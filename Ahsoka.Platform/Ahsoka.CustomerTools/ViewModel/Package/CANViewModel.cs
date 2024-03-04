@@ -249,9 +249,11 @@ internal class CanSetupViewModel : ViewModelBase
         CalibrationPath = null;
         CanClientCalibration = new CanClientCalibration();
         Nodes.Clear();
+        Messages.Clear();
 
         OnPropertyChanged(nameof(ConfigurationPath));
         OnPropertyChanged(nameof(Nodes));
+        OnPropertyChanged(nameof(Messages));
     }
 
     private void LoadCANConfiguration()

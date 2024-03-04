@@ -48,7 +48,7 @@ stages:
     - task: gitversion/setup@0
       displayName: Install GitVersion
       inputs:
-        versionSpec: '5.8.1'
+        versionSpec: '5.x'
         preferLatestVersion: true
 
     - task: gitversion/execute@0

@@ -450,7 +450,7 @@ public NodeSelector[] ReceiveNodes
     {
         if (definition == null)
         {
-            definition = new() { Name = "New Message", Id = 100 };
+            definition = new() { Name = "New Message", Id = 100, TransmitNodes = new int[] {-1, -1}, ReceiveNodes = new int[] { -1, -1 } };
 
             // FindNode Index
             for (uint i = 0; i < UInt32.MaxValue; i++)
@@ -459,7 +459,6 @@ public NodeSelector[] ReceiveNodes
                     definition.Id = i;
                     break;
                 }
-
             canViewModel.CanClientCalibration.Messages.Add(definition);
         }
 

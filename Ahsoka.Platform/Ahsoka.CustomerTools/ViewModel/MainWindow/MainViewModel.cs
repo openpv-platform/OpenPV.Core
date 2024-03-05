@@ -470,7 +470,7 @@ internal class MainViewModel : ViewModelBase
         {
             /// Ping Spark Prod to see if we have internet
             using var ping = new Ping();
-            var reply = ping.Send("sparkserviceprod.azurewebsites.net", 5000);
+            var reply = ping.Send("enovation.powervisionspark.com", 5000);
             if (reply != null && reply.Status == IPStatus.Success)
                 return true;
         }

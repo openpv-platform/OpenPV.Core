@@ -52,7 +52,7 @@ public class RemoteLinuxTests
             // Login to Spark to get Token
             SparkTestsHelpers.GetSparkLogin(out string identity, out string password, out SparkTests.DefaultTestSparkServer);
 
-            var loginDto = SparkTeamClient.SharedSparkClient.LoginToSpark(SparkTests.DefaultTestSparkServer,
+            var loginDto = SparkAccountClient.SharedSparkClient.LoginToSpark(SparkTests.DefaultTestSparkServer,
                                      SparkEndPointType.Teams,
                                      SecurityGroopType.Account,
                                      identity, SecureLocalStrings.ToSecureString(password),

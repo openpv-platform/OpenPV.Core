@@ -72,6 +72,7 @@
 							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Download Key"/>
 						</StackPanel>
 					</Button>
+					
 				</StackPanel>
 			</DockPanel>
 		</Grid>

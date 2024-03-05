@@ -246,7 +246,7 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
             DeviceFactoryInfoDTO factoryInfo = null;
             try
             {
-                factoryInfo = SparkTeamClient.SharedSparkClient.GetFactoryInfo(info.PlatformFamily.ToString(), hardwareID);
+                factoryInfo = SparkAccountClient.SharedSparkClient.GetFactoryInfo(info.PlatformFamily.ToString(), hardwareID);
                 factoryDataIsValid = factoryInfo.DeviceID != Guid.Empty;
             }
             catch { } // Ignore if No Factory Info or Error.  Data will show "Invalid" on Installer UI.
@@ -394,7 +394,7 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
         sparkInfo.CurrentAuthorization = null;
         sparkInfo.LoginToTeamClient();
 
-        var defaultTeam = SparkTeamClient.SharedSparkClient.GetDefaultTeam();
+        var defaultTeam = SparkAccountClient.SharedSparkClient.GetDefaultTeam();
 
         // Create Subscription File
         var subscription = new Services.Spark.SparkSubscription()

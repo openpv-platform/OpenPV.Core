@@ -108,6 +108,18 @@
 						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Remove Device"/>
 					</StackPanel>
 				</Button>
+				<Grid DockPanel.Dock="Bottom">
+					<TextBlock IsVisible="{Binding !ParentViewModel.ParentViewModel.IsError}" Margin="5,20" Width="180"
+							   TextWrapping="Wrap" TextAlignment="Center"
+							   HorizontalAlignment="Center" VerticalAlignment="Bottom"
+							   Foreground="Black" FontSize="13"
+							   Text="{Binding ParentViewModel.ParentViewModel.ResultText, FallbackValue='No Error'}"/>
+
+					<TextBlock IsVisible="{Binding ParentViewModel.ParentViewModel.IsError}" Margin="5,20" Width="180" TextWrapping="Wrap"
+							   HorizontalAlignment="Center" TextAlignment="Center"
+							   Foreground="Red" FontSize="13" VerticalAlignment="Bottom"
+							   Text="{Binding ParentViewModel.ParentViewModel.ResultText, FallbackValue='Error Found'}"/>
+				</Grid>
 
 
 			</DockPanel>

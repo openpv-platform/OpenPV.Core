@@ -25,7 +25,7 @@ public static class SparkCustomerTools
         sparkInfo.LoginToTeamClient();
 
         // Get the Team that we will be assigning this Display To
-        var teamList = SparkTeamClient.SharedSparkClient.GetTeams();
+        var teamList = SparkAccountClient.SharedSparkClient.GetTeams();
         var teamDto = teamList.FirstOrDefault(x => x.TeamID.ToString().StartsWith(provisioningInfo.ApplicationId.ToString()));
         if (teamDto == null)
         {
@@ -113,7 +113,7 @@ public static class SparkCustomerTools
 
         // Get Module Info and Check if Valid
         progress.Report("Sending License List to Spark for Signing.");
-        ProvisioningResult result = SparkTeamClient.SharedSparkClient.ProvisionDeviceLicenses(teamID.ToString(), subInfo.DeviceId, new ProvisioningInfo() { ModuleLicenseList = list, DeviceInfo = deviceDto});
+        ProvisioningResult result = SparkAccountClient.SharedSparkClient.ProvisionDeviceLicenses(teamID.ToString(), subInfo.DeviceId, new ProvisioningInfo() { ModuleLicenseList = list, DeviceInfo = deviceDto});
 
         if (!RSAEncryption.VerifyDataSignature(result.ModuleLicenseInfo.Signature, result.ModuleLicenseInfo.LicenseData, Properties.Resources.ModuleLicensePublicKeyPEM))
         {
@@ -174,8 +174,8 @@ public static class SparkCustomerTools
         });
 
         // Crate Container and Upload
-        var container = SparkTeamClient.SharedSparkClient.CreateContainerData(uploadArea, new string[] { manifestFileName }, uploadInfo.ContainerVersion);
-        SparkTeamClient.SharedSparkClient.UploadContainer(container, team, progressLocal);
+        var container = SparkAccountClient.SharedSparkClient.CreateContainerData(uploadArea, new string[] { manifestFileName }, uploadInfo.ContainerVersion);
+        SparkAccountClient.SharedSparkClient.UploadContainer(container, team, progressLocal);
 
         return true;
     }
@@ -200,7 +200,7 @@ public static class SparkCustomerTools
     public static ReleaseDTO UpdateVersion(TeamDTO team, ReleaseDTO uploadInfo)
     {
         // Fetch This Channel
-        var channels = SparkTeamClient.SharedSparkClient.GetTeamContainers(team.TeamID.ToString(), uploadInfo.ChannelName);
+        var channels = SparkAccountClient.SharedSparkClient.GetTeamContainers(team.TeamID.ToString(), uploadInfo.ChannelName);
         if (channels.Count > 0)
         {
             try // Attempt to Sort by Version if we can.

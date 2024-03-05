@@ -61,7 +61,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
 
     internal void GetTeamModules()
     {        
-        var teamModules = SparkTeamClient.SharedSparkClient.GetTeamModules(ParentViewModel.TeamID);
+        var teamModules = SparkAccountClient.SharedSparkClient.GetTeamModules(ParentViewModel.TeamID);
 
         this.ModuleList.Clear();
         foreach (var module in teamModules)
@@ -104,7 +104,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
     {
         this.AvailableModules.Clear();
 
-        var modules = SparkTeamClient.SharedSparkClient.GetModules();
+        var modules = SparkAccountClient.SharedSparkClient.GetModules();
 
         foreach (var module in modules)
         {
@@ -166,7 +166,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
             string url = "";
             try
             {
-                url = SparkTeamClient.SharedSparkClient.CreateModuleCheckout(ParentViewModel.TeamID, purchaseInfo);
+                url = SparkAccountClient.SharedSparkClient.CreateModuleCheckout(ParentViewModel.TeamID, purchaseInfo);
                 Process.Start(new ProcessStartInfo()
                 {
                     FileName = url,
@@ -192,7 +192,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
 
                     if (checkoutCanceled.IsCompleted)
                     {
-                        SparkTeamClient.SharedSparkClient.InvalidateCheckout(ParentViewModel.TeamID);
+                        SparkAccountClient.SharedSparkClient.InvalidateCheckout(ParentViewModel.TeamID);
                         return false;
                     }
 
@@ -227,7 +227,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
 
         if (continueWork)
         {
-            var result = SparkTeamClient.SharedSparkClient.AddTeamModules(ParentViewModel.TeamID, purchaseInfo);
+            var result = SparkAccountClient.SharedSparkClient.AddTeamModules(ParentViewModel.TeamID, purchaseInfo);
             if (result.ToLower().Contains("error"))
             {
                 _ = root.Dialog.ShowDialog("Purchase Error",

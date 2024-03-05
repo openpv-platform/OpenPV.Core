@@ -71,7 +71,7 @@ internal class LicensedModuleViewModel : ChildViewModelBase<SparkProjectModulesV
         {
             try
             {
-                var url = SparkTeamClient.SharedSparkClient.CreateBillingPortal(ParentViewModel.ParentViewModel.TeamID);
+                var url = SparkAccountClient.SharedSparkClient.CreateBillingPortal(ParentViewModel.ParentViewModel.TeamID);
                 Process.Start(new ProcessStartInfo()
                 {
                     FileName = url,

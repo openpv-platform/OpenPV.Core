@@ -432,13 +432,13 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         try
         {
             var search = new ClientContainerSearchDTO() { ChannelName = channelName, ContainerVersionFilter = filter };
-            var results = SparkTeamClient.SharedSparkClient.SearchContainers(search, 100);
+            var results = SparkAccountClient.SharedSparkClient.SearchContainers(search, 100);
 
             foreach (var result in results.OrderByDescending(x => x.UploadDate))
             {
                 if (property == "Firmware")
                 {
-                    ReleaseDTO token = SparkTeamClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
+                    ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
                     foreach (var item in token.Contents)
                     {
                         if (item.Path.StartsWith("image"))
@@ -449,14 +449,14 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
                 }
                 else if (property == "Demos")
                 {
-                    ReleaseDTO token = SparkTeamClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
+                    ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
                     releases.Add(new PlatformDemoTool(token));
 
                     break; // PUll Latest Demo's and Return;
                 }
                 else if (property == "Dependencies")
                 {
-                    ReleaseDTO token = SparkTeamClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
+                    ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
                     AddDependencyItems(platformSupport, releases, token);
                 }
             }

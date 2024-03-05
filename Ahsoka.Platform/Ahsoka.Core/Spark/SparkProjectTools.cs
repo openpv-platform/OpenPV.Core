@@ -18,7 +18,7 @@ public static class SparkProjectTools
     {
         try
         {
-            _ = SparkTeamClient.SharedSparkClient.LoginToSpark(url, SparkEndPointType.Teams, SecurityGroopType.Account, login, SecureLocalStrings.ToSecureString(password), null, "Ahsoka Client Tools");
+            _ = SparkAccountClient.SharedSparkClient.LoginToSpark(url, SparkEndPointType.Teams, SecurityGroopType.Account, login, SecureLocalStrings.ToSecureString(password), null, "Ahsoka Client Tools");
 
             return true;
         }
@@ -31,39 +31,39 @@ public static class SparkProjectTools
     public static TeamDTOCollection GetTeams()
     {
         // Fetch This Channel
-        return SparkTeamClient.SharedSparkClient.GetTeams();
+        return SparkAccountClient.SharedSparkClient.GetTeams();
     }
 
     public static TeamDTO AddTeam(TeamDTO addTeamDTO)
     {
         // Fetch This Channel
-        return SparkTeamClient.SharedSparkClient.CreateTeam(addTeamDTO.TeamName);
+        return SparkAccountClient.SharedSparkClient.CreateTeam(addTeamDTO.TeamName);
     }
 
     public static string RemoveTeam(TeamDTO teamDto)
     {
         // Fetch This Channel
-        return SparkTeamClient.SharedSparkClient.DeleteTeam(teamDto.TeamID);
+        return SparkAccountClient.SharedSparkClient.DeleteTeam(teamDto.TeamID);
     }
 
     public static TeamDTOCollection GetTeamMembers(Guid teamID)
     {
-        return SparkTeamClient.SharedSparkClient.GetTeamMembers(teamID);
+        return SparkAccountClient.SharedSparkClient.GetTeamMembers(teamID);
     }
 
     public static ContainerSearchResultsDTO GetTeamContainers(Guid teamID, ClientContainerSearchDTO searchInfo)
     {
-        return SparkTeamClient.SharedSparkClient.GetTeamContainers(teamID.ToString(),searchInfo);
+        return SparkAccountClient.SharedSparkClient.GetTeamContainers(teamID.ToString(),searchInfo);
     }
 
     public static TeamDTO AddTeamMember(Guid teamID, string emailAddress)
     {
-        return SparkTeamClient.SharedSparkClient.InviteTeamMember(teamID, emailAddress);
+        return SparkAccountClient.SharedSparkClient.InviteTeamMember(teamID, emailAddress);
     }
 
     public static string RemoveTeamMember(Guid teamID, string emailAddress)
     {
-        return SparkTeamClient.SharedSparkClient.RevokeTeamMember(teamID, emailAddress);
+        return SparkAccountClient.SharedSparkClient.RevokeTeamMember(teamID, emailAddress);
     }
 
     public static void PromoteApplication(TeamDTO team, ContainerDTO container)
@@ -83,7 +83,7 @@ public static class SparkProjectTools
                 return;
         }
 
-        SparkTeamClient.SharedSparkClient.UpdateTeamContainer(container, team);
+        SparkAccountClient.SharedSparkClient.UpdateTeamContainer(container, team);
     }
 
     public static void DemoteApplication(TeamDTO team, ContainerDTO container)
@@ -103,23 +103,23 @@ public static class SparkProjectTools
                 return;
         }
 
-        SparkTeamClient.SharedSparkClient.UpdateTeamContainer(container, team);
+        SparkAccountClient.SharedSparkClient.UpdateTeamContainer(container, team);
 
     }
 
     public static void RemoveTeamContainer(TeamDTO team, ContainerDTO container)
     {
-        SparkTeamClient.SharedSparkClient.DeleteTeamContainer(container, team);
+        SparkAccountClient.SharedSparkClient.DeleteTeamContainer(container, team);
     }
 
     public static DeviceSearchResultsDTO GetTeamDevices(Guid teamID, DeviceSearchDTO searchInfo)
     {
-        return SparkTeamClient.SharedSparkClient.GetTeamDevices(teamID.ToString(), searchInfo);
+        return SparkAccountClient.SharedSparkClient.GetTeamDevices(teamID.ToString(), searchInfo);
     }
 
     public static void RemoveTeamDevice(TeamDTO team, DeviceDTO device)
     {
-        SparkTeamClient.SharedSparkClient.DeleteTeamDevice(device, team);
+        SparkAccountClient.SharedSparkClient.DeleteTeamDevice(device, team);
     }
 
     public static void DemoteDevice(TeamDTO team, DeviceDTO device)
@@ -131,7 +131,7 @@ public static class SparkProjectTools
         else
             return;
 
-        SparkTeamClient.SharedSparkClient.UpdateTeamDevice(device, team);
+        SparkAccountClient.SharedSparkClient.UpdateTeamDevice(device, team);
     }
 
     public static void PromoteDevice(TeamDTO team, DeviceDTO device)
@@ -143,23 +143,23 @@ public static class SparkProjectTools
         else
             return;
 
-        SparkTeamClient.SharedSparkClient.UpdateTeamDevice(device, team);
+        SparkAccountClient.SharedSparkClient.UpdateTeamDevice(device, team);
     }
 
     public static void RenameDevice(TeamDTO team, DeviceDTO device)
     {
-        SparkTeamClient.SharedSparkClient.UpdateTeamDevice(device, team);
+        SparkAccountClient.SharedSparkClient.UpdateTeamDevice(device, team);
 
     }
 
     public static string RemoveDevelopmentKey(TeamDTO team, ArtifactDTO artifact)
     {
-        return SparkTeamClient.SharedSparkClient.DeleteArtifact(team.TeamID, artifact.ArtifactName, artifact.ArtifactGroup);
+        return SparkAccountClient.SharedSparkClient.DeleteArtifact(team.TeamID, artifact.ArtifactName, artifact.ArtifactGroup);
     }
 
     public static ArtifactDTOCollection GetTeamDevelopmentKeys(TeamDTO team)
     {
-        return SparkTeamClient.SharedSparkClient.GetArtifacts(team.TeamID, "", "SecurityData");
+        return SparkAccountClient.SharedSparkClient.GetArtifacts(team.TeamID, "", "SecurityData");
     }
 
 
@@ -182,7 +182,7 @@ public static class SparkProjectTools
             {
                 new ArtifactDTO() { ArtifactGroup = "SecurityData", TeamID = team.TeamID, ArtifactName = artifactName, ArtifactCreator = team.MemberEmailAddress }
             };
-            var uploadTokens = SparkTeamClient.SharedSparkClient.GetArtifactUploadTokens(team.TeamID, artifactToUpload);
+            var uploadTokens = SparkAccountClient.SharedSparkClient.GetArtifactUploadTokens(team.TeamID, artifactToUpload);
 
             // Create Key Data
             DeviceKeyInfo key = new()
@@ -196,7 +196,7 @@ public static class SparkProjectTools
 
             // Upload Key 
             var publicKeyToken = uploadTokens.FirstOrDefault(x => x.ArtifactName == artifactName);
-            SparkTeamClient.SharedSparkClient.UploadDTO(publicKeyToken, new MemoryStream(UTF8Encoding.UTF8.GetBytes(result)));
+            SparkAccountClient.SharedSparkClient.UploadDTO(publicKeyToken, new MemoryStream(UTF8Encoding.UTF8.GetBytes(result)));
         }
         else
         {
@@ -209,10 +209,10 @@ public static class SparkProjectTools
                 {
                     new ArtifactDTO() { ArtifactGroup = "SecurityData", TeamID = team.TeamID, ArtifactName = artifactName, ArtifactCreator = team.MemberEmailAddress }
                 };
-                var downloadTokens = SparkTeamClient.SharedSparkClient.GetArtifactDownloadTokens(team.TeamID, artifactsToUpload);
+                var downloadTokens = SparkAccountClient.SharedSparkClient.GetArtifactDownloadTokens(team.TeamID, artifactsToUpload);
 
                 using var stream = new MemoryStream();
-                SparkTeamClient.SharedSparkClient.DownloadDTO(downloadTokens.First(), stream);
+                SparkAccountClient.SharedSparkClient.DownloadDTO(downloadTokens.First(), stream);
 
                 DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(UTF8Encoding.UTF8.GetString(stream.ToArray()));
 

@@ -136,7 +136,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
         {
             try
             {
-                if (SparkTeamClient.SharedSparkClient.CurrentAuthorization == null)
+                if (SparkAccountClient.SharedSparkClient.CurrentAuthorization == null)
                     return;
 
                 string channelName = string.Empty;
@@ -149,7 +149,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
                     channelName = "OpenPV for Windows";
 
                 var search = new ClientContainerSearchDTO() { ChannelName = channelName };
-                var results = SparkTeamClient.SharedSparkClient.SearchContainers(search, int.MaxValue);
+                var results = SparkAccountClient.SharedSparkClient.SearchContainers(search, int.MaxValue);
 
                 if (results != null)
                 {
@@ -196,7 +196,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
         {
             try
             {
-                ReleaseDTO token = SparkTeamClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
+                ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
                 string fileExt = Environment.OSVersion.Platform == PlatformID.Unix ? ".deb" : ".msi";
 
                 if (OperatingSystem.IsMacOS())
@@ -329,7 +329,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
         {
             try
             {
-                ReleaseDTO token = SparkTeamClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
+                ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
                 string fileExt = Environment.OSVersion.Platform == PlatformID.Unix ? ".deb" : ".msi";
                 var fileItem = token.Contents.FirstOrDefault(x => x.Path.EndsWith(fileExt));
                 string downloadUrl = fileItem.DownloadToken;
@@ -345,7 +345,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
     internal void ShowNotes()
     {
         // Get the text from the ReleaseNotes field of the container
-        ReleaseDTO token = SparkTeamClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
+        ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
         string releaseNotesFile = token.ReleaseNotes;
 
         // See if ReleaseNotes text matches the name of a file in the container, and get its download token
@@ -371,7 +371,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
         try
         {
             // Prepare DTO and download token
-            ReleaseDTO release = SparkTeamClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
+            ReleaseDTO release = SparkAccountClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
 
             // Look in DTO for a file name that matches the ReleaseNotes text from the database
             foreach (ReleaseFileDTO files in release.Contents)

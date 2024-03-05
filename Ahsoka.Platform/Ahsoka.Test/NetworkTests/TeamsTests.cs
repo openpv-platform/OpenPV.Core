@@ -27,7 +27,7 @@ public class SparkTeamsTests
     {
         SparkTestsHelpers.GetSparkLogin(out string identity, out string password, out SparkTests.DefaultTestSparkServer);
 
-        var loginDto = SparkTeamClient.SharedSparkClient.LoginToSpark(SparkTests.DefaultTestSparkServer,
+        var loginDto = SparkAccountClient.SharedSparkClient.LoginToSpark(SparkTests.DefaultTestSparkServer,
                                  SparkEndPointType.Teams,
                                  SecurityGroopType.Account,
                                  identity, SecureLocalStrings.ToSecureString(password),
@@ -74,11 +74,11 @@ public class SparkTeamsTests
         SparkProjectTools.RemoveTeam(team);
 
         // Validate that its Gone
-        team = SparkTeamClient.SharedSparkClient.GetTeam(team.TeamID);
+        team = SparkAccountClient.SharedSparkClient.GetTeam(team.TeamID);
         Assert.IsTrue(team.TeamID == Guid.Empty);
 
         // Logout (Clear Tokens)
-        SparkTeamClient.SharedSparkClient.RequestLogout();
+        SparkAccountClient.SharedSparkClient.RequestLogout();
 
         // Wait For Logout
         loginEvent.WaitOne(TimeSpan.FromSeconds(10));
@@ -102,7 +102,7 @@ public class SparkTeamsTests
         subscription.ReleaseName = "";
 
         var info = new TargetConnectionInfo() { PlatformFamily = PlatformFamily.Windows64, PlatformQualifier = "Desktop", HostName = "localhost", UserName = "" };
-        var sparkLogin = new SparkConnectionInfo() { CurrentAuthorization = SparkTeamClient.SharedSparkClient.CurrentAuthorization, Url = SparkTests.DefaultTestSparkServer };
+        var sparkLogin = new SparkConnectionInfo() { CurrentAuthorization = SparkAccountClient.SharedSparkClient.CurrentAuthorization, Url = SparkTests.DefaultTestSparkServer };
 
         var subInfo = new ProvisionDisplayRequest()
         {
@@ -111,7 +111,7 @@ public class SparkTeamsTests
         };
 
         //SparkOTA Module Info
-        var module = SparkTeamClient.SharedSparkClient.GetModules().FirstOrDefault(x => x.Name.Contains("OTA"));
+        var module = SparkAccountClient.SharedSparkClient.GetModules().FirstOrDefault(x => x.Name.Contains("OTA"));
         subInfo.Licenses.Add(new ModuleLicense() { LicenseId = module.ID, LicenseName = module.Name });
 
         var progress = new Progress<string>(info =>
@@ -128,7 +128,7 @@ public class SparkTeamsTests
 
         // Force to Develop Group.
         device.GroopID = team.DevelopmentDeviceGroup;
-        SparkTeamClient.SharedSparkClient.UpdateTeamDevice(device, team);
+        SparkAccountClient.SharedSparkClient.UpdateTeamDevice(device, team);
         device = SparkProjectTools.GetTeamDevices(team.TeamID, null).Devices.First();
 
         Thread.Sleep(1000);

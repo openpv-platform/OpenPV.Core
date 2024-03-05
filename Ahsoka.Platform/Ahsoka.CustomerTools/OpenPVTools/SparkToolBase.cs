@@ -42,7 +42,7 @@ internal abstract class SparkToolBase : OpenPVToolBase
                 if (File.Exists(path))
                     File.Delete(path);
 
-                ReleaseDTO token = SparkTeamClient.SharedSparkClient.GetDownloadToken(viewModel.ReleaseID, DateTime.Now.AddMinutes(15));
+                ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(viewModel.ReleaseID, DateTime.Now.AddMinutes(15));
                 var contentItem = token.Contents.FirstOrDefault(x => path.EndsWith(x.Path));
 
                 var myDownloadUrl = contentItem.DownloadToken;

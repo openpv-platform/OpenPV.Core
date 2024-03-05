@@ -228,7 +228,7 @@ internal class SparkProjectEditorViewModel : ChildViewModelBase<MainViewModel>
 
         Task.Run(() =>
         {
-            SparkTeamClient.SharedSparkClient.RenameTeam(SelectedTeam.TeamID, renameName);
+            SparkAccountClient.SharedSparkClient.RenameTeam(SelectedTeam.TeamID, renameName);
 
         }).ContinueWith(result =>
         {
@@ -323,13 +323,13 @@ internal class SparkProjectEditorViewModel : ChildViewModelBase<MainViewModel>
         }
 
         // Set Team Sub
-        HasAdminSubscriptions = SparkTeamClient.SharedSparkClient.IsAuthorizedForFeature("TeamSubscriptions");
+        HasAdminSubscriptions = SparkAccountClient.SharedSparkClient.IsAuthorizedForFeature("TeamSubscriptions");
 
         IsWorking = true;
         WorkingText = "Loading Projects";
 
         // Add tier to List
-        var cachedTiers = SparkTeamClient.SharedSparkClient.GetSubscriptionTiers();
+        var cachedTiers = SparkAccountClient.SharedSparkClient.GetSubscriptionTiers();
         tiers.Clear();
         foreach (var tier in cachedTiers)
             tiers.Add(tier);

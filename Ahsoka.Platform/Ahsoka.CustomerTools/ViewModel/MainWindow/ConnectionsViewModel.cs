@@ -258,7 +258,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
         }
 
 
-        CanFactoryPrep = SparkTeamClient.SharedSparkClient.IsAuthorizedForFeature("FactoryPrep");
+        CanFactoryPrep = SparkAccountClient.SharedSparkClient.IsAuthorizedForFeature("FactoryPrep");
 
         EditConfigurationInfo = ConnectionList.FirstOrDefault();
 
@@ -429,7 +429,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             // Create Spark File with Current Auth.
             SparkConnectionInfo info = new()
             {
-                CurrentAuthorization = SparkTeamClient.SharedSparkClient.CurrentAuthorization,
+                CurrentAuthorization = SparkAccountClient.SharedSparkClient.CurrentAuthorization,
                 Url = ParentViewModel.SparkLogin.SparkUrl
             };
 
@@ -470,7 +470,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             var result = connection.RunCommand("cat /sys/firmware/devicetree/base/serial-number"); // This Needs to change but don't want to be reliant on the command being on the unit.
             var hardwareID = result.Result.Replace("\0", "");
 
-            return SparkTeamClient.SharedSparkClient.GetFactoryInfo(hardwareInfo.PlatformFamily.ToString(), hardwareID);
+            return SparkAccountClient.SharedSparkClient.GetFactoryInfo(hardwareInfo.PlatformFamily.ToString(), hardwareID);
 
         }).ContinueWith(result =>
         {

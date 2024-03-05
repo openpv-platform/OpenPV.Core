@@ -145,7 +145,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
             if (ParentViewModel.IsOffline)
             {
-                var result = SparkTeamClient.SharedSparkClient.IsRefreshTokenStillValid(authDTO);
+                var result = SparkAccountClient.SharedSparkClient.IsRefreshTokenStillValid(authDTO);
                 if (result)
                 {
                     // Allow Login to Continue without Logging In.
@@ -156,12 +156,12 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
             try
             {
-                authDTO = SparkTeamClient.SharedSparkClient.LoginWithRefreshToken(settings.Url, authDTO, LogoutCompleted);
+                authDTO = SparkAccountClient.SharedSparkClient.LoginWithRefreshToken(settings.Url, authDTO, LogoutCompleted);
                 settings.RefreshToken = StringEncryption.EncryptString(SecureLocalStrings.ToSecureString(authDTO.Refresh));
 
                 SaveSettings(settings);
 
-                var account = SparkTeamClient.SharedSparkClient.GetAccount();
+                var account = SparkAccountClient.SharedSparkClient.GetAccount();
                 LastName = account.LastName;
                 FirstName = account.FirstName;
                 EmailAddress = account.Email;
@@ -180,15 +180,15 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
     private void SetReleaseValues()
     {
         // Set Default URL
-        sparkList.Add("sparkserviceprod.azurewebsites.net");
+        sparkList.Add("enovation.powervisionspark.com");
         SparkUrl = SparkUrlList.FirstOrDefault();
     }
 
     [Conditional("DEBUG")]
     private void SetDebugValues()
     {
-        sparkList.Add("sparkserviceprod.azurewebsites.net");
-        sparkList.Add("sparkserviceprod-staging.azurewebsites.net");
+        sparkList.Add("enovation.powervisionspark.com");
+        sparkList.Add("development.powervisionspark.com");
         sparkList.Add("localhost:7211");
         SparkUrl ??= SparkUrlList.FirstOrDefault();
 
@@ -246,7 +246,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
     {
         try
         {
-            var authToken = SparkTeamClient.SharedSparkClient.LoginToSpark(settings.Url, SparkEndPointType.Teams, SecurityGroopType.Account, LoginName, password, LogoutCompleted);
+            var authToken = SparkAccountClient.SharedSparkClient.LoginToSpark(settings.Url, SparkEndPointType.Teams, SecurityGroopType.Account, LoginName, password, LogoutCompleted);
             settings.RememberMe = rememberMe;
             if (rememberMe)
             {
@@ -261,7 +261,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
             SaveSettings(settings);
 
-            var account = SparkTeamClient.SharedSparkClient.GetAccount();
+            var account = SparkAccountClient.SharedSparkClient.GetAccount();
             LastName = account.LastName;
             FirstName = account.FirstName;
             EmailAddress = account.Email;
@@ -299,12 +299,12 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
                 if (returnValue.Equals(""))
                 {
-                    var account = SparkTeamClient.SharedSparkClient.GetAccount();
+                    var account = SparkAccountClient.SharedSparkClient.GetAccount();
                     account.NewPassword = SecureLocalStrings.ToInsecureString(newPassword);
                     account.UpdatePassword = true;
 
                     // Update Password
-                    SparkTeamClient.SharedSparkClient.UpdateAccount(account);
+                    SparkAccountClient.SharedSparkClient.UpdateAccount(account);
                     // Set to New Password
                     password = newPassword;
                     // Login Again to Verify Password is Correct. 
@@ -343,7 +343,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
         {
             try
             {
-                SparkTeamClient.SharedSparkClient.RequestPasswordReset(settings.Url, LoginName);
+                SparkAccountClient.SharedSparkClient.RequestPasswordReset(settings.Url, LoginName);
                 return "";
             }
             catch (Exception ex)
@@ -400,7 +400,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
                     CompanyName = CompanyName,
                 };
 
-                return SparkTeamClient.SharedSparkClient.RequestNewAccount(SparkUrl, dto);
+                return SparkAccountClient.SharedSparkClient.RequestNewAccount(SparkUrl, dto);
             }
             catch (Exception ex)
             {
@@ -442,11 +442,11 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
                 string tempEmailAddress = EmailAddress;
 
                 // Login Again to Verify Password is Correct. 
-                var authToken = SparkTeamClient.SharedSparkClient.LoginWithRefreshToken(settings.Url, SparkTeamClient.SharedSparkClient.CurrentAuthorization, LogoutCompleted);
+                var authToken = SparkAccountClient.SharedSparkClient.LoginWithRefreshToken(settings.Url, SparkAccountClient.SharedSparkClient.CurrentAuthorization, LogoutCompleted);
 
                 if (authToken != null && authToken.Token != null)
                 {
-                    var account = SparkTeamClient.SharedSparkClient.GetAccount();
+                    var account = SparkAccountClient.SharedSparkClient.GetAccount();
 
                     bool emailAddressChanged = account.Email != emailAddress;
 
@@ -455,7 +455,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
                     account.Email = tempEmailAddress;
 
                     // Update Info
-                    SparkTeamClient.SharedSparkClient.UpdateAccount(account);
+                    SparkAccountClient.SharedSparkClient.UpdateAccount(account);
 
                     return emailAddressChanged ? "Success: You should receive an email shortly to confirm your email address change." : "Success: Your information has been updated.";
                 }
@@ -480,7 +480,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
     internal void Logout()
     {
-        SparkTeamClient.SharedSparkClient.RequestLogout();
+        SparkAccountClient.SharedSparkClient.RequestLogout();
     }
 
     internal void LogoutCompleted(WebException ex)

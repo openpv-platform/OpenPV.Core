@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using EnovationCloud.Core.Client;
+using Ahsoka.Services.System;
 
 namespace Ahsoka.CustomerTools;
 
@@ -20,14 +21,14 @@ internal partial class SparkProjectApplicationViewModel : ChildViewModelBase<Spa
     UserControl selectView;
     public List<SparkTrackType> TrackList { get; set; } = new List<SparkTrackType>() { SparkTrackType.Development, SparkTrackType.Canary, SparkTrackType.Beta, SparkTrackType.Release };
 
-    public ObservableCollection<ContainerDTO> Applications
+    public ObservableCollection<ApplicationViewModel> Applications
     {
         get;
         init;
 
     } = new();
 
-    public ContainerDTO SelectedApplication
+    public ApplicationViewModel SelectedApplication
     {
         get;
         set;
@@ -87,12 +88,13 @@ internal partial class SparkProjectApplicationViewModel : ChildViewModelBase<Spa
                 foreach (var item in result)
                 {
                     item.ContainerName = item.ContainerName.Replace(item.ContainerVersion, "");
-                    this.Applications.Add(item);
+                    this.Applications.Add(new ApplicationViewModel(item));
                 }
-
-                SelectedApplication = this.Applications.FirstOrDefault(x => x.ContainerName == tempApp?.ContainerName && x.ContainerVersion == tempApp?.ContainerVersion);
+               
+                SelectedApplication = this.Applications.FirstOrDefault(x => x.DTO.ContainerName == tempApp?.DTO.ContainerName && x.DTO.ContainerVersion == tempApp?.DTO.ContainerVersion);
                 OnPropertyChanged(nameof(SelectedApplication));
-            });
+                ParentViewModel.Devices.LoadComplete();
+            });           
         }
         catch { } // Not Containers
     }
@@ -119,9 +121,9 @@ internal partial class SparkProjectApplicationViewModel : ChildViewModelBase<Spa
             Task.Run(() =>
             {
                 if (promote)
-                    SparkProjectTools.PromoteApplication(this.ParentViewModel.Model, SelectedApplication);
+                    SparkProjectTools.PromoteApplication(this.ParentViewModel.Model, SelectedApplication.DTO);
                 else
-                    SparkProjectTools.DemoteApplication(this.ParentViewModel.Model, SelectedApplication);
+                    SparkProjectTools.DemoteApplication(this.ParentViewModel.Model, SelectedApplication.DTO);
 
 
             }).ContinueWith(result =>
@@ -164,7 +166,7 @@ internal partial class SparkProjectApplicationViewModel : ChildViewModelBase<Spa
 
             _ = Task.Run(() =>
             {
-                SparkProjectTools.RemoveTeamContainer(this.ParentViewModel.Model, SelectedApplication);
+                SparkProjectTools.RemoveTeamContainer(this.ParentViewModel.Model, SelectedApplication.DTO);
 
             }).ContinueWith(result =>
             {
@@ -189,7 +191,21 @@ internal partial class SparkProjectApplicationViewModel : ChildViewModelBase<Spa
             });
         }
     }
+}
 
+internal class ApplicationViewModel
+{
+    ContainerDTO dto;
 
+    internal ContainerDTO DTO { get { return dto; } }
 
+    internal ApplicationViewModel(ContainerDTO dto)
+    {
+        this.dto = dto;
+    }
+
+    public override string ToString()
+    {
+        return dto.ContainerName;
+    }
 }

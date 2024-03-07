@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="Ahsoka.CustomerTools.Views.SparkDeviceProvisionView">
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+	</UserControl.Styles>
+	<Border Background="#44888888">
+		<Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+			<Border BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White" Padding="25">
+				<StackPanel >
+					<TextBlock Text="Add a New Device" FontSize="25"
+							   VerticalAlignment="Top" Margin="0,0,8,8" />
+						<StackPanel Orientation="Horizontal" Margin="5">
+						<TextBlock Text="Module Licenses:           " VerticalAlignment="Top" Margin="5,8" />
+						<ItemsRepeater  Width="450" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+									   ItemsSource="{Binding AvailableModules}">
+							<ItemsRepeater.Layout>
+								<StackLayout Spacing="0" Orientation="Vertical"/>
+							</ItemsRepeater.Layout>
+							<ItemsRepeater.ItemTemplate>
+								<DataTemplate>
+									<Grid ColumnDefinitions="*">
+										<CheckBox Background="White" Margin="0,3"
+												  VerticalAlignment="Top" IsChecked="{Binding IsSelected}"
+												  Content="{Binding Module.ModuleName, StringFormat='Add License for {0}' FallbackValue='No licenses available'}"/>
+									</Grid>
+								</DataTemplate>
+							</ItemsRepeater.ItemTemplate>
+						</ItemsRepeater>
+					</StackPanel>
+
+					<StackPanel Orientation="Horizontal" Margin="5">
+						<TextBlock Text="Provisioning Application:"  />
+						<StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" >
+							<ComboBox SelectedItem="{Binding SelectedApplication}" ItemsSource="{Binding ApplicationList}" Width="250" ToolTip.Tip="Application for OTA updates, disabled if blank"/>
+						</StackPanel>
+					</StackPanel>
+					
+					
+					<DockPanel LastChildFill="False" Margin="5">
+						<Button DockPanel.Dock="Right" Content="Close" Command="{Binding CloseEditor}" />
+						<Button DockPanel.Dock="Right" Content="Provision" Command="{Binding ProvisionDevice}" />				
+					</DockPanel>
+					
+				</StackPanel>
+			</Border>
+		</Grid>
+	</Border>
+</UserControl>

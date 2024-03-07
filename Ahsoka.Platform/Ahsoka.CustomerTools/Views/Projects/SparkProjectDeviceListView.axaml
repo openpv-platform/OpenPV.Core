@@ -68,6 +68,17 @@
 						HorizontalAlignment="Stretch"
 					Height="38" Width="165"
 					VerticalContentAlignment="Center"
+					Command="{Binding AddDevice}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Add"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Add Device"/>
+					</StackPanel>
+				</Button>
+				<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+						IsEnabled="{Binding !ParentViewModel.IsViewer}"
+						HorizontalAlignment="Stretch"
+					Height="38" Width="165"
+					VerticalContentAlignment="Center"
 					Command="{Binding RenameDevice}" >
 					<StackPanel Orientation="Horizontal">
 						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Rename"></material:MaterialIcon>

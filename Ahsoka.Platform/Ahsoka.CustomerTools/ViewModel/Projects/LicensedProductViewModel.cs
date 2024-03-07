@@ -150,6 +150,19 @@ internal class ModuleViewModel : ChildViewModelBase<SparkProjectModulesViewModel
 
 }
 
+internal class ProvisionPackageViewModel
+{
+    public LicensedModuleViewModel Module { get; set; }
+
+    public bool IsSelected { get; set; }
+
+    public ProvisionPackageViewModel(LicensedModuleViewModel module)
+    {
+        this.Module = module;
+        IsSelected = false;
+    }
+}
+
 internal class ModulePackageViewModel
 {
     public ProductPackageDTO Package { get; set; }

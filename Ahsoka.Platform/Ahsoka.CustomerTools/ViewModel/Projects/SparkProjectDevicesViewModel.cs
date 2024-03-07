@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using EnovationCloud.Core.Client;
+using System;
 
 namespace Ahsoka.CustomerTools;
 
@@ -17,8 +18,11 @@ namespace Ahsoka.CustomerTools;
 /// </summary>
 internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkProjectViewModel>
 {
+    ApplicationViewModel noSubscribeVM =  new ApplicationViewModel(new ContainerDTO() { ContainerName = "Don't Subcribe to OTA" });
+
     NewItemView addItemView;
     UserControl selectView;
+    UserControl provisionView;
 
     public List<SparkTrackType> TrackList { get; set; } = new List<SparkTrackType>() { SparkTrackType.Development, SparkTrackType.Canary, SparkTrackType.Beta, SparkTrackType.Release };
 
@@ -41,9 +45,31 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
         set;
     } = new DeviceSearchDTO();
 
+    public List<ApplicationViewModel> ApplicationList
+    {
+        get
+        {
+            var list = ParentViewModel.Applications.Applications.DistinctBy(a => a.DTO.ContainerName).ToList();
+            list.Add(noSubscribeVM);          
+            return list;
+        }
+    }
+
+    public ApplicationViewModel SelectedApplication
+    {
+        get;
+        set;
+    }
+
+    public ObservableCollection<ProvisionPackageViewModel> AvailableModules
+    {
+        get;
+        set;
+    } = new ObservableCollection<ProvisionPackageViewModel>();
 
     public SparkProjectDevicesViewModel(SparkProjectViewModel teamVM) : base(teamVM)
     {
+        SelectedApplication = noSubscribeVM;
     }
 
     internal void SearchDevices()
@@ -96,6 +122,84 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
     internal void DemoteDevice()
     {
         UpdateDeviceTrack(false);
+    }
+
+    internal void AddDevice()
+    {
+        if (!FindParent<MainViewModel>().ActiveConnection.IsConnected)
+        {
+            _ = FindParent<MainViewModel>().Dialog.ShowDialog("Device Not Found", "A device must be connected to add to this project", "Ok");
+            return;
+        }
+        
+        AvailableModules.Clear();
+        ParentViewModel.Applications.ContainerSearchInfo = new();
+        ParentViewModel.Applications.SearchContainers();
+        ParentViewModel.Modules.GetTeamModules();
+        foreach (var item in ParentViewModel.Modules.ModuleList)
+        {
+            this.AvailableModules.Add(new ProvisionPackageViewModel(item));
+        }
+
+        provisionView = new SparkDeviceProvisionView() { DataContext = this };
+        FindParent<MainViewModel>().Popup.ShowPopup(provisionView);
+    }
+
+    internal void ProvisionDevice()
+    {
+        _ = Task.Run(() =>
+        {
+            var sparkInfo = new SparkConnectionInfo()
+            {
+                Url = FindParent<MainViewModel>().SparkLogin.SparkUrl
+            };
+
+            ProvisionDisplayRequest provisioningInfo = new();
+
+            provisioningInfo.ApplicationId = Guid.Parse(ParentViewModel.TeamID);
+            if (SelectedApplication != null && SelectedApplication.DTO.ContainerID != Guid.Empty)
+                provisioningInfo.PackageName = SelectedApplication.DTO.ContainerName.Trim();
+
+            foreach (var module in AvailableModules)
+                if (module.IsSelected)
+                    provisioningInfo.Licenses.Add(new ModuleLicense() { LicenseId = module.Module.ModuleID, LicenseName = module.Module.ModuleName });
+
+            FindParent<MainViewModel>().Console.ClearConsole();
+            var progress = new Progress<string>(info =>
+            {
+                FindParent<MainViewModel>().Console.AddConsoleLine(info);
+            });
+
+            FindParent<MainViewModel>().StartProcess();
+
+            // Provision the Display in the Cloud.
+            return SparkCustomerTools.ProvisionDisplayInSpark(FindParent<MainViewModel>().ActiveConnection.Connection,
+                                sparkInfo, provisioningInfo, progress);
+
+        }).ContinueWith(result =>
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (result.Status != TaskStatus.RanToCompletion)
+                    _ = FindParent<MainViewModel>().Dialog.ShowDialog("Provision Failed", "An error occured provisioning the device", "Ok");
+
+                FindParent<MainViewModel>().FinishProcess("", result?.Status == TaskStatus.RanToCompletion);
+            });
+            LoadDevices();
+        });
+
+        CloseEditor();
+    }
+
+    internal void LoadComplete()
+    {
+        OnPropertyChanged(nameof(ApplicationList));
+    }
+
+    internal void CloseEditor()
+    {
+        FindParent<MainViewModel>().Popup.DismissPopup(provisionView);
+        provisionView = null;
     }
 
     internal async void RemoveDevice()
@@ -254,5 +358,4 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
             });
         }
     }
-
 }

@@ -35,7 +35,7 @@ internal class STSocketCanServiceImplementation : CanServiceImplementation
         {
             CanMessageData messageData = new()
             {
-                Dlc = e.Len8Dlc,
+                Dlc = (uint)e.Length,
                 Data = e.Data,
                 Id = e.CanId & 0x1FFFFFFF
             };

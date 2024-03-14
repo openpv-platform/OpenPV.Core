@@ -19,7 +19,6 @@ SemaphoreHandle_t timerListMutex[MAX_PORTS];
 bool promiscuousTx[MAX_PORTS] = {false, false};
 bool promiscuousRx[MAX_PORTS] = {false, false};
 bool transmittingJ1939[MAX_PORTS] = {true, true};
-bool coprocessorReady = false;
 
 void txTimerTask(void* argument);
 
@@ -58,7 +57,7 @@ void canRxTask(void* argument)
 			uint8_t RxData[8];
 			// Receive FDCAN1
 
-			if(HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK && coprocessorReady)
+			if(HAL_FDCAN_GetRxMessage(hfdcan, FDCAN_RX_FIFO0, &RxHeader, RxData) == HAL_OK)
 			{
 				uint32_t id = 0;
 				bool isExtended = true;
@@ -431,11 +430,6 @@ void setPromiscuousMode(uint32_t port, bool txMode, bool rxMode)
 void setTransmittingJ1939(uint32_t port, bool transmitting)
 {
 	transmittingJ1939[port] = transmitting;
-}
-
-void setCoprocessorReady(bool ready)
-{
-	coprocessorReady = ready;
 }
 
 void sendCan(uint32_t port, canMessage_t* msg)

@@ -4,7 +4,6 @@
 #include "pb_encode.h"
 #include "CanService.pb.h"
 #include "encodeCanMessages.h"
-#include "canHandler.h"
 #include "decodeCanMessages.h"
 #include "zmq_message_list.h"
 
@@ -100,7 +99,6 @@ void sendCoprocessorReady(void)
 		// send the message
 		zmq_send_multipart(sendChannel, list);
 	}
-	setCoprocessorReady(true);
 }
 static void handleHeartbeat(void)
 {

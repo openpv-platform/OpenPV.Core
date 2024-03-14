@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EnovationCloud.Core.Client;
 using System;
+using Ahsoka.Services.System;
 
 namespace Ahsoka.CustomerTools;
 
@@ -131,7 +132,17 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
             _ = FindParent<MainViewModel>().Dialog.ShowDialog("Device Not Found", "A device must be connected to add to this project", "Ok");
             return;
         }
-        
+
+        string versionString = FindParent<MainViewModel>().ActiveConnection.ConnectedHardwareInfo.VersionInfoes[SystemServiceDataKeys.SDKVersion];
+
+        Version.TryParse(versionString, out Version version);
+        var versionCompat = new Version("2.1");
+        if (version < versionCompat)
+        {
+            _ = FindParent<MainViewModel>().Dialog.ShowDialog("Bad SDK", "The connected target can not be licensed until it has been upgraded to SDK version 2.1 or greater.  Use Prep or Upgrade the Installer to install licenses", "Ok");
+            return;
+        }
+
         AvailableModules.Clear();
         ParentViewModel.Applications.ContainerSearchInfo = new();
         ParentViewModel.Applications.SearchContainers();

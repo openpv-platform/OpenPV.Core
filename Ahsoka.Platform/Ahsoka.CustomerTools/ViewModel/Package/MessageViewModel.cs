@@ -7,8 +7,10 @@ using Avalonia.Media;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Ahsoka.CustomerTools;
 
@@ -27,9 +29,7 @@ internal class MessageViewModel : ChildViewModelBase<MainViewModel>
     readonly J1939Helper.Id j1939Id = new();
     readonly ObservableCollection<MessageSignalDefinition> signals = new();
     readonly ObservableCollection<SignalModel> signalsModels = new();
-
-    readonly List<NodeSelector> rxNodes = new();
-    readonly List<NodeSelector> txNodes = new();
+    NodeViewModel port0SelectedTransmitter, port0SelectedReceiver, port1SelectedTransmitter, port1SelectedReceiver;
     #endregion
 
     #region ID Handling J1939 <-> RAW
@@ -318,43 +318,78 @@ internal class MessageViewModel : ChildViewModelBase<MainViewModel>
 
     public MessageType[] MessageTypes { get; init; } = Enum.GetValues<MessageType>();
 
-    public NodeSelector[] TransmitNodes
-    {
-        get { return txNodes.ToArray(); }
-    }
-
-    public NodeSelector SelectedTransmitNode
-    {
-        get;
-        set;
-    }
-
     public string Transmitter
     {
-        get 
+        get
         {
             var transmit = "";
-            foreach (var node in TransmitNodes)
+            foreach (var node in MessageDefinition.TransmitNodes)
             {
-                if (node.Selected)
-                    transmit += $"{node.Node}: {node.NodeViewModel.Name}";
+                var nodeVm = canViewModel.Nodes.FirstOrDefault(x => x.NodeDefinition.Id == node);
+                if (nodeVm != null && (nodeVm.SelectedPort == null ||  nodeVm.SelectedPort.IsEnabled))
+                    transmit += $"{nodeVm.NodeDefinition.Id}: {nodeVm.Name}";
             }
             return transmit;
         }
     }
 
-public NodeSelector[] ReceiveNodes
-    {
-        get { return rxNodes.ToArray(); }
-    }
-
-    public NodeSelector SelectedReceiveNode
+    public ObservableCollection<NodeViewModel> Nodes_P0
     {
         get;
         set;
+    } = new ObservableCollection<NodeViewModel>();
+
+    public ObservableCollection<NodeViewModel> Nodes_P1
+    {
+        get;
+        set;
+    } = new ObservableCollection<NodeViewModel>();
+
+    public NodeViewModel SelectedTransmitNode_P0
+    {
+        get { return port0SelectedTransmitter; }
+        set
+        {
+            port0SelectedTransmitter = value; OnPropertyChanged();
+            if (value != null)
+                UpdateNodeValues(true, 0, value.NodeDefinition.Id);
+        }
     }
 
+    public NodeViewModel SelectedReceiveNode_P0
+    {
+        get { return port0SelectedReceiver; }
+        set
+        {
+            port0SelectedReceiver = value; 
+            OnPropertyChanged();
+            if (value != null)
+                UpdateNodeValues(false, 0, value.NodeDefinition.Id);
+        }
+    }
 
+    public NodeViewModel SelectedTransmitNode_P1
+    {
+        get { return port1SelectedTransmitter; }
+        set
+        {
+            port1SelectedTransmitter = value; OnPropertyChanged();
+            if (value != null)
+                UpdateNodeValues(true, 1, value.NodeDefinition.Id);
+        }
+    }
+    
+    public NodeViewModel SelectedReceiveNode_P1
+    {
+        get { return port1SelectedReceiver; }
+        set
+        {
+            port1SelectedReceiver = value;
+            OnPropertyChanged();
+            if (value != null)
+                UpdateNodeValues(false, 1, value.NodeDefinition.Id);
+        }
+    }
 
     [MaxLength(255)]
     public string Name
@@ -462,15 +497,23 @@ public NodeSelector[] ReceiveNodes
             canViewModel.CanClientCalibration.Messages.Add(definition);
         }
 
+        this.CanViewModel = canViewModel;
         MessageDefinition = definition;
 
-        foreach (var node in canViewModel.Nodes)
-        {
-            txNodes.Add(new NodeSelector(this, node, true));
-            rxNodes.Add(new NodeSelector(this, node, false));
-        }
-        SelectedTransmitNode = txNodes.FirstOrDefault(x => x.Selected);
-        SelectedReceiveNode = rxNodes.FirstOrDefault(x => x.Selected);
+        RebuildNodeList(this, null);
+        canViewModel.Nodes.CollectionChanged += RebuildNodeList;
+
+        if (definition.TransmitNodes.Length > 0)
+            SelectedTransmitNode_P0 = Nodes_P0.FirstOrDefault(x => x.NodeDefinition.Id == definition.TransmitNodes[0]);
+
+        if (definition.ReceiveNodes.Length > 0)
+            SelectedReceiveNode_P0 = Nodes_P0.FirstOrDefault(x => x.NodeDefinition.Id == definition.ReceiveNodes[0]);
+
+        if (definition.TransmitNodes.Length > 1)
+            SelectedTransmitNode_P1 = Nodes_P1.FirstOrDefault(x => x.NodeDefinition.Id == definition.TransmitNodes[1]);
+
+        if (definition.ReceiveNodes.Length > 1)
+            SelectedReceiveNode_P1 = Nodes_P1.FirstOrDefault(x => x.NodeDefinition.Id == definition.ReceiveNodes[1]);
 
         MessageDefinition.Signals.Sort(delegate (MessageSignalDefinition x, MessageSignalDefinition y)
         {
@@ -481,9 +524,24 @@ public NodeSelector[] ReceiveNodes
         MessageDefinition.SetAddressOnSend = true;
         SelectedSignal = MessageDefinition.Signals.FirstOrDefault();
 
-        this.CanViewModel = canViewModel;
 
         this.signals = new ObservableCollection<MessageSignalDefinition>(MessageDefinition.Signals);
+    }
+
+    private void RebuildNodeList(object sender, NotifyCollectionChangedEventArgs e)
+    {
+        Nodes_P0.Clear();
+        Nodes_P1.Clear();
+        Nodes_P0.Add(new NodeViewModel(this.ParentViewModel, CanViewModel, new NodeDefinition() { Id = -1, Name = "(None)" }));
+        Nodes_P1.Add(new NodeViewModel(this.ParentViewModel, CanViewModel, new NodeDefinition() { Id = -1, Name = "(None)" }));
+        foreach (var node in canViewModel.Nodes)
+        {
+            foreach (var port in node.NodeDefinition.Ports)
+                if (port == 0)
+                    Nodes_P0.Add(node);
+                else if (port == 1)
+                    Nodes_P1.Add(node);
+        }
     }
 
     public void ShowEditor()
@@ -618,91 +676,25 @@ public NodeSelector[] ReceiveNodes
             SelectedSignal.Values[item.Key] = item.Value;
     }
 
-    public void AddNode(NodeViewModel node)
+    private void UpdateNodeValues(bool transmitter, int port, int node)
     {
-        txNodes.Add(new NodeSelector(this, node, true));
-        rxNodes.Add(new NodeSelector(this, node, false));
-    }
+        var values = transmitter ? MessageDefinition.TransmitNodes.ToList() : MessageDefinition.ReceiveNodes.ToList();
+        if (values.Count < port)
+            values.Capacity = port;
+        values[port] = node;
 
-    public void RemoveNode(NodeViewModel node)
-    {
-        var delete = txNodes.First(x => x.Node == node.NodeDefinition.Id);
-        txNodes.Remove(delete);
-        delete = rxNodes.First(x => x.Node == node.NodeDefinition.Id);
-        rxNodes.Remove(delete);
-        UpdateNodes();
-    }
+        if (transmitter)
+            MessageDefinition.TransmitNodes = values.ToArray();
+        else
+            MessageDefinition.ReceiveNodes = values.ToArray();
 
-    public void UpdateNodes()
-    {
-        MessageDefinition.TransmitNodes = CreateNodeArray(txNodes);
-        MessageDefinition.ReceiveNodes = CreateNodeArray(rxNodes);
         OnPropertyChanged(nameof(IdMasked));
         OnPropertyChanged(nameof(Transmitter));
     }
 
-    public int[] CreateNodeArray(List<NodeSelector> nodes)
-    {
-        var nodeArray = new int[2] { -1, -1 };
-        foreach (var node in nodes)
-        {
-            if (node.Selected)
-            {
-                foreach (var port in node.NodeViewModel.NodeDefinition.Ports)
-                    nodeArray[port] = node.Node;
-            }
-        }
-        return nodeArray;
-    }
     #endregion
 }
 
-internal class NodeSelector
-{
-    readonly MessageViewModel model;
-    bool transmit = false;
-    bool selected = false;
-
-    public bool Selected
-    {
-        get
-        {
-            return selected;
-        }
-        set
-        {
-            selected = value;
-            model.UpdateNodes();
-        }
-    }
-    public string Name
-    {
-        get
-        {
-            return $"Node: {NodeViewModel.NodeDefinition.Id} {NodeViewModel.NodeDefinition.Name}";
-        }
-    }
-    public int Node
-    {
-        get
-        {
-            return NodeViewModel.NodeDefinition.Id;
-        }
-    }
-    public NodeViewModel NodeViewModel { get;  set; }
-
-    public NodeSelector(MessageViewModel model, NodeViewModel node, bool transmit)
-    {
-        this.model = model;
-        NodeViewModel = node;
-        this.transmit = transmit;
-
-        if (transmit)
-            selected = model.MessageDefinition.TransmitNodes.Any(x => x == node.NodeDefinition.Id);
-        else
-            selected = model.MessageDefinition.ReceiveNodes.Any(x => x == node.NodeDefinition.Id);
-    }
-}
 
 internal class SignalModel
 {

@@ -28,6 +28,12 @@
   "canInfo": {
     "canPorts": [
       {
+        "port": "0",
+        "coprocessorSerialPath": "/dev/ttyRPMSG0",
+        "socketCanInterfacePath": "can0",
+        "coprocessorFirmwarePath": "/lib/firmware/rproc-m4-fw"
+      },
+      {
         "port": "1",
         "coprocessorSerialPath": "/dev/ttyRPMSG0",
         "socketCanInterfacePath": "can1",

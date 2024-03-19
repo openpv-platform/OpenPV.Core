@@ -175,7 +175,7 @@ internal class SparkProjectEditorViewModel : ChildViewModelBase<MainViewModel>
     {
         if (SelectedTeam != null)
         {
-            if (SelectedTeam.IsOwner)
+            if (SelectedTeam.IsAdmin)
             {
                 var model = CreateRenameView("Are you Sure? Enter the Current Project Name to Verify.", EnterRename);
                 this.addItemView = new NewItemView() { DataContext = model };
@@ -184,7 +184,7 @@ internal class SparkProjectEditorViewModel : ChildViewModelBase<MainViewModel>
             }
             else
             {
-                ParentViewModel.Dialog.ShowDialog("Rename Error", "You must be the project owner to rename this project", "Ok");
+                ParentViewModel.Dialog.ShowDialog("Rename Error", "You must be the project admin to rename this project", "Ok");
             }
 
         }

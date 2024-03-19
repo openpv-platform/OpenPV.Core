@@ -103,7 +103,8 @@ internal class SparkConnectionState : InstallerUIStateBase
 
         if (subscriptionInfo != null)
         {
-            drawingApi.DrawText($"Subscribed to Spark: {subscriptionInfo.ReleaseName}", width / 2, height / 2 - 30, textInfo);
+            string subscriptionName = String.IsNullOrEmpty(subscriptionInfo.ReleaseName) ? "Default Subscription" : subscriptionInfo.ReleaseName;
+            drawingApi.DrawText($"Subscribed to Spark: {subscriptionName}", width / 2, height / 2 - 30, textInfo);
         }
         else
         {
@@ -122,7 +123,9 @@ internal class SparkConnectionState : InstallerUIStateBase
             drawingApi.DrawText($"Refresh to Check for Updates", width / 2, (height / 2), textInfo);
 
             textInfo.TextSize = 12;
-            drawingApi.DrawText($"Subscrption: {subscriptionInfo.SubscriptionUrl}", width / 2, height / 2 + 30, textInfo);
+            string subUrl = String.IsNullOrEmpty(subscriptionInfo.SubscriptionUrl) ? "enovation.powervisionspark.com" : subscriptionInfo.SubscriptionUrl;
+
+            drawingApi.DrawText($"Subscrption: {subUrl}", width / 2, height / 2 + 30, textInfo);
         }
         else if (state == SparkState.CheckingForDownloads)
         {
@@ -163,6 +166,14 @@ internal class SparkConnectionState : InstallerUIStateBase
         {
             // Display Ready and Execute Login
             drawingApi.DrawText($"Error Downloading", width / 2, height / 2, textInfo);
+
+            var refresh = drawingApi.CreateImage("Assets/Refresh.png");
+            InstallerDrawingManager.Default.AddAction(refreshAction, InstallerDrawingManager.Default.GetActionPosition(5, refresh.Width), refresh); ;
+        }
+        else if (state == SparkState.NoPackages)
+        {
+            // Display Ready and Execute Login
+            drawingApi.DrawText($"No Packages Found to Download", width / 2, height / 2, textInfo);
 
             var refresh = drawingApi.CreateImage("Assets/Refresh.png");
             InstallerDrawingManager.Default.AddAction(refreshAction, InstallerDrawingManager.Default.GetActionPosition(5, refresh.Width), refresh); ;
@@ -218,13 +229,18 @@ internal class SparkConnectionState : InstallerUIStateBase
                 state = SparkState.DisplayingDownloads;
                 InstallerDrawingManager.Default.Refresh();
             }
+            else if (releases.IsCompletedSuccessfully)
+            {
+                Console.WriteLine("No Releases Available");
+                state = SparkState.NoPackages;
+                InstallerDrawingManager.Default.Refresh();
+            }
             else
             {
-                Console.WriteLine("Errored Download");
+                Console.WriteLine("Error During Release Check");
                 state = SparkState.Error;
                 InstallerDrawingManager.Default.Refresh();
             }
-
         });
     }
 
@@ -304,4 +320,5 @@ public enum SparkState
     DownloadingPackage,
     PackageReady,
     Error,
+    NoPackages
 }

@@ -7,6 +7,7 @@ using Avalonia.Styling;
 using Microsoft.Extensions.Azure;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
@@ -17,10 +18,11 @@ internal class NodeViewModel : ChildViewModelBase<MainViewModel>
     UserControl currentView;
     readonly CanSetupViewModel setupViewModel;
 
+    PortViewModel selectedPort;
     bool isSelected = false;
     string labelOne, labelTwo, labelThree = string.Empty;
     string addressDetails = string.Empty;
-    readonly List<PortSelector> ports = new();
+
 
     public NodeDefinition NodeDefinition { get; set; }
 
@@ -54,15 +56,21 @@ internal class NodeViewModel : ChildViewModelBase<MainViewModel>
         }
     }
 
-    public PortSelector[] Ports
+    public ObservableCollection<PortViewModel> Ports
     {
-        get { return ports.ToArray();  }
+        get { return setupViewModel.Ports;  }
     }
 
-    public PortSelector SelectedPort
+    public PortViewModel SelectedPort
     {
-        get;
-        set;
+        get { return selectedPort; }
+        set 
+        { 
+            selectedPort = value; 
+            if (value != null)
+                NodeDefinition.Ports = new int[] { (int)value.Port };
+            OnPropertyChanged();
+        }
     }
 
     [MaxLength(255)]
@@ -315,13 +323,13 @@ internal class NodeViewModel : ChildViewModelBase<MainViewModel>
         }        
 
         NodeDefinition = definition;
-        if (NodeDefinition.J1939Info.Addresses == "")
+        if (NodeDefinition.J1939Info?.Addresses == "")
             NodeDefinition.J1939Info.Addresses = "0,0";
         IsJ1939 = NodeDefinition.TransportProtocol == TransportProtocol.J1939;
 
-        foreach (var port in setupViewModel.Ports)
-            ports.Add(new PortSelector(this, port));
-        SelectedPort = ports.FirstOrDefault(x => x.Selected);
+        // Load the Ports in the List
+        if (NodeDefinition.Name != "ANY")
+            SelectedPort = Ports.FirstOrDefault(x => x.Port == NodeDefinition.Ports?.FirstOrDefault());
 
         UpdateAddressLabels();
         RefreshAddressDetails();
@@ -355,7 +363,6 @@ internal class NodeViewModel : ChildViewModelBase<MainViewModel>
                 break;
             default:
                 break;
-
         }
 
     }
@@ -420,63 +427,13 @@ internal class NodeViewModel : ChildViewModelBase<MainViewModel>
         }
     }   
 
-    public void AddPort(PortViewModel port)
-    {
-        ports.Add(new PortSelector(this, port));
-    }
-
-    public void RemovePort(PortViewModel port)
-    {
-        var delete = ports.First(x => x.Port == port.Port);
-        ports.Remove(delete);
-        UpdatePorts();
-    }
-
-    public void UpdatePorts()
-    {
-        var ports = new List<int>();
-        foreach (var port in Ports)
-        {
-            if (port.Selected)
-                ports.Add((int)port.Port);
-        }
-        NodeDefinition.Ports = ports.ToArray();
-    }
-
     public override string ToString()
     {
+        if (NodeDefinition.Id == -1)
+            return "(No Node)";
+
         return NodeDefinition.NodeType == NodeType.Self ?
             $"{NodeDefinition.Id}: {NodeDefinition.Name} (Self)" :
             $"{NodeDefinition.Id}: {NodeDefinition.Name}";
-    }
-}
-
-internal class PortSelector 
-{
-    readonly NodeViewModel model;
-    readonly PortViewModel port;
-    bool selected = false;
-
-    public bool Selected
-    {
-        get
-        {
-            return selected;
-        }
-        set
-        {
-            selected = value;
-            model.UpdatePorts();
-        }
-    }
-    public string Name { get { return $"CAN Port {port.PortDefinition.Port}"; } }
-    public uint Port { get { return port.PortDefinition.Port; } }
-
-    public PortSelector(NodeViewModel model, PortViewModel port)
-    {
-        this.model = model;
-        this.port = port;
-
-        selected = model.NodeDefinition.Ports.Any(x => x == port.PortDefinition.Port);
     }
 }

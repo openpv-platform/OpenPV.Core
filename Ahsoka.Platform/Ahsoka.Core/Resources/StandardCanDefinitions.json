@@ -31,7 +31,11 @@
 				"name": 0,
 				"addresses": "",
 				"useAddressClaim": false
-			}	
+			},
+			"ports": [
+				0,
+				1
+			]
 		}
 	],
 	"messages": [

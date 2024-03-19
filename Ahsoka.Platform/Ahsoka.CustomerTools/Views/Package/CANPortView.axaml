@@ -12,16 +12,16 @@
 	</UserControl.Styles>
 	<Border Grid.Row="4" Margin="0,5,15,5" BorderBrush="{Binding IconColor}" Background="{Binding BackColor}" BorderThickness="1" >
 		<Grid Margin="5" RowDefinitions="24,24,*" ColumnDefinitions="120,2*,4*">
-			<Border BorderBrush="{Binding IconColor}" BorderThickness="0,0,1,0" Background="{Binding IconColor}" Margin="-5,-5,5,-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Grid.Column="0" Grid.RowSpan="3">
-				<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0"
+			<Border BorderBrush="{Binding IconColor}" 
+					BorderThickness="0,0,1,0" Background="{Binding IconColor}" 
+					Margin="-5,-5,5,-5" HorizontalAlignment="Stretch" 
+					VerticalAlignment="Stretch"  Grid.Column="0" Grid.RowSpan="3">
+				<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" 
+						   Grid.Column="0"
 						   Foreground="WhiteSmoke" FontWeight="Bold" FontSize="30"
 						   Text="{Binding Port, StringFormat='ID:{0}'}"/>
 			</Border>
-			<material:MaterialIcon VerticalAlignment="Center" Grid.RowSpan="3" Margin="-6,0,0,0" IsVisible="{Binding IsEnabled,FallbackValue=true}" HorizontalAlignment="Left" Width="30" Height="30" Foreground="WhiteSmoke"  Background="Transparent" Kind="Connection">
-				<material:MaterialIcon.RenderTransform>
-					<RotateTransform Angle="-45"></RotateTransform>
-				</material:MaterialIcon.RenderTransform>
-			</material:MaterialIcon>
+		
 			
 			<TextBlock Grid.Column="1" Grid.Row="0" FontWeight="Black" Text="{Binding Port, StringFormat='Can{0}'}"/>
 			<StackPanel Grid.Column="1" Orientation="Horizontal" Grid.Row="1">

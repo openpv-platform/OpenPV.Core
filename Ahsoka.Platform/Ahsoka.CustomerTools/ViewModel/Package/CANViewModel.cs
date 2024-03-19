@@ -30,8 +30,24 @@ internal class CanSetupViewModel : ViewModelBase
     private MessageViewModel selectedMessage;
     private ObservableCollection<PortViewModel> ports = new();
     private PortViewModel selectedPort;
+    private int selectedTabIndex = 0;
+    private bool port0Enabled, port1Enabled = false;
 
-    internal int SelectedTab { get; set; }
+    internal int SelectedTab { get { return selectedTabIndex; } set { selectedTabIndex = value; OnPropertyChanged(); OnPropertyChanged(nameof(ShowAddRemove)); EvaluatePort(); } }
+
+    public bool ShowAddRemove { get { return SelectedTab != 2; } set { } }
+
+    public bool Port0Enabled
+    {
+        get { return port0Enabled; }
+        set { port0Enabled = value; OnPropertyChanged(); }
+    }
+
+    public bool Port1Enabled
+    {
+        get { return port1Enabled; }
+        set { port1Enabled = value; OnPropertyChanged(); }
+    }
 
     public string CalibrationPath
     {
@@ -149,7 +165,6 @@ internal class CanSetupViewModel : ViewModelBase
         }
     }
 
-
     public CanClientCalibration CanClientCalibration
     {
         get => canClientCalibration;
@@ -160,6 +175,7 @@ internal class CanSetupViewModel : ViewModelBase
         }
     }
 
+
     public CanSetupViewModel(MainViewModel parentViewModel, PackageViewModel packageViewModel, uint canIndex)
     {
         this.parentViewModel = parentViewModel;
@@ -168,6 +184,8 @@ internal class CanSetupViewModel : ViewModelBase
         this.canIndex = canIndex;
 
         LoadCANConfiguration();
+
+        EvaluatePort();
     }
 
     internal async void SetConfigurationDirectory()
@@ -319,20 +337,26 @@ internal class CanSetupViewModel : ViewModelBase
         {
             var nodeViewModel = new NodeViewModel(parentViewModel, this, null);
             this.Nodes.Add(nodeViewModel);
-            foreach (var message in this.Messages)
-                message.AddNode(nodeViewModel);
         }
         else if (SelectedTab == 0)
         {
             var nodeViewModel = new MessageViewModel(parentViewModel, this, null);
             nodeViewModel.MessageDefinition.UserDefined = true;
             this.Messages.Add(nodeViewModel);
+           
+            EvaluatePort();
         }
         else if (SelectedTab == 3)
         {
             var vm = new DiagnosticEventViewModel(parentViewModel, this, null);
             this.DiagnosticEvents.Add(vm);
         }
+    }
+
+    private void EvaluatePort()
+    {
+        Port0Enabled = this.Ports.Any(x => x.IsEnabled && x.Port == 0);
+        Port1Enabled = this.Ports.Any(x => x.IsEnabled && x.Port == 1);
     }
 
     internal async void RemoveItem()
@@ -347,8 +371,6 @@ internal class CanSetupViewModel : ViewModelBase
             if (selectedNode != null)
             {
                 this.CanClientCalibration.Nodes.Remove(selectedNode.NodeDefinition);
-                foreach (var message in this.Messages)
-                    message.RemoveNode(selectedNode);
                 this.Nodes.Remove(selectedNode);
                 this.selectedNode = this.nodes.FirstOrDefault();
             }
@@ -362,18 +384,6 @@ internal class CanSetupViewModel : ViewModelBase
             this.CanClientCalibration.Messages.Remove(SelectedMessage.MessageDefinition);
             this.Messages.Remove(SelectedMessage);
             this.SelectedMessage = this.messages.FirstOrDefault();
-        }
-        else if (SelectedTab == 2)
-        {
-            var continueWork = await parentViewModel.Dialog.ShowDialog("Remove Port", "Are you sure you wish to remove the Selected Port?", "Yes", "Cancel");
-            if (!continueWork)
-                return;
-
-            this.CanClientCalibration.Ports.Remove(SelectedPort.PortDefinition);
-            foreach (var node in this.Nodes)
-                node.RemovePort(SelectedPort);
-            this.Ports.Remove(SelectedPort);
-            this.SelectedPort = this.ports.FirstOrDefault();
         }
         else if (SelectedTab == 3)
         {
@@ -411,13 +421,8 @@ internal class CanSetupViewModel : ViewModelBase
             if (port.IsEnabled)
                 canClientCalibration.Ports.Add(port.PortDefinition);
 
-        foreach (var node in Nodes)
-            node.UpdatePorts();
-
         foreach (var message in Messages)
         {
-            message.UpdateNodes();
-
             uint maxBits = message.MessageDefinition.Signals.Max(x => x.StartBit + x.BitLength);
             if (maxBits > 0)
             {

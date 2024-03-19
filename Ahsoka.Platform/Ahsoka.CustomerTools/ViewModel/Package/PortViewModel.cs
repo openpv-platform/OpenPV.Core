@@ -17,6 +17,11 @@ internal class PortViewModel : ChildViewModelBase<MainViewModel>
 
     public PortDefinition PortDefinition { get; set; }
 
+    public override string ToString()
+    {
+        return $"CAN Port {Port}";
+    }
+
     public uint Port 
     {
         get { return PortDefinition.Port; }
@@ -144,6 +149,7 @@ internal class PortViewModel : ChildViewModelBase<MainViewModel>
         else
             this.BaudRate = (CanBaudRate)((int)this.BaudRate + 1);
     }
+    
     public void ShowEditor()
     {
         currentView = new CANPortEditView() { DataContext = this };

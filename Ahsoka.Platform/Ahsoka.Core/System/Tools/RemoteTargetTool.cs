@@ -199,7 +199,16 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
 
         Dictionary<string, MemoryStream> filesToLoad = new();
 
-        string hardwareID = GetHardwareId(info, sshClient); 
+        string hardwareID = GetHardwareId(info, sshClient);
+
+        // Create Device Signing Files in XML Format
+        var result = RSAEncryption.GenerateNewKeyPair(false);
+        var privateKey = result.Key;
+        var publicKey = result.Value;
+
+        // Capture for use in Spark Provisioning Later
+        var sparkPublicKey = publicKey;
+
 
         string factoryFileData;
 
@@ -225,7 +234,8 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
                 SerialNumber = manufacturingInfo.SerialNumber,
                 PlatformFamily = info.PlatformFamily.ToString(),
                 PlatformQualifier = info.PlatformQualifier,
-                FactoryInfo = factoryFileData
+                FactoryInfo = factoryFileData,
+                DevicePublicKey = sparkPublicKey,
             };
 
             var factoryResultVerification = SparkProvisioningClient.SharedSparkClient.CreateFactoryInfo(newFactoryInfo);
@@ -234,7 +244,8 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
                           newFactoryInfo.PartNumber == factoryResultVerification.PartNumber &&
                           newFactoryInfo.MacAddress == factoryResultVerification.MacAddress &&
                           newFactoryInfo.DeviceHardwareID == factoryResultVerification.DeviceHardwareID &&
-                          newFactoryInfo.DeviceID == factoryResultVerification.DeviceID;
+                          newFactoryInfo.DeviceID == factoryResultVerification.DeviceID &&
+                          newFactoryInfo.DevicePublicKey == factoryResultVerification.DevicePublicKey;
 
             if (!isSaved)
                 throw new ApplicationException("\r\nThe Factory Info Was not Completely Saved...Erroring Out.");
@@ -299,14 +310,7 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
         // Add Factory Info to Upload List
         filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareInformationFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(factoryFileData)));
 
-        // Create Device Signing Files in XML Format
-        var result = RSAEncryption.GenerateNewKeyPair(false);
-        var privateKey = result.Key;
-        var publicKey = result.Value;
-
-        // Capture for use in Spark Provisioning Later
-        var sparkPublicKey = publicKey;
-
+       
         // Add Keys to List - NOTE THIS IS TO SUPPORT PRE 2.0 Hardware Prep
         filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(privateKey)));
         filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(publicKey)));
@@ -379,10 +383,10 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
             SerialNumber = info.FactoryInfo.SerialNumber,
         };
 
-        return AddToFactoryProject(info, subInfo, sshClient, scpClient, sparkInfo, progress);
+        return InstallExistingLicenseData(info, subInfo, sshClient, scpClient, sparkInfo, progress);
     }
 
-    private bool AddToFactoryProject(HardwareInfo info,
+    private bool InstallExistingLicenseData(HardwareInfo info,
           SparkSubscriptionInfo subInfo,
           SshClient sshClient,
           ScpClient scpClient,
@@ -394,42 +398,15 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
         sparkInfo.CurrentAuthorization = null;
         sparkInfo.LoginToTeamClient();
 
-        var defaultTeam = SparkAccountClient.SharedSparkClient.GetDefaultTeam();
-
-        // Create Subscription File
-        var subscription = new Services.Spark.SparkSubscription()
-        {
-            DeviceId = subInfo.DeviceId,
-            ChannelName = SparkCustomerTools.CreateChannelName(defaultTeam.TeamName, defaultTeam.TeamID.ToString()),
-            ReleaseName = ReleaseName,
-            SubscriptionUrl = sparkInfo.Url,
-            IsFactorySubscrption = true
-        };
-
-        // Push the File to the Cloud Subscription Folder 
-        progress.Report($"Loading Factory OTA Subscription");
-        string subscriptionFile = info.TargetPathInfo.GetCloudPath(CloudPaths.FactorySubscriptionFile);
-        var fileData = Encoding.UTF8.GetBytes(JsonUtility.Serialize(subscription));
-        using (var fileToUpload = new MemoryStream(fileData))
-        {
-            // Create Cloud Folder.
-            var commandResult = sshClient.RunCommand($"mkdir -p {Path.GetDirectoryName(subscriptionFile).Replace("\\", "/")}");
-            if (commandResult.Result != string.Empty)
-                throw new Exception(commandResult.Result);
-
-            fileToUpload.Seek(0, SeekOrigin.Begin);
-            scpClient.Upload(fileToUpload, subscriptionFile);
-        };
-
         // Provision Display in Spark with Local Key
         ProvisionDisplayRequest provisionDisplayRequest = new()
         {
-            ApplicationId = Guid.Parse(defaultTeam.TeamID.ToString()),
+            ApplicationId = Guid.Empty,
             PackageName = ReleaseName
         };
 
-        progress.Report($"Requesting License File and Provisioning Display in Cloud Service");
-        var moduleInfo = SparkCustomerTools.PushSparkLicenseInfo(subInfo, defaultTeam.TeamID, defaultTeam.ReleaseDeviceGroup, provisionDisplayRequest, progress, true);
+        progress.Report($"Requesting License File from Cloud");
+        var moduleInfo = SparkCustomerTools.PushSparkLicenseInfo(subInfo, Guid.Empty, Guid.Empty, provisionDisplayRequest, progress, true);
 
         // Push License File to Display
         progress.Report($"Restoring Module License File from Cloud");

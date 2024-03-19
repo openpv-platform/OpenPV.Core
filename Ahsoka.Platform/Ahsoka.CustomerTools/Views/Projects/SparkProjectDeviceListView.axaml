@@ -44,6 +44,7 @@
 					<DataGridTextColumn Header="Part Number" Binding="{Binding PartNumber}" IsReadOnly="True"/>
 					<DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}" IsReadOnly="True"/>
 					<DataGridTextColumn Header="Device ID" Binding="{Binding DeviceID}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Licenses" Binding="{Binding LicenseList}" IsReadOnly="True"/>
 				</DataGrid.Columns>
 			</DataGrid>
 			<DockPanel Margin="0,13,0,0" Grid.RowSpan="2" Grid.Column="2" VerticalAlignment="Top"

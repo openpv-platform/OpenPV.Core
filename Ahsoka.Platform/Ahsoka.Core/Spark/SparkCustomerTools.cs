@@ -15,7 +15,7 @@ namespace Ahsoka.Spark;
 
 public static class SparkCustomerTools
 {
-
+   
     public static bool ProvisionDisplayInSpark(ITargetConnectionInfo connectionInfo,
                                                 SparkConnectionInfo sparkInfo,
                                                 IProvisionDisplayRequest provisioningInfo,
@@ -93,7 +93,7 @@ public static class SparkCustomerTools
         // Create License List Request
         var list = new ModuleLicenseList()
         {
-            ApplicationId = provisioningInfo.ApplicationId,
+            TeamId = provisioningInfo.ApplicationId,
             DeviceId = subInfo.DeviceId,
             Licenses = new List<ModuleLicense>(provisioningInfo.Licenses)
         };

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:material="using:Material.Icons.Avalonia"
 			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
-			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+			 mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="600"
              x:Class="Ahsoka.CustomerTools.Views.SparkDeviceProvisionView">
 
 	<UserControl.Styles>
@@ -14,40 +14,134 @@
 		<Grid VerticalAlignment="Center" HorizontalAlignment="Center">
 			<Border BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White" Padding="25">
 				<StackPanel >
-					<TextBlock Text="Add a New Device" FontSize="25"
-							   VerticalAlignment="Top" Margin="0,0,8,8" />
-						<StackPanel Orientation="Horizontal" Margin="5">
-						<TextBlock Text="Module Licenses:           " VerticalAlignment="Top" Margin="5,8" />
-						<ItemsRepeater  Width="450" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-									   ItemsSource="{Binding AvailableModules}">
-							<ItemsRepeater.Layout>
-								<StackLayout Spacing="0" Orientation="Vertical"/>
-							</ItemsRepeater.Layout>
-							<ItemsRepeater.ItemTemplate>
-								<DataTemplate>
-									<Grid ColumnDefinitions="*">
-										<CheckBox Background="White" Margin="0,3"
-												  VerticalAlignment="Top" IsChecked="{Binding IsSelected}"
-												  Content="{Binding Module.ModuleName, StringFormat='Add License for {0}' FallbackValue='No licenses available'}"/>
-									</Grid>
-								</DataTemplate>
-							</ItemsRepeater.ItemTemplate>
-						</ItemsRepeater>
-					</StackPanel>
+					<TextBlock Text="Pre-Provision Devices for this Project" FontSize="25"
+							   VerticalAlignment="Top" Margin="0,0,8,0" />
+					<TextBlock HorizontalAlignment="Left" 
+							   MaxWidth="600" FontStyle="Italic" Foreground="SteelBlue"
+							   Text="Allocate licenses from your teams module list and attach devices to this team for use with OTA.  Devices can aquire licenses and OTA Updates on first connect to Spark." FontSize="12"
+							   VerticalAlignment="Top" TextWrapping="Wrap" Margin="0,0,0,8" />
+					<Grid RowDefinitions="*,200" ColumnDefinitions="*,*">
 
-					<StackPanel Orientation="Horizontal" Margin="5">
-						<TextBlock Text="Provisioning Application:"  />
-						<StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" >
-							<ComboBox SelectedItem="{Binding SelectedApplication}" ItemsSource="{Binding ApplicationList}" Width="250" ToolTip.Tip="Application for OTA updates, disabled if blank"/>
+						<TextBlock  Text="Attach These Licenses:" VerticalAlignment="Top" Margin="5,40,0,20" />
+						<Border Grid.Column="1" BorderBrush="Gainsboro" BorderThickness="1" Margin="20,20,20,0" Padding="20,10,10,10">
+							<ItemsRepeater  Width="450" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+									   ItemsSource="{Binding AvailableModules}">
+								<ItemsRepeater.Layout>
+									<StackLayout Spacing="0" Orientation="Vertical"/>
+								</ItemsRepeater.Layout>
+								<ItemsRepeater.ItemTemplate>
+									<DataTemplate>
+										<Grid ColumnDefinitions="*">
+											<CheckBox Background="White" Margin="0,3"
+													  VerticalAlignment="Top" IsChecked="{Binding IsSelected}"
+													  Content="{Binding Module.ModuleName, StringFormat='Add License for {0}' FallbackValue='No licenses available'}"/>
+										</Grid>
+									</DataTemplate>
+								</ItemsRepeater.ItemTemplate>
+							</ItemsRepeater>
+						</Border>
+						
+						<StackPanel Grid.Row="1" Orientation="Vertical" Margin="10,6,0,10">
+							<RadioButton Margin="0,30,20,0" GroupName="SingleView" IsChecked="{Binding IsSingleDevice}"
+										 Content="To Single Device"/>
+							<RadioButton GroupName="SingleView"
+										 Content="To Device List"/>
 						</StackPanel>
-					</StackPanel>
-					
-					
-					<DockPanel LastChildFill="False" Margin="5">
-						<Button DockPanel.Dock="Right" Content="Close" Command="{Binding CloseEditor}" />
-						<Button DockPanel.Dock="Right" Content="Provision" Command="{Binding ProvisionDevice}" />				
+
+						<StackPanel Grid.Column="1" Grid.Row="1" IsVisible="{Binding IsSingleDevice, FallbackValue=false}">
+							<Border BorderBrush="Gainsboro" BorderThickness="1" Margin="20" Padding="10">
+								<Grid Margin="5" ColumnDefinitions="170,*" RowDefinitions="*,*,*,*,*">
+
+									<TextBlock Margin="5" Text="Device Family:" Grid.Row="0" Grid.Column="0"/>
+									<ComboBox ItemsSource="{Binding ProvisionPlatformFamilies}"
+											  Grid.Column="1" Grid.Row="0"
+											  SelectedItem="{Binding ProvisionPlatformFamily}" Width="225"  />
+								
+									<TextBlock Margin="5" Text="Part Number:"
+											   Grid.Row="1" Grid.Column="0"/>
+									<TextBox  Grid.Column="1" Grid.Row="1"
+											  Text="{Binding ProvisionPartNumber}" Width="150"  />
+									
+									<TextBlock Margin="5" Text="Serial Number:" Grid.Row="2" Grid.Column="0"/>
+									<TextBox  Grid.Column="1" Grid.Row="2"
+											  Text="{Binding ProvisionSerialNumber}" Width="150"  />
+									
+									
+									<TextBlock  Text="Device Id (8 Characters):"
+												   ToolTip.Tip="Enter the first 8 Characters of the DeviceID.  This is visible on the Installer UI"
+													Grid.Row="3" Grid.Column="0"/>
+									<TextBox  Grid.Column="1"  Grid.Row="3"
+											  Text="{Binding ProvisionDeviceId}" Width="150"  />
+									
+									<Button HorizontalAlignment="Right"
+											Grid.Column="1"  Grid.Row="3"
+											Height="32" Margin="-5,0,0,0"
+											VerticalContentAlignment="Center"
+											Command="{Binding UpdateConnected}">
+										<StackPanel Orientation="Horizontal">
+											<TextBlock VerticalAlignment="Center" FontSize="12" ToolTip.Tip="Read Connected Device Info"  Text="Read Info "/>
+										</StackPanel>
+									</Button>
+								</Grid>
+							</Border>
+						</StackPanel>
+
+						<StackPanel  Grid.Column="1" Grid.Row="1"
+									IsVisible="{Binding !IsSingleDevice, FallbackValue=true}">
+							<Border Height="140" BorderBrush="Gainsboro" BorderThickness="1" Margin="20" Padding="10">
+								<Grid Margin="10" ColumnDefinitions="auto,*" RowDefinitions="*,*,*,*,*">
+									<TextBlock  Text="Import File:"
+											   ToolTip.Tip="Device files should be CSV files with DeviceID, PartNumber, SerialNumber." Grid.Row="0" Grid.Column="0"/>
+									<TextBox IsReadOnly="True" Grid.Column="1"  Grid.Row="0"
+											  Text="{Binding ProvisionDeviceFile}" HorizontalAlignment="Stretch" Margin="10,0,40,0"  />
+									<Button HorizontalAlignment="Right"
+											Grid.Column="1"  Grid.Row="0"
+											Height="32" Margin="-5,0,0,0"
+											VerticalContentAlignment="Center"
+											Command="{Binding SelectDeviceFile}"
+											Content="...">
+									</Button>
+									<TextBlock HorizontalAlignment="Stretch"
+											Grid.Column="1"  Grid.Row="3" 
+										    FontStyle="Italic" Foreground="SteelBlue"
+											Height="60"
+										    Text="PlatformFamily, PartNumber, SerialNumber, DeviceID" FontSize="12"
+											VerticalAlignment="Top" TextWrapping="Wrap" Margin="10" />
+									<TextBlock HorizontalAlignment="Stretch"
+												Grid.Column="1"  Grid.Row="2"
+												FontStyle="Italic" Foreground="SteelBlue"
+												Height="60"
+												Text="Device files should be CSV files with the following format for each row." FontSize="12"
+												VerticalAlignment="Top" TextWrapping="Wrap" Margin="10" />
+
+								</Grid>
+							</Border>
+						</StackPanel>
+					</Grid>
+
+
+					<DockPanel LastChildFill="False" Margin="0,20,0,0">
+						<Button Margin="3,8,5,3" DockPanel.Dock="Right"
+							HorizontalAlignment="Stretch"
+							Height="38" Width="175"
+							VerticalContentAlignment="Center"
+							Command="{Binding CloseEditor}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Cancel"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Cancel Provisioning"/>
+							</StackPanel>
+						</Button>
+						<Button Margin="3,8,5,3" DockPanel.Dock="Right"
+							HorizontalAlignment="Stretch"
+							Height="38" Width="175"
+							VerticalContentAlignment="Center"
+							Command="{Binding ProvisionDevice}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="CloudAccess"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Begin Provisioning"/>
+							</StackPanel>
+						</Button>
 					</DockPanel>
-					
 				</StackPanel>
 			</Border>
 		</Grid>

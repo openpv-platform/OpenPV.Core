@@ -75,8 +75,8 @@
 	</Target>
 
 
-	<!--We no longer nse the Nuget CLI for Generation -->
-	<Target Name="FinishWithNuget" AfterTargets="CreateOpenViewPublishOutputs" Condition="False">
+	<!--We no longer nse the Nuget CLI for Generation but Generate a Package if Needed -->
+	<Target Name="FinishWithNuget" AfterTargets="CreateOpenViewPublishOutputs">
 
 		<!--Create Ahsoka Windows Command Line Nuget Package....must happen AFTER the publish of the Command line for Windows and Mac -->
 		<Exec Command="dotnet pack ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj" />

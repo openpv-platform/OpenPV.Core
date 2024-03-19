@@ -1,5 +1,6 @@
 ﻿using EnovationCloud.Core.DataTransferObjects;
 using Ahsoka.Utility;
+using System.Linq;
 
 namespace Ahsoka.CustomerTools;
 
@@ -12,6 +13,11 @@ internal class DeviceViewModel : ChildViewModelBase<SparkProjectViewModel>
     public DeviceViewModel(SparkProjectViewModel teamVM, DeviceDTO dto) : base(teamVM)
     {
         this.Model = dto;
+    }
+
+    public string LicenseList
+    {
+        get { return string.Join(", ", this.model.Licenses.Select(x => x.LicenseName)); }
     }
 
     public string Description

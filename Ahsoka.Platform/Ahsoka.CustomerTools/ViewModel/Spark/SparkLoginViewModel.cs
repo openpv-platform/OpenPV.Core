@@ -189,6 +189,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
     {
         sparkList.Add("enovation.powervisionspark.com");
         sparkList.Add("development.powervisionspark.com");
+        sparkList.Add("sparkserviceprod-workspace.azurewebsites.net");
         sparkList.Add("localhost:7211");
         SparkUrl ??= SparkUrlList.FirstOrDefault();
 

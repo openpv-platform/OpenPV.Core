@@ -33,18 +33,15 @@
 								<TextBox Text="{Binding Name}" Grid.Row="1" Width="300"  TextWrapping="NoWrap" Grid.Column="1" />
 
 								<TextBlock Text="Transport Protocol:" Grid.Row="2" Grid.Column="0"/>
-								<ComboBox ItemsSource="{Binding TransportProtocols}"  SelectedItem="{Binding TransportProtocol}" Width="300" Grid.Row="2" Grid.Column="1" />
-								<TextBlock Text="Ports Available:" Grid.Row="3" Grid.Column="0"/>
-								<ComboBox ItemsSource="{Binding Ports}" SelectedItem="{Binding SelectedPort}"  Width="300" Grid.Row="3" Grid.Column="1">
-									<ComboBox.ItemTemplate>
-										<DataTemplate>
-											<StackPanel Orientation="Horizontal">
-												<CheckBox IsChecked="{Binding Selected}" />
-												<TextBlock Text="{Binding Name}"/>												
-											</StackPanel>
-										</DataTemplate>										
-									</ComboBox.ItemTemplate>
-								</ComboBox>
+								<ComboBox ItemsSource="{Binding TransportProtocols}"  
+										  SelectedItem="{Binding TransportProtocol}" 
+										  Width="300" Grid.Row="2" 
+										  Grid.Column="1" />
+								<TextBlock Text="CAN Port:" Grid.Row="3" Grid.Column="0"/>
+								<ComboBox ItemsSource="{Binding Ports}" 
+										  SelectedItem="{Binding SelectedPort}"  
+										  Width="300" Grid.Row="3" 
+										  Grid.Column="1"/>
 								<TextBlock Text="Comment:" Grid.Row="5" Grid.Column="0"/>
 								<TextBox  Text="{Binding Comment}" Grid.Row="5" Width="300"  TextWrapping="NoWrap" Grid.Column="1" />
 

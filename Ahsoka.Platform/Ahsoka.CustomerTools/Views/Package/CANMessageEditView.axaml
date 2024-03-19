@@ -22,8 +22,8 @@
 					</Border>
 					<Border Margin="20,20,20,5" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,2" DockPanel.Dock="Top">
 						<DockPanel  LastChildFill="True">
-							<Grid DockPanel.Dock="Top" Margin="5" ColumnDefinitions="100,Auto" RowDefinitions="*,*,*,*" IsEnabled="{Binding IsEditable}">
-								<TextBlock Text="Message Type"  Grid.Row="0" Grid.Column="0"/>
+							<Grid DockPanel.Dock="Top" Margin="5" ColumnDefinitions="120,Auto,Auto,Auto" RowDefinitions="*,*,*,*" IsEnabled="{Binding IsEditable}">
+								<TextBlock Text="Message Type:"  Grid.Row="0" Grid.Column="0"/>
 								<StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
 									<ComboBox ItemsSource="{Binding MessageTypes}" Grid.Column="1"  SelectedItem="{Binding MessageType}" Width="175"  />
 
@@ -50,35 +50,45 @@
 									<TextBlock Text="{Binding IdMasked, StringFormat='0x{0:x8}', FallbackValue=0x00FF00FF}}" ToolTip.Tip="CanID as Hex" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="8" Background="WhiteSmoke" />
 								</StackPanel>
 
-								<TextBlock Text="Transmitter:" Grid.Row="2" Grid.Column="0"/>
-								<ComboBox ItemsSource="{Binding TransmitNodes}" SelectedItem="{Binding SelectedTransmitNode}"  Width="300" Grid.Row="2" Grid.Column="1">
-									<ComboBox.ItemTemplate>
-										<DataTemplate>
-											<StackPanel Orientation="Horizontal">
-												<CheckBox IsChecked="{Binding Selected}" />
-												<TextBlock Text="{Binding Name}"/>
-											</StackPanel>
-										</DataTemplate>
-									</ComboBox.ItemTemplate>
-								</ComboBox>
+								
+								<TextBlock IsVisible="{Binding CanViewModel.Port0Enabled}" 
+										   Text="CAN Port 0:" Grid.Row="2" Grid.Column="0"/>
+								<StackPanel  IsVisible="{Binding CanViewModel.Port0Enabled}" Orientation="Horizontal" Grid.Row="2" Grid.Column="1">
+									<TextBlock Text="Transmit Node:" Grid.Row="2" Grid.Column="0" />
+									<ComboBox ItemsSource="{Binding Nodes_P0}"
+										  SelectedItem="{Binding SelectedTransmitNode_P0}"
+										  Width="200" />
 
-								<TextBlock Text="Receiver:" Grid.Row="3" Grid.Column="0" IsVisible="{Binding IsJ1939}"/>
-								<ComboBox ItemsSource="{Binding ReceiveNodes}" SelectedItem="{Binding SelectedReceiveNode}"  Width="300" Grid.Row="3" Grid.Column="1" IsVisible="{Binding IsJ1939}">
-									<ComboBox.ItemTemplate>
-										<DataTemplate>
-											<StackPanel Orientation="Horizontal">
-												<CheckBox IsChecked="{Binding Selected}" />
-												<TextBlock Text="{Binding Name}"/>
-											</StackPanel>
-										</DataTemplate>
-									</ComboBox.ItemTemplate>
-								</ComboBox>
+									<TextBlock Text="Receive Node:" Grid.Row="2" Grid.Column="0" IsVisible="{Binding IsJ1939}"/>
+									<ComboBox ItemsSource="{Binding Nodes_P0}"
+											  SelectedItem="{Binding SelectedReceiveNode_P0}"
+											  Width="200" Grid.Row="3" Grid.Column="1"
+											  IsVisible="{Binding IsJ1939}"/>
+								</StackPanel>
+
+
+								<TextBlock IsVisible="{Binding CanViewModel.Port1Enabled}" 
+										   Text="CAN Port 1:" Grid.Row="3" Grid.Column="0"/>
+								<StackPanel  IsVisible="{Binding CanViewModel.Port1Enabled}" Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
+									<TextBlock Text="Transmit Node:" Grid.Row="2" Grid.Column="0" IsVisible="{Binding IsJ1939}"/>
+									<ComboBox ItemsSource="{Binding Nodes_P1}"
+										  SelectedItem="{Binding SelectedTransmitNode_P1}"
+										  Width="200" />
+
+									<TextBlock Text="Receive Node:" Grid.Row="2" Grid.Column="0" IsVisible="{Binding IsJ1939}"/>
+									<ComboBox ItemsSource="{Binding Nodes_P1}"
+											  SelectedItem="{Binding SelectedReceiveNode_P1}"
+											  Width="200" Grid.Row="3" Grid.Column="1"
+											  IsVisible="{Binding IsJ1939}"/>
+								</StackPanel>
+
+
 							</Grid>
 						</DockPanel>
 					</Border>
 					<Border Margin="20,0,20,20" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
 						<DockPanel  LastChildFill="True">
-							<Grid DockPanel.Dock="Top" Margin="5" ColumnDefinitions="100,Auto" RowDefinitions="*,*,*,*,*" IsEnabled="{Binding IsEditable}">
+							<Grid DockPanel.Dock="Top" Margin="5" ColumnDefinitions="120,Auto" RowDefinitions="*,*,*,*,*" IsEnabled="{Binding IsEditable}">
 															
 								<TextBlock Text="Name:" Grid.Row="0" Grid.Column="0"/>
 								<TextBox Text="{Binding Name}" Grid.Row="0" Width="300"  TextWrapping="NoWrap" Grid.Column="1" />

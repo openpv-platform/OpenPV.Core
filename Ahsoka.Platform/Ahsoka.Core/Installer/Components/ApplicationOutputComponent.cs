@@ -101,8 +101,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)
     {
-        if (!ValidateLicenses(context, item))
-            return InstallResult.MissingLicenseForComponent;
+        ValidateLicenses(context, item);
 
         var result = base.OnInstallComponent(context, item);
 
@@ -169,7 +168,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Validating License for Module {licenseKeyName}" });
                 if (!ModuleLicenseManager.IsLicensed(attributeValue.Value))
                 {
-                    context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to find License for Module {licenseKeyName}"});
+                    context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to find License for Module {licenseKeyName} on Target but may be available in Spark"});
                     return false;
                 }
             }

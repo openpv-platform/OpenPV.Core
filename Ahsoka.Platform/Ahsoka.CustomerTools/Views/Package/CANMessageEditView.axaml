@@ -70,7 +70,7 @@
 								<TextBlock IsVisible="{Binding CanViewModel.Port1Enabled}" 
 										   Text="CAN Port 1:" Grid.Row="3" Grid.Column="0"/>
 								<StackPanel  IsVisible="{Binding CanViewModel.Port1Enabled}" Orientation="Horizontal" Grid.Row="3" Grid.Column="1">
-									<TextBlock Text="Transmit Node:" Grid.Row="2" Grid.Column="0" IsVisible="{Binding IsJ1939}"/>
+									<TextBlock Text="Transmit Node:" Grid.Row="3" Grid.Column="0"/>
 									<ComboBox ItemsSource="{Binding Nodes_P1}"
 										  SelectedItem="{Binding SelectedTransmitNode_P1}"
 										  Width="200" />

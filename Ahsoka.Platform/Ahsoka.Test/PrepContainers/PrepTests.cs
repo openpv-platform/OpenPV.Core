@@ -47,6 +47,15 @@ public class RemoteLinuxTests
             Console.WriteLine(error);
         });
 
+        // Wait for Container to Start.
+        int tries = 10;
+        while ((tries--) > 0)
+        {
+            ProcessUtility.RunProcess("docker", $"ps --filter \"name=Ahsoka.Test\" --filter \"status=running\" --quiet", null, out string runningResult, out string runningError, 10000);
+            if (!string.IsNullOrEmpty(runningResult))
+                break;
+        }
+
         try
         {
             // Login to Spark to get Token

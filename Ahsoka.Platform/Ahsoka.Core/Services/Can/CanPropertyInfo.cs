@@ -214,10 +214,6 @@ public class CanPropertyInfo
         else // Big endian 
             iVal = (long)((MirrorMsg(data) >> GetStartBitLE()) & bitMask);
 
-        // All FF's 
-        if ((ulong)iVal == bitMask)
-            return 0.0;
-
         if (dataType == ValueType.Float)
             returnValue = FloatConverter.AsFloatingPoint((int)iVal);
         else if (dataType == ValueType.Double)

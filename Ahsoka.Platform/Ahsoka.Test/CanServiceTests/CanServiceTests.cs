@@ -320,7 +320,7 @@ public class CanServiceTests
         Assert.IsTrue(data.Id == 500);
         Assert.IsTrue(data.Dlc == 16);
 
-        CanPropertyInfo info = new CanPropertyInfo(0, 31, ByteOrder.LittleEndian, ValueType.Unsigned, 1000, 0, 0);
+        CanPropertyInfo info = new CanPropertyInfo(0, 32, ByteOrder.LittleEndian, ValueType.Unsigned, 1000, 0, 0);
 
         var candata = new byte[8] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
         var result = info.GetValue<uint>(candata, true);

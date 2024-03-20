@@ -35,6 +35,7 @@ public class CanPropertyInfo
     ///  Bit Length for Property
     /// </summary>
     public int BitLength { get => bitLength; set => bitLength = value; }
+
     internal string Name { get => name; set => name = value; }
 
     /// <summary>
@@ -203,6 +204,7 @@ public class CanPropertyInfo
 
     private double Unpack(ulong data, bool scaleValue = true)
     {
+        double returnValue = 0;
         long iVal;
         ulong bitMask = BitMask();
 
@@ -212,28 +214,32 @@ public class CanPropertyInfo
         else // Big endian 
             iVal = (long)((MirrorMsg(data) >> GetStartBitLE()) & bitMask);
 
+        // All FF's 
+        if ((ulong)iVal == bitMask)
+            return 0.0;
+
         if (dataType == ValueType.Float)
-        {
-            var retVal = FloatConverter.AsFloatingPoint((int)iVal);
-            if (scaleValue)
-                retVal = (float)(retVal * scale + offset);
-
-            return retVal;
-        }
+            returnValue = FloatConverter.AsFloatingPoint((int)iVal);
         else if (dataType == ValueType.Double)
-        {
-            var retVal = DoubleConverter.AsFloatingPoint(iVal);
-            if (scaleValue)
-                retVal = retVal * scale + offset;
+            returnValue = DoubleConverter.AsFloatingPoint(iVal);
+        else
+            returnValue = iVal;
 
-            return retVal;
-        }
 
         // Apply scaling for Int Values
         if (scaleValue)
-            return iVal * scale + offset;
+            returnValue = returnValue * scale + offset;
 
-        return iVal;
+        if (dataType == ValueType.Float)
+            returnValue = Math.Max(float.MinValue, Math.Min(float.MaxValue, returnValue));
+        else if (dataType == ValueType.Double)
+            returnValue = Math.Max(double.MinValue, Math.Min(double.MaxValue, returnValue));
+        else if (dataType == ValueType.Unsigned || dataType == ValueType.Enum)
+            returnValue = Math.Max(uint.MinValue, Math.Min(uint.MaxValue, returnValue));
+        else if (dataType == ValueType.Signed)
+            returnValue = Math.Max(int.MinValue, Math.Min(int.MaxValue, returnValue));
+        
+        return returnValue;
     }
 
     private ulong BitMask()

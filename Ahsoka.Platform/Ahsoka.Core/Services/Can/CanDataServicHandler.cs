@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Ahsoka.ServiceFramework;
+using System;
+using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ahsoka.Services.Can;
 
@@ -63,31 +66,38 @@ internal class CanDataServicHandler
 
     private void SendValue(CanPropertyInfo item, CanMessageData message)
     {
-        object value;
-        switch (item.ValueType)
+        try
         {
-            case ValueType.Signed:
-                value = item.GetValue<int>(message.Data);
-                break;
-            case ValueType.Unsigned:
-                value = item.GetValue<uint>(message.Data);
-                break;
-            case ValueType.Float:
-                value = item.GetValue<float>(message.Data);
-                break;
-            case ValueType.Double:
-                value = item.GetValue<double>(message.Data);
-                break;
-            case ValueType.Enum:
-                value = item.GetValue<float>(message.Data).ToString();
-                break;
-            default:
-                value = null;
-                break;
-        }
+            object value;
+            switch (item.ValueType)
+            {
+                case ValueType.Signed:
+                    value = item.GetValue<int>(message.Data);
+                    break;
+                case ValueType.Unsigned:
+                    value = item.GetValue<uint>(message.Data);
+                    break;
+                case ValueType.Float:
+                    value = item.GetValue<float>(message.Data);
+                    break;
+                case ValueType.Double:
+                    value = item.GetValue<double>(message.Data);
+                    break;
+                case ValueType.Enum:
+                    value = item.GetValue<float>(message.Data).ToString();
+                    break;
+                default:
+                    value = null;
+                    break;
+            }
 
-        if (value != null)
-            service.UpdateDataServiceKey(item.Name, value);
+            if (value != null)
+                service.UpdateDataServiceKey(item.Name, value);
+        }
+        catch 
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High,$"An error occured reading CAN Message Property {item.Name} with data '{ BitConverter.ToString(message.Data)}'");
+        }
     }
   
     class CanMessageInfo

@@ -26,8 +26,8 @@
 	
 		<Message Text="Building ESP32 Firmwware at $(ESPSource_Root)" Importance="high" />
 		<Exec WorkingDirectory="$(ESPSource_Root)" Command="docker pull openpv/openview_espidf" />
-		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(ESPSource_Root)" Command="chmod +x $(ESPSource_Root)/Ahsoka.Interop/ThirdParty/esp-hosted/docker/build_firmware.sh" />
-		<Exec ContinueOnError="true" Timeout="300000" WorkingDirectory="$(ESPSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(ESPSource_Root)/Ahsoka.Interop/ThirdParty/esp-hosted:/esp-hosted --rm --entrypoint &quot;/esp-hosted/docker/build_firmware.sh&quot; --name Ahsoka.ESPBuilder openpv/openview_espidf" />
+		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(ESPSource_Root)" Command="chmod +x $(ESPSource_Root)/Ahsoka.Interop/ThirdParty/build_setup.sh" />
+		<Exec ContinueOnError="true" Timeout="300000" WorkingDirectory="$(ESPSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(ESPSource_Root)/Ahsoka.Interop/ThirdParty:/source --rm --entrypoint &quot;/source/build_setup.sh&quot; --name Ahsoka.ESPBuilder openpv/openview_espidf" />
 		
 		<Message Text="Copying Outputs from $(ESPSource_Root)\Ahsoka.Interop\ThirdParty\esp-hosted\ESPFirmware.zip" Importance="high" />
 		<Copy SourceFiles="$(ESPSource_Root)Ahsoka.Interop\ThirdParty\esp-hosted\ESPFirmware.zip" DestinationFolder="$(ESPSource_Root)BuildOutputs\Firmware\OpenViewLinux_TargetSupport" />

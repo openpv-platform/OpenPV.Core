@@ -3,6 +3,7 @@ using Avalonia.Threading;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -109,6 +110,8 @@ internal abstract class DockerBaseTool : OpenPVToolBase
 
     public override async Task LaunchTool(IToolViewModel toolVM)
     {
+        if (!CheckDependencies(toolVM)) return;
+
         ProcessUtility.RunProcess("wsl", $"docker ps --all --filter name={containerName}", null, out string result, out string error);
         bool containerCreated = result.Contains(imageName);
 
@@ -143,6 +146,44 @@ internal abstract class DockerBaseTool : OpenPVToolBase
 
 
             });
+    }
+
+    private bool CheckDependencies(IToolViewModel toolVM)
+    {
+        string result, error;
+        if (OperatingSystem.IsWindows())
+        {
+            ProcessUtility.RunProcess("wsl", $"--list", null, out result, out error);
+
+            result = result.Replace("\0", "");
+            if (!result.Contains("Default") || !result.Contains("Ubuntu-20.04"))
+            {
+                _ = toolVM.MainViewModel.Dialog.ShowDialog("Missing Dependency", $"Must install WSL to launch container, Ubuntu-20.04 should be default", "Ok");
+                return false;
+            }
+        }
+
+        if (OperatingSystem.IsWindows())
+            ProcessUtility.RunProcess("wsl", $"docker info", null, out result, out error);
+        else
+            ProcessUtility.RunProcess("docker", $"info", null, out result, out error);
+        if (!result.Contains("Version:"))
+        {
+            _ = toolVM.MainViewModel.Dialog.ShowDialog("Missing Dependency", $"Must install Docker Desktop and enable WSL2 backend in settings", "Ok");
+            return false;
+        }
+
+        if (OperatingSystem.IsWindows())
+            ProcessUtility.RunProcess("wsl", $"apt list --installed | grep x11-xserver-utils", null, out result, out error);
+        else
+            ProcessUtility.RunProcess("/bin/sh", $"-c apt list --installed | grep x11-xserver-utils", null, out result, out error);
+        if (!result.Contains("x11-xserver-utils"))
+        {
+            _ = toolVM.MainViewModel.Dialog.ShowDialog("Missing Dependency", $"Must install apt package x11-xserver-utils to enable xhost", "Ok");
+            return false;
+        }
+
+        return true;
     }
 
     protected string GetLaunchCommand(string imageName, string containerName, string workingDirectoryPath)

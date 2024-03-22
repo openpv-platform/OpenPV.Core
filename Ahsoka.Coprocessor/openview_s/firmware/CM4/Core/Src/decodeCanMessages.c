@@ -9,7 +9,6 @@
 #include "decodeCanMessages.h"
 #include "nodeList.h"
 #include "Services.pb.h"
-#include "CanHandler.h"
 #include "cmsis_os.h"
 #include "FreeRTOS.h"
 #include "semphr.h"

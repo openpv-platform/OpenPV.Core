@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 #include <math.h>
+#include <cfloat>
 #include "AhsokaServices.h"
 
 using namespace std;
@@ -24,9 +25,12 @@ namespace AhsokaCAN
                 byteOrder = copy.byteOrder;
                 dataType = copy.dataType;
                 signalId = copy.signalId;
+                defaultValue = copy.defaultValue;
+                minValue = copy.minValue;
+                maxValue = copy.maxValue;
             }
 
-            CanPropertyInfo(int astartBit, int abitLength, ByteOrder abyteOrder, ValueType adataType, double ascale, double aoffset, int signal = -1)
+            CanPropertyInfo(int astartBit, int abitLength, ByteOrder abyteOrder, ValueType adataType, double ascale, double aoffset, int signal = -1, double defaultVal = 0, double min = DBL_MIN, double max = DBL_MAX)
             {
                 scale = ascale;
                 offset = aoffset;
@@ -35,6 +39,8 @@ namespace AhsokaCAN
                 byteOrder = abyteOrder;
                 dataType = adataType;
                 signalId = signal;
+                defaultValue = defaultVal;
+                SetBounds(adataType, min, max);
             }
         
             template <typename T>
@@ -99,8 +105,11 @@ namespace AhsokaCAN
                 long iVal;
                 uint64_t bitMask = BitMask();
 
+                // Ensure value lies within bounds
+                auto rawValue = std::max(minValue, std::min(maxValue, value));
+
                 // Apply scaling
-                auto rawValue = scaleValue ? (value - offset) / scale : value;
+                rawValue = scaleValue ? (rawValue - offset) / scale : rawValue;
 
                 // Convert to Byte[8]
                 if (dataType == ValueType::Float)
@@ -120,6 +129,7 @@ namespace AhsokaCAN
             double Unpack(uint64_t data, bool scaleValue = true)
             {
                 long iVal;
+                double retVal = 0;
                 uint64_t bitMask = BitMask();
 
                 // Unpack signal
@@ -129,27 +139,24 @@ namespace AhsokaCAN
                     iVal = (long)((MirrorMsg(data) >> GetStartBitLE()) & bitMask);
 
                 if (dataType == ValueType::Float)
-                {
-                    auto retVal = (float)iVal;
-                    if (scaleValue)
-                        retVal = (float)(retVal * scale + offset);
-
-                    return retVal;
-                }
+                    retVal = (float)iVal;
                 else if (dataType == ValueType::Double)
-                {
-                    auto retVal = (double)iVal;
-                    if (scale)
-                        retVal = retVal * scale + offset;
+                    retVal = (double)iVal;
+                else 
+                    retVal = iVal;
 
-                    return retVal;
-                }
+                // All FF's
+                if ((unsigned long)iVal == bitMask)
+                    return defaultValue;
 
-                // Apply scaling for Int Values
+                // Apply scaling
                 if (scaleValue)
-                    return iVal * scale + offset;
+                    return iVal * scale + offset;                                
+
+                // Ensure value lies within bounds
+                retVal = std::max(minValue, std::min(maxValue, retVal));
                 
-                return iVal;
+                return retVal;
             }
 
             uint64_t BitMask()
@@ -177,6 +184,36 @@ namespace AhsokaCAN
                 return swapped;
             }
 
+            void SetBounds(ValueType dataType, double min, double max) 
+            {
+                if (min == 0 && max == 0)
+                {
+                    min = DBL_MIN; 
+                    max = DBL_MAX;
+                }
+
+                if (dataType == ValueType::Float)
+                {
+                    minValue = std::max(min, (double)FLT_MIN);
+                    maxValue = std::min(max, (double)FLT_MAX);
+                }
+                else if (dataType == ValueType::Double)
+                {
+                    minValue = std::max(min, DBL_MIN);
+                    maxValue = std::min(max, DBL_MAX);
+                }
+                else if (dataType == ValueType::Unsigned || dataType == ValueType::Enum)
+                {
+                    minValue = std::max(min, (double)0);
+                    maxValue = std::min(max, (double)UINT32_MAX);
+                }
+                else if (dataType == ValueType::Signed)    
+                {
+                    minValue = std::max(min, (double)INT_MIN);
+                    maxValue = std::min(max, (double)INT_MAX);
+                } 
+            }
+
             int GetSignalId() { return signalId; }
             ValueType GetDataType() { return dataType; }      
             int GetStartBit() const { return startBit; }
@@ -187,6 +224,9 @@ namespace AhsokaCAN
             int signalId;
             double scale;
             double offset; 
+            double defaultValue;
+            double minValue;
+            double maxValue;
             int startBit;
             int bitLength;
             ByteOrder byteOrder;

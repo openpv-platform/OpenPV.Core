@@ -62,14 +62,14 @@ internal class J1939Helper
         {
             var name = new ulong[] { 0 };
 
-            identityInfo.SetValue(ref name, identityNumber, false, false);
-            manufacturerInfo.SetValue(ref name, Definition.ManufacturerCode, false, false);
-            ECUInfo.SetValue(ref name, Definition.ECUinstance, false, false);
-            functionInstanceInfo.SetValue(ref name, Definition.FunctionInstance, false, false);
-            functionInfo.SetValue(ref name, Definition.Function, false, false);
-            vehicleInfo.SetValue(ref name, Definition.VehicleSystem, false, false);
-            vehicleInstanceInfo.SetValue(ref name, Definition.VehicleSystemInstance, false, false);
-            industryInfo.SetValue(ref name, Definition.IndustryGroup, false, false);
+            identityInfo.SetValue(ref name, identityNumber, false);
+            manufacturerInfo.SetValue(ref name, Definition.ManufacturerCode, false);
+            ECUInfo.SetValue(ref name, Definition.ECUinstance, false);
+            functionInstanceInfo.SetValue(ref name, Definition.FunctionInstance, false);
+            functionInfo.SetValue(ref name, Definition.Function, false);
+            vehicleInfo.SetValue(ref name, Definition.VehicleSystem, false);
+            vehicleInstanceInfo.SetValue(ref name, Definition.VehicleSystemInstance, false);
+            industryInfo.SetValue(ref name, Definition.IndustryGroup, false);
 
             return name[0];
         }
@@ -77,11 +77,11 @@ internal class J1939Helper
 
     public class Id
     {
-        private CanPropertyInfo sourceInfo = new(0, 8, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0);
-        private CanPropertyInfo specificInfo = new(8, 8, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0);
-        private CanPropertyInfo formatInfo = new(16, 8, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0);
-        private CanPropertyInfo pageInfo = new(24, 1, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0);
-        private CanPropertyInfo priorityInfo = new(26, 3, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0);
+        private CanPropertyInfo sourceInfo = new(0, 8, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0, 1, 0xFF);
+        private CanPropertyInfo specificInfo = new(8, 8, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0, 2, 0xFF);
+        private CanPropertyInfo formatInfo = new(16, 8, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0, 3, 0xFF);
+        private CanPropertyInfo pageInfo = new(24, 1, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0, 4, 0xFF);
+        private CanPropertyInfo priorityInfo = new(26, 3, Ahsoka.System.ByteOrder.LittleEndian, Services.Can.ValueType.Unsigned, 0, 0, 5, 0xFF);
 
         public uint SourceAddress { get; set; }
         public uint PDUS { get; set; }
@@ -100,11 +100,11 @@ internal class J1939Helper
         {
             var id = new ulong[] { 0 };
 
-            sourceInfo.SetValue(ref id, SourceAddress, false, false);
-            specificInfo.SetValue(ref id, PDUS, false, false);
-            formatInfo.SetValue(ref id, PDUF, false, false);
-            pageInfo.SetValue(ref id, DataPage, false, false);
-            priorityInfo.SetValue(ref id, Priority, false, false);
+            sourceInfo.SetValue(ref id, SourceAddress, false);
+            specificInfo.SetValue(ref id, PDUS, false);
+            formatInfo.SetValue(ref id, PDUF, false);
+            pageInfo.SetValue(ref id, DataPage, false);
+            priorityInfo.SetValue(ref id, Priority, false);
 
             return (uint)id[0];
         }
@@ -165,32 +165,32 @@ internal class J1939Helper
         {
             var data = new ulong[] { 0 };
 
-            controlInfo.SetValue(ref data, ControlByte, false, false);
+            controlInfo.SetValue(ref data, ControlByte, false);
             if (ControlByte is CMControl.RTS or CMControl.EndOfMsgACK)
             {
-                messageInfo.SetValue(ref data, MessageSize, false, false);
-                packetInfo.SetValue(ref data, NumPackets, false, false);
-                responseInfo.SetValue(ref data, PacketsPerCTS, false, false);
+                messageInfo.SetValue(ref data, MessageSize, false);
+                packetInfo.SetValue(ref data, NumPackets, false);
+                responseInfo.SetValue(ref data, PacketsPerCTS, false);
             }
             else if (ControlByte == CMControl.CTS)
             {
-                sendInfo.SetValue(ref data, PacketsRequested, false, false);
-                sequenceInfo.SetValue(ref data, PacketStart, false, false);
-                reservedCTS.SetValue(ref data, 0xFFFF, false, false);
+                sendInfo.SetValue(ref data, PacketsRequested, false);
+                sequenceInfo.SetValue(ref data, PacketStart, false);
+                reservedCTS.SetValue(ref data, 0xFFFF, false);
             }
             else if (ControlByte == CMControl.BAM)
             {
-                messageInfo.SetValue(ref data, MessageSize, false, false);
-                packetInfo.SetValue(ref data, NumPackets, false, false);
-                reservedBAM.SetValue(ref data, 0xFF, false, false);
+                messageInfo.SetValue(ref data, MessageSize, false);
+                packetInfo.SetValue(ref data, NumPackets, false);
+                reservedBAM.SetValue(ref data, 0xFF, false);
             }
             else if (ControlByte == CMControl.Abort)
             {
-                reasonInfo.SetValue(ref data, AbortReason, false, false);
-                roleInfo.SetValue(ref data, AbortRole, false, false);
-                reservedAbort.SetValue(ref data, 0xFFFFFF, false, false);
+                reasonInfo.SetValue(ref data, AbortReason, false);
+                roleInfo.SetValue(ref data, AbortRole, false);
+                reservedAbort.SetValue(ref data, 0xFFFFFF, false);
             }
-            pgnInfo.SetValue(ref data, PGN, false, false);
+            pgnInfo.SetValue(ref data, PGN, false);
 
             return data[0];
         }

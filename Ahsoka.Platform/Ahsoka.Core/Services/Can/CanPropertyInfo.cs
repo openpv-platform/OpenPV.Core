@@ -13,6 +13,9 @@ public class CanPropertyInfo
     int signalId;
     readonly double scale;
     readonly double offset;
+    readonly double defaultValue;
+    double minValue;
+    double maxValue;
     int startBit;
     int bitLength;
     readonly ByteOrder byteOrder;
@@ -48,15 +51,20 @@ public class CanPropertyInfo
     /// <param name="byteOrder"></param>
     /// <param name="dataType"></param>
     /// <param name="signalId"></param>
-    public CanPropertyInfo(int startBit, int bitLength, ByteOrder byteOrder, ValueType dataType, double scale, double offset, int signalId = -1)
+    /// <param name="defaultValue"></param>
+    /// <param name="minValue"></param>
+    /// <param name="maxValue"></param>
+    public CanPropertyInfo(int startBit, int bitLength, ByteOrder byteOrder, ValueType dataType, double scale, double offset, int signalId = -1, double defaultValue = 0, double minValue = double.MinValue, double maxValue = double.MaxValue )
     {
         this.signalId = signalId;
         this.scale = scale;
         this.offset = offset;
+        this.defaultValue = defaultValue;
         this.StartBit = startBit;
         this.BitLength = bitLength;
         this.byteOrder = byteOrder;
         this.dataType = dataType;
+        SetBounds(dataType, minValue, maxValue);
     }
 
     #region Utility Methods
@@ -122,8 +130,7 @@ public class CanPropertyInfo
     /// <param name="data"></param>
     /// <param name="newValue"></param>
     /// <param name="scaleValue"></param>
-    /// <param name="clampValue"></param>
-    public void SetValue<T>(byte[] data, T newValue, bool scaleValue = true, bool clampValue = true) where T : struct
+    public void SetValue<T>(byte[] data, T newValue, bool scaleValue = true) where T : struct
     {
         var longData = new ulong[data.Length / 8];
 
@@ -131,7 +138,7 @@ public class CanPropertyInfo
         for (int i = 0; i < longData.Length; i++)
             longData[i] = BitConverter.ToUInt64(data, i * 8);
 
-        SetValue(ref longData, newValue, scaleValue, clampValue);
+        SetValue(ref longData, newValue, scaleValue);
 
         // Return Data to Array
         for (int i = 0; i < longData.Length; i++)
@@ -146,8 +153,7 @@ public class CanPropertyInfo
     /// <param name="data"></param>
     /// <param name="newValue"></param>
     /// <param name="scaleValue"></param>
-    /// <param name="clampValue"></param>
-    internal void SetValue<T>(ref ulong[] data, T newValue, bool scaleValue = true, bool clampValue = true) where T : struct
+    internal void SetValue<T>(ref ulong[] data, T newValue, bool scaleValue = true) where T : struct
     {
         int startByte = StartBit / 8;
         int messageIndex = startByte / 8;
@@ -158,34 +164,37 @@ public class CanPropertyInfo
         switch (newValue)
         {
             case uint u4:
-                data[messageIndex] |= Pack(u4, scaleValue, clampValue);
+                data[messageIndex] |= Pack(u4, scaleValue);
                 break;
 
             case int s4:
-                data[messageIndex] |= Pack(s4, scaleValue, clampValue);
+                data[messageIndex] |= Pack(s4, scaleValue);
                 break;
 
             case float f4:
-                data[messageIndex] |= Pack(f4, scaleValue, clampValue);
+                data[messageIndex] |= Pack(f4, scaleValue);
                 break;
 
             case double f8:
-                data[messageIndex] |= Pack(f8, scaleValue, clampValue);
+                data[messageIndex] |= Pack(f8, scaleValue);
                 break;
 
             case Enum e4:
-                data[messageIndex] |= Pack(e4.EnumToInt(), scaleValue, clampValue);
+                data[messageIndex] |= Pack(e4.EnumToInt(), scaleValue);
                 break;
         }
     }
 
-    private ulong Pack(double value, bool scaleValue = true, bool clampValue = true)
+    private ulong Pack(double value, bool scaleValue = true)
     {
         long iVal;
         ulong bitMask = BitMask();
 
+        // Ensure value lies within bounds
+        var rawValue = Math.Max(minValue, Math.Min(maxValue, value));
+
         // Apply scaling
-        var rawValue = scaleValue ? (value - offset) / scale : value;
+        rawValue = scaleValue ? (rawValue - offset) / scale : rawValue;
 
         // Convert to Byte[8]
         if (dataType == ValueType.Float)
@@ -221,19 +230,16 @@ public class CanPropertyInfo
         else
             returnValue = iVal;
 
+        // All FF's 
+        if ((ulong)iVal == bitMask)
+            return defaultValue;
 
-        // Apply scaling for Int Values
+        // Apply scaling
         if (scaleValue)
             returnValue = returnValue * scale + offset;
 
-        if (dataType == ValueType.Float)
-            returnValue = Math.Max(float.MinValue, Math.Min(float.MaxValue, returnValue));
-        else if (dataType == ValueType.Double)
-            returnValue = Math.Max(double.MinValue, Math.Min(double.MaxValue, returnValue));
-        else if (dataType == ValueType.Unsigned || dataType == ValueType.Enum)
-            returnValue = Math.Max(uint.MinValue, Math.Min(uint.MaxValue, returnValue));
-        else if (dataType == ValueType.Signed)
-            returnValue = Math.Max(int.MinValue, Math.Min(int.MaxValue, returnValue));
+        // Ensure value lies within bounds
+        returnValue = Math.Max(minValue, Math.Min(maxValue, returnValue));
         
         return returnValue;
     }
@@ -261,6 +267,36 @@ public class CanPropertyInfo
     {
         Byte startByte = (Byte)(StartBit / 8);
         return (Byte)(64 - (BitLength + 8 * startByte + (8 * (startByte + 1) - (StartBit + 1)) % 8));
+    }
+
+    private void SetBounds(ValueType dataType, double min, double max)
+    {        
+        if (min == 0 && max == 0)
+        {
+            min = double.MinValue; 
+            max = double.MaxValue;
+        }
+
+        if (dataType == ValueType.Float)
+        {
+            minValue = Math.Max(min, float.MinValue);
+            maxValue = Math.Min(max, float.MaxValue);
+        }
+        else if (dataType == ValueType.Double)
+        {
+            minValue = Math.Max(min, double.MinValue);
+            maxValue = Math.Min(max, double.MaxValue);
+        }
+        else if (dataType == ValueType.Unsigned || dataType == ValueType.Enum)
+        {
+            minValue = Math.Max(min, uint.MinValue);
+            maxValue = Math.Min(max, uint.MaxValue);
+        }
+        else if (dataType == ValueType.Signed)
+        {
+            minValue = Math.Max(min, int.MinValue);
+            maxValue = Math.Min(max, int.MaxValue);
+        }
     }
 
     [StructLayout(LayoutKind.Explicit)]

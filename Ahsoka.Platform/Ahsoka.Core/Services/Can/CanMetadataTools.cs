@@ -376,6 +376,7 @@ internal static class CanMetadataTools
 
        
         baseClass ??= "CanViewModelBase";
+        definition.Id &= 0x1FFFFFFF;
 
         string className = definition.Name.AsIdentifier();
 
@@ -510,7 +511,7 @@ internal static class CanMetadataTools
 
         // Add Metadata to Static Dictionary.
         string endianness = definition.ByteOrder == ByteOrder.LittleEndian ? "ByteOrder::LittleEndian" : "ByteOrder::BigEndian";
-        metadata.Append($"\t\t{className.AsIdentifier()}Props[{className.AsIdentifier()}::Properties::{propName}] =  CanPropertyInfo({definition.StartBit}, {definition.BitLength}, {endianness}, {canType}, {definition.Scale}, {definition.Offset}, {definition.Id});\r\n");
+        metadata.Append($"\t\t{className.AsIdentifier()}Props[{className.AsIdentifier()}::Properties::{propName}] =  CanPropertyInfo({definition.StartBit}, {definition.BitLength}, {endianness}, {canType}, {definition.Scale}, {definition.Offset}, {definition.Id}, {definition.DefaultValue}, {definition.Minimum}, {definition.Maximum});\r\n");
     }
     #endregion
 
@@ -554,6 +555,7 @@ internal static class CanMetadataTools
     private static void GenerateClassDotNet(MessageDefinition definition, StringBuilder fileOutputBuilder, StringBuilder metadataBuilder, string baseClass = null)
     {
         baseClass ??= "CanViewModelBase";
+        definition.Id &= 0x1FFFFFFF;
 
         string className = definition.Name.AsIdentifier().ToCamelCase();
 
@@ -678,7 +680,7 @@ internal static class CanMetadataTools
         mainOutput.AppendLine($"\r\n\tpublic {type} {propName.AsIdentifier()} \r\n\t{{\r\n\t\t{getValue}\r\n\t\t{setValue} \r\n\t}}");
 
         // Add Metadata to Static Dictionary.
-        metadataBuilder.AppendLine($"\t\t\t{{nameof({className}.{propName}), new( {definition.StartBit}, {definition.BitLength}, {endianNess}, {canType}, {definition.Scale}, {definition.Offset}, {definition.Id})}},");
+        metadataBuilder.AppendLine($"\t\t\t{{nameof({className}.{propName}), new( {definition.StartBit}, {definition.BitLength}, {endianNess}, {canType}, {definition.Scale}, {definition.Offset}, {definition.Id}, {definition.DefaultValue}, {definition.Minimum}, {definition.Maximum})}},");
     }
     #endregion
 

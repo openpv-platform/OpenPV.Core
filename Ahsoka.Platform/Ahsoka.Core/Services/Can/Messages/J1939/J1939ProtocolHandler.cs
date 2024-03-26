@@ -78,17 +78,6 @@ internal class J1939ProtocolHandler : BaseProtocolHandler
         };
     }
 
-    protected override bool ProtocolResponsible(CanMessageData messageData)
-    {
-        if (!GetAvailableMessage(messageData.Id, out var messageInfo))
-            return false;
-
-        if (messageInfo.Message.MessageType == MessageType.J1939ExtendedFrame)
-            return true;
-
-        return false;
-    }
-
     internal override bool ConfirmAvailable(CanMessageData messageData, object info, out CanMessageResult result)
     {
         if (!base.ConfirmAvailable(messageData, info, out result))
@@ -139,7 +128,7 @@ internal class J1939ProtocolHandler : BaseProtocolHandler
 
             var mask = j1939Id.PDUF >= 240 ? 0x1FFFFF00 : 0x1FFF0000;
 
-            var messages = Service.AvailableMessages.Values.Where(x => (x.Message.Id & mask) == (id & mask));
+            var messages = Service.AvailableMessages.Values.Where(x => x.Message.MessageType == MessageType.J1939ExtendedFrame && (x.Message.Id & mask) == (id & mask));
             foreach (var message in messages)
             {
                 var knownDestination = Service.GetNode(message.Message.ReceiveNodes[Service.Port]).J1939Info.AddressType == NodeAddressType.Static;
@@ -167,14 +156,13 @@ internal class J1939ProtocolHandler : BaseProtocolHandler
     {
         try
         {
-            if (Service.AvailableMessages.TryGetValue(id, out result))
-                return true;
+            result = new();
 
             var j1939Id = new J1939Helper.Id(id);
 
             var mask = j1939Id.PDUF >= 240 ? 0x1FFFFF00 : 0x1FFF0000;
 
-            var messages = Service.AvailableMessages.Values.Where(x => (x.Message.Id & mask) == (id & mask));
+            var messages = Service.AvailableMessages.Values.Where(x => x.Message.MessageType == MessageType.J1939ExtendedFrame && (x.Message.Id & mask) == (id & mask));
             foreach (var message in messages)
             {
                 bool knownDestination;
@@ -192,7 +180,7 @@ internal class J1939ProtocolHandler : BaseProtocolHandler
                 else if (j1939Id.PDUF >= 240 && (!received || (j1939Id.SourceAddress == CanState.NodeAddresses[message.Message.TransmitNodes[Service.Port]] || message.Message.TransmitNodes[Service.Port] == J1939Helper.BroadcastAddress)))
                     result = message;
 
-                if (result != null)
+                if (result.Message != null)
                     return true;
             }
 

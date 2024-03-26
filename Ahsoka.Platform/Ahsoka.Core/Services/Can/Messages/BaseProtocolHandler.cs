@@ -23,11 +23,13 @@ internal abstract class BaseProtocolHandler
     internal virtual bool ConfirmAvailable(CanMessageData messageData, object info, out CanMessageResult result )
     {
         result = new CanMessageResult();
-        if (!ProtocolResponsible(messageData))
-            return false;
 
         if (!GetAvailableMessage(messageData.Id, out var messageInfo))
+        {
             result = new CanMessageResult() { Status = MessageStatus.Error, Message = $"CAN message not found in configuration with Id: {messageData.Id}" };
+            return false;
+        }
+            
         if (!messageInfo.Message.TransmitNodes.Contains(Service.Self.Id) && !messageInfo.Message.TransmitNodes.Contains(255))
             result = new CanMessageResult() { Status = MessageStatus.Error, Message = $"CAN message not set to transmit from node {Service.Self.Id} with message Id: {messageData.Id}" };
 
@@ -37,9 +39,6 @@ internal abstract class BaseProtocolHandler
     internal virtual bool ProcessMessage(CanMessageData message, out uint modifiedId)
     {
         modifiedId = message.Id;
-
-        if (!ProtocolResponsible(message))
-            return false;
 
         lock (Service.AvailableMessages)
         {
@@ -52,11 +51,11 @@ internal abstract class BaseProtocolHandler
                     var propertyInfo = new CanPropertyInfo((int)messageInfo.Message.RollCountBit, (int)messageInfo.Message.RollCountLength, signal.ByteOrder, signal.ValueType, signal.Scale, signal.Offset);
                     int wordIndex = propertyInfo.StartBit / 64;
                     var val = new ulong[] { BitConverter.ToUInt64(message.Data, wordIndex) };
-                    propertyInfo.SetValue(ref val, messageInfo.RollCount, false, false);
+                    propertyInfo.SetValue(ref val, messageInfo.RollCount, false);
                     Array.Copy(BitConverter.GetBytes(val[0]), 0, message.Data, wordIndex, sizeof(ulong));
                     messageInfo.RollCount = propertyInfo.GetValue<uint>(val, false);
                     messageInfo.RollCount++;
-                }                
+                }
 
                 if (messageInfo.Message.CrcType == CrcType.Tsc1)
                 {
@@ -69,10 +68,14 @@ internal abstract class BaseProtocolHandler
                     var checksumProperty = new CanPropertyInfo((int)messageInfo.Message.CrcBit, 4, signal.ByteOrder, signal.ValueType, signal.Scale, signal.Offset);
                     int wordIndex = checksumProperty.StartBit / 64;
                     var val = new ulong[] { BitConverter.ToUInt64(message.Data, wordIndex) };
-                    checksumProperty.SetValue(ref val, (uint)checksum, false, false);
+                    checksumProperty.SetValue(ref val, (uint)checksum, false);
                     Array.Copy(BitConverter.GetBytes(val[0]), 0, message.Data, wordIndex, sizeof(ulong));
                 }
+                else if (messageInfo.Message.CrcType == CrcType.CheckSum) { }
+                else if (messageInfo.Message.CrcType == CrcType.Crc6) { }
             }
+            else
+                return false;
         }
         return true;
     }
@@ -94,11 +97,8 @@ internal abstract class BaseProtocolHandler
     {
         shouldSend = false;
 
-        if (!ProtocolResponsible(messageData))
-            return false;
-
         if (!GetAvailableMessage(messageData.Id, out var messageInfo, true))
-            return true;
+            return false;
 
         if (!messageInfo.Message.UserDefined)
         {
@@ -143,8 +143,6 @@ internal abstract class BaseProtocolHandler
     {
         return Service.AvailableMessages.TryGetValue(id, out message);
     }
-
-    protected abstract bool ProtocolResponsible(CanMessageData messageData);
 
     protected abstract bool IsEnabled();  
 }

@@ -23,8 +23,9 @@ internal class CanHandler
     {
         return new List<Type>
         {
-            typeof(J1939ProtocolHandler),
-            typeof(RawProtocolHandler)
+            // Raw must get processed first
+            typeof(RawProtocolHandler),
+            typeof(J1939ProtocolHandler)           
         };
     }
 

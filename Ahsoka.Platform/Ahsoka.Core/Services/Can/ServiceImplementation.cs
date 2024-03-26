@@ -143,8 +143,13 @@ internal abstract class CanServiceImplementation
 
         if (shouldSend && canHandler.MatchId(messageData.Id, out var configId, true))
         {
-            messageData.Id = configId;
-            dataHandler.HandleMesssage(messageData);
+            var data = new CanMessageData()
+            {
+                Id = configId,
+                Dlc = messageData.Dlc,
+                Data = messageData.Data,
+            };
+            dataHandler.HandleMesssage(data);
         }
     }
 

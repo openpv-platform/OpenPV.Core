@@ -224,10 +224,10 @@
   <data name="CSharpMetadataDictionary" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\clienttemplates\csharpmetadatadictionary.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="StandardCanDefinitions" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\standardcandefinitions.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="OpenViewS70HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\openviews70hardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="StandardCanDefinitions" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\resources\standardcandefinitions.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

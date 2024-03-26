@@ -20,7 +20,7 @@ internal class CanDataServicHandler
         var signalInfo = new CanMessageInfo();
         foreach (var sig in message.Signals)
         {
-            var info = new CanPropertyInfo((int)sig.StartBit, (int)sig.BitLength, sig.ByteOrder, sig.ValueType, sig.Scale, sig.Offset, (int)sig.Id) { Name = sig.Name };
+            var info = new CanPropertyInfo((int)sig.StartBit, (int)sig.BitLength, sig.ByteOrder, sig.ValueType, sig.Scale, sig.Offset, (int)sig.Id, sig.DefaultValue, sig.Minimum, sig.Maximum) { Name = sig.Name };
 
             if (sig.MuxRole == MuxRole.Multiplexor)
             {

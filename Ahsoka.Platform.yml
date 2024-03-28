@@ -64,7 +64,7 @@ stages:
         projects: |
           **/Ahsoka.PublishOutputs.Mac.csproj
           **/Ahsoka.Installer.UI.csproj
-          **/Ahsoka.CustomerTools.csproj
+          **/Ahsoka.DeveloperTools.csproj
         feedsToUse: 'select'
 
     - task: InstallAppleCertificate@2

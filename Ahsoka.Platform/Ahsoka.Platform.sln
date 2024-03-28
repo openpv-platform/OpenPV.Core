@@ -27,14 +27,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{B68F5390
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Installer.UI", "Ahsoka.Installer.UI\Ahsoka.Installer.UI.csproj", "{73B0F143-542F-46D6-8173-8156446557A4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.CustomerTools", "Ahsoka.CustomerTools\Ahsoka.CustomerTools.csproj", "{9FAAA9D3-3173-4E10-85C3-3D3A1D41D23F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.DeveloperTools", "Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj", "{9FAAA9D3-3173-4E10-85C3-3D3A1D41D23F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{772641A0-D341-4B6A-B55F-0AA6BDF2A986} = {772641A0-D341-4B6A-B55F-0AA6BDF2A986}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.CommandLine", "Ahsoka.CommandLine\Ahsoka.CommandLine.csproj", "{B7CEE217-6267-4F9D-BDA5-BFD3898D9D04}"
 EndProject
-Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Ahsoka.CustomerTools.Installer", "Ahsoka.CustomerTools.Installer\Ahsoka.CustomerTools.Installer.wixproj", "{BC7CB82E-2AD1-4B43-BE43-1DC4BE83601E}"
+Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Ahsoka.DeveloperTools.Installer", "Ahsoka.DeveloperTools.Installer\Ahsoka.DeveloperTools.Installer.wixproj", "{BC7CB82E-2AD1-4B43-BE43-1DC4BE83601E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{772641A0-D341-4B6A-B55F-0AA6BDF2A986} = {772641A0-D341-4B6A-B55F-0AA6BDF2A986}
 		{9FAAA9D3-3173-4E10-85C3-3D3A1D41D23F} = {9FAAA9D3-3173-4E10-85C3-3D3A1D41D23F}
@@ -112,6 +112,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.PublishOutputs.Mac", "Ahsoka.PublishOutputs.Mac\Ahsoka.PublishOutputs.Mac.csproj", "{8136C209-4270-464B-8C75-E184285F828C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Core.Cygnus", "Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj", "{390B23D7-2E9A-4DE1-B772-A6FB8FFAD4AD}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.CompareDistros", "Ahsoka.CompareDistros\Ahsoka.CompareDistros.csproj", "{E1F287B6-06F6-459C-955B-48DBB07A779D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscUtils.Core", "ThirdParty\DiscUtils\Library\DiscUtils.Core\DiscUtils.Core.csproj", "{DC04EF60-9B5B-4922-8763-CE6D57D597F6}"
@@ -121,6 +122,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscUtils.Streams", "ThirdParty\DiscUtils\Library\DiscUtils.Streams\DiscUtils.Streams.csproj", "{3B7A3E44-8656-47AD-A899-68B529121E41}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utilities", "Utilities", "{93ED7200-1AB7-4057-9B12-ACFE5661C572}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Core.Can", "Ahsoka.Core.CAN\Ahsoka.Core.Can.csproj", "{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.DeveloperTools.Extensions", "Ahsoka.DeveloperTools.Extensions\Ahsoka.DeveloperTools.Extensions.csproj", "{E4254DCE-3075-4E2D-AB81-1F17F51031E9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.DeveloperTools.Core", "Ahsoka.DeveloperTools.Core\Ahsoka.DeveloperTools.Core.csproj", "{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -496,6 +503,42 @@ Global
 		{3B7A3E44-8656-47AD-A899-68B529121E41}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3B7A3E44-8656-47AD-A899-68B529121E41}.Release|x64.ActiveCfg = Release|Any CPU
 		{3B7A3E44-8656-47AD-A899-68B529121E41}.Release|x64.Build.0 = Release|Any CPU
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Debug|x64.ActiveCfg = Debug|x64
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Debug|x64.Build.0 = Debug|x64
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Mac-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Mac-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Mac-Debug|x64.ActiveCfg = Debug|x64
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Mac-Debug|x64.Build.0 = Debug|x64
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Release|x64.ActiveCfg = Release|x64
+		{DFFC994D-49D3-4FDD-83A8-1CF5DFF88931}.Release|x64.Build.0 = Release|x64
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Debug|x64.ActiveCfg = Debug|x64
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Debug|x64.Build.0 = Debug|x64
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Mac-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Mac-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Mac-Debug|x64.ActiveCfg = Debug|x64
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Mac-Debug|x64.Build.0 = Debug|x64
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Release|x64.ActiveCfg = Release|x64
+		{E4254DCE-3075-4E2D-AB81-1F17F51031E9}.Release|x64.Build.0 = Release|x64
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Debug|x64.ActiveCfg = Debug|x64
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Debug|x64.Build.0 = Debug|x64
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Mac-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Mac-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Mac-Debug|x64.ActiveCfg = Debug|x64
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Mac-Debug|x64.Build.0 = Debug|x64
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Release|x64.ActiveCfg = Release|x64
+		{CBDD7C07-3CD3-4AC0-9B26-AD8020137CF1}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

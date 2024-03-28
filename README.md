@@ -66,7 +66,7 @@ This guide will assist in understanding and setting up tools for developing inte
 
 7. Select Debug or Release from the Configuration Manager with "Any CPU" selected and Build your solution.  Multiple targets are used when testing Ahsoka.Platform
 
-   - Ahsoka.CustomerTools - Builds the Customer Tools UI.
+   - Ahsoka.DeveloperTools - Builds the Customer Tools UI.
    - Ahsoka.CommandLine - Builds the command line tools and used when debugging functionality
    - Ahsoka.InstallerUI - Builds the Installer Application.
    - Ahsoka.PublishOutputs - Builds the Platform Support Packages (OpenView, Ubuntu, Windows)
@@ -79,13 +79,13 @@ Note that the PreReqs project does NOT build automatically.  Since this project 
  
 All components in Ahsoka.Platform use Pipelines to contribute to Public Delivery.  At the current time, there are 4 primary public deliveries made of the following components
 
-**Ahsoka.CustomerTools for Windows / Ubuntu** - Customer Tools is the download that most users will recieve when they want to develop applications using OpenPV.  All of the artifacts that make up OpenPV are created as part of the Ahsoka.Services pipeline.   This pipeline executes the following high level steps
+**Ahsoka.DeveloperTools for Windows / Ubuntu** - Customer Tools is the download that most users will recieve when they want to develop applications using OpenPV.  All of the artifacts that make up OpenPV are created as part of the Ahsoka.Services pipeline.   This pipeline executes the following high level steps
 
 1. Build Ahsoka.Interop - This package of platform specific libraries is created using containers or local compilers to build libraries which are needed to access low level components in the Distribution or system libraries only avaialble in C++.  In addition, this build creates any target support packages needed for various platforms.
 2. Build Ahsoka.Platform - This package produces following outputs
 
-   - Ahsoka.CustomerTools Installer (.msi) for Windows which is uploaded to PowerVision Spark
-   - Ahsoka.CustomerTools Installer (.deb) for Ubuntu which is uploaded to an APT repository in Azure Storage
+   - Ahsoka.DeveloperTools Installer (.msi) for Windows which is uploaded to PowerVision Spark
+   - Ahsoka.DeveloperTools Installer (.deb) for Ubuntu which is uploaded to an APT repository in Azure Storage
    - TargetSupport Packages for each Platform (Windows, Ubuntu, OpenView).  Each package may include the following items
      - Ahsoka.CommandLine - Commandline tools used to install, package and execute various OpenPV Tasks.
      - Ahsoka.InstallerUI - The Installer UI used on the target to execute installs.

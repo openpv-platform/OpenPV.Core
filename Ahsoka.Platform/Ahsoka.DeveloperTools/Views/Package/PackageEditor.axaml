@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      		 xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="800"
+             xmlns:material="using:Material.Icons.Avalonia"
+		     x:Class="Ahsoka.DeveloperTools.Views.PackageEditor">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="250"/>
+		</Grid.ColumnDefinitions>
+		<Border BorderBrush="Gainsboro" BorderThickness="1,0,0,0" Grid.Row="0"
+				Grid.Column="1" Grid.RowSpan="2"  Background="WhiteSmoke" VerticalAlignment="Stretch" Margin="0,0,0,0">
+			<StackPanel Margin="20" VerticalAlignment="Bottom"
+						HorizontalAlignment="Left">
+				<StackPanel  HorizontalAlignment="Left" Orientation="Horizontal">
+					<TextBlock FontSize="12" Text="Platform:"/>
+					<TextBlock FontSize="12" Margin="5,0,0,0" FontStyle="Italic" Text="{Binding SelectedPackage.PlatformDescription, FallbackValue=No Family}"/>
+				</StackPanel>
+				<StackPanel HorizontalAlignment="Left" Margin="0,6,0,0" Orientation="Horizontal">
+					<TextBlock FontSize="12" Text="Project Type:"/>
+					<TextBlock FontSize="12" Margin="5,0,5,0" FontStyle="Italic" Text="{Binding SelectedPackage.ApplicationType, FallbackValue=No Project Type}"/>
+				</StackPanel>
+				<StackPanel HorizontalAlignment="Left" Margin="0,6,0,0" Orientation="Horizontal">
+					<TextBlock FontSize="12" Text="Generated:"/>
+					<TextBlock FontSize="12" Margin="5,0,5,0" FontStyle="Italic" Text="{Binding SelectedPackage.ProjectGenerated, FallbackValue=Not Found}"/>
+				</StackPanel>
+			</StackPanel>
+		</Border>
+
+		<TabControl SelectedIndex="{Binding SelectedPackage.SelectedTab}"
+					VerticalAlignment="Stretch" Grid.Column="0" 
+					Grid.ColumnSpan="2" Grid.Row="0" Grid.RowSpan="2" 
+					HorizontalAlignment="Stretch" Padding="0,-10" TabStripPlacement="Top" >
+			<TabItem>
+				<TabItem.Header>
+					<TextBlock FontSize="18"
+							   Text="Packaging"/>
+				</TabItem.Header>
+				<CustomerTools:PackageInfoView/>
+			</TabItem>
+			<TabItem>
+				<TabItem.Header>
+					<TextBlock
+						FontSize="18"
+						Text="Development"/>
+				</TabItem.Header>
+				<CustomerTools:DeveloperView/>
+			</TabItem>
+
+			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
+				<TabItem.Header>
+					<TextBlock
+						FontSize="18"
+						Text="Startup"/>
+				</TabItem.Header>
+				<CustomerTools:StartupOptionsView/>
+			</TabItem>
+			
+			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
+				<TabItem.Header>
+					<TextBlock
+						FontSize="18"
+						Text="Services"/>
+				</TabItem.Header>
+				<CustomerTools:ServiceOptionsView/>
+			</TabItem>
+
+			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
+				<TabItem.Header>
+					<TextBlock
+						FontSize="18"
+						Text="Extensions"/>
+				</TabItem.Header>
+				<CustomerTools:ExtensionsView/>
+			</TabItem>
+		</TabControl>
+	</Grid>
+</UserControl>
+

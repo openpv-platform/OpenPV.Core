@@ -1,0 +1,189 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           	 xmlns:sys="clr-namespace:System;assembly=mscorlib"
+		     mc:Ignorable="d" d:DesignWidth="1085" d:DesignHeight="450"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.ServiceOptionsView">
+
+	<Grid HorizontalAlignment="Stretch" DataContext="{Binding SelectedPackage.ServiceViewModel}" >
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="250"/>
+		</Grid.ColumnDefinitions>
+
+		<Grid.Styles>
+			<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+		</Grid.Styles>
+
+		<StackPanel  Margin="-15" Grid.Column="1"
+			HorizontalAlignment="Center">
+			<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12" 
+				   Foreground="DimGray"
+			   Text=" Service Actions "/>
+		
+			<Button Margin="3,3,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							IsEnabled="{Binding SelectedService.IsIncluded}"
+							VerticalContentAlignment="Center"
+							Command="{Binding ShowKeys}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="KeyVariant"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13" 
+							   ToolTip.Tip="Show and Configure Data Keys for this Service."
+							   Text="DataService Config..."/>
+				</StackPanel>
+			</Button>
+		</StackPanel>
+
+		<Grid ColumnDefinitions="205,auto,*" 
+			  RowDefinitions="*,auto,20" Margin="20,0">
+
+			<Border Grid.ColumnSpan="3" Grid.Row="1" BorderBrush="Gainsboro"
+							BorderThickness="1" Background="WhiteSmoke"
+							Margin="20,0,20,20" Padding="10,10,10,10"
+							HorizontalAlignment="Stretch">
+				<TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Configure OpenPV Services for your Application. From here you can configure the service ports as well as any DataService Keys to make available in your application"
+					 Foreground="SteelBlue" HorizontalAlignment="Left" />
+			</Border>
+			<Border Margin="0,20,0,0" BorderBrush="Gainsboro" BorderThickness="0"
+					Grid.ColumnSpan="3" Grid.Row="0"
+					HorizontalAlignment="Stretch">
+				<Grid ColumnDefinitions="2*,3*" RowDefinitions="auto,*">
+					<TextBlock  FontSize="16"  Margin="18,10,0,0" Foreground="SteelBlue"
+								Text="Configured Services" VerticalAlignment="Top"/>
+					<Border VerticalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="3"
+							Margin="20,5,20,20" BorderBrush="Gainsboro" BorderThickness="1">
+						<ListBox  ItemsSource="{Binding Services}" SelectedItem="{Binding SelectedService}" Background="Transparent" >
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<Grid ColumnDefinitions="30,*,auto,auto,auto,auto" Margin="-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+										<Button IsVisible="{Binding !IsModuleExtension}" Margin="0,3,0,0" 
+												HorizontalAlignment="Left"
+												 BorderThickness="0"
+												 Width="24"
+												 Height="24"
+												 VerticalContentAlignment="Center"
+												ToolTip.Tip="Check to to include Configuration in Service Config."
+												 Command="{Binding IncludeChanged}">
+											<Grid>
+												<material:MaterialIcon IsVisible="{Binding IsIncluded}" Width="20" Height="20" Foreground="SteelBlue" Kind="CheckboxMarked"></material:MaterialIcon>
+												<material:MaterialIcon IsVisible="{Binding !IsIncluded}" Width="20" Height="20" Foreground="Gray" Kind="CheckboxBlank"></material:MaterialIcon>
+											</Grid>
+										</Button>
+										<Grid 
+												ToolTip.Tip="Automatically Included based on Imported Extension."
+												HorizontalAlignment="Left" Width="24"
+											    Height="24" Margin="0,3,0,0" IsVisible="{Binding IsModuleExtension}">
+											<material:MaterialIcon Width="20" Height="20" Foreground="DarkGray" Kind="CheckboxMarked"></material:MaterialIcon>
+										</Grid>
+
+										<TextBlock Text="{Binding ServiceNameFull}" Margin="0,3,0,0"  HorizontalAlignment="Stretch" FontSize="14" Grid.Column="1" TextWrapping="1" />
+
+										<TextBlock IsVisible="{Binding IsIncluded}" Text="Port (TCP):" Margin="0,3,20,0"  HorizontalAlignment="Stretch" FontSize="14" Grid.Column="2" TextWrapping="1" />
+										<TextBox IsVisible="{Binding IsIncluded}" Text="{Binding ServicePort}"
+												 Margin="0,3,0,0"  HorizontalAlignment="Left"
+												 TextAlignment="Center" FontSize="12" Grid.Column="3"
+												 MaxHeight="24" Height="24" MinHeight="24" Padding="3"
+												 TextWrapping="1" />
+
+										<TextBlock IsVisible="false" Text="UUID:" Margin="15,3,0,0"  HorizontalAlignment="Stretch" FontSize="14" Grid.Column="4" TextWrapping="1" />
+										<TextBox IsVisible="false" Text="{Binding ServiceUUID}"
+												 MaxHeight="24" Height="24" MinHeight="24" Padding="3"
+												 Width="300" Margin="0,3,0,0"  HorizontalAlignment="Left"
+												 TextAlignment="Center" FontSize="12" Grid.Column="5" TextWrapping="1" />
+									</Grid>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</Border>
+
+					
+				</Grid>
+			</Border>
+		</Grid>
+		<Border Grid.ColumnSpan="2" IsVisible="{Binding KeyListShown, FallbackValue=true}"
+				 BorderBrush="DarkGray" Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+			<Border Background="Transparent">
+				<Grid VerticalAlignment="Stretch" HorizontalAlignment="Center" MaxHeight="500" Margin="30">
+					<Border BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White" Padding="25">
+						<Grid RowDefinitions="auto,auto,*,auto">
+							<TextBlock Text="DataService Values" FontSize="25" 
+									   VerticalAlignment="Top" Margin="0,0,8,0" />
+							<TextBlock HorizontalAlignment="Left" Grid.Row="1"
+									   MaxWidth="600" FontStyle="Italic" Foreground="SteelBlue"
+									   Text="These values are available in the Data Service when this service is enabled.  You can change the visibility of these keys here.." FontSize="12"
+									   VerticalAlignment="Top" TextWrapping="Wrap" Margin="0,0,0,8" />
+						
+							<Border VerticalAlignment="Stretch" Grid.Row="2" Grid.Column="1" Margin="2,5,20,20" BorderBrush="Gainsboro" BorderThickness="1">
+								<ListBox Grid.Column="1" Background="Transparent"
+										 ItemsSource="{Binding SelectedService.Keys}"
+										 SelectedItem="{Binding SelectedService.SelectedKey}">
+									<ListBox.ItemTemplate>
+										<DataTemplate>
+											<Grid Margin="-5" ColumnDefinitions="30,*,auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" >
+												<Button  Margin="0,3,0,0" HorizontalAlignment="Left"
+														 BorderThickness="0"
+														 Width="24"
+														 Height="24"
+														 VerticalContentAlignment="Center"
+														 Command="{Binding IncludeChanged}">
+													<Grid>
+														<material:MaterialIcon IsVisible="{Binding IsIncluded}" Width="20" Height="20" Foreground="SteelBlue" Kind="CheckboxMarked"></material:MaterialIcon>
+														<material:MaterialIcon IsVisible="{Binding !IsIncluded}" Width="20" Height="20" Foreground="Gray" Kind="CheckboxBlank"></material:MaterialIcon>
+													</Grid>
+												</Button>
+												<TextBlock Grid.Column="1" Margin="0,3,0,0" Text="{Binding Key}" HorizontalAlignment="Stretch" FontSize="14"  TextWrapping="1" />
+												<TextBlock  IsVisible="{Binding !IsIncluded}" Margin="0,3,0,0" Grid.Column="2" Text="Internal Only" VerticalAlignment="Center" HorizontalAlignment="Stretch" FontSize="14"  TextWrapping="1" />
+												<ComboBox IsVisible="{Binding IsIncluded}" Margin="-2,-2,-4,-4" VerticalAlignment="Center"
+														  ItemsSource="{Binding ParentViewModel.ParentViewModel.DataAccessLevels}" Grid.Column="2"
+														 SelectedItem="{Binding DataAccessLevel}" Width="125" />
+											</Grid>
+										</DataTemplate>
+									</ListBox.ItemTemplate>
+								</ListBox>
+							</Border>
+							<StackPanel Grid.Row="3" Orientation="Horizontal" Margin="-14,-30"
+										VerticalAlignment="Top" HorizontalAlignment="Left">
+								<Button  Classes="link" Margin="8,8,0,0"
+										Height="24" FontStyle="Italic"
+										HorizontalAlignment="Right"
+										VerticalContentAlignment="Center"
+										Command="{Binding SelectedService.SelectAll}"
+										Foreground="SteelBlue" Background="White"
+										Content="Select All"/>
+								<Button  Classes="link" Margin="0,8,18,0" Grid.Column="2"
+									 Height="24" FontStyle="Italic"
+									 HorizontalAlignment="Right"
+									 VerticalContentAlignment="Center"
+									 Command="{Binding SelectedService.UnselectAll}"
+									 Foreground="SteelBlue" Background="White"
+									 Content="Remove All"/>
+							</StackPanel>
+							<DockPanel LastChildFill="False" Grid.Row="3" Margin="0,0,0,0">
+								<Button Margin="3,8,5,3" DockPanel.Dock="Right"
+									HorizontalAlignment="Stretch"
+									Height="38" Width="145"
+									VerticalContentAlignment="Center"
+									Command="{Binding ShowKeys}" >
+									<StackPanel Orientation="Horizontal">
+										<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="CloudAccess"></material:MaterialIcon>
+										<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Close"/>
+									</StackPanel>
+								</Button>
+							</DockPanel>
+						</Grid>
+					</Border>
+				</Grid>
+			</Border>
+
+		</Border>
+	</Grid>
+	
+</UserControl>
+

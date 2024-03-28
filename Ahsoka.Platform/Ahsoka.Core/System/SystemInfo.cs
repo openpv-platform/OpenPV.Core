@@ -1,5 +1,4 @@
 ﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Can;
 using Ahsoka.Services.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
@@ -20,7 +19,7 @@ public static class SystemInfo
     static List<LicenseInfo> licenseInfos;
     static readonly object syncRoot = new();
     static HardwareInfo hardwareInformation;
-    static CanClientCalibration canClientCalibration;
+
     static readonly PlatformFamily currentPlatform;
 
     #endregion
@@ -42,18 +41,7 @@ public static class SystemInfo
         }
     }
 
-    /// <summary>
-    /// Contains Definitions for automaitcally includes CAN nodes and messages
-    /// </summary>
-    public static CanClientCalibration StandardCanMessages
-    {
-        get
-        {
-            lock (syncRoot)
-                canClientCalibration ??= LoadCanMessages();
-            return canClientCalibration;
-        }
-    }
+
 
     /// <summary>
     /// Returns the Hardware Information for the Current Platform.
@@ -227,11 +215,6 @@ public static class SystemInfo
                 licenseInfo.Add(item);
 
         return licenseInfo;
-    }
-
-    private static CanClientCalibration LoadCanMessages()
-    {
-        return JsonUtility.Deserialize<CanClientCalibration>(Properties.Resources.StandardCanDefinitions);
     }
 
     #endregion

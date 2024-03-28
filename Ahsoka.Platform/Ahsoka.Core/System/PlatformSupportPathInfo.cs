@@ -1,44 +1,53 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.ServiceFramework;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace Ahsoka.System.Hardware;
 
 public static class PlatformSupportPathInfo
 {
+    public const string ModuleSupportFolderName = "Modules";
     public const string PlatformSupportRootFolderName = "PlatformSupport";
     static readonly string platformSupportFolder;
+    static readonly string moduleSupportFolder;
 
     static PlatformSupportPathInfo()
     {
         // Search for Root Folder Relative to Assembly first
         string path = AppContext.BaseDirectory;
 
+        platformSupportFolder = FindPlatformSupportPath(path, PlatformSupportRootFolderName);
+        moduleSupportFolder = FindPlatformSupportPath(path, ModuleSupportFolderName);
+    }
+
+    private static string FindPlatformSupportPath(string rootPath, string folderName)
+    {
         // Work our way up looking for platform support
         // if we find it (as a parent) OR we find a path that contains it (sibling of parent)
         // we stop.
-        while (!String.IsNullOrEmpty(path))
+        while (!String.IsNullOrEmpty(rootPath))
         {
-            path = new DirectoryInfo(path).Parent?.FullName;
+            rootPath = new DirectoryInfo(rootPath).Parent?.FullName;
 
-            if (path != null)
+            if (rootPath != null)
             {
-                if (path.EndsWith(PlatformSupportRootFolderName))
+                if (rootPath.EndsWith(folderName))
                 {
-                    platformSupportFolder = path; // Root is One Up from Platform Support Root.
-                    break;
+                    return rootPath; // Root is One Up from Platform Support Root.
                 }
 
                 // Look to see if we are beside the folder
-                string siblingPath = Path.Combine(path, PlatformSupportRootFolderName);
+                string siblingPath = Path.Combine(rootPath, folderName);
                 if (Directory.Exists(siblingPath))
                 {
-                    platformSupportFolder = siblingPath; // Root is One Up from Platform Support Root.
-                    break;
+                    return siblingPath; // Root is One Up from Platform Support Root.
                 }
             }
         }
 
+        return string.Empty;
     }
 
     public static string GetPlatformFolderName(PlatformFamily platform)
@@ -57,5 +66,22 @@ public static class PlatformSupportPathInfo
     public static string GetPlatformResourcePath(PlatformFamily platform)
     {
         return Path.Combine(GetPlatformSupportPath(platform), "Resources");
+    }
+
+    public static string GetModuleSupportFolder()
+    {
+        string returnValue = moduleSupportFolder;
+
+        // Fallback to local "Modules" folder
+        if (!Directory.Exists(returnValue))
+        {
+            Console.WriteLine(AppContext.BaseDirectory); 
+            returnValue = Path.Combine(AppContext.BaseDirectory, "Modules");
+        }
+
+        if (!Directory.Exists(returnValue))
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"The path to the Modules folder could not be found relative to {AppContext.BaseDirectory}.   Module Support Not Available");
+
+        return returnValue;
     }
 }

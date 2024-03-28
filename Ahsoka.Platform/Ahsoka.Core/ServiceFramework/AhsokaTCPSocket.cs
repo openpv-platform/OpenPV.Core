@@ -109,7 +109,7 @@ public sealed class TCPClientSocket : AhsokaSocket
         NetMQSocket socket = receiveAsNotification ? NotificationSocket : Socket;
 
         NetMQMessage message = new();
-        if (socket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(timeOutInMs), ref message, 2))
+        if (socket != null && socket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(timeOutInMs), ref message, 2))
         {
             header = message.Pop().Buffer;
             data = message.Pop().Buffer;

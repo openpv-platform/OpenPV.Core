@@ -7,8 +7,10 @@
 	<Target Name="Clean Platform Support Folders" BeforeTargets="BeforeClean">
 		<Message Text="Clean Platform Support Folders" Importance="high" />
 		<RemoveDir Directories="$(SolutionDir)PlatformSupport\" />
+		<RemoveDir Directories="$(SolutionDir)Modules\" />
 		<RemoveDir Directories="$(SolutionDir)SparkUpload\" />
 		<MakeDir Directories="$(SolutionDir)PlatformSupport\" />
+		<MakeDir Directories="$(SolutionDir)Modules\" />
 		<MakeDir Directories="$(SolutionDir)SparkUpload\" />
 	</Target>
 
@@ -24,7 +26,7 @@
 			<OV_SDK Include="..\..\BuildOutputs\SDK\**" />
 		</ItemGroup>
 
-		<Copy SourceFiles="@(OV_SDK)" DestinationFolder="$(SolutionDir)\PlatformSupport\%(RecursiveDir)"  OverwriteReadOnlyFiles="true" SkipUnchangedFiles="false"/>
+		<Copy SourceFiles="@(OV_SDK)" DestinationFolder="$(SolutionDir)\PlatformSupport\%(RecursiveDir)" OverwriteReadOnlyFiles="true" SkipUnchangedFiles="false" />
 
 		<!-- Create Windows Development Support Package (For Running Tools and Compiling C++)-->
 		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=WindowsOutput" />
@@ -36,7 +38,7 @@
 	<Target Name="CreateUbuntuPublishOutputs" AfterTargets="CreateWindowsPublishOutputs" Condition="!Exists('$(SolutionDir)\SparkUpload\Ubuntu64_TargetSupport.zip')">
 
 		<!-- Publish .deb for Ubuntu -->
-		<Exec Command="dotnet msbuild ../Ahsoka.CustomerTools/Ahsoka.CustomerTools.csproj -target:CreateDeb -property:TargetFramework=net7.0 -property:RuntimeIdentifier=linux-x64 -property:SelfContained=true -property:Configuration=Debug -property:PublishWithAspNetCoreTargetManifest=false" />
+		<Exec Command="dotnet msbuild ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj -target:CreateDeb -property:TargetFramework=net7.0 -property:RuntimeIdentifier=linux-x64 -property:SelfContained=true -property:Configuration=Debug -property:PublishWithAspNetCoreTargetManifest=false" />
 
 		<Copy SourceFiles="OpenPV for Ubuntu.release.json" DestinationFiles="..\SparkUpload\OpenPV for Ubuntu.release.json" />
 
@@ -79,24 +81,77 @@
 	<Target Name="FinishWithNuget" AfterTargets="CreateOpenViewPublishOutputs">
 
 		<!--Create Ahsoka Windows Command Line Nuget Package....must happen AFTER the publish of the Command line for Windows and Mac -->
+		<Exec Command="dotnet pack ../Ahsoka.Core/Ahsoka.Core.csproj" />
+		<Exec Command="dotnet pack ../Ahsoka.Core.Can/Ahsoka.Core.Can.csproj" />
+		<Exec Command="dotnet pack ../Ahsoka.Core.Bluetooth/Ahsoka.Core.Bluetooth.csproj" />
+		<Exec Command="dotnet pack ../Ahsoka.Core.Bluetooth.LE/Ahsoka.Core.Bluetooth.LE.csproj" />
+		<Exec Command="dotnet pack ../Ahsoka.Core.Cygnus/Ahsoka.Core.Cygnus.csproj" />
+		<Exec Command="dotnet pack ../Ahsoka.Core.Drawing/Ahsoka.Core.Drawing.csproj" />
 		<Exec Command="dotnet pack ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj" />
 
 	</Target>
 	
-	<Target Name="CreateDemos" AfterTargets="CreateWindowsPublishOutputs" Condition="$(Configuration)=='Release'">
+	<Target Name="CreateModules" AfterTargets="CreateWindowsPublishOutputs">
+
+		<Exec Command="dotnet build --configuration $(Configuration) $(SolutionDir)Ahsoka.DeveloperTools.Extensions\Ahsoka.DeveloperTools.Extensions.csproj" />
+		<Exec Command="dotnet publish --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.csproj" />
+		<Exec Command="dotnet publish --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
+		<Exec Command="dotnet publish --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
+
+		<!-- Create Demo Packages -->
+		<ItemGroup>
+			<CORE_UX Include="$(SolutionDir)Ahsoka.DeveloperTools.Extensions\bin\$(Configuration)\$(TargetFramework)\Ahsoka.DeveloperTools.Extensions.dll" />
+		
+			<MODULE_CAN Include="$(SolutionDir)Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\publish\Ahsoka.Core.Can.dll" />
+			<MODULE_CAN_INFO Include="$(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.moduleinfo.json" />
+		
+			<MODULE_BLUETOOTH_LE Include="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Bluetooth.LE.dll;
+								 $(SolutionDir)Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\publish\Linux.Bluetooth.dll;
+								 $(SolutionDir)Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\publish\Tmds.DBus.dll" />
+			<MODULE_BLUETOOTH_LE_INFO Include="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.moduleinfo.json" />
+
+			<MODULE_CYGNUS Include="$(SolutionDir)Ahsoka.Core.Cygnus\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Cygnus.dll" />
+			<MODULE_CYGNUS_INFO Include="$(SolutionDir)Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.moduleinfo.json" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(CORE_UX)" DestinationFolder="$(SolutionDir)\Modules\CAN\%(RecursiveDir)" />
+		<Copy SourceFiles="@(MODULE_CAN)" DestinationFolder="$(SolutionDir)\Modules\CAN\%(RecursiveDir)" />
+		<Copy SourceFiles="@(MODULE_CAN_INFO)" DestinationFolder="$(SolutionDir)\Modules\CAN\%(RecursiveDir)" />
+
+		<Copy SourceFiles="@(MODULE_BLUETOOTH_LE)" DestinationFolder="$(SolutionDir)\Modules\BluetoothLE\%(RecursiveDir)" />
+		<Copy SourceFiles="@(MODULE_BLUETOOTH_LE_INFO)" DestinationFolder="$(SolutionDir)\Modules\BluetoothLE\%(RecursiveDir)" />
+		
+		<Copy SourceFiles="@(MODULE_CYGNUS)" DestinationFolder="$(SolutionDir)\Modules\Cygnus\%(RecursiveDir)" />
+		<Copy SourceFiles="@(MODULE_CYGNUS_INFO)" DestinationFolder="$(SolutionDir)\Modules\Cygnus\%(RecursiveDir)" />
+
+	
+		<!-- Dependencies for OpenView "Select" -->
+		<ItemGroup>
+			<OV_MODULES Include="$(SolutionDir)\Modules\**" />
+		</ItemGroup>
+		<Copy SourceFiles="@(OV_MODULES)" DestinationFolder="$(SolutionDir)\Modules\%(RecursiveDir)" />	
+		
+		<ZipDirectory Overwrite="true" SourceDirectory="$(SolutionDir)\Modules" DestinationFile="$(SolutionDir)\SparkUpload\OpenPV Modules.zip" />
+		
+		<!--Copy Spark Package Manifst to Output -->
+		<Copy SourceFiles="OpenPV Modules.release.json" DestinationFiles="$(SolutionDir)\SparkUpload\OpenPV Modules.release.json" />
+
+	</Target>
+
+	<Target Name="CreateDemos" AfterTargets="CreateModules" Condition="$(Configuration)=='Release'">
 
 		<!-- Create Demo Packages -->
 		<ItemGroup>
 			<DEMO_Blank_Basic Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Blank.Basic\**" />
 			<DEMO_Blank_Advanced Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Blank.Advanced\**" />
 			<DEMO_Blank_Storyboard Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Blank.Storyboard\**" />
-			
+
 			<DEMO_CAN Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.CAN\**" />
 			<DEMO_SERVICES Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Services\**" />
 			<DEMO_GTK Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.GTK\**" />
 			<DEMO_CAIRO Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Cairo\**" />
 			<DEMO_BLE Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.BLE\**" />
-			
+
 			<DEMO_SBIO Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Storyboard\**" />
 			<DEMO_SBIO_IO Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Storyboard.IO\**" />
 		</ItemGroup>
@@ -104,7 +159,7 @@
 		<Copy SourceFiles="@(DEMO_Blank_Basic)" DestinationFolder="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Blank.Basic\%(RecursiveDir)" />
 		<Copy SourceFiles="@(DEMO_Blank_Advanced)" DestinationFolder="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Blank.Advanced\%(RecursiveDir)" />
 		<Copy SourceFiles="@(DEMO_Blank_Storyboard)" DestinationFolder="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\%(RecursiveDir)" />
-		
+
 		<Copy SourceFiles="@(DEMO_GTK)" DestinationFolder="$(SolutionDir)\BuildOutputs\Ahsoka.CS.GTK\%(RecursiveDir)" />
 		<Copy SourceFiles="@(DEMO_CAN)" DestinationFolder="$(SolutionDir)\BuildOutputs\Ahsoka.CS.CAN\%(RecursiveDir)" />
 		<Copy SourceFiles="@(DEMO_SERVICES)" DestinationFolder="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Services\%(RecursiveDir)" />
@@ -123,7 +178,7 @@
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Blank.Advanced\obj\" />
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Blank.Advanced\.vs\" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(SolutionDir)BuildOutputs\Ahsoka.CS.Blank.Advanced\" DestinationFile="$(SolutionDir)\SparkUpload\Ahsoka.CS.Blank.Advanced.zip" />
-		
+
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\bin\" />
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\obj\" />
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\.vs\" />
@@ -159,7 +214,7 @@
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Storyboard\obj\" />
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Storyboard\.vs\" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(SolutionDir)BuildOutputs\Ahsoka.CS.Storyboard\" DestinationFile="$(SolutionDir)\SparkUpload\Ahsoka.CS.Storyboard.zip" />
-		
+
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Storyboard.IO\StoryboardExport\" />
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Storyboard.IO\bin\" />
 		<RemoveDir ContinueOnError="true" Directories="$(SolutionDir)\BuildOutputs\Ahsoka.CS.Storyboard.IO\obj\" />

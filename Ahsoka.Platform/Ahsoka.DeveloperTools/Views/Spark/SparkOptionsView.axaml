@@ -1,0 +1,71 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="600"
+             xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+             x:Class="Ahsoka.DeveloperTools.Views.SparkOptionsView" Background="#33555555">
+
+	<Border Margin="60" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="220"/>
+			</Grid.ColumnDefinitions>
+			
+			<Border BorderBrush="Gainsboro" BorderThickness="1,0,0,0" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"  Background="WhiteSmoke" VerticalAlignment="Stretch" Margin="0,0,0,0"/>
+			
+			<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12,36,12,12"
+				   Foreground="DimGray"
+				   Text="Actions"
+				   Grid.Column="1"/>
+
+			<Grid  Grid.ColumnSpan="2">
+				<TabControl Padding="0,-10" TabStripPlacement="Top" >
+
+
+					<TabItem>
+						<TabItem.Header>
+							<TextBlock
+								FontSize="18"
+								Text="Change Info"/>
+						</TabItem.Header>
+						<CustomerTools:SparkChangeInfoView/>
+					</TabItem>
+
+					<TabItem>
+						<TabItem.Header>
+							<TextBlock
+								FontSize="18"
+								Text="Change Password"/>
+						</TabItem.Header>
+						<CustomerTools:SparkChangePasswordView/>
+					</TabItem>
+					<TabItem>
+						<TabItem.Header>
+							<TextBlock
+								FontSize="18"
+								Text="About OpenPV"/>
+						</TabItem.Header>
+						<CustomerTools:AboutView/>
+					</TabItem>
+
+				</TabControl>
+			</Grid>
+
+			<Button Margin="4" Grid.Column="1" Grid.Row="0" Width="24" Height="24"
+					HorizontalAlignment="Right"
+					VerticalAlignment="Top"
+					Command="{Binding ClosePopup}" 
+					Background="Transparent">
+					<material:MaterialIcon Padding="5"  Background="Transparent" 
+										   Foreground="SteelBlue" Kind="Close"/>
+			</Button>
+		</Grid>
+	</Border>
+</UserControl>

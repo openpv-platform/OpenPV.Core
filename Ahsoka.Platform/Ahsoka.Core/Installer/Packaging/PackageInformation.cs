@@ -42,8 +42,6 @@ public class PackageInformation : PackageHeader
 
     public ServiceInfo ServiceInfo { get; set; } = new();
 
-    public string CanCalibration { get; set; }
-
     public static PackageInformation LoadPackageInformation(string path)
     {
         PackageInformation package;

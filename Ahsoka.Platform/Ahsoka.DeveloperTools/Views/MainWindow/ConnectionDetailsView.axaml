@@ -1,0 +1,67 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="600"
+			 xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+             x:Class="Ahsoka.DeveloperTools.Views.ConnectionDetailsView" Background="#33555555">
+	<Border Margin="60" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
+		<Grid>
+			<Grid RowDefinitions="auto,*">
+				<StackPanel Margin="25" Grid.Row="0">
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Foreground="SteelBlue" FontSize="22" Margin="0,0,5,20" Text="Connected Display Details"/>
+					</StackPanel>
+					<StackPanel Margin="20,2" Orientation="Horizontal">
+						<TextBlock FontSize="16" Text="Platform Family:" Width="165"/>
+						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.PlatformFamily, FallbackValue=Not Connected}"/>
+						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.PlatformQualifier, StringFormat=' ({0})'}"/>
+					</StackPanel>
+					<StackPanel Margin="20,2" Orientation="Horizontal">
+						<TextBlock FontSize="16" Text="Device ID:" Width="165"/>
+						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.DeviceId, FallbackValue=Not Connected}"/>
+					</StackPanel>
+					<StackPanel Margin="20,2" Orientation="Horizontal">
+						<TextBlock FontSize="16" Text="Part Number:" Width="165"/>
+						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.PartNumber, FallbackValue=Not Connected}"/>
+					</StackPanel>
+					<StackPanel Margin="20,2" Orientation="Horizontal">
+						<TextBlock FontSize="16" Text="Serial Number:" Width="165"/>
+						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.SerialNumber, FallbackValue=Not Connected}"/>
+					</StackPanel>
+					<StackPanel Margin="20,2" Orientation="Horizontal">
+						<TextBlock FontSize="16" Text="Current Application:" Width="165"/>
+						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.ApplicationName, FallbackValue=Not Connected}"/>
+					</StackPanel>
+					<StackPanel Margin="20,2" Orientation="Horizontal">
+						<TextBlock FontSize="16" Text="CPU Temp:" Width="165"/>
+						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.CpuTempInC, FallbackValue=Not Connected}"/>
+					</StackPanel>
+					<StackPanel Orientation="Horizontal">
+						<TextBlock Foreground="SteelBlue" FontSize="22" Margin="0,20,10,10" Text="Component Versions"/>
+					</StackPanel>
+				</StackPanel>
+				
+				<DataGrid VerticalAlignment="Stretch" Grid.Row="1" BorderThickness="0" Margin="25,-15,25,25" SelectionMode="Single"
+						GridLinesVisibility="None"
+						IsReadOnly="True"
+						ItemsSource="{Binding  ConnectedHardwareInfo.VersionInfoes}" AutoGenerateColumns="False">
+					<DataGrid.Columns>
+						<DataGridTextColumn Header="Component" Binding="{Binding Key}" />
+						<DataGridTextColumn Header="Version" Binding="{Binding Value}" />
+					</DataGrid.Columns>
+				</DataGrid>
+			</Grid>
+
+			<Button Margin="4" Grid.Row="0" Width="24" Height="24"
+				HorizontalAlignment="Right"
+				VerticalAlignment="Top"
+				Command="{Binding ClosePopup}"
+				Background="Transparent">
+				<material:MaterialIcon Padding="5"  Background="Transparent"
+									   Foreground="SteelBlue" Kind="Close"/>
+			</Button>
+		</Grid>
+	</Border>
+</UserControl>

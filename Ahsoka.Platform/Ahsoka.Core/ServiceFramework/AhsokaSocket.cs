@@ -3,8 +3,6 @@ using System.Runtime.CompilerServices;
 
 #pragma warning disable CS1591
 
-[assembly: InternalsVisibleTo("Ahsoka.Core.Cygnus")]
-
 namespace Ahsoka.ServiceFramework;
 
 #region Socket

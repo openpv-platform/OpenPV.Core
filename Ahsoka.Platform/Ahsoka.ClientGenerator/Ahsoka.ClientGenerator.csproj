@@ -4,7 +4,6 @@
 		<RootNamespace>Ahsoka</RootNamespace>
 		<TrimMode>copyused</TrimMode>
 	</PropertyGroup>
-	
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />

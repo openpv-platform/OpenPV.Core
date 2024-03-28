@@ -1,0 +1,98 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:material="using:Material.Icons.Avalonia"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+			 x:Class="Ahsoka.DeveloperTools.Views.PluginProfileView">
+	<Grid RowDefinitions="55,auto,35,*" ColumnDefinitions="*,*,220">
+		<StackPanel Grid.Column="3"
+					HorizontalAlignment="Center" >
+
+			<Button Margin="3,15,5,3"
+						HorizontalAlignment="Stretch"
+						Height="38"
+						VerticalContentAlignment="Center"
+						Command="{Binding DownloadAll}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Download"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Setup Profile..."/>
+				</StackPanel>
+			</Button>
+
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					Command="{Binding RefreshTools}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Refresh"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Refresh List"/>
+				</StackPanel>
+			</Button>
+
+			<Button Margin="3,15,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				IsEnabled="{Binding SelectedProfile.CanLaunch}"
+				Command="{Binding LaunchProfile}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Launch"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch..."/>
+				</StackPanel>
+			</Button>
+		</StackPanel>
+
+
+		<TextBlock Grid.ColumnSpan="2" MaxWidth="650" Foreground="SteelBlue" FontStyle="Italic" FontSize="12" Margin="0,0,10,0"
+										HorizontalAlignment="Left" VerticalAlignment="Top"
+										TextWrapping="Wrap"
+										Padding="10" TextAlignment="Left"
+										Text="Select a Development Profile to download all required plugins (Light Blue Items are Downloaded Already).  You can return to this tool to add plugins on the 'All Downloads' tab."/>
+
+
+		<ListBox Grid.Row="1" Background="White" Margin="10,0,0,8" ItemsSource="{Binding ProfileDefinitions}"
+				SelectedItem="{Binding SelectedProfile}" VerticalAlignment="Top"
+				ScrollViewer.VerticalScrollBarVisibility="Auto"
+								  SelectionMode="AlwaysSelected" >
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Grid Margin="-12,-12,-12,-12"  Background="White" >
+						<CustomerTools:PluginProfileItem/>
+					</Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
+		<StackPanel Margin="10,0,25,0" Grid.Row="1" Grid.Column="1"
+					HorizontalAlignment="Stretch" 
+					VerticalAlignment="Top">
+			
+			<TextBlock  Foreground="DimGray" FontStyle="Italic" FontSize="12" 
+						Margin="0,5,0,5"
+						HorizontalAlignment="Left"
+						TextWrapping="Wrap"
+						Padding="0" TextAlignment="Left"
+						Text="Items in Profile"/>
+
+			<ListBox Grid.Row="1" Grid.Column="1" Padding="3" Background="White"
+					  ItemsSource="{Binding SelectedDownloads}" VerticalAlignment="Bottom"
+					  SelectedItem="{Binding SelectedTool}">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<StackPanel ToolTip.Tip="{Binding Description}" Margin="-12,-12,-12,-12" Orientation="Horizontal" >
+							<TextBlock IsVisible="{Binding !IsDownloaded}"
+									   VerticalAlignment="Center" FontSize="11" Margin="2" Foreground="SteelBlue"
+									   Text="{Binding NameDescription}"/>
+							<TextBlock ToolTip.Tip="Item is Already Downloaded" IsVisible="{Binding IsDownloaded}"
+								VerticalAlignment="Center" FontSize="11" Margin="2" Foreground="LightSteelBlue"
+								   Text="{Binding NameDescription}"/>
+						</StackPanel>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+
+			</ListBox>
+		</StackPanel>
+	</Grid>
+</UserControl>

@@ -26,7 +26,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Ahsoka.Core.Bluetooth\Ahsoka.Core.Bluetooth.csproj" />
 		<ProjectReference Include="..\Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
-		<ProjectReference Include="..\Ahsoka.CustomerTools\Ahsoka.CustomerTools.csproj" />
+		<ProjectReference Include="..\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

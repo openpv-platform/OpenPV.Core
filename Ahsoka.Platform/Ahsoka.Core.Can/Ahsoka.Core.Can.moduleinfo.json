@@ -1,0 +1,19 @@
+﻿{
+  "extensionName": "CAN Service Extension",
+  "library": "Ahsoka.Core.CAN.dll",
+  "uxLibrary": "Ahsoka.DeveloperTools.Extensions.dll",
+  "uxViewModelName": "CanSetupViewModel",
+  "serviceConfigurations": [
+    {
+      "serviceName": "CanService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+      "dataChannel": 5007,
+      "notificationChannel": 6007,
+      "configurationFile": "CanService.cancalibration.json"
+    }
+  ],
+  "hasCommands": "false",
+  "hasUx": "true"
+}

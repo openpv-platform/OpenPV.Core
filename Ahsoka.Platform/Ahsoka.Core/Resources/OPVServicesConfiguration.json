@@ -5,7 +5,7 @@
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5000,
+      "dataChannel": 5000,
       "notificationChannel": 6000
     },
     {
@@ -13,7 +13,7 @@
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5001,
+      "dataChannel": 5001,
       "notificationChannel": 6001
     },
     {
@@ -21,7 +21,7 @@
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5002,
+      "dataChannel": 5002,
       "notificationChannel": 6002
     },
     {
@@ -29,23 +29,15 @@
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5003,
+      "dataChannel": 5003,
       "notificationChannel": 6003
-    },
-    {
-      "serviceName": "BluetoothService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5004,
-      "notificationChannel": 6004
     },
     {
       "serviceName": "IotService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5005,
+      "dataChannel": 5005,
       "notificationChannel": 6005
     },
     {
@@ -53,24 +45,8 @@
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5006,
+      "dataChannel": 5006,
       "notificationChannel": 6006
-    },
-    {
-      "serviceName": "CanService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5007,
-      "notificationChannel": 6007
-    },
-    {
-      "serviceName": "BLEService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5008,
-      "notificationChannel": 6008
     },
     {
       "serviceName": "DataService",
@@ -79,30 +55,6 @@
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel" : 5009,
       "notificationChannel": 6009
-    },
-    {
-      "serviceName": "CygnusServerInterfaceService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5010,
-      "notificationChannel": 6010
-    },
-    {
-      "serviceName": "CygnusServerService",
-      "tcpListenAddress": "localhost",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5011,
-      "notificationChannel": 6011
-    },
-    {
-      "serviceName": "CygnusService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5012,
-      "notificationChannel": 6012
     }
   ]
 }

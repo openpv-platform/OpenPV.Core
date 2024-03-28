@@ -1,7 +1,11 @@
 ﻿using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
+using Ahsoka.System;
+using Ahsoka.System.Hardware;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Ahsoka.Installer.Components;
 
@@ -26,6 +30,14 @@ internal class CommandLineComponent : PackageComponentBase
         IProgress<PackageProgressInfo> progress)
 
     {
+        // Add Module Extensions
+        foreach(var item in info.ServiceInfo.RuntimeConfiguration.Extensions)
+        {
+            var ext = AhsokaExtensions.GetModuleFiles(item);
+            foreach(var file in ext)
+                additionalFiles["Modules/" + Path.GetFileName(file)] = File.ReadAllBytes(file);
+        }
+
         var componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
         if (componentData != null)
         {

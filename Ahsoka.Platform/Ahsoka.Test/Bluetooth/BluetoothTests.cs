@@ -66,7 +66,15 @@ public class BluetoothTests
     private BluetoothServiceClient StartClient()
     {
         // Create Client Runtime and Add Services
-        BluetoothServiceClient btClient = new();
+        BluetoothServiceClient btClient = new(new ServiceConfiguration() 
+        { 
+            DataChannel = 5004, 
+            NotificationChannel = 6004, 
+            ServiceName = "BluetoothService", 
+            TcpListenAddress = "*",
+            TcpConnectionAddress = "localhost" 
+        });
+
         btClient.NotificationReceived += BTClient_NotificationReceived;
         AhsokaRuntime.CreateBuilder()
                      .AddClients(btClient)

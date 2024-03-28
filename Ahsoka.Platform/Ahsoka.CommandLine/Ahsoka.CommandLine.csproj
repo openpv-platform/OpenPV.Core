@@ -12,7 +12,6 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<ProjectReference Include="..\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
 		<ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
 	</ItemGroup>
 

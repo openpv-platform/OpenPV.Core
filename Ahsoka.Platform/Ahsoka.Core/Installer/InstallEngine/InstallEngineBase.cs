@@ -1,10 +1,10 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.Installer.Components;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
-using ProtoBuf.Meta;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +13,6 @@ using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
-using System.Xml.Linq;
 
 namespace Ahsoka.Installer.InstallEngine;
 
@@ -353,10 +352,17 @@ public class InstallEngineBase
 
         // Optional Components.
         components.Add(new StartLogoComponent());
-        //components.Add(new DependencyComponent());
         components.Add(new InstallerUIComponent());
         components.Add(new NetworkFirmwareComponent());
-        components.Add(new CanInstallerComponent());
+
+        // Add any Extensions
+        var results = AhsokaExtensions.GetExtensions<InstallEngineComponent>();
+        if (results.Count() > 0)
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Loading {results.Count} External Installer Modules");
+            components.AddRange(results);
+        }
+
         components.Add(new EndInstallEngineComponent());
     }
     #endregion
@@ -569,6 +575,10 @@ public class InstallEngineBase
 
     }
 
+    static List<InstallEngineComponent> GetInstallerExtensions()
+    {
+        return AhsokaExtensions.GetExtensions< InstallEngineComponent>();
+    }
 
     #endregion
 }

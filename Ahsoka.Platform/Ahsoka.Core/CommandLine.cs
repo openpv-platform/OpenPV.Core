@@ -2,7 +2,6 @@
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 
 namespace Ahsoka;
@@ -83,24 +82,7 @@ public static class CommandLine
     {
         Dictionary<string, CommandInfo> methods = new();
 
-        // Always Load Ahsoka.Core Assembly
-        var assemblies = new List<Assembly>
-        {
-            Assembly.GetExecutingAssembly()
-        };
-
-        // Load any Plugin Assemblies
-        string pluginFolder = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), "Commands");
-        if (Directory.Exists(pluginFolder))
-            foreach (var item in Directory.GetFiles(pluginFolder, "*.dll"))
-            {
-                try
-                {
-                    var assembly = Assembly.LoadFrom(item);
-                    assemblies.Insert(0, assembly);
-                }
-                catch { } // Ignore and Skip on Errors LoadingAssemblies.
-            }
+        var assemblies = AhsokaExtensions.GetExtensionLibraries(true);
 
         foreach (Assembly assembly in assemblies)
         {

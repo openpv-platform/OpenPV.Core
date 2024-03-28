@@ -63,7 +63,7 @@ public class CanServiceTests
         };
         config.Nodes.FirstOrDefault(x => x.Name == "IO").J1939Info = info;
         Assert.IsTrue(config.Nodes.FirstOrDefault(x => x.Name == "SENSOR") != null);
-        config.Nodes.Add(SystemInfo.StandardCanMessages.Nodes.First(x => x.Name == "ANY"));
+        config.Nodes.Add(CanSystemInfo.StandardCanMessages.Nodes.First(x => x.Name == "ANY"));
         File.WriteAllText(canConfigFile, JsonUtility.Serialize(config));
 
         CanApplicationCalibration appConfig = CanMetadataTools.GenerateApplicationConfig(SystemInfo.HardwareInfo, canConfigFile, false);
@@ -272,8 +272,28 @@ public class CanServiceTests
     private static void TestCanGeneration(string canConfigFile)
     {
         string canPackageInfoFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + "PackageInfo.json");
-        PackageInformation packageInformation = new();
-        packageInformation.CanCalibration = canConfigFile;
+        PackageInformation packageInformation = new()
+        {
+            ServiceInfo = new ServiceInfo()
+            {
+                RuntimeConfiguration = new RuntimeConfiguration()
+                {
+
+                }
+            }
+        };
+
+        var serviceConfiguration = ConfigurationLoader.GetServiceConfig("CanService");
+        packageInformation.ServiceInfo.RuntimeConfiguration.Services.Add(new ServiceConfiguration()
+        {
+            ServiceName = serviceConfiguration.ServiceName,
+            DataChannel = serviceConfiguration.DataChannel,
+            NotificationChannel = serviceConfiguration.NotificationChannel,
+            TcpConnectionAddress = serviceConfiguration.TcpConnectionAddress,
+            TcpListenAddress = serviceConfiguration.TcpListenAddress,
+            ConfigurationFile = canConfigFile
+        });
+
         File.WriteAllText(canPackageInfoFile, JsonUtility.Serialize(packageInformation));
 
         string outputFileNameDotNet = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".generated.cs");

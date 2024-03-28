@@ -21,10 +21,15 @@ public class ConfigurationLoader
     /// Gets a copy of the default configuration (Defaults to TCP Configuration)
     /// </summary>
     /// <returns></returns>
-    public static RuntimeConfiguration CreateDefaultConfiguration()
+    public static RuntimeConfiguration CreateDefaultConfiguration(bool includeExtensions = true)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Reading Default TCP Configuration");
-        return JsonUtility.Deserialize<RuntimeConfiguration>(Properties.Resources.OPVServicesConfiguration);
+        var config = JsonUtility.Deserialize<RuntimeConfiguration>(Properties.Resources.OPVServicesConfiguration);
+        if (includeExtensions)
+            foreach (var item in AhsokaExtensions.Configurations)
+                config.Services.AddRange(item.ServiceConfigurations);
+
+        return config;
     }
 
     /// <summary>
@@ -34,8 +39,8 @@ public class ConfigurationLoader
     {
         configuration = LoadFromFileSystem();
 
-        if (configuration == null)
-            configuration = JsonUtility.Deserialize<RuntimeConfiguration>(Properties.Resources.OPVServicesConfiguration);
+        if (configuration == null || configuration.Services.Count == 0)
+            configuration = CreateDefaultConfiguration();
     } 
 
     /// <summary>
@@ -68,7 +73,7 @@ public class ConfigurationLoader
         if (result == null)
         {
             var defaultConfig = CreateDefaultConfiguration();
-            result = configuration.Services.FirstOrDefault(x => x.ServiceName == serviceName);
+            result = defaultConfig.Services.FirstOrDefault(x => x.ServiceName == serviceName);
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Falling back to Default Configuration for Service {serviceName}");
         }
 
@@ -117,6 +122,7 @@ public partial class RuntimeConfiguration : ICanDeserializeBase
     public RuntimeConfiguration()
     {
         this.StartupDelay = 3;
+        this.CustomServiceEnabled = ServiceEnableDisable.Enabled; // Now Hard Coded to True.
     }
 }
 

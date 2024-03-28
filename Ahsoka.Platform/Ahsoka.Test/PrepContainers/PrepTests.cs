@@ -51,7 +51,7 @@ public class RemoteLinuxTests
         int tries = 10;
         while ((tries--) > 0)
         {
-            ProcessUtility.RunProcess("docker", $"ps --filter \"name=Ahsoka.Test\" --filter \"status=running\" --quiet", null, out string runningResult, out string runningError, 10000);
+            ProcessUtility.RunProcess("docker", $"ps --filter \"name={containerName}\" --filter \"status=running\" --quiet", null, out string runningResult, out string runningError, 10000);
             if (!string.IsNullOrEmpty(runningResult))
                 break;
         }

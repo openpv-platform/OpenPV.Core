@@ -186,81 +186,41 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
     internal void ProvisionDevice()
     {
         var vm = FindParent<MainViewModel>();
-          
+
+        IProgress<string> progress = new Progress<string>(info =>
+        {
+            vm.Console.AddConsoleLine(info);
+        });
+
         _ = Task.Run(() =>
         {
             vm.StartProcess();
             vm.Console.ClearConsole();
-           
-            var deviceList = new List<ProvisionItem>() { new ProvisionItem(ProvisionPlatformFamily, ProvisionPartNumber, ProvisionSerialNumber, ProvisionDeviceId) };
-            if (!IsSingleDevice)
+
+            List<ProvisionItem> deviceList = null;
+            if (IsSingleDevice)         
+                deviceList = new List<ProvisionItem>() { new ProvisionItem(ProvisionPlatformFamily, ProvisionPartNumber, ProvisionSerialNumber, ProvisionDeviceId) };
+
+            var sparkInfo = new SparkConnectionInfo()
             {
-                deviceList.Clear();
-                int lineNumber = 0;
-                     
-                try
-                {
-                    if (File.Exists(ProvisionDeviceFile))
-                    {
-                        foreach (var fileLine in File.ReadAllLines(ProvisionDeviceFile))
-                        {
-                            lineNumber++;
-                            var cols = fileLine.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-                            if (cols.Length < 4)
-                                vm.Console.AddConsoleLine($"Error Importing Line {lineNumber}");
-
-                            deviceList.Add(new ProvisionItem(Enum.Parse<PlatformFamily>(cols[0]), cols[1], cols[2], cols[3]));
-
-                            vm.Console.AddConsoleLine($"Found DeviceID: {cols[3]} to Provision");
-
-                        }
-                    }
-                }
-                catch
-                {
-                    vm.Console.AddConsoleLine($"Error Importing Line {lineNumber}");
-                    throw;
-                }
-
-                vm.Console.AddConsoleLine($"Starting Offline Provisioning Using License File: {ProvisionDeviceFile}");
-            }
-            else
-                vm.Console.AddConsoleLine($"Starting Offline Provisioning of Single Display: {ProvisionDeviceId}");
-
-             string teamId = ParentViewModel.TeamID;
-
-            ProvisioningInfo info = new()
-            {
-                ModuleLicenseList = new()
-                {
-                    Licenses = new(),
-                    TeamId = Guid.Parse(teamId)
-                    // Full Device ID Assigned on Server from Gathered Info.
-                }
+                Url = vm.SparkLogin.SparkUrl
             };
 
+            var request = new ProvisionDisplayRequest()
+            {
+                ApplicationId = Guid.Parse(ParentViewModel.TeamID),
+                Licenses = new()
+            };
 
             foreach (var module in AvailableModules)
                 if (module.IsSelected)
                 {
-                    vm.Console.AddConsoleLine($"Requesting License for : {module.Module.ModuleName} (Already Licensed Devices will NOT impact Project License Pool.)");
-                    info.ModuleLicenseList.Licenses.Add(new ModuleLicense() { LicenseId = module.Module.ModuleID, LicenseName = module.Module.ModuleName });
+                    progress.Report($"Requesting License for : {module.Module.ModuleName} (Already Licensed Devices will NOT impact Project License Pool.)");
+                    request.Licenses.Add(new ModuleLicense() { LicenseId = module.Module.ModuleID, LicenseName = module.Module.ModuleName });
                 }
 
-            foreach (var item in deviceList)
-            {
-                info.DeviceInfo = new DeviceDTO()
-                {
-                    Description = $"Device ({item.ProvisionDeviceId})",
-                    GroopID = ParentViewModel.Model.ReleaseDeviceGroup,
-                    PartNumber = item.ProvisionPartNumber,
-                    SerialNumber = item.ProvisionSerialNumber,
-                    UseDeviceIDForLookup = true
-                };
-
-                var result = SparkAccountClient.SharedSparkClient.PreProvisionDevice(teamId, item.ProvisionPlatformFamily.ToString(), item.ProvisionDeviceId, info);
-                vm.Console.AddConsoleLine($"Provisioning Completed - DeviceID: {result.DeviceInfo.DeviceID} Found and Licensed");
-            }
+            if (!SparkCustomerTools.PreProvisionDevices(ProvisionDeviceFile, sparkInfo, request, progress, deviceList))
+                throw new Exception();
 
         }).ContinueWith(result =>
         {
@@ -269,9 +229,9 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
                 if (result.Status != TaskStatus.RanToCompletion)
                 {
                     if (result.Exception.InnerException is SparkException sparkEX)
-                        vm.Console.AddConsoleLine($"Provisioning Failed with Error: {sparkEX.Message}.");
+                        progress.Report($"Provisioning Failed with Error: {sparkEX.Message}.");
                     else
-                        vm.Console.AddConsoleLine($"Provisioning Failed with Error: {result.Exception.Message}.");
+                        progress.Report($"Provisioning Failed with Error: {result.Exception.Message}.");
 
                     _ = FindParent<MainViewModel>().Dialog.ShowDialog("Provision Failed", "An error occured provisioning the device", "Ok");
                 }
@@ -473,21 +433,5 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
         var path = await FindParent<MainViewModel>().FileLocatorAsync("Select a Device List File (.csv)", "csv", "CSV Device List");
         if (path != null)
             ProvisionDeviceFile = path;
-    }
-}
-
-internal class ProvisionItem
-{
-    public PlatformFamily ProvisionPlatformFamily { get; init; }
-    public string ProvisionPartNumber { get; init; }
-    public string ProvisionSerialNumber { get; init; }
-    public string ProvisionDeviceId { get; init; }
-
-    public ProvisionItem(PlatformFamily provisionPlatformFamily, string provisionPartNumber, string provisionSerialNumber, string provisionDeviceId)
-    {
-        this.ProvisionPlatformFamily = provisionPlatformFamily;
-        this.ProvisionPartNumber = provisionPartNumber;
-        this.ProvisionSerialNumber = provisionSerialNumber;
-        this.ProvisionDeviceId = provisionDeviceId;
     }
 }

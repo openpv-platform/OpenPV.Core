@@ -180,6 +180,105 @@ public static class SparkCustomerTools
         return true;
     }
 
+    public static bool PreProvisionDevices(string deviceInfoFile,
+                                                SparkConnectionInfo sparkInfo,
+                                                IProvisionDisplayRequest provisioningInfo,
+                                                IProgress<string> progress,
+                                                List<ProvisionItem> deviceList = null)
+    {
+        sparkInfo.LoginToTeamClient();
+
+        var teamList = SparkAccountClient.SharedSparkClient.GetTeams();
+        var teamDto = teamList.FirstOrDefault(x => x.TeamID.ToString().StartsWith(provisioningInfo.ApplicationId.ToString()));
+        if (teamDto == null)
+        {
+            progress.Report($"Unknown Project (ApplicationID): {provisioningInfo.ApplicationId} - Required for Provisioning");
+            return false;
+        }
+
+        if (deviceList == null)
+        {
+            deviceList = new List<ProvisionItem>();
+            if (!DecodeDeviceCSV(deviceList, deviceInfoFile, progress))
+                return false;
+            progress.Report($"Starting Offline Provisioning Using License File: {deviceInfoFile}");
+        }
+        else
+            progress.Report($"Starting Offline Provisioning of Input Device List");
+
+
+        ProvisioningInfo info = new()
+        {
+            ModuleLicenseList = new()
+            {
+                Licenses = provisioningInfo.Licenses,
+                TeamId = teamDto.TeamID
+                // Full Device ID Assigned on Server from Gathered Info.
+            }
+        };
+
+        bool status = true;
+        foreach (var item in deviceList)
+        {
+            bool completed = true;
+            info.DeviceInfo = new DeviceDTO()
+            {
+                Description = $"Device ({item.ProvisionDeviceId})",
+                GroopID = teamDto.ReleaseDeviceGroup,
+                PartNumber = item.ProvisionPartNumber,
+                SerialNumber = item.ProvisionSerialNumber,
+                UseDeviceIDForLookup = true
+            };
+
+            var provisioningResult = SparkAccountClient.SharedSparkClient.PreProvisionDevice(teamDto.TeamID.ToString(), item.ProvisionPlatformFamily.ToString(), item.ProvisionDeviceId, info);
+
+            // Throw an Error if the License List was not accepted....aka returned list does not match
+            var responseList = ProtoBuf.Serializer.Deserialize<ModuleLicenseList>(new MemoryStream(provisioningResult.ModuleLicenseInfo.LicenseData));
+            foreach (var request in info.ModuleLicenseList.Licenses)
+                if (!responseList.Licenses.Any(x => x.LicenseId == request.LicenseId))
+                {
+                    progress.Report($"Provisioning failed to return a license for Module: {request.LicenseName} on DeviceID: {provisioningResult.DeviceInfo.DeviceID}");
+                    status = false;
+                    completed = false;
+                }
+            if (completed)
+                progress.Report($"Provisioning Completed - DeviceID: {provisioningResult.DeviceInfo.DeviceID} Found and Licensed");
+        }
+
+        return status;
+    }
+
+    public static bool DecodeDeviceCSV(List<ProvisionItem> deviceList, string deviceFile, IProgress<string> progress)
+    {
+        int lineNumber = 0;
+        try
+        {
+            progress.Report($"Beginning read of {deviceFile}");
+            if (File.Exists(deviceFile))
+            {
+                foreach (var fileLine in File.ReadAllLines(deviceFile))
+                {
+                    lineNumber++;
+                    var cols = fileLine.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                    if (cols.Length < 4)
+                        progress.Report($"Error Importing Line {lineNumber}");
+
+                    deviceList.Add(new ProvisionItem(Enum.Parse<System.PlatformFamily>(cols[0]), cols[1], cols[2], cols[3]));
+
+                    progress.Report($"Found DeviceID: {cols[3]} to Provision");
+                }
+            }
+            else
+                progress.Report($"{deviceFile} does not exist");
+        }
+        catch
+        {
+            progress.Report($"Error Importing Line {lineNumber}");
+            return false;
+        }
+        return true;
+    }
+
     static SparkServiceClient CreateClient(string hostName)
     {
         var config = new System.ServiceConfiguration()

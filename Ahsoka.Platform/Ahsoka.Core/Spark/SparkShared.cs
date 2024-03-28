@@ -51,3 +51,18 @@ public class ProvisionDisplayRequest : IProvisionDisplayRequest
     public List<ModuleLicense> Licenses { get; init; } = new();
 }
 
+public class ProvisionItem
+{
+    public System.PlatformFamily ProvisionPlatformFamily { get; init; }
+    public string ProvisionPartNumber { get; init; }
+    public string ProvisionSerialNumber { get; init; }
+    public string ProvisionDeviceId { get; init; }
+
+    public ProvisionItem(System.PlatformFamily provisionPlatformFamily, string provisionPartNumber, string provisionSerialNumber, string provisionDeviceId)
+    {
+        this.ProvisionPlatformFamily = provisionPlatformFamily;
+        this.ProvisionPartNumber = provisionPartNumber;
+        this.ProvisionSerialNumber = provisionSerialNumber;
+        this.ProvisionDeviceId = provisionDeviceId;
+    }
+}

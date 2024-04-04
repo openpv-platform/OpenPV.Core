@@ -231,5 +231,8 @@ void decodeNetworkStateChanged(uint8_t* buffer, uint32_t length)
 		setTransmittingJ1939(port, false);
 }
 
-
+void decodeCoprocessorReady()
+{
+	setCoprocessorReady(true);
+}
 

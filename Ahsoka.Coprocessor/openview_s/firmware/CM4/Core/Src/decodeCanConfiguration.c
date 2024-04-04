@@ -60,7 +60,9 @@ bool decodePort(pb_istream_t *stream, const pb_field_iter_t *field, void **arg)
 
 	if(status)
 	{
-		initCanHandler(message.port);
+		nodeList_t* port = createNodeList();
+		port->id = message.port;
+		addNode(&portList, port);
 		setPromiscuousMode(message.port, message.promiscuous_transmit, message.promiscuous_receive);
 	}
 	return status;
@@ -296,4 +298,12 @@ void decodeCANCalibration(void)
 	buffer = (uint8_t*)0x800;
 	stream = pb_istream_from_buffer(buffer, (64*1024)-0x800);
 	pb_decode(&stream, AhsokaCAN_CanApplicationCalibration_fields, &msg);
+
+	nodeList_t* list = portList;
+	while(list != NULL)
+	{
+		initCanHandler(list->id);
+		list = list->next;
+	}
+	deleteList(portList);
 }

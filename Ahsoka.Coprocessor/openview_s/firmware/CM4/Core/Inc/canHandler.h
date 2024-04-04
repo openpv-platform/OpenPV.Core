@@ -68,6 +68,7 @@ extern void updateCanMessageTimerValues( canMessageTimerList_t* node, AhsokaCAN_
 
 extern void setPromiscuousMode(uint32_t port, bool txMode, bool rxMode);
 extern void setTransmittingJ1939(uint32_t port, bool transmitting);
+extern void setCoprocessorReady(bool ready);
 
 // checksum functions
 extern void tsc1Checksum(uint32_t id, uint8_t* data, uint8_t length, uint32_t bit);

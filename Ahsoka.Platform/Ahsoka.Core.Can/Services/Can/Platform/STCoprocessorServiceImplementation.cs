@@ -326,8 +326,16 @@ internal sealed class CoprocessorSocket
         NetMQMessage message = new();
         if (RecieveSocket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(timeOutInMs), ref message, 2))
         {
-            header = message.Pop().Buffer;
-            data = message.Pop().Buffer;
+            try
+            {
+                header = message.Pop().Buffer;
+                data = message.Pop().Buffer;
+            }
+            catch
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Bad Coprocessor Message");
+                header = data = null;
+            }
         }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Receiving Coprocessor Message Complete ");

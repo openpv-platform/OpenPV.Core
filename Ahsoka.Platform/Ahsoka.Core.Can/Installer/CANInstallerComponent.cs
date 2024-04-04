@@ -206,6 +206,10 @@ internal class CanInstallerComponent : InstallEngineComponent
             string pathToApplication = Path.Combine(coprocessorPath, applicationBinaryName);
             string enableCommand = File.Exists(pathToApplication) ? CanInterface.Coprocessor.ToString().ToLower() : CanInterface.SocketCan.ToString().ToLower();
 
+            // Stops the coprocessor if running
+            if(File.Exists("/sys/class/remoteproc/remoteproc0/state"))
+                ProcessUtility.RunProcessScript("echo stop > /sys/class/remoteproc/remoteproc0/state", null, out string sOut, out string sErr);
+
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Enabling {enableCommand} Application" });
             ProcessUtility.RunProcessScript($"assign-can.sh {enableCommand}", null, out string stdOut, out string stdErr);
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Enabled {enableCommand} Application - {stdOut} - {stdErr}" });

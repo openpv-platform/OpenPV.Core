@@ -98,11 +98,12 @@ void sendCoprocessorReady(void)
 		zmq_add_message_list(list, emptyFrame);
 		// send the message
 		zmq_send_multipart(sendChannel, list);
+
+		decodeCoprocessorReady();
 	}
 }
 static void handleHeartbeat(void)
 {
-
     // for a heartbeat, first send a heartbeat message
     zmq_message_list_t* list = zmq_new_message_list();
     zmtp_msg_t* frame = encodeCanMessageType(AhsokaCAN_CanMessageTypes_Ids_COPROCESSOR_HEARTBEAT);

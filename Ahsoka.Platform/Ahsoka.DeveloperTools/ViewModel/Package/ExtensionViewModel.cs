@@ -8,6 +8,7 @@ using Avalonia.Controls;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -43,7 +44,13 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
         {
             try
             {
-                AhsokaExtensions.LoadExtensions(CustomerToolPaths.GetToolPath(AhsokaExtensions.ModulesFolder));
+                // Find Tools Path
+                string path = PlatformSupportPathInfo.FindPlatformSupportPath(AppContext.BaseDirectory, AhsokaExtensions.ModulesFolder);
+                if (!Directory.Exists(path))
+                    path = CustomerToolPaths.GetToolPath(AhsokaExtensions.ModulesFolder);
+
+
+                AhsokaExtensions.LoadExtensions(path);
                 foreach (var item in AhsokaExtensions.Configurations)
                 {
                     var module = new ExtensionViewModel(this, item)
@@ -52,9 +59,7 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
                     };
                     
                     if (module.ModuleInfoConfiguration.HasUx)
-                    {
                         LoadUX(module.ModuleInfoConfiguration);
-                    }
                     
                     AvailableModules.Add(module);
                 }
@@ -78,10 +83,19 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
 
                     var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, service, null, module);
                     ParentViewModel.ServiceViewModel.Services.Add(viewModel);
+
+                    if (extensionUXModules.TryGetValue(module.ModuleExtensionName,out ExtensionViewModelBase extVM))
+                    {
+                        var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
+                        extVM.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
+                    }
                 }
 
             }
         }
+
+       
+
     }
 
     private void LoadUX(ModuleInfoConfiguration item)
@@ -123,9 +137,7 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
 
     public void ShowUx(string extensionName)
     {
-        var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
-        if (extensionUXModules.TryGetValue(extensionName, out var vm))
-             vm.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
+        InitExtension(extensionName);
 
         currentPopup = new ExtensionContainerView() { DataContext = this };
         var container = currentPopup.FindControl<Border>("Container");
@@ -133,6 +145,13 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
         container.Child = view;
 
         ParentViewModel.ParentViewModel.Popup.ShowPopup(currentPopup);
+    }
+
+    private void InitExtension(string extensionName)
+    {
+        var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
+        if (extensionUXModules.TryGetValue(extensionName, out var vm))
+            vm.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
     }
 
     public void CloseAndDiscardChanges()
@@ -157,7 +176,7 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
             {
                 var config = ParentViewModel.ServiceConfiguration.Services.FirstOrDefault(x => x.ServiceName == service.ServiceName);
 
-                if ( extensionUXModules.TryGetValue(item.ModuleExtensionName, out var vm))
+                if (config != null && extensionUXModules.TryGetValue(item.ModuleExtensionName, out var vm))
                    config.ConfigurationFile = vm.Save(packageInfoFolder, config.ServiceName);
             }
         }

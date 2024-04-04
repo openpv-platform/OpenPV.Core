@@ -1,7 +1,8 @@
 {
-  "version": "1.247.1.20053",
+  "version": "3.0.1.10015",
   "applicationType": "Dotnet",
   "userInterfaceType": "None",
+  "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Blank.Basic",
   "packageName": "Ahsoka.CS.Blank.Basic",
   "packageDescription": "Basic Ahsoka Starter Project",
@@ -9,11 +10,34 @@
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
   "includeInstallerUI": false,
+  "licenses": [],
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Blank.Basic.csproj",
     "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
   },
-  "canCalibrationFiles": {},
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "services": [
+        {
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5001,
+          "notificationChannel": 6001,
+          "isModuleExtension": false,
+          "dataKeyValues": [],
+          "configurationFile": ""
+        }
+      ],
+      "customServiceEnabled": "Enabled",
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensions": [],
+      "startupDelay": 3
+    },
+    "environmentValues": []
+  },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinux",

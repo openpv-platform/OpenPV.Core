@@ -41,18 +41,18 @@
 		<None Remove="Ubuntu\OpenPV.DeveloperToolkit.desktop" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia" Version="11.0.9" />
-		<PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.9" />
-		<PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.9" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.0.9" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.9" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.13" />
-		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.9" />
+		<PackageReference Include="Avalonia" Version="11.1.0-beta1" />
+		<PackageReference Include="Avalonia.Controls.DataGrid" Version="11.1.0-beta1" />
+		<PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.0-beta1" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.1.0-beta1" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-beta1" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.17" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-beta1" />
 		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.0" />
-		<PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.5" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="8.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.2" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.2" />
+		<PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.6" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.3" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Include="NuGet.Protocol" Version="6.9.1" />
 		<PackageReference Include="Packaging.Targets" Version="0.1.220-*">

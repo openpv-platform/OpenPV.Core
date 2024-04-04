@@ -1,5 +1,5 @@
 {
-  "version": "3.0.1.10030",
+  "version": "3.0.1.10015",
   "applicationType": "Dotnet",
   "userInterfaceType": "None",
   "systemOrientation": "DefaultOrientation",
@@ -30,6 +30,17 @@
           "isModuleExtension": false,
           "dataKeyValues": [],
           "configurationFile": "STDemoPackage.1.cancalibration.json"
+        },
+        {
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5001,
+          "notificationChannel": 6001,
+          "isModuleExtension": false,
+          "dataKeyValues": [],
+          "configurationFile": ""
         }
       ],
       "customServiceEnabled": "Disabled",

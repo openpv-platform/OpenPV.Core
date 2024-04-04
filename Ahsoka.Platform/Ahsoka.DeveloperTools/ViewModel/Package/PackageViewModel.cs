@@ -61,8 +61,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
 
         set
         {
-            isOpenView = value;
-            OnPropertyChanged();
+            if (value != IsOpenView)
+            {
+                isOpenView = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(PlatformDescriptions));
+            }
         }
     }
 
@@ -261,6 +265,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         set
         {
             var hardwareInfo = HardwareInfo.GetHardwareInfoByDescription(value);
+
             if (hardwareInfo != null)
             {
                 if (PackageInfo.PlatformFamily != hardwareInfo.PlatformFamily ||
@@ -275,7 +280,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
 
                     HandleHardwareInfoChanges();
                     OnPropertyChanged();
-                    OnPropertyChanged(nameof(PlatformDescriptions));
                 }
             }
         }

@@ -22,7 +22,7 @@ public static class PlatformSupportPathInfo
         moduleSupportFolder = FindPlatformSupportPath(path, ModuleSupportFolderName);
     }
 
-    private static string FindPlatformSupportPath(string rootPath, string folderName)
+    public static string FindPlatformSupportPath(string rootPath, string folderName)
     {
         // Work our way up looking for platform support
         // if we find it (as a parent) OR we find a path that contains it (sibling of parent)

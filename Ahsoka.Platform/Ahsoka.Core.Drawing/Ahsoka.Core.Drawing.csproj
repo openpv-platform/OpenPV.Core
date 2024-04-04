@@ -18,7 +18,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CairoSharp" Version="3.24.24.95" />
+		<PackageReference Include="CairoSharp" Version="3.24.24.117-develop" />
 		<PackageReference Include="GtkSharp" Version="3.24.24.95" />
 	</ItemGroup>
 

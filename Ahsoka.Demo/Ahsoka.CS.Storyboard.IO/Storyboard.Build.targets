@@ -23,20 +23,17 @@
 
 	<!--Storyboard Runtimes to be included in the Package-->
 	<ItemGroup Label="Storyboard Runtimes">
-		<Content Label="Windows Runtime" Include="$(StoryboardProgramFolder)\Storyboard_Engine\$(StoryboardVersion)\windows-x86_64-swrender-obj\**"
-				Condition="'$(RuntimeIdentifier)' != 'linux-arm' and $([MSBuild]::IsOSPlatform('Windows'))">
+		<Content Label="Windows Runtime" Include="$(StoryboardProgramFolder)\Storyboard_Engine\$(StoryboardVersion)\windows-x86_64-swrender-obj\**" Condition="'$(RuntimeIdentifier)' != 'linux-arm' and $([MSBuild]::IsOSPlatform('Windows'))">
 			<Link>Storyboard/Windows64/sbengine/%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Label="OpenView Runtime" Include="$(StoryboardProgramFolder)\Storyboard_Engine\$(StoryboardVersion)\linux-stmA5-armle-opengles_2.0-wayland-obj\**"
-				Condition="'$(RuntimeIdentifier)' == 'linux-arm'">
+		<Content Label="OpenView Runtime" Include="$(StoryboardProgramFolder)\Storyboard_Engine\$(StoryboardVersion)\linux-stmA5-armle-opengles_2.0-wayland-obj\**" Condition="'$(RuntimeIdentifier)' == 'linux-arm'">
 			<Link>Storyboard/OpenViewLinux/sbengine/%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>
 		</Content>
-		<Content Label="MacOS Runtime" Include="$(StoryboardProgramFolder)/Storyboard_Engine/$(StoryboardVersion)/macos-arm64-swrender-obj/**"
-				Condition="'$(RuntimeIdentifier)' != 'linux-arm' and $([MSBuild]::IsOSPlatform('OSX'))">
+		<Content Label="MacOS Runtime" Include="$(StoryboardProgramFolder)/Storyboard_Engine/$(StoryboardVersion)/macos-arm64-swrender-obj/**" Condition="'$(RuntimeIdentifier)' != 'linux-arm' and $([MSBuild]::IsOSPlatform('OSX'))">
 			<Link>Storyboard/MacosArm64/sbengine/%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>false</Visible>

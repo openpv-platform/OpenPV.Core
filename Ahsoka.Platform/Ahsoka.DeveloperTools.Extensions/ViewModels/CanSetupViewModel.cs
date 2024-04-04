@@ -230,7 +230,7 @@ internal class CanSetupViewModel : ExtensionViewModelBase
         var path = await CustomerToolViewModel.FileLocatorAsync("Pick CAN Calibration", "cancalibration.json", currentPath);
         if (path != null && File.Exists(path))
         {
-            configurationPath = Path.GetRelativePath(projectFolder, path);
+            ConfigurationPath = Path.GetRelativePath(projectFolder, path);
             LoadCANConfiguration();
         }
     }
@@ -315,6 +315,8 @@ internal class CanSetupViewModel : ExtensionViewModelBase
             {
                 try
                 {
+                    originalCANConfigText = File.ReadAllText(pathToConfig);
+
                     CanClientCalibration = ConfigurationFileLoader.LoadFile<CanClientCalibration>(pathToConfig);                   
 
                     Ports.Clear();

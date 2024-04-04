@@ -1,5 +1,5 @@
 {
-  "version": "2.1.1.10033",
+  "version": "3.0.1.10015",
   "applicationType": "Dotnet",
   "userInterfaceType": "None",
   "systemOrientation": "DefaultOrientation",
@@ -18,15 +18,27 @@
   },
   "serviceInfo": {
     "runtimeConfiguration": {
-      "services": [],
+      "services": [
+        {
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5001,
+          "notificationChannel": 6001,
+          "isModuleExtension": false,
+          "dataKeyValues": [],
+          "configurationFile": ""
+        }
+      ],
       "customServiceEnabled": "Disabled",
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
+      "extensions": [],
       "startupDelay": 0
     },
     "environmentValues": []
   },
-  "canCalibrationFiles": {},
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinux",

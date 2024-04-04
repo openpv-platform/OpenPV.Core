@@ -8,7 +8,7 @@ namespace Ahsoka.System.Hardware;
 
 public static class PlatformSupportPathInfo
 {
-    public const string ModuleSupportFolderName = "Modules";
+    public const string ModuleSupportFolderName = AhsokaExtensions.ModulesFolder;
     public const string PlatformSupportRootFolderName = "PlatformSupport";
     static readonly string platformSupportFolder;
     static readonly string moduleSupportFolder;
@@ -76,7 +76,7 @@ public static class PlatformSupportPathInfo
         if (!Directory.Exists(returnValue))
         {
             Console.WriteLine(AppContext.BaseDirectory); 
-            returnValue = Path.Combine(AppContext.BaseDirectory, "Modules");
+            returnValue = Path.Combine(AppContext.BaseDirectory, AhsokaExtensions.ModulesFolder);
         }
 
         if (!Directory.Exists(returnValue))

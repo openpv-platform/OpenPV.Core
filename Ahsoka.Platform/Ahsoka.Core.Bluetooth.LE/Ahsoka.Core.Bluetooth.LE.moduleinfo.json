@@ -1,6 +1,6 @@
 ﻿{
   "extensionName": "Bluetooth LE Extension",
-  "library": "Ahsoka.Core.Bluetooth.LE.dll",
+  "packageName": "Ahsoka.Core.Bluetooth.LE",
   "serviceConfigurations": [
     {
       "serviceName": "BLEService",
@@ -11,11 +11,6 @@
       "notificationChannel": 6008
     }
   ],
-  "dependentLibraries": [
-    "Tmds.DBus.dll",
-    "Tmds.DBus.Protocol.dll",
-    "Linux.Bluetooth.dll"
-  ],
-  "hasCommands": "false",
-  "hasUx": "true"
+  "hasCommands": "true",
+  "hasUx": "false"
 }

@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup Label="Reference to Ahsoka Nuget Packages" Condition="!Exists('../../Demo.Build.props')">
-		<PackageReference Include="Ahsoka.Core" Version="(2.*,3.0)" />
+		<PackageReference Include="Ahsoka.Core" Version="(3.*,4.0)" />
 	</ItemGroup>
 
 

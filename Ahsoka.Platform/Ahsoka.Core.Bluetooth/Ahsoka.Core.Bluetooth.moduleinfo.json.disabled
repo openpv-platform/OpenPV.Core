@@ -1,6 +1,6 @@
 ﻿{
   "extensionName": "Bluetooth Classic Extension",
-  "library": "Ahsoka.Core.Bluetooth.dll",
+  "library": "Ahsoka.Core.Bluetooth",
   "serviceConfigurations": [
     {
       "serviceName": "BluetoothService",

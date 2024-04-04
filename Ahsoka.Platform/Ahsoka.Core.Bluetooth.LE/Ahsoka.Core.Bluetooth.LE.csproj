@@ -4,6 +4,7 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 	
 	<ItemGroup>
@@ -30,6 +31,12 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
 	</ItemGroup>
+	<Target Name="AfterBLEBuild" AfterTargets="Build">
+		<Message Text="Copy BLE Module..." Importance="high" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.moduleinfo.json" DestinationFiles="$(SolutionDir)\Modules\Bluetooth LE Service Extension\Ahsoka.Core.Bluetooth.LE.moduleinfo.json" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Bluetooth.LE.dll" DestinationFiles="$(SolutionDir)\Modules\Bluetooth LE Service Extension\lib\Ahsoka.Core.Bluetooth.LE.dll" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Tmds.DBus.dll" DestinationFiles="$(SolutionDir)\Modules\Bluetooth LE Service Extension\lib\Tmds.DBus.dll" />
+	</Target>
 
 	<ItemGroup>
 		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">

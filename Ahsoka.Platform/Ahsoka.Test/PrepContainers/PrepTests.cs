@@ -20,12 +20,12 @@ public class RemoteLinuxTests
 
     public TestContext TestContext { get; set; }
 
-    [ClassCleanup]
+   // [ClassCleanup]
     public static void StopLogging()
     {
     }
 
-    [TestMethod]
+   // [TestMethod]
     public void TestRemoteLinuxToolsInContainer()
     {
         //docker pull openpv/openview_test

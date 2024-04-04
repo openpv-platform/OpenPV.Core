@@ -43,6 +43,7 @@ internal class PlatformDemoTool : SparkToolBase
             toolVM.PercentStatus = $"Downloading {item.Path.Replace(".zip", "")}...";
             await ExecuteDownloadInternal(toolVM, Path.Combine(LocalPath, item.Path), cancellationToken);
         }
+
         File.WriteAllText(GetVersionFilePath(), Version);
 
     }

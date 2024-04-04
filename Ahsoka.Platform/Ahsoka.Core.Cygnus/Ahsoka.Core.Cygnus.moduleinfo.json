@@ -1,6 +1,6 @@
 ﻿{
   "extensionName": "Cygnus Service Extension",
-  "library": "Ahsoka.Core.Cygnus.dll",
+  "packageName": "Ahsoka.Core.Cygnus",
   "serviceConfigurations": [
     {
       "serviceName": "CygnusServerInterfaceService",

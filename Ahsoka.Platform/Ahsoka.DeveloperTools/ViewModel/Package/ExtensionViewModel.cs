@@ -43,7 +43,7 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
         {
             try
             {
-                AhsokaExtensions.LoadExtensions(CustomerToolPaths.GetToolPath("Modules"));
+                AhsokaExtensions.LoadExtensions(CustomerToolPaths.GetToolPath(AhsokaExtensions.ModulesFolder));
                 foreach (var item in AhsokaExtensions.Configurations)
                 {
                     var module = new ExtensionViewModel(this, item)
@@ -86,13 +86,13 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
 
     private void LoadUX(ModuleInfoConfiguration item)
     {
-        string modulePath = Path.Combine(Path.GetDirectoryName(item.FilePath),item.UxLibrary);
+        string modulePath = Path.Combine(Path.GetDirectoryName(item.FilePath),"ux",item.UXLibraryFilename);
         if (File.Exists(modulePath))
         {
             try
             {
-                if (!extensionUXLibraries.TryGetValue(item.UxLibrary, out Assembly asm))
-                    extensionUXLibraries[item.UxLibrary] = asm = Assembly.LoadFile(modulePath);
+                if (!extensionUXLibraries.TryGetValue(item.UxPackageName, out Assembly asm))
+                    extensionUXLibraries[item.UxPackageName] = asm = Assembly.LoadFile(modulePath);
 
                 foreach (var defType in asm.DefinedTypes)
                 {

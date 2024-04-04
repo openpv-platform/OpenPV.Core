@@ -357,10 +357,10 @@ public class InstallEngineBase
 
         // Add any Extensions
         var results = AhsokaExtensions.GetExtensions<InstallEngineComponent>();
-        if (results.Count() > 0)
+        foreach(var item in results)
         {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Loading {results.Count} External Installer Modules");
-            components.AddRange(results);
+            components.Add(item);
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Loading {item.ComponentName} Installer Module");
         }
 
         components.Add(new EndInstallEngineComponent());
@@ -573,11 +573,6 @@ public class InstallEngineBase
             service.SendLog(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Deleted Log File {Path.GetFileName(log)}" });
         }
 
-    }
-
-    static List<InstallEngineComponent> GetInstallerExtensions()
-    {
-        return AhsokaExtensions.GetExtensions< InstallEngineComponent>();
     }
 
     #endregion

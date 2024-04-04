@@ -31,6 +31,13 @@
 	  <ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
 	</ItemGroup>
 
+	<!--To help Debugging since this is loaded dynamically-->
+	<Target Name="AfterCanBuild" AfterTargets="Build">
+		<Message Text="Copy CAN Module..." Importance="high" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Can.dll" DestinationFiles="$(SolutionDir)\Modules\Can Service Extension\lib\Ahsoka.Core.Can.dll" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.moduleinfo.json" DestinationFiles="$(SolutionDir)\Modules\Can Service Extension\Ahsoka.Core.Can.moduleinfo.json" />
+	</Target>
+
 	<ItemGroup>
 		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
 			<PrivateAssets>all</PrivateAssets>

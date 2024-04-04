@@ -394,7 +394,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
             {
                 LoadSparkItems(platformSupport, platformSupport.DemoSparkChannelName, "Demos", platformSupport.DemoSparkVersionFilter);
 
-                LoadSparkItems(platformSupport, platformSupport.ModuleSparkChannelName, "Modules", platformSupport.ModuleSparkVersionFilter);
+                LoadSparkItems(platformSupport, platformSupport.ModuleSparkChannelName, AhsokaExtensions.ModulesFolder, platformSupport.ModuleSparkVersionFilter);
 
                 LoadSparkItems(platformSupport, platformSupport.FirmwareSparkChannelName, "Firmware", platformSupport.FirmwareSparkVersionFilter);
 
@@ -456,7 +456,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
                     break; // PUll Latest Demo's and Return;
                 }
-                else if (property == "Modules")
+                else if (property == AhsokaExtensions.ModulesFolder)
                 {
                     ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
                     releases.Add(new PlatformModuleTool(token));

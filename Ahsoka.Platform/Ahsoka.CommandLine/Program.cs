@@ -1,4 +1,5 @@
-﻿using Ahsoka.Utility;
+﻿using Ahsoka.ServiceFramework;
+using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ class Program
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff"));
+        //Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff"));
         using var stopwatch = new AhsokaStopwatch("Ahsoka.Commandline.Main()");
 
         List<string> mutableArgs = new(args);

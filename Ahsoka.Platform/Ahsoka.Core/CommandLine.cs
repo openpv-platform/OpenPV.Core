@@ -2,6 +2,7 @@
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 
 namespace Ahsoka;
@@ -14,6 +15,9 @@ public static class CommandLine
     public static void Execute(string[] args)
     {
         string pathToExecutable = Environment.ProcessPath;
+
+        Console.WriteLine($"Loading Extensions ...");
+        AhsokaExtensions.LoadExtensions(Path.GetDirectoryName(pathToExecutable));
 
         string version = VersionUtility.GetAppVersionString();
 

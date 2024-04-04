@@ -33,9 +33,7 @@ internal class CommandLineComponent : PackageComponentBase
         // Add Module Extensions
         foreach(var item in info.ServiceInfo.RuntimeConfiguration.Extensions)
         {
-            var ext = AhsokaExtensions.GetModuleFiles(item);
-            foreach(var file in ext)
-                additionalFiles["Modules/" + Path.GetFileName(file)] = File.ReadAllBytes(file);
+            AhsokaExtensions.InstallModuleExtension(additionalFiles, item);
         }
 
         var componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);

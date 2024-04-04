@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Core;
+using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
@@ -221,43 +222,16 @@ internal class DotNetViewModel : ViewModelBase
 
         // Copy Command Line
         string pathToCLIOutput = Path.Combine(dirctory, platform.ToString(), "CommandLine");
+        mainViewModel.Console.AddConsoleLine($" ");
         mainViewModel.Console.AddConsoleLine($"Installing Ahsoka Services Application to {pathToCLIOutput}");
+        mainViewModel.Console.AddConsoleLine($" ");
         FileUtilities.CopyDirectory(pathToCommandLine, pathToCLIOutput, true, progressString);
 
-        string pathToModules = Path.Combine(pathToCLIOutput, "Modules");
         foreach (var item in AhsokaExtensions.Configurations)
         {
-            if ( mainViewModel.SelectedPackage.ServiceConfiguration.Extensions.Contains(item.ExtensionName))
+            if (mainViewModel.SelectedPackage.ServiceConfiguration.Extensions.Contains(item.ExtensionName))
             {
-                string modulePath = Path.GetDirectoryName(item.FilePath);
-        
-                string moduleLibrary = Path.Combine(modulePath, item.Library);
-                if (!File.Exists(moduleLibrary))
-                {
-                    mainViewModel.Console.AddConsoleLine($"Could not find module library for {item.ExtensionName}.\n" +
-                                                            $"Please ensure you have downloaded the Modules on the PlugIns tab.");
-                    return "Missing Module";
-                }
-
-                if (!Directory.Exists(pathToModules))
-                    Directory.CreateDirectory(pathToModules);
-
-
-                mainViewModel.Console.AddConsoleLine($"Installing Module {item.ExtensionName}");
-
-                var results = AhsokaExtensions.GetModuleFiles(item.ExtensionName);
-                foreach(var file in results)
-                {
-                    if (!File.Exists(file))
-                    {
-                        mainViewModel.Console.AddConsoleLine($"Could not find module file {Path.GetFileName(file)} for {item.ExtensionName}.\n" +
-                                                                $"Please ensure you have downloaded the Modules on the PlugIns tab.");
-                        return "Missing Module Dependency";
-                    }
-
-                    File.Copy(file, Path.Combine(pathToModules, Path.GetFileName(file)));
-                }
-
+                AhsokaExtensions.InstallModuleExtension(pathToCLIOutput, item.ExtensionName, progressString);
             }
         }
 

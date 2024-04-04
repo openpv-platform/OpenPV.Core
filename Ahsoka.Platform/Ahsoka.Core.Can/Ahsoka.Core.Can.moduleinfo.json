@@ -1,7 +1,7 @@
 ﻿{
   "extensionName": "CAN Service Extension",
-  "library": "Ahsoka.Core.CAN.dll",
-  "uxLibrary": "Ahsoka.DeveloperTools.Extensions.dll",
+  "packageName": "Ahsoka.Core.CAN",
+  "uxpackageName": "Ahsoka.DeveloperTools.Extensions",
   "uxViewModelName": "CanSetupViewModel",
   "serviceConfigurations": [
     {

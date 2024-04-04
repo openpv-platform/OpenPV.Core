@@ -54,6 +54,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.2" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="NuGet.Protocol" Version="6.9.1" />
 		<PackageReference Include="Packaging.Targets" Version="0.1.220-*">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>

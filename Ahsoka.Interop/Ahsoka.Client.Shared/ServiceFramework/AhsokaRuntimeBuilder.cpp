@@ -24,42 +24,12 @@ namespace AhsokaServiceFramework
 
 			bool isClient = false;
 			std::string externalCommandline = "";
-			std::string serviceConfigurationFile = "";
 			std::vector<AhsokaEndPoint*> clients;
 			std::string defaultConfigName = "AhsokaConfig.json";
 			
-			std::string CreateServiceConfiguration(std::vector<AhsokaEndPoint*>& clients)
-			{	
-				RuntimeConfiguration rt;
-				for (auto endpoint : clients)
-				{					
-					ServiceConfiguration* tempConfig = rt.add_services();
-					tempConfig->CopyFrom(endpoint->GetEndPoint()->GetRuntimeConfiguration());
-				}
-				
-				// Create Temp Configuration File
-				std::string json_string;
-				google::protobuf::util::JsonPrintOptions options;
-				options.add_whitespace = true;
-				options.always_print_primitive_fields = true;
-				MessageToJsonString(rt, &json_string, options);
-				
-				// Create Temp File name
-				std::stringstream tempName;
-				tempName << std::chrono::system_clock::now().time_since_epoch().count() << "AhsokaConfig.json";
-
-				fs::path tempFile = fs::temp_directory_path() / tempName.str();
-
-				std::ofstream configFile(tempFile);
-				configFile << json_string;
-					configFile.close();
-
-				return tempFile.string();
-			}
-		
 			AhsokaRuntimeProcess* StartProcessExecutable()
 			{
-				std::string autoStartFileName = ".appinfo/AutoStartServiceConfig.json";
+				std::string autoStartFileName = ".appinfo/AutoStartEnabled";
 				if (Exists(autoStartFileName))
 				{	
 					std::cout << std::endl << "Skipping External Service Startup since Autostart Configuration was found" << std::endl;
@@ -69,17 +39,12 @@ namespace AhsokaServiceFramework
 				if (!Exists(externalCommandline))
 					throw std::logic_error("Service Executable not specified. Use SetServiceExecutable to reference an application that accepts --StartServices <RuntimeConfigurationFile> as parameters.");
 				
-				std::string configFile;
-
-				if (serviceConfigurationFile == "")
-					configFile = CreateServiceConfiguration(clients);  
-				else
-					configFile  = serviceConfigurationFile;  
-
+				std::string configFile = ".appinfo/AutoStartServiceConfig.pbuff";
+				
 				std::cout << std::endl << "Process Starting at " << externalCommandline << " --StartServices " << configFile << std::endl;
 
 				AhsokaRuntimeProcess* process = new AhsokaRuntimeProcess();
-				process->StartProcess(externalCommandline, configFile, serviceConfigurationFile == "");
+				process->StartProcess(externalCommandline, configFile, false);
 
 				return process;
 			}
@@ -108,12 +73,6 @@ namespace AhsokaServiceFramework
 	AhsokaRuntimeBuilder& AhsokaRuntimeBuilder::SetServiceExecutable(const std::string& fileName)
 	{
 		details->externalCommandline = fileName;
-		return *this;
-	}
-
-	AhsokaRuntimeBuilder& AhsokaRuntimeBuilder::SetServiceConfiguration(const std::string& fileName)
-	{
-		details->serviceConfigurationFile = fileName;
 		return *this;
 	}
 

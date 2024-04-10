@@ -24,8 +24,6 @@ message RuntimeConfiguration
 {
     repeated ServiceConfiguration services = 1; // System Services to Start.
 
-    ServiceEnableDisable CustomServiceEnabled = 3;
-
     StartOptions ServiceStartup = 4;
 
     StartOptions ReleaseOption = 5;

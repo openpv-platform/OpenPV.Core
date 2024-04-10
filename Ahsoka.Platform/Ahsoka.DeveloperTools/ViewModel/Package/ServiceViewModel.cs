@@ -42,16 +42,6 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
         }
     }
 
-    public ServiceEnableDisable CustomServiceEnabled
-    {
-        get { return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.CustomServiceEnabled; }
-        set
-        {
-            ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.CustomServiceEnabled = value;
-            OnPropertyChanged();
-        }
-    }
-
     public bool KeyListShown { get => keysShown; set { keysShown = value; OnPropertyChanged(); } }
 
     public ServiceViewModel(PackageViewModel parentViewModel)

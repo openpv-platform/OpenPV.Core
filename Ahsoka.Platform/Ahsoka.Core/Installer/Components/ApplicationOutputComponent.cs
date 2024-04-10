@@ -3,11 +3,13 @@ using Ahsoka.Services.Install;
 using Ahsoka.Services.Network;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
+using Ahsoka.Utility;
 using Mono.Unix;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 
 namespace Ahsoka.Installer.Components;
@@ -142,6 +144,8 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             InstallerPlugin appPlugin = InstallerPlugin.GetPlugin(projectType);
             appPlugin?.ModifyTargetInstall(workingDirectory, appCommand);
 
+            AddInstaller(context, item);
+
             // Enable the Services for Application Startup.
             output = Process.Start("systemctl", "disable Ahsoka.Installer.service");
             output.WaitForExit();
@@ -153,6 +157,28 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             if (output.ExitCode != 0)
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to enable Ahsoka.Application.service" });
         }
+
+
+        void AddInstaller(InstallContext context, PackageComponent item)
+        {
+            string workingDirectory = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot),"CommandLine");
+
+            string tempFile = Path.GetTempFileName();
+            using (FileStream installer = new(tempFile, FileMode.Create))
+                context.InstallEngine.ExtractPackage(CommandLineComponent.CommandLineComponentType, installer, context.Progress);
+
+            context.Log?.Report(new InstallLogInfo()
+            {
+                LogMessage = $"Inflating CommandLine to {workingDirectory}"
+            });
+
+            // Extract Zip to Output Area
+            PackagingUtility.ExtractPackage(tempFile, workingDirectory, context.Progress, context.Log);
+
+            // Remove Temp File
+            File.Delete(tempFile);
+        }
+        
         return result;
     }
 

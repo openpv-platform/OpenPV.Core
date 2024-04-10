@@ -78,7 +78,6 @@ internal abstract class FileSystemComponentBase : InstallEngineComponent
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)
     {
-
         context.Log?.Report(new InstallLogInfo() { LogMessage = $"Component '{ComponentName}' Began Extraction", LogMessageType = LogMessageType.Information });
 
         // Get Output Path for Component.

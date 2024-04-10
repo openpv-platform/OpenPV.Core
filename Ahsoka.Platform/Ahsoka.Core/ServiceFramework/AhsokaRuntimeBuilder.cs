@@ -254,7 +254,6 @@ public partial class AhsokaRuntime
         SystemdNotifier notifier = new();
         notifier.Notify(ServiceState.Ready);
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Releasing Startup (System Notify)");
-
     }
 
     /// <summary>

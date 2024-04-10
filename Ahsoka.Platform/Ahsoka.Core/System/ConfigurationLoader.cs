@@ -122,7 +122,6 @@ public partial class RuntimeConfiguration : ICanDeserializeBase
     public RuntimeConfiguration()
     {
         this.StartupDelay = 3;
-        this.CustomServiceEnabled = ServiceEnableDisable.Enabled; // Now Hard Coded to True.
     }
 }
 

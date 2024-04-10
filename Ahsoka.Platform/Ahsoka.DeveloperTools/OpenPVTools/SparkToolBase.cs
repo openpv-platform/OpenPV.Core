@@ -1,4 +1,5 @@
-﻿using EnovationCloud.Core.Client;
+﻿using Ahsoka.Installer;
+using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Utilities;
 using System;
@@ -60,7 +61,7 @@ internal abstract class SparkToolBase : OpenPVToolBase
                 {
                     string extractPath = Path.GetDirectoryName(LocalPath);
 
-                    ZipFile.ExtractToDirectory(path, extractPath);
+                    PackagingUtility.ExtractPackage(path, extractPath,null,null);
                     if (File.Exists(LocalPath))
                         File.Delete(LocalPath);
                     else if (Directory.Exists(LocalPath))

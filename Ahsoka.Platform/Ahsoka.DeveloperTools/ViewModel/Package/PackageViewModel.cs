@@ -35,7 +35,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     private PowerVisionViewModel pvModel;
     private StartupOptionsViewModel serviceStartModel;
     private ServiceViewModel dataServiceModel;
-    ModuleExtensionsViewModel moduleExtensionsViewModel;
+    ExtensionsViewModel extensionsViewModel;
     private CppViewModel cppViewModel;
     private Bitmap bitmap;
     SparkViewModel sparkViewModel;
@@ -115,6 +115,14 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         {
             PackageInfo.PackageName = value;
             OnPropertyChanged();
+        }
+    }
+
+    public bool SdkNeedsUpdate
+    {
+        get
+        {
+            return (cppViewModel != null && cppViewModel.SdkNeedsUpdate) || (dotNetModel != null && dotNetModel.SdkNeedsUpdate);
         }
     }
 
@@ -363,12 +371,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         set { sparkViewModel = value; OnPropertyChanged(); }
     }
     
-    public ModuleExtensionsViewModel ExtensionsViewModel 
+    public ExtensionsViewModel ExtensionsViewModel 
     { 
-        get => moduleExtensionsViewModel;
+        get => extensionsViewModel;
         set
         {
-            moduleExtensionsViewModel = value;
+            extensionsViewModel = value;
             OnPropertyChanged();
         }
     }
@@ -548,7 +556,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         this.sparkViewModel = new SparkViewModel(ParentViewModel);
         StartupViewModel = new StartupOptionsViewModel(this);
         ServiceViewModel = new ServiceViewModel(this);
-        ExtensionsViewModel = new ModuleExtensionsViewModel(this);
+        ExtensionsViewModel = new ExtensionsViewModel(this);
 
         Deps.CheckDependencies(SystemInfo.CurrentPlatform, PackageInfo.PlatformFamily);
 
@@ -772,7 +780,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         launchTool.LaunchTool(this);
     }
 
-    internal void GenerateInstallPackage()
+    internal async void GenerateInstallPackage()
     {
         var itemToGenerate = ParentViewModel.SelectedPackage;
         if (itemToGenerate == null)
@@ -783,6 +791,14 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
 
         // Save Before Generating
         ParentViewModel.SavePackage();
+
+        if (SdkNeedsUpdate)
+        {
+            if (ApplicationType == ApplicationType.Dotnet)
+               await dotNetModel.NeedsUpdate(true);
+            else if (ApplicationType == ApplicationType.Cpp)
+               await cppViewModel.NeedsUpdate(true);
+        }
 
         ParentViewModel.Console.ClearConsole();
         ParentViewModel.Console.AddConsoleLine("Generating OPV Package File");
@@ -799,7 +815,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
 
         ParentViewModel.StartProcess(this);
 
-        Task.Run(() =>
+        await Task.Run(() =>
         {
             // Grab Latest Copy of Info.
             itemToGenerate.UpdatePackageInfo();
@@ -960,6 +976,15 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     internal void Close()
     {
         ExtensionsViewModel.CloseAndDiscardChanges();
+    }
+
+    internal void NeedsSDKUpdate()
+    {
+        if (cppViewModel != null)
+            cppViewModel.SdkNeedsUpdate = true;
+        
+        if (dotNetModel != null)
+            dotNetModel.SdkNeedsUpdate = true;
     }
 
     #endregion

@@ -8,10 +8,10 @@ namespace Ahsoka.System.Hardware;
 
 public static class PlatformSupportPathInfo
 {
-    public const string ModuleSupportFolderName = AhsokaExtensions.ModulesFolder;
+    public const string ExtensionSupportFolderName = Extensions.ExtensionsFolder;
     public const string PlatformSupportRootFolderName = "PlatformSupport";
     static readonly string platformSupportFolder;
-    static readonly string moduleSupportFolder;
+    static readonly string extensionSupportFolder;
 
     static PlatformSupportPathInfo()
     {
@@ -19,7 +19,7 @@ public static class PlatformSupportPathInfo
         string path = AppContext.BaseDirectory;
 
         platformSupportFolder = FindPlatformSupportPath(path, PlatformSupportRootFolderName);
-        moduleSupportFolder = FindPlatformSupportPath(path, ModuleSupportFolderName);
+        extensionSupportFolder = FindPlatformSupportPath(path, ExtensionSupportFolderName);
     }
 
     public static string FindPlatformSupportPath(string rootPath, string folderName)
@@ -68,19 +68,19 @@ public static class PlatformSupportPathInfo
         return Path.Combine(GetPlatformSupportPath(platform), "Resources");
     }
 
-    public static string GetModuleSupportFolder()
+    public static string GetExtensionSupportFolder()
     {
-        string returnValue = moduleSupportFolder;
+        string returnValue = extensionSupportFolder;
 
-        // Fallback to local "Modules" folder
+        // Fallback to local "Extensions" folder
         if (!Directory.Exists(returnValue))
         {
             Console.WriteLine(AppContext.BaseDirectory); 
-            returnValue = Path.Combine(AppContext.BaseDirectory, AhsokaExtensions.ModulesFolder);
+            returnValue = Path.Combine(AppContext.BaseDirectory, Extensions.ExtensionsFolder);
         }
 
         if (!Directory.Exists(returnValue))
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"The path to the Modules folder could not be found relative to {AppContext.BaseDirectory}.   Module Support Not Available");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"The path to the Extensions folder could not be found relative to {AppContext.BaseDirectory}.   Extension Support Not Available");
 
         return returnValue;
     }

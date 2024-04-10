@@ -1,10 +1,10 @@
 {
   "ReleaseID": "00000000-0000-0000-0000-000000000000",
-  "ChannelName": "OpenPV Modules",
+  "ChannelName": "OpenPV Extensions",
   "AvailableToVersion": null,
   "ContainerType": 0,
   "TrackType": 0,
-  "ReleaseName": "OpenPV Modules",
+  "ReleaseName": "OpenPV Extensions",
   "ContainerName": "OpenPV",
   "ContainerVersion": "1.0.0",
   "ReleaseNotes": null,
@@ -14,7 +14,7 @@
   "OriginalFileSizeInBytes": 0,
   "Contents": [
     {
-      "Path": "OpenPV Modules.zip",
+      "Path": "OpenPV Extensions.zip",
       "DownloadToken": null,
       "SizeInBytes": 0,
       "Hash": null

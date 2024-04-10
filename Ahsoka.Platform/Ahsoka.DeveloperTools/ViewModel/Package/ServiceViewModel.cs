@@ -96,7 +96,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     DataKeyItemViewModel selectedKey;
     string extentionName;
    
-    public bool IsModuleExtension { get; set; }
+    public bool IsExtension { get; set; }
     
     public bool HasUx { get; set; }
 
@@ -144,7 +144,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                     BleServiceUuidBase = defaultValues.BleServiceUuidBase,
                     DataChannel = defaultValues.DataChannel,
                     NotificationChannel = defaultValues.NotificationChannel,
-                    IsModuleExtension = defaultValues.IsModuleExtension
+                    IsExtension = defaultValues.IsExtension
                 };
 
                 ParentViewModel.ParentViewModel.ServiceConfiguration.Services.Add(item);
@@ -248,12 +248,12 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
         if (extension != null)
         {
             this.extension = extension;
-            this.IsModuleExtension = true;
-            this.HasUx = extension.ModuleInfoConfiguration.HasUx;
-            this.extentionName = extension.ModuleInfoConfiguration.ExtensionName;
+            this.IsExtension = true;
+            this.HasUx = extension.ExtensionConfiguration.HasUx;
+            this.extentionName = extension.ExtensionConfiguration.ExtensionName;
         }
         this.ServiceName = $"{config.ServiceName}";
-        this.ServiceNameFull = $"{config.ServiceName} ({(config.IsModuleExtension ? $"from {extentionName}" : "Core Module")})";
+        this.ServiceNameFull = $"{config.ServiceName} ({(config.IsExtension ? $"from {extentionName}" : "Core Module")})";
         this.keyValues = keyValues;
        
         LoadKeys();
@@ -294,6 +294,8 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                 {
                     ParentViewModel.CurrentServiceConfiguration.DataKeyValues.Remove(CurrentKeyItem);
                 }
+
+                ParentViewModel.ParentViewModel.ParentViewModel.NeedsSDKUpdate();
 
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(DataAccessLevel));

@@ -32,10 +32,10 @@
 	  <ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
 	</ItemGroup>
 	<Target Name="AfterBLEBuild" AfterTargets="Build">
-		<Message Text="Copy BLE Module..." Importance="high" />
-		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.moduleinfo.json" DestinationFiles="$(SolutionDir)\Modules\Bluetooth LE Service Extension\Ahsoka.Core.Bluetooth.LE.moduleinfo.json" />
-		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Bluetooth.LE.dll" DestinationFiles="$(SolutionDir)\Modules\Bluetooth LE Service Extension\lib\Ahsoka.Core.Bluetooth.LE.dll" />
-		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Tmds.DBus.dll" DestinationFiles="$(SolutionDir)\Modules\Bluetooth LE Service Extension\lib\Tmds.DBus.dll" />
+		<Message Text="Copy BLE Extension..." Importance="high" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.extensioninfo.json" DestinationFiles="$(SolutionDir)\Extensions\Bluetooth LE Service Extension\Ahsoka.Core.Bluetooth.LE.extensioninfo.json" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Bluetooth.LE.dll" DestinationFiles="$(SolutionDir)\Extensions\Bluetooth LE Service Extension\lib\Ahsoka.Core.Bluetooth.LE.dll" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Tmds.DBus.dll" DestinationFiles="$(SolutionDir)\Extensions\Bluetooth LE Service Extension\lib\Tmds.DBus.dll" />
 	</Target>
 
 	<ItemGroup>

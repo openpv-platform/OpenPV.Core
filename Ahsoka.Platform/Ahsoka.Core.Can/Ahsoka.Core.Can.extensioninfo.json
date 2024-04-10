@@ -1,8 +1,9 @@
 ﻿{
   "extensionName": "CAN Service Extension",
-  "packageName": "Ahsoka.Core.CAN",
-  "uxpackageName": "Ahsoka.DeveloperTools.Extensions",
+  "packageName": "Ahsoka.Core.Can",
+  "uxpackageName": "Ahsoka.Core.Can.UX",
   "uxViewModelName": "CanSetupViewModel",
+  "sdkGeneratorName": "CanCodeGenerator",
   "serviceConfigurations": [
     {
       "serviceName": "CanService",
@@ -14,6 +15,7 @@
       "configurationFile": "CanService.cancalibration.json"
     }
   ],
-  "hasCommands": "false",
-  "hasUx": "true"
+  "hasCommands": "true",
+  "hasUx": "true",
+  "hasSdkGenerator": "true"
 }

@@ -1,5 +1,5 @@
 {
-  "version": "3.0.1.10015",
+  "version": "3.0.1.10025",
   "applicationType": "Dotnet",
   "userInterfaceType": "None",
   "systemOrientation": "DefaultOrientation",
@@ -27,7 +27,7 @@
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5007,
           "notificationChannel": 6007,
-          "isModuleExtension": false,
+          "isExtension": false,
           "dataKeyValues": [],
           "configurationFile": "STDemoPackage.1.cancalibration.json"
         },
@@ -38,7 +38,7 @@
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "notificationChannel": 6001,
-          "isModuleExtension": false,
+          "isExtension": false,
           "dataKeyValues": [],
           "configurationFile": ""
         }

@@ -1,0 +1,7 @@
+﻿{
+  "extensionName": "Storyboard Extension",
+  "packageName": "Ahsoka.Core.Storyboard",
+  "serviceConfigurations": [ ],
+  "hasCommands": "true",
+  "hasUx": "false"
+}

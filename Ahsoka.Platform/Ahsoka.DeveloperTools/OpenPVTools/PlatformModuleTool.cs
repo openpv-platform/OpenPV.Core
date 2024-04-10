@@ -18,42 +18,33 @@ using System.Xml.Linq;
 
 namespace Ahsoka.DeveloperTools;
 
-internal class PlatformModuleTool : SparkToolBase
+internal class PlatformExtensionsTool : SparkToolBase
 {
-    const string Folder = AhsokaExtensions.ModulesFolder;
+    const string Folder = System.Extensions.ExtensionsFolder;
     readonly ReleaseDTO viewModel;
     static List<string> frameworks = new List<string>() { "net7.0", "net6.0", "net5.0", "NETStandard2.1" };
 
-    public static string GetModulePath()
+    public static string GetExtensionsPath()
     {
         return CustomerToolPaths.GetToolPath(Folder);
     }
 
-    public PlatformModuleTool(ReleaseDTO viewModel) :
+    public PlatformExtensionsTool(ReleaseDTO viewModel) :
         base(viewModel, false)
     {
         this.viewModel = viewModel;
-        this.PackageType = AhsokaExtensions.ModulesFolder;
+        this.PackageType = System.Extensions.ExtensionsFolder;
         this.CanInstall = false;
         this.Description = viewModel.ChannelName;
         this.Name = viewModel.ChannelName;
         this.Version = viewModel.ContainerVersion;
-        
+
         this.IncludedProfiles = "All";
-        this.LocalPath = GetModulesPath();
+        this.LocalPath = GetExtensionsPath();
     }
-
-
-    public static string GetModulesPath()
-    {
-        return CustomerToolPaths.GetToolPath(AhsokaExtensions.ModulesFolder);
-    }
-
 
     protected override async Task ExecuteDownload(IToolViewModel toolVM, CancellationTokenSource cancellationToken)
     {
-        List<string> previousDownloads = new List<string>();
-
         if (Directory.Exists(this.LocalPath))
             Directory.Delete(this.LocalPath, true);
 
@@ -68,8 +59,8 @@ internal class PlatformModuleTool : SparkToolBase
         // Process the Nuget Files
         foreach (var item in archive.Entries)
         {
-            var moduleInfoText = new StreamReader(item.Open()).ReadToEnd();
-            var info = JsonUtility.Deserialize<ModuleInfoConfiguration>(moduleInfoText);
+            var extensionInfoText = new StreamReader(item.Open()).ReadToEnd();
+            var info = JsonUtility.Deserialize<ExtensionConfiguration>(extensionInfoText);
             if (info != null)
             {
                 toolVM.PercentStatus = $"Fetching {info.ExtensionName}...";
@@ -77,14 +68,14 @@ internal class PlatformModuleTool : SparkToolBase
                 if (!Directory.Exists(rootDirectory))
                     Directory.CreateDirectory(rootDirectory);
 
-                File.WriteAllText(Path.Combine(rootDirectory, item.Name), moduleInfoText);
+                File.WriteAllText(Path.Combine(rootDirectory, item.Name), extensionInfoText);
 
                 string libDirectory = Path.Combine(rootDirectory, "lib");
 
                 if (!Directory.Exists(libDirectory))
                     Directory.CreateDirectory(libDirectory);
 
-                await DownloadPackage(toolVM, cancellationToken, info.PackageName, libDirectory,true);
+                await DownloadPackage(toolVM, cancellationToken, info.PackageName, libDirectory, true);
 
 
                 if (info.HasUx)
@@ -137,7 +128,7 @@ internal class PlatformModuleTool : SparkToolBase
         string nugetUrl = $"https://www.nuget.org/api/v2/package/{package}/{version}";
         string libraryFile = package + ".dll";
 
-        if (previousDownloads.Contains(package))
+        if (previousDownloads.Contains(package) || string.IsNullOrEmpty(package) )
             return;
 
         previousDownloads.Add(package);
@@ -226,7 +217,7 @@ internal class PlatformModuleTool : SparkToolBase
 
     protected override string GetVersionFilePath()
     {
-        return Path.Combine(LocalPath, "Modules.customertools.version");
+        return Path.Combine(LocalPath, "Extensions.customertools.version");
     }
 
     protected override bool GetIsDownloaded()

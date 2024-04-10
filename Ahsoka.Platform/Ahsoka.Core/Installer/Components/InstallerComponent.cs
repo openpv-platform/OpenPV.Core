@@ -30,10 +30,10 @@ internal class CommandLineComponent : PackageComponentBase
         IProgress<PackageProgressInfo> progress)
 
     {
-        // Add Module Extensions
+        // Add Extensions
         foreach(var item in info.ServiceInfo.RuntimeConfiguration.Extensions)
         {
-            AhsokaExtensions.InstallModuleExtension(additionalFiles, item);
+            Extensions.InstallExtension(additionalFiles, item);
         }
 
         var componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);

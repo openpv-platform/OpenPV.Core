@@ -125,6 +125,37 @@
 											</ListBox.ItemTemplate>
 										</ListBox>
 									</TabItem>
+									<TabItem >
+										<TabItem.Header>
+											<TextBlock FontSize="18" Text="Code Generator "/>
+										</TabItem.Header>
+										<Grid Margin="15" ColumnDefinitions="140,Auto,*"   RowDefinitions="20,auto,auto,auto,*">
+
+											<TextBlock Text="Generator Enabled:" Grid.Row="0" Grid.Column="0"/>
+											<CheckBox HorizontalAlignment="Stretch" BorderBrush="DimGray"
+													 Grid.Row="0" Margin="3,10" Grid.Column="1" IsChecked="{Binding GeneratorEnabled}" />
+											<TextBlock Text="The CAN Code Generator will generate model objects for your CPP or C# application." 
+													   Grid.Row="0" Grid.Column="1" Margin="30,0,0,0" VerticalAlignment="Center"
+													   TextWrapping="WrapWithOverflow" MaxWidth="300" MinHeight="40"
+													   Foreground="DimGray"/> 
+
+											<TextBlock Text="Model Output File:" Grid.Row="1" Grid.Column="0"/>
+											<TextBox HorizontalAlignment="Stretch"
+													 Grid.Row="1" Grid.Column="1" Text="{Binding GeneratorOutputFile}"
+													 MinWidth="300"  />
+
+											<TextBlock Text="Model Namespace:" Grid.Row="2" Grid.Column="0"/>
+											<TextBox HorizontalAlignment="Stretch"
+													 Grid.Row="2" Grid.Column="1" Text="{Binding GeneratorNamespace}"
+													 MinWidth="300"  />
+
+											<TextBlock Text="Model Base Class:" Grid.Row="3" Grid.Column="0"/>
+											<TextBox HorizontalAlignment="Stretch"
+													 Grid.Row="3" Grid.Column="1" Text="{Binding GeneratorBaseClass}"
+													 MinWidth="300"  />
+
+										</Grid>
+										</TabItem>
 								</TabControl>
 								<StackPanel  IsVisible="{Binding ShowAddRemove}" VerticalAlignment="Top" Orientation="Horizontal" Margin="20,4,0,0" Background="White" HorizontalAlignment="Right" >
 									<Button Command="{Binding AddItem}" Margin="0,0,3,0"

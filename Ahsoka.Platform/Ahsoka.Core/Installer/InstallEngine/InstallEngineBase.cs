@@ -356,11 +356,11 @@ public class InstallEngineBase
         components.Add(new NetworkFirmwareComponent());
 
         // Add any Extensions
-        var results = AhsokaExtensions.GetExtensions<InstallEngineComponent>();
+        var results = System.Extensions.GetExtensions<InstallEngineComponent>();
         foreach(var item in results)
         {
             components.Add(item);
-            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Loading {item.ComponentName} Installer Module");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Loading {item.ComponentName} Installer Extension");
         }
 
         components.Add(new EndInstallEngineComponent());

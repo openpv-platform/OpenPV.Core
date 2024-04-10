@@ -17,7 +17,7 @@ public static class CommandLine
         string pathToExecutable = Environment.ProcessPath;
 
         Console.WriteLine($"Loading Extensions ...");
-        AhsokaExtensions.LoadExtensions(Path.GetDirectoryName(pathToExecutable));
+        System.Extensions.LoadExtensions(Path.GetDirectoryName(pathToExecutable));
 
         string version = VersionUtility.GetAppVersionString();
 
@@ -86,7 +86,7 @@ public static class CommandLine
     {
         Dictionary<string, CommandInfo> methods = new();
 
-        var assemblies = AhsokaExtensions.GetExtensionLibraries(true);
+        var assemblies = System.Extensions.GetExtensionLibraries(true);
 
         foreach (Assembly assembly in assemblies)
         {

@@ -6,12 +6,19 @@
 		<SignAssembly>False</SignAssembly>
 		<TrimMode>copyused</TrimMode>
 		<AssemblyName>OpenPV.DeveloperToolkit.Core</AssemblyName>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Suppress Errors for GPIO Project">
 		<SuppressWindowsPlatformTargetingRequiredError>true</SuppressWindowsPlatformTargetingRequiredError>
 	</PropertyGroup>
 	
+	<ItemGroup>
+		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<None Remove=".gitignore" />
 	</ItemGroup>

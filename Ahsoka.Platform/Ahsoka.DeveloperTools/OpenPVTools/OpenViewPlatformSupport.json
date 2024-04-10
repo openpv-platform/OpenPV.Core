@@ -3,7 +3,7 @@
   "PlatformDescription": "Support for the OpenView Select Line of Products including S50 and S70",
   "FirmwareSparkChannelName": "OpenPV Distribution",
   "DemoSparkChannelName": "OpenPV Demos",
-  "ModuleSparkChannelName": "OpenPV Modules",
+  "ExtensionSparkChannelName": "OpenPV Extensions",
   "PlatformSupportSparkChannelName": "OpenPV Dependencies",
   "TargetPlatform": "OpenViewLinux",
   "FirmwareResources": {

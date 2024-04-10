@@ -91,31 +91,41 @@ internal class StartupInstallerPlugin : InstallerPlugin
         // Create Path relative to Working Directory
         string pathRelativeToExecutable = $"CommandLine";
 
-        // Remove Existing Command Line if it exists...we will use ours.
-        string pathToCommandLine = Path.Combine(buildLocation, pathRelativeToExecutable);
-        if (Directory.Exists(pathToCommandLine))
-            Directory.Delete(pathToCommandLine, true);
-      
         // Create Target Path
         string targetCommandLinePath = HardwareInfo.GetHardwareInfo(info.PlatformFamily, info.PlatformQualifier).TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
         targetCommandLinePath = Path.Combine(targetCommandLinePath, pathRelativeToExecutable, "Ahsoka.CommandLine");
 
-        // Create Local Paths (Copy From / To)
-        string localCommandLineFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(info.PlatformFamily), "CommandLine");
-
-         // Copy Command Line
-        if (!Directory.Exists(localCommandLineFolder))
+        // Remove Existing Command Line if it exists...we will use theirs
+        string pathToCommandLine = Path.Combine(buildLocation, pathRelativeToExecutable);
+        if (!Directory.Exists(pathToCommandLine))
         {
-           throw new ApplicationException($"Could not find target support for {info.PlatformFamily}.\n" +
-                $"Please download the necessary files from the PlugIns tab.");
+            // Create Local Paths (Copy From / To)
+            string localCommandLineFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(info.PlatformFamily), "CommandLine");
+
+            // Copy Command Line
+            if (!Directory.Exists(localCommandLineFolder))
+            {
+                throw new ApplicationException($"Could not find target support for {info.PlatformFamily}.\n" +
+                     $"Please download the necessary files from the PlugIns tab.");
+            }
+
+            // Add Command Line to the Output Folder
+            foreach (var item in Directory.EnumerateFiles(localCommandLineFolder, "*", SearchOption.AllDirectories))
+            {
+                string path = item.Replace(localCommandLineFolder, pathRelativeToExecutable).Replace("\\", "/");
+                additionalFiles[path] = File.ReadAllBytes(item);
+            }
+
+            // Add Module Plugins for Command Line
+            foreach (var extension in info.ServiceInfo.RuntimeConfiguration.Extensions)
+            {
+                Dictionary<string, byte[]> tempExtensionFiles = new Dictionary<string, byte[]>();
+                Extensions.InstallExtension(tempExtensionFiles, extension);
+                foreach (var extFile in tempExtensionFiles)
+                    additionalFiles[$"CommandLine/{extFile.Key}"] = extFile.Value;
+            }
         }
 
-        // Add Command Line to the Output Folder
-        foreach(var item in Directory.EnumerateFiles(localCommandLineFolder,"*", SearchOption.AllDirectories))
-        {
-            string path = item.Replace(localCommandLineFolder, pathRelativeToExecutable).Replace("\\","/");
-            additionalFiles[path] = File.ReadAllBytes(item);
-        }
 
         // Add Configuration File Use Custom or Default Depending on Setup.
         var stream = new MemoryStream();

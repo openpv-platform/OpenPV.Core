@@ -17,12 +17,12 @@ using System.Threading.Tasks;
 
 namespace Ahsoka.DeveloperTools;
 
-internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICustomerToolViewModel
+internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICustomerToolViewModel
 {
-    Dictionary<string, ExtensionViewModelBase> extensionUXModules = new();
+    Dictionary<string, ExtensionViewModelBase> extensionUXExtensions = new();
     Dictionary<string, Assembly> extensionUXLibraries = new();
     ExtensionViewModel selectedExtension;
-    public ObservableCollection<ExtensionViewModel> AvailableModules { get; private set; } = new();
+    public ObservableCollection<ExtensionViewModel> AvailableExtensions { get; private set; } = new();
     ExtensionContainerView currentPopup;
 
     public ExtensionViewModel SelectedExtension
@@ -35,33 +35,37 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
         }
     }
 
-
-    private void LoadModules()
+    void ICustomerToolViewModel.SdkNeedsUpdate()
     {
-        AvailableModules.Clear();
+        ParentViewModel.NeedsSDKUpdate();
+    }
+
+    private void LoadExtensions()
+    {
+        AvailableExtensions.Clear();
 
         if (!Design.IsDesignMode)
         {
             try
             {
                 // Find Tools Path
-                string path = PlatformSupportPathInfo.FindPlatformSupportPath(AppContext.BaseDirectory, AhsokaExtensions.ModulesFolder);
+                string path = PlatformSupportPathInfo.FindPlatformSupportPath(AppContext.BaseDirectory, System.Extensions.ExtensionsFolder);
                 if (!Directory.Exists(path))
-                    path = CustomerToolPaths.GetToolPath(AhsokaExtensions.ModulesFolder);
+                    path = CustomerToolPaths.GetToolPath(System.Extensions.ExtensionsFolder);
 
 
-                AhsokaExtensions.LoadExtensions(path);
-                foreach (var item in AhsokaExtensions.Configurations)
+                System.Extensions.LoadExtensions(path);
+                foreach (var item in System.Extensions.Configurations)
                 {
-                    var module = new ExtensionViewModel(this, item)
+                    var extension = new ExtensionViewModel(this, item)
                     {
                         IsIncluded = ParentViewModel.ServiceConfiguration.Extensions.Contains(item.ExtensionName)
                     };
                     
-                    if (module.ModuleInfoConfiguration.HasUx)
-                        LoadUX(module.ModuleInfoConfiguration);
-                    
-                    AvailableModules.Add(module);
+                    if (extension.ExtensionConfiguration.HasUx)
+                        LoadUX(extension.ExtensionConfiguration);
+
+                    AvailableExtensions.Add(extension);
                 }
             }
             catch (Exception ex)
@@ -72,19 +76,19 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
 
 
         // Load Service Extensions Service Info
-        foreach (var module in AvailableModules)
+        foreach (var extension in AvailableExtensions)
         {
-            foreach (var service in module.ModuleInfoConfiguration.ServiceConfigurations)
+            foreach (var service in extension.ExtensionConfiguration.ServiceConfigurations)
             {
                 var config = ParentViewModel.ServiceConfiguration.Services.FirstOrDefault(x => x.ServiceName == service.ServiceName);
                 if (config != null)
                 {
-                    service.IsModuleExtension = true;
+                    service.IsExtension = true;
 
-                    var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, service, null, module);
+                    var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, service, null, extension);
                     ParentViewModel.ServiceViewModel.Services.Add(viewModel);
 
-                    if (extensionUXModules.TryGetValue(module.ModuleExtensionName,out ExtensionViewModelBase extVM))
+                    if (extensionUXExtensions.TryGetValue(extension.ExtensionName,out ExtensionViewModelBase extVM))
                     {
                         var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
                         extVM.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
@@ -93,20 +97,17 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
 
             }
         }
-
-       
-
     }
 
-    private void LoadUX(ModuleInfoConfiguration item)
+    private void LoadUX(ExtensionConfiguration item)
     {
-        string modulePath = Path.Combine(Path.GetDirectoryName(item.FilePath),"ux",item.UXLibraryFilename);
-        if (File.Exists(modulePath))
+        string extPath = Path.Combine(Path.GetDirectoryName(item.FilePath),"ux",item.UXLibraryFilename);
+        if (File.Exists(extPath))
         {
             try
             {
                 if (!extensionUXLibraries.TryGetValue(item.UxPackageName, out Assembly asm))
-                    extensionUXLibraries[item.UxPackageName] = asm = Assembly.LoadFile(modulePath);
+                    extensionUXLibraries[item.UxPackageName] = asm = Assembly.LoadFile(extPath);
 
                 foreach (var defType in asm.DefinedTypes)
                 {
@@ -114,25 +115,25 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
                         defType.Name == item.UxViewModelName)
                     {
                         var vm = ClassLoader.CreateType(defType, null) as ExtensionViewModelBase;
-                        extensionUXModules[item.ExtensionName] = vm;
+                        extensionUXExtensions[item.ExtensionName] = vm;
                     }
                 }
             }
             catch
             {
-                // TODO Notify User of Bad Module
+                // TODO Notify User of Bad Extension
             }
         }
     }
 
-    public void RemoveServiceModule()
+    public void RemoveServiceExtension()
     {
 
     }
 
-    public ModuleExtensionsViewModel(PackageViewModel parentViewModel) : base(parentViewModel)
+    public ExtensionsViewModel(PackageViewModel parentViewModel) : base(parentViewModel)
     {
-        LoadModules();
+        LoadExtensions();
     }
 
     public void ShowUx(string extensionName)
@@ -141,7 +142,7 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
 
         currentPopup = new ExtensionContainerView() { DataContext = this };
         var container = currentPopup.FindControl<Border>("Container");
-        var view = extensionUXModules[extensionName]?.GetView();
+        var view = extensionUXExtensions[extensionName]?.GetView();
         container.Child = view;
 
         ParentViewModel.ParentViewModel.Popup.ShowPopup(currentPopup);
@@ -150,13 +151,13 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
     private void InitExtension(string extensionName)
     {
         var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
-        if (extensionUXModules.TryGetValue(extensionName, out var vm))
+        if (extensionUXExtensions.TryGetValue(extensionName, out var vm))
             vm.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
     }
 
     public void CloseAndDiscardChanges()
     {
-        foreach (var item in extensionUXModules)
+        foreach (var item in extensionUXExtensions)
             item.Value.Close();
 
         ParentViewModel.ParentViewModel.Popup.DismissPopup(currentPopup);
@@ -167,16 +168,15 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
         ParentViewModel.ParentViewModel.Popup.DismissPopup(currentPopup);
     }
 
-
     internal void SaveViewModels(string packageInfoFolder)
     {
-        foreach (var item in AvailableModules)
+        foreach (var item in AvailableExtensions)
         {
-            foreach(var service in item.ModuleInfoConfiguration.ServiceConfigurations)
+            foreach(var service in item.ExtensionConfiguration.ServiceConfigurations)
             {
                 var config = ParentViewModel.ServiceConfiguration.Services.FirstOrDefault(x => x.ServiceName == service.ServiceName);
 
-                if (config != null && extensionUXModules.TryGetValue(item.ModuleExtensionName, out var vm))
+                if (config != null && extensionUXExtensions.TryGetValue(item.ExtensionName, out var vm))
                    config.ConfigurationFile = vm.Save(packageInfoFolder, config.ServiceName);
             }
         }
@@ -237,7 +237,7 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
 
     internal bool HasChanges()
     {
-        foreach (var item in extensionUXModules)
+        foreach (var item in extensionUXExtensions)
             if (item.Value.HasChanges())
             {
                 return true;
@@ -251,11 +251,11 @@ internal class ModuleExtensionsViewModel : ChildViewModelBase<PackageViewModel>,
 }
 
 
-internal class ExtensionViewModel : ChildViewModelBase<ModuleExtensionsViewModel>
+internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
 {
-    ModuleInfoConfiguration configuration;
+    ExtensionConfiguration configuration;
 
-    public string ModuleExtensionName { get { return configuration.ExtensionName; } }
+    public string ExtensionName { get { return configuration.ExtensionName; } }
 
     public bool HasUx { get { return configuration.HasUx; } }
 
@@ -265,22 +265,22 @@ internal class ExtensionViewModel : ChildViewModelBase<ModuleExtensionsViewModel
     {
         get
         {
-            return ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Contains(ModuleExtensionName);
+            return ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Contains(ExtensionName);
         }
         set
         {
             if (value)
             {
                 // Add Service Extensions
-                if (!ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Contains(ModuleExtensionName))
+                if (!ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Contains(ExtensionName))
                 {
-                    ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Add(ModuleExtensionName);
+                    ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Add(ExtensionName);
 
-                    foreach (var serviceConfig in ModuleInfoConfiguration.ServiceConfigurations)
+                    foreach (var serviceConfig in ExtensionConfiguration.ServiceConfigurations)
                     {
                         if (!ParentViewModel.ParentViewModel.ServiceViewModel.Services.Any(x => x.ServiceName == serviceConfig.ServiceName))
                         {
-                            serviceConfig.IsModuleExtension = true;
+                            serviceConfig.IsExtension = true;
                             var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ParentViewModel.ServiceViewModel, serviceConfig, null, this);
                             ParentViewModel.ParentViewModel.ServiceViewModel.Services.Add(viewModel);
                             viewModel.IsIncluded = true;
@@ -290,10 +290,10 @@ internal class ExtensionViewModel : ChildViewModelBase<ModuleExtensionsViewModel
             }
             else
             {
-                ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Remove(ModuleExtensionName);
+                ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Remove(ExtensionName);
 
                 foreach (var service in ParentViewModel.ParentViewModel.ServiceViewModel.Services.ToArray())
-                    if (ModuleInfoConfiguration.ServiceConfigurations.Any(x => x.ServiceName == service.ServiceName))
+                    if (ExtensionConfiguration.ServiceConfigurations.Any(x => x.ServiceName == service.ServiceName))
                     {
                         service.IsIncluded = false;
                         ParentViewModel.ParentViewModel.ServiceViewModel.Services.Remove(service);
@@ -303,9 +303,9 @@ internal class ExtensionViewModel : ChildViewModelBase<ModuleExtensionsViewModel
         }
     }
 
-    public ModuleInfoConfiguration ModuleInfoConfiguration { get => configuration; set => configuration = value; }
+    public ExtensionConfiguration ExtensionConfiguration { get => configuration; set => configuration = value; }
 
-    public ExtensionViewModel(ModuleExtensionsViewModel model, ModuleInfoConfiguration moduleInfo)
+    public ExtensionViewModel(ExtensionsViewModel model, ExtensionConfiguration moduleInfo)
         : base(model)
     {
         configuration = moduleInfo;
@@ -314,10 +314,11 @@ internal class ExtensionViewModel : ChildViewModelBase<ModuleExtensionsViewModel
     public void IncludeChanged()
     {
         IsIncluded = !IsIncluded;
+        ParentViewModel.ParentViewModel.NeedsSDKUpdate();
     }
 
     internal void ShowUx()
     {
-        ParentViewModel.ShowUx(this.ModuleExtensionName);
+        ParentViewModel.ShowUx(this.ExtensionName);
     }
 }

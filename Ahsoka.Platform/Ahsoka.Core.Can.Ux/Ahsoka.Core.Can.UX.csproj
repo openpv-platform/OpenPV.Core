@@ -7,29 +7,26 @@
 		<SignAssembly>False</SignAssembly>
 		<TrimMode>copyused</TrimMode>
 		<DebugType>portable</DebugType>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Suppress Errors for GPIO Project">
 		<SuppressWindowsPlatformTargetingRequiredError>true</SuppressWindowsPlatformTargetingRequiredError>
 	</PropertyGroup>
-	
+
+	<ItemGroup>
+		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<None Remove=".gitignore" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia" Version="11.1.0-beta1" />
 		<PackageReference Include="Avalonia.Controls.DataGrid" Version="11.1.0-beta1" />
-		<PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.0-beta1" />
 		<PackageReference Include="Avalonia.Desktop" Version="11.1.0-beta1" />
-		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-beta1" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.17" />
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-beta1" />
-		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.0" />
-		<PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.6" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="8.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.3" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Include="Packaging.Targets" Version="0.1.220-*">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
@@ -60,7 +57,7 @@
 	<!--To help Debugging since this is loaded dynamically-->
 	<Target Name="AfterExtensionBuild" AfterTargets="Build">
 		<Message Text="Building.." Importance="high" />
-		<Copy SourceFiles="$(SolutionDir)Ahsoka.DeveloperTools.Extensions\bin\$(Configuration)\$(TargetFramework)\Ahsoka.DeveloperTools.Extensions.dll" DestinationFiles="$(SolutionDir)\Modules\CAN Service Extension\ux\Ahsoka.DeveloperTools.Extensions.dll" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Can.Ux\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Can.UX.dll" DestinationFiles="$(SolutionDir)\Extensions\CAN Service Extension\ux\Ahsoka.Core.Can.UX.dll" />
 	</Target>
 	
 	<ItemGroup>

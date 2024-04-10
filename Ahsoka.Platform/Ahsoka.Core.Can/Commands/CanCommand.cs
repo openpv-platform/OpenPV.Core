@@ -1,7 +1,11 @@
 ﻿using Ahsoka.Installer;
 using Ahsoka.Services.Can;
 using Ahsoka.System;
+using Ahsoka.Utility;
+using ELFSharp.MachO;
 using System;
+using System.IO;
+using System.Linq;
 
 namespace Ahsoka.Commands;
 
@@ -22,8 +26,24 @@ internal static class CanCommands
             [NameSpace] NameSpace for Output Classes
             [BaseClass] Base Class (or View Model) for Output Classes
             [Language] Dotnet or Cpp Supported")]
-    private static void GenerateCANClasses(string pathToCalibrationFile, string pathToOutputFolder, string nameSpace, string baseClass, string language)
+    private static void GenerateCANClasses(string pathToPackageFile, string pathToOutputFolder, string nameSpace, string baseClass, string language)
     {
-        CanMetadataTools.GenerateMessageClasses(pathToCalibrationFile, pathToOutputFolder, nameSpace, baseClass, Enum.Parse<ApplicationType>(language));
+        CanMetadataTools.GenerateMessageClasses(pathToPackageFile, pathToOutputFolder, nameSpace, baseClass, Enum.Parse<ApplicationType>(language));
+    }
+}
+
+internal class CanCodeGenerator : IExtensionGenerator
+{
+    public string GetGeneratorCommandLine(PackageInformation packageInfo)
+    {
+        string config = packageInfo.ServiceInfo.RuntimeConfiguration.Services.FirstOrDefault(x => x.ServiceName == "CanService").ConfigurationFile;
+        string configFile = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), config);
+        if (File.Exists(configFile))
+        {
+            var calibration = JsonUtility.Deserialize<CanClientCalibration>(File.ReadAllText(configFile));
+            return $"--GenerateCANClasses \"{Path.GetFileName(packageInfo.GetPackageInfoPath())}\" \"{calibration.GeneratorOutputFile}\" \"{calibration.GeneratorNamespace}\" \"{calibration.GeneratorBaseClass}\" {packageInfo.ApplicationType}";
+        }
+
+        return "";
     }
 }

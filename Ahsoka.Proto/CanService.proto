@@ -38,8 +38,14 @@ message CanClientCalibration
     repeated AhsokaCAN.PortDefinition ports = 9;
     repeated AhsokaCAN.NodeDefinition nodes = 10;
     repeated AhsokaCAN.MessageDefinition messages = 11;
-    repeated AhsokaCAN.DiagnosticEventDefinition diagnostic_events = 13;
-    string version = 16;
+    repeated AhsokaCAN.DiagnosticEventDefinition diagnostic_events = 12;
+
+    bool generator_enabled = 13;
+    string generator_namespace = 14;
+    string generator_output_file = 15;
+    string generator_base_class = 16;
+
+    string version = 20;
 }
 
 message RecurringCanMessage

@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Core;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Ahsoka.System;
@@ -9,8 +10,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Extensions = Ahsoka.System.Extensions;
 
 #pragma warning disable CS0436 // Type conflicts with imported type for GitVersionInformation
 
@@ -20,17 +23,26 @@ internal class DotNetViewModel : ViewModelBase
 {
     private readonly MainViewModel parentViewModel;
     private readonly PackageInformation packageInfo;
+    public bool SdkNeedsUpdate { get; set; }
 
-    public async void NeedsUpdate()
+    public void UpdateSDK()
     {
-        if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Dotnet)
+        InstallCLI(false);
+    }
+
+    public async Task NeedsUpdate(bool isGenerating = false)
+    {
+        if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Dotnet || SdkNeedsUpdate)
         {
             var frameworkInfo = GetFrameworkInfo();
-            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion())
+            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate)
             {
-                var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Mismatch", "The installed 'SDK Package'  for this project does not match this toolkit, do you wish to update?", "Yes", "No");
+                var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
-                    InstallCLI();
+                {
+                    InstallCLI(isGenerating);
+                    SdkNeedsUpdate = false;
+                }
             }
         }
     }
@@ -140,9 +152,10 @@ internal class DotNetViewModel : ViewModelBase
             PublishProfile = Path.GetRelativePath(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), path);
     }
 
-    internal async void InstallCLI()
+    internal async void InstallCLI(bool isGenerating = false)
     {
-        parentViewModel.StartProcess(null);
+        if (!isGenerating)
+            parentViewModel.StartProcess(null);
 
         string result = "Process Ended";
         try
@@ -192,6 +205,26 @@ internal class DotNetViewModel : ViewModelBase
                 });
             }
 
+            await Task.Run(() =>
+            {
+                var progress = new Progress<CommandLineProgressInfo>(info =>
+                {
+                    if (info.IsWriteLine)
+                        parentViewModel.Console.AddConsoleLine(info.Message);
+                    else
+                        parentViewModel.Console.AddConsoleText(info.Message);
+                });
+
+                foreach (var extensionName in parentViewModel.SelectedPackage.ServiceConfiguration.Extensions)
+                {
+                    var list = Extensions.GetGeneratorCommands(parentViewModel.SelectedPackage.PackageInfo, extensionName);
+                    foreach (var command in list)
+                        parentViewModel.RunCommandLineProcess(command, projectPath, progress, CancellationToken.None);
+                }
+
+            });
+
+            parentViewModel.Console.AddConsoleLine($" ");
 
             string fileInfo = JsonUtility.Serialize(new CppFrameworkInfo() { FrameworkVersion = parentViewModel.GetVersion() });
             File.WriteAllText(GetFrameworkInfoPath(), fileInfo);
@@ -202,18 +235,19 @@ internal class DotNetViewModel : ViewModelBase
         }
         finally
         {
-            parentViewModel.FinishProcess(result, true);
+            if (!isGenerating)
+                parentViewModel.FinishProcess("SDK Updated", true);
         }
     }
 
-    internal static string InstallCommandLine(string dirctory,PlatformFamily platform, MainViewModel mainViewModel, Progress<string> progressString )
+    internal static string InstallCommandLine(string directory, PlatformFamily platform, MainViewModel mainViewModel, IProgress<string> progressString)
     {
         string pathToCommandLine = Path.Combine(mainViewModel.GetPlatformPath(platform), "CommandLine");
 
         // Copy Command Line
         if (!Directory.Exists(pathToCommandLine))
         {
-            mainViewModel.Console.AddConsoleLine($"Could not find target support for {platform}.\n" +
+            progressString.Report($"Could not find target support for {platform}.\n" +
                 $"Please download the necessary files from the PlugIns tab.");
             return "No Target Found";
         }
@@ -221,25 +255,21 @@ internal class DotNetViewModel : ViewModelBase
         Stopwatch stopwatch = Stopwatch.StartNew();
 
         // Copy Command Line
-        string pathToCLIOutput = Path.Combine(dirctory, platform.ToString(), "CommandLine");
-        mainViewModel.Console.AddConsoleLine($" ");
-        mainViewModel.Console.AddConsoleLine($"Installing Ahsoka Services Application to {pathToCLIOutput}");
-        mainViewModel.Console.AddConsoleLine($" ");
+        string pathToCLIOutput = Path.Combine(directory, platform.ToString(), "CommandLine");
+        progressString.Report($" ");
+        progressString.Report($"Installing Ahsoka Services Application to {pathToCLIOutput}");
+        progressString.Report($" ");
         FileUtilities.CopyDirectory(pathToCommandLine, pathToCLIOutput, true, progressString);
 
-        foreach (var item in AhsokaExtensions.Configurations)
-        {
-            if (mainViewModel.SelectedPackage.ServiceConfiguration.Extensions.Contains(item.ExtensionName))
-            {
-                AhsokaExtensions.InstallModuleExtension(pathToCLIOutput, item.ExtensionName, progressString);
-            }
-        }
+        foreach (var extensionName in mainViewModel.SelectedPackage.ServiceConfiguration.Extensions)
+            Extensions.InstallExtension(pathToCLIOutput, extensionName, progressString);
+     
+        progressString.Report($" ");
 
         stopwatch.Stop();
 
         return "Command Line Install Complete";
     }
-
 
     private void UpdateNuget()
     {

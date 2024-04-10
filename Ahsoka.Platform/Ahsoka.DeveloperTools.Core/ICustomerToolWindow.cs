@@ -22,5 +22,7 @@ public interface ICustomerToolViewModel
 
     string GetConfigurationPath(string serviceName);
 
+    void SdkNeedsUpdate();
+
     void RunCommandLineProcess(string processArgs, string workingDirectory, IProgress<CommandLineProgressInfo> progressString, CancellationToken token);
 }

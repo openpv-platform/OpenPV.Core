@@ -166,6 +166,30 @@ internal class CanSetupViewModel : ExtensionViewModelBase
         }
     }
 
+    public bool GeneratorEnabled
+    {
+        get { return CanClientCalibration.GeneratorEnabled; }
+        set { CanClientCalibration.GeneratorEnabled = value; OnPropertyChanged(); }
+    }
+
+    public string GeneratorBaseClass
+    {
+        get { return CanClientCalibration.GeneratorBaseClass; }
+        set { CanClientCalibration.GeneratorBaseClass = value; OnPropertyChanged(); }
+    }
+
+    public string GeneratorNamespace
+    {
+        get { return CanClientCalibration.GeneratorNamespace; }
+        set { CanClientCalibration.GeneratorNamespace = value; OnPropertyChanged(); }
+    }
+
+    public string GeneratorOutputFile
+    {
+        get { return CanClientCalibration.GeneratorOutputFile; }
+        set { CanClientCalibration.GeneratorOutputFile = value; OnPropertyChanged(); }
+    }
+
     public string ConfigurationPath { get => configurationPath; set { configurationPath = value; OnPropertyChanged(); } }
 
     public CanSetupViewModel()
@@ -202,6 +226,16 @@ internal class CanSetupViewModel : ExtensionViewModelBase
         {
             string fileName = Path.Combine(packageInfoFolder, configurationPath);
             string data = JsonUtility.Serialize(CanClientCalibration);
+            
+            bool hasChanges = data != originalCANConfigText;
+
+            // Config Changed...may need to regenerate the Models.
+            if (hasChanges)
+            {
+                originalCANConfigText = data;
+                this.CustomerToolViewModel.SdkNeedsUpdate();
+            }
+
             File.WriteAllText(fileName, data);
         }
 
@@ -211,7 +245,13 @@ internal class CanSetupViewModel : ExtensionViewModelBase
     protected override bool OnHasChanges()
     {
         string newConfig = JsonUtility.Serialize(CanClientCalibration);
-        return newConfig != originalCANConfigText;
+        bool hasChanges = newConfig != originalCANConfigText;
+
+        // Config Changed...may need to regenerate the Models.
+        if (hasChanges)
+            this.CustomerToolViewModel.SdkNeedsUpdate();
+
+        return hasChanges;
     }
 
     protected override void OnClose()
@@ -219,7 +259,6 @@ internal class CanSetupViewModel : ExtensionViewModelBase
         CanClientCalibration = null;
         configurationPath = null;
     }
-
 
     internal async void SetConfigurationDirectory()
     {
@@ -314,10 +353,14 @@ internal class CanSetupViewModel : ExtensionViewModelBase
             if (File.Exists(pathToConfig))
             {
                 try
-                {
+                {  
                     originalCANConfigText = File.ReadAllText(pathToConfig);
 
-                    CanClientCalibration = ConfigurationFileLoader.LoadFile<CanClientCalibration>(pathToConfig);                   
+                    CanClientCalibration = ConfigurationFileLoader.LoadFile<CanClientCalibration>(pathToConfig);
+
+                    CanClientCalibration.GeneratorNamespace = String.IsNullOrEmpty(CanClientCalibration.GeneratorNamespace) ? "Ahsoka.CS.CAN" : CanClientCalibration.GeneratorNamespace;
+                    CanClientCalibration.GeneratorOutputFile = String.IsNullOrEmpty(CanClientCalibration.GeneratorOutputFile) ? "obj\\GeneratedObjects.cs" : CanClientCalibration.GeneratorOutputFile;
+                    CanClientCalibration.GeneratorBaseClass = String.IsNullOrEmpty(CanClientCalibration.GeneratorBaseClass) ? "CanViewModelBase" : CanClientCalibration.GeneratorBaseClass;
 
                     Ports.Clear();
                     foreach (PortDefinition port in CanClientCalibration.Ports.OrderBy(x => x.Port))

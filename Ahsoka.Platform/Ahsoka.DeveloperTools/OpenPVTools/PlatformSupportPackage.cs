@@ -20,9 +20,9 @@ internal class PlatformSupportPackage : ViewModelBase
 
     public string FirmwareSparkChannelName { get; set; }
 
-    public string ModuleSparkChannelName { get; set; }
+    public string ExtensionSparkChannelName { get; set; }
 
-    public string ModuleSparkVersionFilter { get { return GetCurrentMajorMinor(); } }
+    public string ExtensionSparkVersionFilter { get { return GetCurrentMajorMinor(); } }
 
     public string FirmwareSparkVersionFilter { get { return FirmwarePreRequisites.GetBSPInfo(TargetPlatform).FirmwareFilter; } }
 

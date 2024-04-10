@@ -1,15 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Data;
 
-internal static class KeyValueExtensions
+/// <summary>
+/// Extension Methods for KeyValues
+/// </summary>
+public static class KeyValueExtensions
 {
     #region Utility
-    internal static object GetValue(this KeyValue keyValue)
+    /// <summary>
+    /// Gets a value from a KeyValue Object
+    /// </summary>
+    /// <param name="keyValue"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    public static object GetValue(this KeyValue keyValue)
     {
         if (keyValue.ShouldSerializeBooleanValue())
             return keyValue.BooleanValue;
@@ -27,7 +32,13 @@ internal static class KeyValueExtensions
             throw new Exception($"Could not set value for {keyValue.KeyInfo.Origin} / {keyValue.KeyInfo.Key}");
     }
 
-    internal static void SetValue(this KeyValue keyValue, object value)
+    /// <summary>
+    /// Sets a value to a KeyValue Object
+    /// </summary>
+    /// <param name="keyValue"></param>
+    /// <param name="value"></param>
+    /// <exception cref="ArgumentException"></exception>
+    public static void SetValue(this KeyValue keyValue, object value)
     {
         if (value.GetType() == typeof(bool))
             keyValue.BooleanValue = (bool)value;

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("OpenPV.DeveloperToolkit")]
 [assembly: InternalsVisibleTo("Ahsoka.Test")]
@@ -11,6 +6,7 @@ using System.Threading.Tasks;
 [assembly: InternalsVisibleTo("Ahsoka.Core.Bluetooth")]
 [assembly: InternalsVisibleTo("Ahsoka.Core.Cygnus")]
 [assembly: InternalsVisibleTo("Ahsoka.Core.CAN")]
+[assembly: InternalsVisibleTo("Ahsoka.Core.Storyboard")]
 
 namespace Ahsoka;
 internal class VisibleInternals

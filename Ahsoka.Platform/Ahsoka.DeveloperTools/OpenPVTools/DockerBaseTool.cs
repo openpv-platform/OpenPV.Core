@@ -156,9 +156,9 @@ internal abstract class DockerBaseTool : OpenPVToolBase
             ProcessUtility.RunProcess("wsl", $"--list", null, out result, out error);
 
             result = result.Replace("\0", "");
-            if (!result.Contains("Default") || !result.Contains("Ubuntu-20.04"))
+            if (!result.Contains("Default") || !result.Contains("Ubuntu-"))
             {
-                _ = toolVM.MainViewModel.Dialog.ShowDialog("Missing Dependency", $"Must install WSL to launch container, Ubuntu-20.04 should be default", "Ok");
+                _ = toolVM.MainViewModel.Dialog.ShowDialog("Missing Dependency", $"Must install WSL to launch container, Please set an Ubuntu WSL Distro as the default", "Ok");
                 return false;
             }
         }

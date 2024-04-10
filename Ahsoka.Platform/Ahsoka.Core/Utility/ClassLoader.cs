@@ -87,7 +87,12 @@ public static class ClassLoader
         return typeList.ToArray();
     }
 
-    internal static Dictionary<T, Type> GetItemsWithAttribute<T>() where T : Attribute
+    /// <summary>
+    /// Enumerate Types with the specified attribute using Reflection.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    public static Dictionary<T, Type> GetItemsWithAttribute<T>() where T : Attribute
     {
         Dictionary<T, Type> typeList = new();
         foreach (Assembly assm in GetSystemAssemblies())

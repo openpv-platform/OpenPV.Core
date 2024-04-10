@@ -10,7 +10,7 @@ public class TestInitializer
    [AssemblyInitialize]
     public static void AssemblyInit(TestContext context)
     {
-        AhsokaExtensions.LoadExtensions();
+        Extensions.LoadExtensions();
     }
 
 }

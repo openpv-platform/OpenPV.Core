@@ -1,4 +1,6 @@
 using Ahsoka.Storyboard;
+using Ahsoka.System;
+using Ahsoka.System.Hardware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;

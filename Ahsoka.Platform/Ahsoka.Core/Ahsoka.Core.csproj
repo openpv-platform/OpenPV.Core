@@ -23,16 +23,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Storyboard\Proto\StartupConfiguration.proto" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<AdditionalFiles Include="Storyboard\Proto\StartupConfiguration.proto">
-		  <CustomToolNamespace>Models</CustomToolNamespace>
-		</AdditionalFiles>
-	</ItemGroup>
-
-	<ItemGroup>
 		<AdditionalFiles Include="..\..\Ahsoka.Proto\*.proto" Exclude="..\..\Ahsoka.Proto\Can*.proto;..\..\Ahsoka.Proto\BLE*.proto;..\..\Ahsoka.Proto\Cygnus*.proto;..\..\Ahsoka.Proto\reach.proto">
 			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
 		</AdditionalFiles>

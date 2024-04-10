@@ -52,4 +52,4 @@ Ahsoka.Platform/Ahsoka.Test/.avalonia-build-tasks/*
 Ahsoka.Demo/Ahsoka.CS.CAN/Ahsoka.Client.Shared/**/*
 Ahsoka.Demo/*/Directory.Build.props
 Ahsoka.Proto/output/*
-Ahsoka.Platform/Modules/*
+Ahsoka.Platform/Extensions/*

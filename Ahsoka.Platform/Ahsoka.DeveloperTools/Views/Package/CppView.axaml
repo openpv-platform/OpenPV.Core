@@ -23,7 +23,7 @@
 					HorizontalAlignment="Stretch"
 					Height="38"
 					VerticalContentAlignment="Center"
-					Command="{Binding InstallSDK}">
+					Command="{Binding UpdateSDK}">
 				<StackPanel Orientation="Horizontal">
 					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Toolbox"></material:MaterialIcon>
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="{Binding FrameworkButtonText, FallbackValue='Add SDK Package'}"/>

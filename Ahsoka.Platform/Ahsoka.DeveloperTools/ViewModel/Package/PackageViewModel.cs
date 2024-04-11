@@ -785,7 +785,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         // Save Before Generating
         ParentViewModel.SavePackage();
 
-        bool didRunCommands = false;
         if (SdkNeedsUpdate)
         {
             ParentViewModel.Console.AddConsoleLine("Updating SDK");
@@ -794,8 +793,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                await dotNetModel.NeedsUpdate(true);
             else if (ApplicationType == ApplicationType.Cpp)
                await cppViewModel.NeedsUpdate(true);
-
-            didRunCommands = !SdkNeedsUpdate;
         }
         
 
@@ -818,23 +815,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         {
             // Grab Latest Copy of Info.
             itemToGenerate.UpdatePackageInfo();
-
-            // Execute Commands 
-            if (!didRunCommands)
-            {
-                ((IProgress<CommandLineProgressInfo>)progress).Report(new CommandLineProgressInfo() { Message = "Running Code Generators...", IsWriteLine = true });
-
-                foreach (var extensionName in ServiceConfiguration.Extensions)
-                {
-                    var list = Extensions.GetGeneratorCommands(PackageInfo, extensionName);
-                    foreach (var command in list)
-                        if (command.Value == GeneratorCommandType.AhsokaCommandLine)
-                            ParentViewModel.RunCommandLineProcess(command.Key, Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), progress, CancellationToken.None);
-                        else
-                            ParentViewModel.RunShellProcess(command.Key, Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), progress, CancellationToken.None);
-
-                }
-            }
 
             string workingDirectory = Path.GetDirectoryName(itemToGenerate.PackageInfoPath);
             string packageInfoPath = itemToGenerate.PackageInfoPath;

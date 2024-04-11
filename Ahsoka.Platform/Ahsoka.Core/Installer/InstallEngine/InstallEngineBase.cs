@@ -12,6 +12,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace Ahsoka.Installer.InstallEngine;
@@ -107,20 +108,10 @@ public class InstallEngineBase
     public string CreateInstallPackage(string xmlPublicKey = null,
         IProgress<PackageProgressInfo> progress = null)
     {
-        // Create Installer Items
-        List<InstallerPlugin> installedPlugins = new List<InstallerPlugin>()
-        {
-            InstallerPlugin.GetPlugin(PackageInformation.UserInterfaceType),
-            InstallerPlugin.GetPlugin(PackageInformation.ApplicationType),
-            new StartupInstallerPlugin(), // Generates Start Scripts.
-        };
+        RunGeneratorCommands(progress);
 
-        // Remove Nulls
-        installedPlugins = installedPlugins.Where(x => x != null).ToList();
-    
-        // Run Prerequisite Checks
-        foreach(var item in installedPlugins)
-            item.CheckPrerequisites(PackageInformation, progress, cancelToken.Token);
+        // Create Installer Items
+        List<InstallerPlugin> installedPlugins = RunInstallerPreReqs(progress);
 
         string applicationPath = PackageInformation.GetApplicationFullPath();
         string outputPath = PackageInformation.GetOutputFullPath();
@@ -184,6 +175,71 @@ public class InstallEngineBase
         progress?.Report(new PackageProgressInfo() { Message = $"Finished Package Creation at {outputPathRelative}" });
 
         return outputPath;
+    }
+
+    private void RunGeneratorCommands(IProgress<PackageProgressInfo> progress)
+    {
+        // Execute Commands 
+        progress.Report(new PackageProgressInfo() { Message = "Running Code Generators..." });
+
+        foreach (var extensionName in PackageInformation.ServiceInfo.RuntimeConfiguration.Extensions)
+        {
+            var list = Extensions.GetCommands(PackageInformation, extensionName, CommandTypes.ModelGenerators | CommandTypes.BuildCommands);
+            foreach (var command in list)
+                if (command.Value == GeneratorCommandType.AhsokaCommandLine)
+                {
+                    // Split Arguments
+                    var args = new List<string>();
+                    args.AddRange(Regex.Matches(command.Key, @"[\""].+?[\""]|[^ ]+")
+                                    .Cast<Match>()
+                                    .Select(m => m.Value.Trim('"'))
+                                    .ToList());
+
+                    CommandLine.Execute(args.ToArray());
+                }
+                else
+                {
+                    string pathToCommand = command.Key.Substring(0, command.Key.IndexOf('"', 2) + 1).Trim('"');
+                    string processArgs = command.Key.Substring(command.Key.IndexOf('"', 2) + 2);
+
+                    progress.Report(new PackageProgressInfo() { Message = $"Executing Shell Command from..." });
+                    progress.Report(new PackageProgressInfo() { Message = $"   {pathToCommand}" });
+                    progress.Report(new PackageProgressInfo() { Message = $" " });
+                    progress.Report(new PackageProgressInfo() { Message = $"With Arguments..."});
+                    progress.Report(new PackageProgressInfo() { Message = $"   {processArgs}" });
+                    progress.Report(new PackageProgressInfo() { Message = $" " });
+
+                    IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
+                    {
+                        progress.Report(new PackageProgressInfo() { Message = info.Data});
+                    });
+
+                    if (OperatingSystem.IsLinux())
+                        ProcessUtility.RunProcessAsync("chmod", "+x " + pathToCommand, Environment.CurrentDirectory, progressText, CancellationToken.None);
+
+                    ProcessUtility.RunProcessAsync(pathToCommand, processArgs, Environment.CurrentDirectory, progressText, CancellationToken.None);
+                }
+        }
+    }
+
+    private List<InstallerPlugin> RunInstallerPreReqs(IProgress<PackageProgressInfo> progress)
+    {
+        List<InstallerPlugin> installedPlugins = new List<InstallerPlugin>();
+
+        foreach (var item in Extensions.GetExtensions<InstallerPlugin>())
+            installedPlugins.Add(item);
+
+        // Add App Plugins Last
+        installedPlugins.Add(InstallerPlugin.GetApplicationPlugin(PackageInformation.ApplicationType));
+        installedPlugins.Add(new StartupInstallerPlugin()); // Generates Start Scripts.
+
+        // Remove Nulls
+        installedPlugins = installedPlugins.Where(x => x != null).ToList();
+
+        // Run Prerequisite Checks
+        foreach (var item in installedPlugins)
+            item.CheckPrerequisites(PackageInformation, progress, cancelToken.Token);
+        return installedPlugins;
     }
 
     public InstallResult ValidatePackages(string passKey = null,

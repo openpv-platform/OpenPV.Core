@@ -18,6 +18,13 @@ public class LicenseTests
     [TestMethod]
     public void TestLicenseManager()
     {
+        string fileName = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(System.Hardware.FactoryPaths.ModuleLicenseFile);
+        if (File.Exists(fileName))
+            File.Delete(fileName);
+
+        var isLicensedResult = ModuleLicenseManager.IsLicensed(testLicenseID);
+        Assert.IsFalse(isLicensedResult);
+
         var keys = RSAEncryption.GenerateNewKeyPair();
 
         // Capture LicenseID to restore later
@@ -32,12 +39,11 @@ public class LicenseTests
 
         // Create License File with local key
         var data = ModuleLicenseManager.CreateLicenseFile(keys.Key, testLicenseID, licenseInfo);
-        string fileName = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(System.Hardware.FactoryPaths.ModuleLicenseFile);
         File.WriteAllBytes(fileName, data.ToArray());
 
         // Now Lets Test it with our Local keys
         ModuleLicenseManager.InitWithPublicKey(keys.Value);
-        var isLicensedResult = ModuleLicenseManager.IsLicensed(testLicenseID);
+        isLicensedResult = ModuleLicenseManager.IsLicensed(testLicenseID);
         var licenseID = ModuleLicenseManager.GetLicenseID(testLicenseName);
 
         Assert.IsTrue(isLicensedResult);

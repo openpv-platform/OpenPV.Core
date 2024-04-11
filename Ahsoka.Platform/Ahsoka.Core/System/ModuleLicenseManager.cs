@@ -48,7 +48,7 @@ public static class ModuleLicenseManager
         string licenseFile = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(FactoryPaths.ModuleLicenseFile);
         if (!File.Exists(licenseFile))
         {
-            validLicenses = new ModuleLicenseList();
+            validLicenses = new ModuleLicenseList() { Licenses = new List<ModuleLicense>() };
             return;
         }
 

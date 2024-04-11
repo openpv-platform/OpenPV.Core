@@ -173,7 +173,7 @@ internal class Extensions
         }
     }
 
-    internal static Dictionary<string, GeneratorCommandType> GetGeneratorCommands(PackageInformation packageInfo, string extensionName)
+    internal static Dictionary<string, GeneratorCommandType> GetCommands(PackageInformation packageInfo, string extensionName,CommandTypes commandTypes )
     {
         var commands = new Dictionary<string, GeneratorCommandType>();
 
@@ -191,7 +191,7 @@ internal class Extensions
                         {
                             // Execute Generator
                             IExtensionGenerator generator = ClassLoader.CreateType(defType, null) as IExtensionGenerator;
-                            generator.GetCommands(packageInfo, commands);
+                            generator.GetCommands(packageInfo, commands, commandTypes);
                         }
                     }
             }
@@ -207,6 +207,28 @@ internal class Extensions
 }
 
 /// <summary>
+/// Types of Commands to Get / Execute
+/// </summary>
+public enum CommandTypes
+{
+    /// <summary>
+    /// Commands that must be called to generate artifacts used for Compiling - Run During SDK Updates
+    /// </summary>
+    SdkGenerator,
+
+    /// <summary>
+    /// Commands that Generate Models from Application Configurations - Run During SDK Updates and Build
+    /// </summary>
+    ModelGenerators,
+
+    /// <summary>
+    /// Commands that Generate Other Build Artifacts - Run Prior to Generation
+    /// </summary>
+    BuildCommands
+}
+
+
+/// <summary>
 /// Code Generator for Extensions
 /// </summary>
 public interface IExtensionGenerator
@@ -216,8 +238,9 @@ public interface IExtensionGenerator
     /// </summary>
     /// <param name="packageInfo"></param>
     /// <param name="commandsToExecute"></param>
+    /// <param name="commandTypes"></param>
     /// <returns></returns>
-    void GetCommands(PackageInformation packageInfo, Dictionary<string, GeneratorCommandType> commandsToExecute);
+    void GetCommands(PackageInformation packageInfo, Dictionary<string, GeneratorCommandType> commandsToExecute, CommandTypes commandTypes);
 }
 
 /// <summary>

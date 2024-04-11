@@ -12,6 +12,7 @@ namespace Ahsoka.DeveloperTools.ViewModel;
 
 internal class ConsoleViewModel : ChildViewModelBase<MainViewModel>, ICanCancel
 {
+    object syncRoot = new object();
     SshCommand asyncCommand;
     CancellationTokenSource cancelToken = null;
     readonly StringBuilder console = new();
@@ -68,44 +69,57 @@ internal class ConsoleViewModel : ChildViewModelBase<MainViewModel>, ICanCancel
 
     internal void CopyConsole()
     {
-        var clipboard = ParentViewModel.RootVisual.Clipboard;
-        clipboard.SetTextAsync(console.ToString());
-
+        lock (syncRoot)
+        {
+            var clipboard = ParentViewModel.RootVisual.Clipboard;
+            clipboard.SetTextAsync(console.ToString());
+        }
     }
 
     internal void AddConsoleLine(string text)
     {
-        ParentViewModel.StatusText = text;
-        console.AppendLine(text);
-        try { latestString = console.ToString(); }
-        catch { };
-        OnPropertyChanged(nameof(ConsoleOutput));
-
+        lock (syncRoot)
+        {
+            ParentViewModel.StatusText = text;
+            console.AppendLine(text);
+            try { latestString = console.ToString(); }
+            catch { };
+            OnPropertyChanged(nameof(ConsoleOutput));
+        }
     }
 
     internal void AddConsoleCharacter(char text)
     {
-        console.Append(text);
-        latestString = console.ToString();
-        OnPropertyChanged(nameof(ConsoleOutput));
+        lock (syncRoot)
+        {
+            console.Append(text);
+            latestString = console.ToString();
+            OnPropertyChanged(nameof(ConsoleOutput));
+        }
     }
 
     internal void AddConsoleText(string text, bool removeLastLine = false)
     {
-        if (removeLastLine)
-            console.RemoveToLastLine();
+        lock (syncRoot)
+        {
+            if (removeLastLine)
+                console.RemoveToLastLine();
 
-        console.Append(text);
-        latestString = console.ToString();
-        OnPropertyChanged(nameof(ConsoleOutput));
+            console.Append(text);
+            latestString = console.ToString();
+            OnPropertyChanged(nameof(ConsoleOutput));
+        }
     }
 
     internal void TrimLastLine()
     {
-        while (console[console.Length - 1] != '\n')
-            console.Remove(console.Length - 1, 1);
-        latestString = console.ToString();
-        OnPropertyChanged(nameof(ConsoleOutput));
+        lock (syncRoot)
+        {
+            while (console[console.Length - 1] != '\n')
+                console.Remove(console.Length - 1, 1);
+            latestString = console.ToString();
+            OnPropertyChanged(nameof(ConsoleOutput));
+        }
     }
 
     internal void FetchInstallerJournal()

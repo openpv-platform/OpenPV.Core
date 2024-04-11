@@ -218,15 +218,7 @@ internal class DotNetViewModel : ViewModelBase
                         parentViewModel.Console.AddConsoleText(info.Message);
                 });
 
-                foreach (var extensionName in parentViewModel.SelectedPackage.ServiceConfiguration.Extensions)
-                {
-                    var list = Extensions.GetGeneratorCommands(parentViewModel.SelectedPackage.PackageInfo, extensionName);
-                    foreach (var command in list)
-                        if (command.Value == GeneratorCommandType.AhsokaCommandLine)
-                            parentViewModel.RunCommandLineProcess(command.Key, projectPath, progress, CancellationToken.None);
-                        else
-                            parentViewModel.RunShellProcess(command.Key, projectPath, progress, CancellationToken.None);
-                }
+                RunSdkCommands(projectPath, parentViewModel, progress);
 
             });
 
@@ -243,6 +235,19 @@ internal class DotNetViewModel : ViewModelBase
         {
             if (!isGenerating)
                 parentViewModel.FinishProcess("SDK Updated", true);
+        }
+    }
+
+    public static void RunSdkCommands(string projectPath,MainViewModel mainViewModel, Progress<CommandLineProgressInfo> progress)
+    {
+        foreach (var extensionName in mainViewModel.SelectedPackage.ServiceConfiguration.Extensions)
+        {
+            var list = Extensions.GetCommands(mainViewModel.SelectedPackage.PackageInfo, extensionName, CommandTypes.SdkGenerator | CommandTypes.ModelGenerators);
+            foreach (var command in list)
+                if (command.Value == GeneratorCommandType.AhsokaCommandLine)
+                    mainViewModel.RunCommandLineProcess(command.Key, projectPath, progress, CancellationToken.None);
+                else
+                    mainViewModel.RunShellProcess(command.Key, projectPath, progress, CancellationToken.None);
         }
     }
 

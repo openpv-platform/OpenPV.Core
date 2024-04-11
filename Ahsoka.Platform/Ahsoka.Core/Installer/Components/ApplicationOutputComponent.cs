@@ -141,7 +141,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             string workingDirectory = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
 
             // Run Installer Plugin to handle 
-            InstallerPlugin appPlugin = InstallerPlugin.GetPlugin(projectType);
+            InstallerPlugin appPlugin = InstallerPlugin.GetApplicationPlugin(projectType);
             appPlugin?.ModifyTargetInstall(workingDirectory, appCommand);
 
             AddInstaller(context, item);

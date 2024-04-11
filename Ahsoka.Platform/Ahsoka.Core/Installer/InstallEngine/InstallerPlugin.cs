@@ -9,18 +9,7 @@ namespace Ahsoka.Installer.InstallEngine;
 
 internal class InstallerPlugin
 {
-    internal static InstallerPlugin GetPlugin(UserInterfaceType userInterfaceType)
-    {
-        switch (userInterfaceType)
-        {
-            case UserInterfaceType.Storyboard: 
-                return new StoryboardInstallerPlugin();
-            default:
-                return null;
-        }
-    }
-
-    internal static InstallerPlugin GetPlugin(ApplicationType applicationType)
+    internal static InstallerPlugin GetApplicationPlugin(ApplicationType applicationType)
     {
         switch (applicationType)
         {

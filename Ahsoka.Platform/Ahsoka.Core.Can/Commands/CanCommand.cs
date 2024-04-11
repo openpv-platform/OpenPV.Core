@@ -35,11 +35,11 @@ internal static class CanCommands
 
 internal class CanCodeGenerator : IExtensionGenerator
 {
-    public void GetCommands(PackageInformation packageInfo, Dictionary<string, GeneratorCommandType> commandsToExecute)
+    public void GetCommands(PackageInformation packageInfo, Dictionary<string, GeneratorCommandType> commandsToExecute, CommandTypes commandtypes)
     {
         string config = packageInfo.ServiceInfo.RuntimeConfiguration.Services.FirstOrDefault(x => x.ServiceName == "CanService").ConfigurationFile;
         string configFile = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), config);
-        if (File.Exists(configFile))
+        if (File.Exists(configFile) && commandtypes.HasFlag(CommandTypes.ModelGenerators))
         {
             var calibration = JsonUtility.Deserialize<CanClientCalibration>(File.ReadAllText(configFile));
             commandsToExecute.Add($"--GenerateCANClasses \"{Path.GetFileName(packageInfo.GetPackageInfoPath())}\" \"{calibration.GeneratorOutputFile}\" \"{calibration.GeneratorNamespace}\" \"{calibration.GeneratorBaseClass}\" {packageInfo.ApplicationType}",

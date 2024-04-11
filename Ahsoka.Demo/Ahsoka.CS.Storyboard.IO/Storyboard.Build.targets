@@ -1,60 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
-
-  <!--Storyboard Variables used to Configure Export and Generation in OpenPV-->
-  <PropertyGroup Label="OpenPV Storyboard Settings">
-	<StoryboardProgramFolder>C:\Program Files\Crank_Software</StoryboardProgramFolder>
-	<StoryboardVersion>8.0-stable.202304090148</StoryboardVersion>
-	<StoryboardProjectFolder>StoryboardProject</StoryboardProjectFolder>
-    <StoryboardExportFolder>StoryboardExport</StoryboardExportFolder>
-    <StoryboardAppName>Demo</StoryboardAppName>
-
-    <StoryboardClassNameSpace>Ahsoka.Application.Storyboard</StoryboardClassNameSpace>
-    <StoryboardClassDirectory>obj/GeneratedObjects</StoryboardClassDirectory>
-    <StoryboardClassBase>ApplicationViewModelBase</StoryboardClassBase>
-    <StoryboardGenerateClassesOnBuild>True</StoryboardGenerateClassesOnBuild>
-    <StoryboardGenerateAppOnBuild>True</StoryboardGenerateAppOnBuild>
-  </PropertyGroup>
-
-	<PropertyGroup>
-		<StoryboardExecutable Condition="$([MSBuild]::IsOSPlatform('OSX'))">$(StoryboardProgramFolder)/Storyboard_Designer/Storyboard.app/Contents/MacOS/Crank Storyboard</StoryboardExecutable>
-		<StoryboardExecutable Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(StoryboardProgramFolder)\Storyboard_Designer\Crank Storyboard.exe</StoryboardExecutable>
+	<!--Beginning in OpenPV 3.0, Command Line Code Generators have been simplified and now execute as part of the 
+	SDK Installation so the targets (ExportStoryboardClasses) / properties (Can Generator Properties) below are no 
+	longer needed. With this change, the Developer Toolkit will generate your CAN Models as part of the SDK Update 
+	or after Changes to the CanConfiguration.
+	
+	NOTE: For developers that prefer to keep the model generation here as part of their local build system, you can set the 
+	StoryboardGenerateClassesOnBuild Property to True to continue using the older style code generation method.  You 
+	will need to disable the Code Generation in the Associated CAN Extension as well to avoid conflicts-->
+	<PropertyGroup Label="Storyboard AutoGeneration Propertiees">
+		<StoryboardGenerateClassesOnBuild>true</StoryboardGenerateClassesOnBuild>
+		<StoryboardOutputFolder>obj\GeneratedObjects</StoryboardOutputFolder>
 	</PropertyGroup>
 
-	<!--Storyboard Runtimes to be included in the Package-->
-	<ItemGroup Label="Storyboard Runtimes">
-		<Content Label="Windows Runtime" Include="$(StoryboardProgramFolder)\Storyboard_Engine\$(StoryboardVersion)\windows-x86_64-swrender-obj\**" Condition="'$(RuntimeIdentifier)' != 'linux-arm' and $([MSBuild]::IsOSPlatform('Windows'))">
-			<Link>Storyboard/Windows64/sbengine/%(RecursiveDir)%(Filename)%(Extension)</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Visible>false</Visible>
-		</Content>
-		<Content Label="OpenView Runtime" Include="$(StoryboardProgramFolder)\Storyboard_Engine\$(StoryboardVersion)\linux-stmA5-armle-opengles_2.0-wayland-obj\**" Condition="'$(RuntimeIdentifier)' == 'linux-arm'">
-			<Link>Storyboard/OpenViewLinux/sbengine/%(RecursiveDir)%(Filename)%(Extension)</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Visible>false</Visible>
-		</Content>
-		<Content Label="MacOS Runtime" Include="$(StoryboardProgramFolder)/Storyboard_Engine/$(StoryboardVersion)/macos-arm64-swrender-obj/**" Condition="'$(RuntimeIdentifier)' != 'linux-arm' and $([MSBuild]::IsOSPlatform('OSX'))">
-			<Link>Storyboard/MacosArm64/sbengine/%(RecursiveDir)%(Filename)%(Extension)</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Visible>false</Visible>
-		</Content>
-	</ItemGroup>
-
-	<!--Path to Storyboard Compiled Output Folder -->
-	<ItemGroup Label="Project Outputs">
-		<None Label="Sample Storyboard Project (Hidden)" Remove="$(StoryboardProjectFolder)\**" />
-	</ItemGroup>
-
 	<Target Name="Clean Storyboard Classes" BeforeTargets="BeforeClean">
-		<RemoveDir Directories="$(StoryboardClassDirectory)" />
+		<RemoveDir Directories="$(StoryboardOutputFolder)" />
 	</Target>
 
-	<Target Condition="'$(StoryboardGenerateClassesOnBuild)'=='True' and Exists('$(AhsokaCommandLinePath)')" Label="ExportStoryboardClasses" Name="ExportStoryboardClasses" BeforeTargets="BeforeCompile">
+	<Target Label="ExportStoryboardClasses" Name="ExportStoryboardClasses" BeforeTargets="BeforeCompile"
+		Condition="'$(StoryboardGenerateClassesOnBuild)'=='True' and Exists('$(AhsokaCommandLinePath)')" >
 		<!--Note that we use Core Compile here to let the build know this should happen FIRST as we want the outputs for code completion-->
-
 		<!--Pre-Compile our Classes from the Storyboard Event File-->
 		<Message Text="CommandLine Path = $(AhsokaCommandLinePath)" Importance="high" />
-		<Exec ContinueOnError="true" Command="&quot;$(AhsokaCommandLinePath)&quot; --GenerateStoryboardClasses &quot;$(StoryboardProjectFolder)\events\custom.evt&quot; &quot;$(StoryboardClassDirectory)&quot; &quot;$(StoryboardClassNameSpace)&quot; &quot;$(StoryboardClassBase)&quot;" Outputs="$(StoryboardClassDirectory)/*.cs">
+		<Exec ContinueOnError="true" Command="$(AhsokaCommandLinePath) --GenerateStoryboardClasses StoryboardProject\events\custom.evt $(StoryboardOutputFolder) Ahsoka.Application.Storyboard ApplicationViewModelBase"
+			  Outputs="$(StoryboardOutputFolder)/*.cs">
 			<Output ItemName="Generated" TaskParameter="Outputs" />
 		</Exec>
 		<Message Importance="high" Text="Output= @(Generated)" />
@@ -65,19 +34,37 @@
 		</ItemGroup>
 	</Target>
 
+
+
+	<!--Storyboard Variables used to Configure Export and Generation in OpenPV-->
+	<PropertyGroup Label="OpenPV Storyboard Settings">
+		<StoryboardGenerateAppOnBuild>true</StoryboardGenerateAppOnBuild>
+		<StoryboardExportFolder>StoryboardExport</StoryboardExportFolder>
+	</PropertyGroup>
+	
 	<!--Export the Application-->
 	<Target Name="Clean ExportStoryboardApp" BeforeTargets="BeforeClean">
 		<RemoveDir Directories="$(StoryboardExportFolder)" />
 	</Target>
 
+	<PropertyGroup>
+		<StoryboardExecutable Condition="$([MSBuild]::IsOSPlatform('OSX'))">$(StoryboardProgramFolder)/Storyboard_Designer/Storyboard.app/Contents/MacOS/Crank Storyboard</StoryboardExecutable>
+		<StoryboardExecutable Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(StoryboardProgramFolder)\Storyboard_Designer\Crank Storyboard.exe</StoryboardExecutable>
+	</PropertyGroup>
+
+	<!--Path to Storyboard Compiled Output Folder -->
+	<ItemGroup Label="Project Outputs">
+		<None Label="Sample Storyboard Project (Hidden)" Remove="StoryboardProject\**" />
+	</ItemGroup>
+
 	<Target Condition="'$(StoryboardGenerateAppOnBuild)'=='True' AND Exists('$(StoryboardExecutable)')" Label="ExportStoryboardApp" Name="ExportStoryboardApp" AfterTargets="AfterPublish;PostBuildEvent">
 
 		<!--Publish Storyboard Outputs-->
-		<Exec Command="&quot;$(StoryboardExecutable)&quot; -application com.crank.gdt.ui.gappexport -nosplash model=$(ProjectDir)$(StoryboardProjectFolder)/$(StoryboardAppName).gde output=$(ProjectDir)$(StoryboardExportFolder)/$(StoryboardAppName).gapp" Outputs="$(ProjectDir)$(StoryboardExportFolder)/*.*" />
+		<Exec Command="&quot;$(StoryboardExecutable)&quot; -application com.crank.gdt.ui.gappexport -nosplash model=$(ProjectDir)StoryboardProject/ThermostatIO.gde output=$(ProjectDir)StoryboardExport/ThermostatIO.gapp" Outputs="$(ProjectDir)StoryboardExport/*.*" />
 
 		<!--Copy Storyboard gapp to Output Areas-->
 		<ItemGroup>
-			<DistFiles Include="$(StoryboardExportFolder)\**" />
+			<DistFiles Include="StoryboardExport\**" />
 			<ResolvedFileToPublish Include="@(DistFiles-&gt;'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
 				<RelativePath>%(DistFiles.Identity)</RelativePath>
 				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

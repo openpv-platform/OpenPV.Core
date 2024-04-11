@@ -198,15 +198,7 @@ internal class CppViewModel : ViewModelBase
                         parentViewModel.Console.AddConsoleText(info.Message);
                 });
 
-                foreach (var extensionName in parentViewModel.SelectedPackage.ServiceConfiguration.Extensions)
-                {
-                    var list = Extensions.GetGeneratorCommands(parentViewModel.SelectedPackage.PackageInfo, extensionName);
-                    foreach (var command in list)
-                        if (command.Value == GeneratorCommandType.AhsokaCommandLine)
-                            parentViewModel.RunCommandLineProcess(command.Key, projectPath, progress, CancellationToken.None);
-                        else
-                            parentViewModel.RunShellProcess(command.Key, projectPath, progress, CancellationToken.None);
-                }
+                DotNetViewModel.RunSdkCommands(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), parentViewModel, progress);
             });
 
             parentViewModel.Console.AddConsoleLine($" ");

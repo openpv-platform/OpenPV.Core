@@ -119,12 +119,12 @@ namespace Ahsoka.DeveloperTools.Properties {
         ///  &quot;PlatformDescription&quot;: &quot;Support for the OpenView Select Line of Products including S50 and S70&quot;,
         ///  &quot;FirmwareSparkChannelName&quot;: &quot;OpenPV Distribution&quot;,
         ///  &quot;DemoSparkChannelName&quot;: &quot;OpenPV Demos&quot;,
-        ///  &quot;ModuleSparkChannelName&quot;: &quot;OpenPV Modules&quot;,
+        ///  &quot;ExtensionSparkChannelName&quot;: &quot;OpenPV Extensions&quot;,
         ///  &quot;PlatformSupportSparkChannelName&quot;: &quot;OpenPV Dependencies&quot;,
         ///  &quot;TargetPlatform&quot;: &quot;OpenViewLinux&quot;,
         ///  &quot;FirmwareResources&quot;: {
         ///    &quot;Name&quot;: &quot;OpenView Firmware Resources&quot;,
-        ///    &quot;Description&quot;: &quot;Hardware Definitions as well a [rest of string was truncated]&quot;;.
+        ///    &quot;Description&quot;: &quot;Hardware Definitions as  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OpenViewPlatformSupport {
             get {

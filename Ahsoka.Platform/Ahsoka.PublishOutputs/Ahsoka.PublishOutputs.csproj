@@ -117,6 +117,7 @@
 		<Exec Command="dotnet pack ../Ahsoka.Core.Can.Ux/Ahsoka.Core.Can.Ux.csproj" />
 		<Exec Command="dotnet pack ../Ahsoka.Core.Cygnus/Ahsoka.Core.Cygnus.csproj" />
 		<Exec Command="dotnet pack ../Ahsoka.Core.Storyboard/Ahsoka.Core.Storyboard.csproj" />
+		<Exec Command="dotnet pack ../Ahsoka.Core.Storyboard.Ux/Ahsoka.Core.Storyboard.Ux.csproj" />
 
 	</Target>
 

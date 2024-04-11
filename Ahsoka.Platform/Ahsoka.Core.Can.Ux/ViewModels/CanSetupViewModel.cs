@@ -213,7 +213,7 @@ internal class CanSetupViewModel : ExtensionViewModelBase
         EvaluatePort();
     }
 
-    protected override string OnSave(string packageInfoFolder, string serviceName)
+    protected override string OnSave(string packageInfoFolder)
     {
         /// Generate FileName if We Edited the Data but have no path.
         if (String.IsNullOrEmpty(configurationPath))
@@ -249,7 +249,7 @@ internal class CanSetupViewModel : ExtensionViewModelBase
 
         // Config Changed...may need to regenerate the Models.
         if (hasChanges)
-            this.CustomerToolViewModel.SdkNeedsUpdate();
+            this.CustomerToolViewModel?.SdkNeedsUpdate();
 
         return hasChanges;
     }

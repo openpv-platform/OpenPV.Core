@@ -78,6 +78,15 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         // Load Service Extensions Service Info
         foreach (var extension in AvailableExtensions)
         {
+            foreach( var ext in ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.Extensions)
+            {
+                if (extensionUXExtensions.TryGetValue(extension.ExtensionName, out ExtensionViewModelBase extVM))
+                {
+                    var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
+                    extVM.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
+                }
+            }
+
             foreach (var service in extension.ExtensionConfiguration.ServiceConfigurations)
             {
                 var config = ParentViewModel.ServiceConfiguration.Services.FirstOrDefault(x => x.ServiceName == service.ServiceName);
@@ -87,14 +96,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
                     var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, service, null, extension);
                     ParentViewModel.ServiceViewModel.Services.Add(viewModel);
-
-                    if (extensionUXExtensions.TryGetValue(extension.ExtensionName,out ExtensionViewModelBase extVM))
-                    {
-                        var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
-                        extVM.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
-                    }
                 }
-
             }
         }
     }
@@ -172,12 +174,10 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     {
         foreach (var item in AvailableExtensions)
         {
-            foreach(var service in item.ExtensionConfiguration.ServiceConfigurations)
+            if (ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.Extensions.Contains(item.ExtensionName))
             {
-                var config = ParentViewModel.ServiceConfiguration.Services.FirstOrDefault(x => x.ServiceName == service.ServiceName);
-
-                if (config != null && extensionUXExtensions.TryGetValue(item.ExtensionName, out var vm))
-                   config.ConfigurationFile = vm.Save(packageInfoFolder, config.ServiceName);
+                var vm = extensionUXExtensions[item.ExtensionName];
+                vm.Save(packageInfoFolder);
             }
         }
     }
@@ -186,6 +186,11 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     public Task<string> FileLocatorAsync(string dialogTitle, string extension, string fileType, string currentFile = "")
     {
         return ParentViewModel.ParentViewModel.FileLocatorAsync(dialogTitle, extension, fileType, currentFile);
+    }
+
+    public Task<string> FolderLocatorAsync(string dialogTitle, string defaultPath = "")
+    {
+        return ParentViewModel.ParentViewModel.FolderLocatorAsync(dialogTitle, defaultPath);
     }
 
     public Task<bool> ShowDialog(string dialogTitle, string dialogText, string dialogAcceptText, string dialogRejectText = "")
@@ -257,7 +262,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
 
     public string ExtensionName { get { return configuration.ExtensionName; } }
 
-    public bool HasUx { get { return configuration.HasUx; } }
+    public bool HasUx { get { return configuration.HasUx && IsIncluded; } }
 
     public bool IsSelected { get; set; }
 
@@ -300,6 +305,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
                     }
             }
             OnPropertyChanged();
+            OnPropertyChanged(nameof(HasUx));
         }
     }
 

@@ -23,7 +23,11 @@ internal class DotNetViewModel : ViewModelBase
 {
     private readonly MainViewModel parentViewModel;
     private readonly PackageInformation packageInfo;
-    public bool SdkNeedsUpdate { get; set; }
+    public bool SdkNeedsUpdate
+    { 
+        get; 
+        set; 
+    }
 
     public void UpdateSDK()
     {
@@ -69,7 +73,6 @@ internal class DotNetViewModel : ViewModelBase
         set
         {
             packageInfo.DotNetInfo.ProjectPath = value;
-            parentViewModel.SelectedPackage.StoryboardViewModel?.ReadPathsFromProject(); // Notify SB UI of Project Change.
             OnPropertyChanged();
         }
     }
@@ -219,7 +222,10 @@ internal class DotNetViewModel : ViewModelBase
                 {
                     var list = Extensions.GetGeneratorCommands(parentViewModel.SelectedPackage.PackageInfo, extensionName);
                     foreach (var command in list)
-                        parentViewModel.RunCommandLineProcess(command, projectPath, progress, CancellationToken.None);
+                        if (command.Value == GeneratorCommandType.AhsokaCommandLine)
+                            parentViewModel.RunCommandLineProcess(command.Key, projectPath, progress, CancellationToken.None);
+                        else
+                            parentViewModel.RunShellProcess(command.Key, projectPath, progress, CancellationToken.None);
                 }
 
             });

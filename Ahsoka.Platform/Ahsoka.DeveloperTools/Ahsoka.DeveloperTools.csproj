@@ -114,9 +114,6 @@
 	  <Compile Update="Views\Package\OpenPackageView.axaml.cs">
 	    <DependentUpon>OpenPackageView.axaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Views\Package\StoryboardView.axaml.cs">
-	    <DependentUpon>StoryboardView.axaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="Views\Package\ExtensionContainerView.axaml.cs">
 	    <DependentUpon>ExtensionContainerView.axaml</DependentUpon>
 	  </Compile>

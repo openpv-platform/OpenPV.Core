@@ -30,14 +30,14 @@ public abstract class ExtensionViewModelBase : ViewModelBase
         OnClose();
     }
 
-    public string Save(string packageInfoFolder, string serviceName)
+    public string Save(string packageInfoFolder)
     {
-        return OnSave(packageInfoFolder,serviceName);
+        return OnSave(packageInfoFolder);
     }
 
     protected abstract void OnInitExtension(HardwareInfo hardwareInfo, string projectFolder);
 
-    protected abstract string OnSave(string packageInfoFolder, string serviceName);
+    protected abstract string OnSave(string packageInfoFolder);
 
     protected abstract UserControl OnGetView();
 

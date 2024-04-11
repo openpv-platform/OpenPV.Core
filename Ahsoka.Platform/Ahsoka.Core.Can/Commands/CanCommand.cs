@@ -4,6 +4,7 @@ using Ahsoka.System;
 using Ahsoka.Utility;
 using ELFSharp.MachO;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -34,16 +35,15 @@ internal static class CanCommands
 
 internal class CanCodeGenerator : IExtensionGenerator
 {
-    public string GetGeneratorCommandLine(PackageInformation packageInfo)
+    public void GetCommands(PackageInformation packageInfo, Dictionary<string, GeneratorCommandType> commandsToExecute)
     {
         string config = packageInfo.ServiceInfo.RuntimeConfiguration.Services.FirstOrDefault(x => x.ServiceName == "CanService").ConfigurationFile;
         string configFile = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), config);
         if (File.Exists(configFile))
         {
             var calibration = JsonUtility.Deserialize<CanClientCalibration>(File.ReadAllText(configFile));
-            return $"--GenerateCANClasses \"{Path.GetFileName(packageInfo.GetPackageInfoPath())}\" \"{calibration.GeneratorOutputFile}\" \"{calibration.GeneratorNamespace}\" \"{calibration.GeneratorBaseClass}\" {packageInfo.ApplicationType}";
+            commandsToExecute.Add($"--GenerateCANClasses \"{Path.GetFileName(packageInfo.GetPackageInfoPath())}\" \"{calibration.GeneratorOutputFile}\" \"{calibration.GeneratorNamespace}\" \"{calibration.GeneratorBaseClass}\" {packageInfo.ApplicationType}",
+                      GeneratorCommandType.AhsokaCommandLine);
         }
-
-        return "";
     }
 }

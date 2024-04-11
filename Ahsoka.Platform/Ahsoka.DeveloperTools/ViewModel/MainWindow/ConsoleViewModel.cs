@@ -144,7 +144,7 @@ internal class ConsoleViewModel : ChildViewModelBase<MainViewModel>, ICanCancel
         cancelToken = new CancellationTokenSource();
 
         using var sshClient = SshUtility.CreateSshClient(ParentViewModel.ActiveConnection.Connection);
-        using (asyncCommand = sshClient.CreateCommand($"journalctl -u {serviceName}.service -f"))
+        using (asyncCommand = sshClient.CreateCommand($"journalctl -u {serviceName}.service -f --lines=all"))
         {
             var result = asyncCommand.BeginExecute();
             using var reader = new StreamReader(asyncCommand.OutputStream, Encoding.UTF8, true, 1024, true);

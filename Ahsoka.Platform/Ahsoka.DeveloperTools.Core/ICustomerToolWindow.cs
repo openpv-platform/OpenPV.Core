@@ -8,6 +8,7 @@ namespace Ahsoka.DeveloperTools.Core;
 
 public interface ICustomerToolViewModel
 {
+    Task<string> FolderLocatorAsync(string dialogTitle, string defaultPath = "");
     Task<string> FileLocatorAsync(string dialogTitle, string extension, string fileType, string currentFile = "");
     Task<bool> ShowDialog(string dialogTitle, string dialogText, string dialogAcceptText, string dialogRejectText = "");
 

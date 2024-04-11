@@ -61,7 +61,7 @@ internal abstract class SparkToolBase : OpenPVToolBase
                 {
                     string extractPath = Path.GetDirectoryName(LocalPath);
 
-                    PackagingUtility.ExtractPackage(path, extractPath,null,null);
+                    PackagingUtility.ExtractPackage(path, extractPath, null, null);
                     if (File.Exists(LocalPath))
                         File.Delete(LocalPath);
                     else if (Directory.Exists(LocalPath))

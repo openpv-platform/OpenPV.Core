@@ -11,3 +11,18 @@ message StartupConfiguration
     bool UseEarlyStart = 6;
 }
 
+message StoryboardDevelopmentConfiguration
+{
+    bool ModelGeneratorEnabled = 1;
+    bool AppGeneratorEnabled = 2;
+    string GeneratorOutputFolder = 5;
+    string GeneratorNameSpace = 6;
+    string GeneratorProjectPath = 7;
+    string GeneratorModelBaseClass = 8;
+
+    string StoryboardAppProgramFolder = 9;
+    string StoryboardAppExportFolder = 10;
+    string StoryboardAppVersion = 11;
+    string StoryboardAppName = 13;
+}
+

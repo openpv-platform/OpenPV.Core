@@ -172,7 +172,7 @@ internal class MainViewModel : ViewModelBase
                 if (Path.Exists(StartupArg))
                     OpenProject(StartupArg);
             });
-            
+
             ProgressVisible = false;
         });
     }
@@ -218,11 +218,11 @@ internal class MainViewModel : ViewModelBase
     }
 
     public ObservableCollection<RecentItem> RecentItems { get => recentItems; set => recentItems = value; }
-    
-    public bool UseInternalCommandLine 
+
+    public bool UseInternalCommandLine
     {
         get { return Settings.UseInternalCLI; }
-        set 
+        set
         {
             Settings.UseInternalCLI = value;
             SaveSettings();
@@ -306,6 +306,30 @@ internal class MainViewModel : ViewModelBase
             ProcessUtility.RunProcessAsync(pathToCommand, processArgs, workingDirectory, progressText, token);
         }
     }
+
+    internal void RunShellProcess(string command, string workingDirectory, IProgress<CommandLineProgressInfo> progressString, CancellationToken token)
+    {
+        string pathToCommand = command.Substring(0, command.IndexOf('"', 2) + 1).Trim('"');
+        string processArgs = command.Substring(command.IndexOf('"', 2) + 2);
+
+        progressString.Report(new CommandLineProgressInfo() { Message = $"Executing Shell Command from...", IsWriteLine = true });
+        progressString.Report(new CommandLineProgressInfo() { Message = $"   {pathToCommand}", IsWriteLine = true });
+        progressString.Report(new CommandLineProgressInfo() { Message = $" ", IsWriteLine = true });
+        progressString.Report(new CommandLineProgressInfo() { Message = $"With Arguments...", IsWriteLine = true });
+        progressString.Report(new CommandLineProgressInfo() { Message = $"   {processArgs}", IsWriteLine = true });
+        progressString.Report(new CommandLineProgressInfo() { Message = $" ", IsWriteLine = true });
+
+        IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
+        {
+            progressString.Report(new CommandLineProgressInfo() { Message = info.Data, IsWriteLine = true });
+        });
+
+        if (OperatingSystem.IsLinux())
+            ProcessUtility.RunProcessAsync("chmod", "+x " + pathToCommand, workingDirectory, progressText, token);
+
+        ProcessUtility.RunProcessAsync(pathToCommand, processArgs, workingDirectory, progressText, token);
+    }
+
 
     public string GetPlatformPath(PlatformFamily family)
     {

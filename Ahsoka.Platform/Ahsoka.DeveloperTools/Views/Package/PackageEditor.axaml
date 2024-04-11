@@ -49,7 +49,14 @@
 				</TabItem.Header>
 				<CustomerTools:DeveloperView/>
 			</TabItem>
-
+			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
+				<TabItem.Header>
+					<TextBlock
+						FontSize="18"
+						Text="Extensions"/>
+				</TabItem.Header>
+				<CustomerTools:ExtensionsView/>
+			</TabItem>
 			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
 				<TabItem.Header>
 					<TextBlock
@@ -68,14 +75,7 @@
 				<CustomerTools:ServiceOptionsView/>
 			</TabItem>
 
-			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
-				<TabItem.Header>
-					<TextBlock
-						FontSize="18"
-						Text="Extensions"/>
-				</TabItem.Header>
-				<CustomerTools:ExtensionsView/>
-			</TabItem>
+		
 		</TabControl>
 	</Grid>
 </UserControl>

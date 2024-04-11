@@ -202,7 +202,10 @@ internal class CppViewModel : ViewModelBase
                 {
                     var list = Extensions.GetGeneratorCommands(parentViewModel.SelectedPackage.PackageInfo, extensionName);
                     foreach (var command in list)
-                        parentViewModel.RunCommandLineProcess(command, projectPath, progress, CancellationToken.None);
+                        if (command.Value == GeneratorCommandType.AhsokaCommandLine)
+                            parentViewModel.RunCommandLineProcess(command.Key, projectPath, progress, CancellationToken.None);
+                        else
+                            parentViewModel.RunShellProcess(command.Key, projectPath, progress, CancellationToken.None);
                 }
             });
 

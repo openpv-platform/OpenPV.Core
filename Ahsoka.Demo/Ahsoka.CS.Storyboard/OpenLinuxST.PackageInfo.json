@@ -1,5 +1,5 @@
 {
-  "version": "3.0.1.10015",
+  "version": "3.0.1.10020",
   "applicationType": "Dotnet",
   "userInterfaceType": "Storyboard",
   "systemOrientation": "DefaultOrientation",
@@ -11,7 +11,12 @@
   "packageOutputDirectory": "../PackageOutput",
   "startupLogoPath": "StoryboardProject/images/bg_wood.png",
   "includeInstallerUI": false,
-  "licenses": [],
+  "licenses": [
+    {
+      "licenseName": "Storyboard Runtime",
+      "licenseId": "2a676c49-e0d2-4578-ae5b-6ce14fc59dc6"
+    }
+  ],
   "storyboardInfo": {},
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Storyboard.csproj",
@@ -33,10 +38,11 @@
           "configurationFile": ""
         }
       ],
-      "customServiceEnabled": "Disabled",
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
-      "extensions": [],
+      "extensions": [
+        "Storyboard Extension"
+      ],
       "startupDelay": 0
     },
     "environmentValues": []
@@ -46,6 +52,6 @@
   "platformFamily": "OpenViewLinux",
   "platformQualifier": "S70",
   "securityMode": "None",
-  "applicationId": "dcab7071-7440-4aea-a9c1-f1f7e8ce895d",
+  "applicationId": "6e05ae42-c6be-40df-ae8f-d138273ba3f7",
   "components": []
 }

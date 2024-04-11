@@ -173,9 +173,10 @@ internal class Extensions
         }
     }
 
-    internal static List<string> GetGeneratorCommands(PackageInformation packageInfo, string extensionName)
+    internal static Dictionary<string, GeneratorCommandType> GetGeneratorCommands(PackageInformation packageInfo, string extensionName)
     {
-        List<string> commands = new List<string>();
+        var commands = new Dictionary<string, GeneratorCommandType>();
+
         var config = Configurations.FirstOrDefault(x => x.ExtensionName == extensionName);
         if (config != null)
         {
@@ -189,8 +190,8 @@ internal class Extensions
                             defType.Name == config.SdkGeneratorName)
                         {
                             // Execute Generator
-                            IExtensionGenerator generator = ClassLoader.CreateType(defType,null) as IExtensionGenerator;
-                            commands.Add(generator.GetGeneratorCommandLine(packageInfo));
+                            IExtensionGenerator generator = ClassLoader.CreateType(defType, null) as IExtensionGenerator;
+                            generator.GetCommands(packageInfo, commands);
                         }
                     }
             }
@@ -214,7 +215,24 @@ public interface IExtensionGenerator
     /// Executes a Code Generator
     /// </summary>
     /// <param name="packageInfo"></param>
+    /// <param name="commandsToExecute"></param>
     /// <returns></returns>
-    string GetGeneratorCommandLine(PackageInformation packageInfo);
+    void GetCommands(PackageInformation packageInfo, Dictionary<string, GeneratorCommandType> commandsToExecute);
+}
+
+/// <summary>
+/// Type of Commands Returned from the Generator
+/// </summary>
+public enum GeneratorCommandType
+{
+    /// <summary>
+    /// Arguments to pass to the OpenPV CLI
+    /// </summary>
+    AhsokaCommandLine,
+
+    /// <summary>
+    /// Execute Command in Shell
+    /// </summary>
+    ShellCommand
 }
 

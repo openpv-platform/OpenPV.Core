@@ -31,7 +31,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     string originalJsonText = string.Empty;
     CancellationTokenSource source;
     private DotNetViewModel dotNetModel;
-    private StoryboardViewModel sbModel;
     private PowerVisionViewModel pvModel;
     private StartupOptionsViewModel serviceStartModel;
     private ServiceViewModel dataServiceModel;
@@ -333,12 +332,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get { return ApplicationType == ApplicationType.Dotnet ? dotNetModel : null; }
         set { dotNetModel = value; OnPropertyChanged(); }
-    }
-
-    public StoryboardViewModel StoryboardViewModel
-    {
-        get { return UserInterfaceType == UserInterfaceType.Storyboard ? sbModel : null; }
-        set { sbModel = value; OnPropertyChanged(); }
     }
 
     public PowerVisionViewModel PowerVisionViewModel
@@ -792,13 +785,19 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         // Save Before Generating
         ParentViewModel.SavePackage();
 
+        bool didRunCommands = false;
         if (SdkNeedsUpdate)
         {
+            ParentViewModel.Console.AddConsoleLine("Updating SDK");
+
             if (ApplicationType == ApplicationType.Dotnet)
                await dotNetModel.NeedsUpdate(true);
             else if (ApplicationType == ApplicationType.Cpp)
                await cppViewModel.NeedsUpdate(true);
+
+            didRunCommands = !SdkNeedsUpdate;
         }
+        
 
         ParentViewModel.Console.ClearConsole();
         ParentViewModel.Console.AddConsoleLine("Generating OPV Package File");
@@ -819,6 +818,23 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         {
             // Grab Latest Copy of Info.
             itemToGenerate.UpdatePackageInfo();
+
+            // Execute Commands 
+            if (!didRunCommands)
+            {
+                ((IProgress<CommandLineProgressInfo>)progress).Report(new CommandLineProgressInfo() { Message = "Running Code Generators...", IsWriteLine = true });
+
+                foreach (var extensionName in ServiceConfiguration.Extensions)
+                {
+                    var list = Extensions.GetGeneratorCommands(PackageInfo, extensionName);
+                    foreach (var command in list)
+                        if (command.Value == GeneratorCommandType.AhsokaCommandLine)
+                            ParentViewModel.RunCommandLineProcess(command.Key, Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), progress, CancellationToken.None);
+                        else
+                            ParentViewModel.RunShellProcess(command.Key, Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), progress, CancellationToken.None);
+
+                }
+            }
 
             string workingDirectory = Path.GetDirectoryName(itemToGenerate.PackageInfoPath);
             string packageInfoPath = itemToGenerate.PackageInfoPath;
@@ -877,7 +893,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                     ApplicationType = ApplicationType.Cpp;
                 break;
             case UserInterfaceType.Storyboard:
-                StoryboardViewModel = new StoryboardViewModel(this);
                 if (ApplicationType is ApplicationType.PowerVision or ApplicationType.CODESYS or ApplicationType.Cpp)
                     ApplicationType = ApplicationType.Dotnet;
                 break;
@@ -894,7 +909,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                 break;
         }
 
-        OnPropertyChanged(nameof(StoryboardViewModel));
         OnPropertyChanged(nameof(PowerVisionViewModel));
     }
 
@@ -949,9 +963,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         else
         {
             ExtensionsViewModel.SaveViewModels(Path.GetDirectoryName(PackageInfoPath));
-
-            if (StoryboardViewModel != null && DotNetViewModel != null)
-                StoryboardViewModel.Save(StoryboardViewModel.StoryboardProjectInfo);
 
             // Update this Last in case Child Values Changed
             string data = JsonUtility.Serialize(PackageInfo);

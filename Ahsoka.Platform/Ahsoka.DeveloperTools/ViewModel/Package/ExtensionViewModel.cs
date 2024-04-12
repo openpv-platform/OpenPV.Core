@@ -79,13 +79,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         foreach (var extension in AvailableExtensions)
         {
             foreach( var ext in ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.Extensions)
-            {
-                if (extensionUXExtensions.TryGetValue(extension.ExtensionName, out ExtensionViewModelBase extVM))
-                {
-                    var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
-                    extVM.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
-                }
-            }
+                InitExtension(extension.ExtensionName);
 
             foreach (var service in extension.ExtensionConfiguration.ServiceConfigurations)
             {
@@ -98,6 +92,15 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
                     ParentViewModel.ServiceViewModel.Services.Add(viewModel);
                 }
             }
+        }
+    }
+
+    internal void InitExtension(string extensionName)
+    {
+        if (extensionUXExtensions.TryGetValue(extensionName, out ExtensionViewModelBase extVM))
+        {
+            var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
+            extVM.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
         }
     }
 
@@ -150,12 +153,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         ParentViewModel.ParentViewModel.Popup.ShowPopup(currentPopup);
     }
 
-    private void InitExtension(string extensionName)
-    {
-        var hw = HardwareInfo.GetHardwareInfo(ParentViewModel.PackageInfo.PlatformFamily, ParentViewModel.PackageInfo.PlatformQualifier);
-        if (extensionUXExtensions.TryGetValue(extensionName, out var vm))
-            vm.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath));
-    }
+   
 
     public void CloseAndDiscardChanges()
     {
@@ -280,7 +278,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
                 if (!ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Contains(ExtensionName))
                 {
                     ParentViewModel.ParentViewModel.ServiceConfiguration.Extensions.Add(ExtensionName);
-
+                    
                     foreach (var serviceConfig in ExtensionConfiguration.ServiceConfigurations)
                     {
                         if (!ParentViewModel.ParentViewModel.ServiceViewModel.Services.Any(x => x.ServiceName == serviceConfig.ServiceName))
@@ -291,6 +289,8 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
                             viewModel.IsIncluded = true;
                         }
                     }
+
+                    ParentViewModel.InitExtension(ExtensionName);
                 }
             }
             else

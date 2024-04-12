@@ -226,12 +226,12 @@ public class InstallEngineBase
     {
         List<InstallerPlugin> installedPlugins = new List<InstallerPlugin>();
 
-        foreach (var item in Extensions.GetExtensions<InstallerPlugin>())
-            installedPlugins.Add(item);
-
         // Add App Plugins Last
         installedPlugins.Add(InstallerPlugin.GetApplicationPlugin(PackageInformation.ApplicationType));
         installedPlugins.Add(new StartupInstallerPlugin()); // Generates Start Scripts.
+
+        foreach (var item in Extensions.GetExtensions<InstallerPlugin>())
+            installedPlugins.Add(item);
 
         // Remove Nulls
         installedPlugins = installedPlugins.Where(x => x != null).ToList();

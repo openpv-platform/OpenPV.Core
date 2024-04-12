@@ -30,6 +30,8 @@
 
 		<Content Label="Application Export" Include="StoryboardExport\**">
 			<Visible>false</Visible>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</Content>
 
 		<Content Label="Windows Runtime" Include="$(StoryboardProgramFolder)\Storyboard_Engine\$(StoryboardVersion)\windows-x86_64-swrender-obj\**" Condition="'$(RuntimeIdentifier)' != 'linux-arm' and $([MSBuild]::IsOSPlatform('Windows'))">

@@ -113,7 +113,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         var results = versions.Select(x => new NuGetVersion((string)x.SelectToken("version")));
         var minVersion = new NuGetVersion(nugetVersion.Major, nugetVersion.Minor, 0);
 
-        string thisVersion = new VersionRange(minVersion, true, nugetVersion, true).FindBestMatch(results).ToFullString();
+        string thisVersion = new VersionRange(minVersion, true, nugetVersion, true).FindBestMatch(results)?.ToFullString();
 
         if (thisVersion != null)
             await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, thisVersion, null, evaluateDeps);

@@ -26,6 +26,13 @@
 	</PropertyGroup>
 
 	<ItemGroup Label="Storyboard Runtimes">
+
+		<Content Label="Application Export" Include="StoryboardExport\**">
+			<Visible>false</Visible>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+		
 		<Content Label="Windows Runtime" Include="$(StoryboardProgramFolder)\Storyboard_Engine\$(StoryboardVersion)\windows-x86_64-swrender-obj\**" Condition="'$(RuntimeIdentifier)' != 'linux-arm' and $([MSBuild]::IsOSPlatform('Windows'))">
 			<Link>Storyboard/Windows64/sbengine/%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

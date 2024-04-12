@@ -61,7 +61,7 @@
 				
 				<TextBlock Grid.Column="1" Margin="0,20"
 						   Grid.Row="3" Foreground="DimGray"
-						   Text="User Interface Extension Setup is not located on the 'Extension' Setup Page" IsVisible="{Binding PowerVisionViewModel, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
+						   Text="User Interface Extension Setup is now located on the 'Extension' Setup Page" IsVisible="{Binding PowerVisionViewModel, Converter={x:Static StringConverters.IsNullOrEmpty}}"/>
 			</Grid>
 
 			<CustomerTools:PowerVisionView  IsVisible="{Binding PowerVisionViewModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>

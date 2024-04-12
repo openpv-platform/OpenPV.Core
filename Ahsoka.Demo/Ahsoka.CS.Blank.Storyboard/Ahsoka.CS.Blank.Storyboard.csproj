@@ -17,7 +17,6 @@
 
 	<Import Label="Ahsoka Local Build Properties" Condition="Exists('../../Demo.Build.props')" Project="../../Demo.Build.props" />
 
-
 	<!--Storyboard Runtimes to be included in the Package-->
 	<PropertyGroup Label=" Storyboard Runtime Settings">
 		<StoryboardProgramFolder>C:\Program Files\Crank_Software</StoryboardProgramFolder>
@@ -25,6 +24,13 @@
 	</PropertyGroup>
 
 	<ItemGroup Label="Storyboard Runtimes">
+
+		<Content Label="Application Export" Include="StoryboardExport\**">
+			<Visible>false</Visible>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+		</Content>
+	
 		<Content Label="Windows Runtime" Include="$(StoryboardProgramFolder)\Storyboard_Engine\$(StoryboardVersion)\windows-x86_64-swrender-obj\**" Condition="'$(RuntimeIdentifier)' != 'linux-arm' and $([MSBuild]::IsOSPlatform('Windows'))">
 			<Link>Storyboard/Windows64/sbengine/%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

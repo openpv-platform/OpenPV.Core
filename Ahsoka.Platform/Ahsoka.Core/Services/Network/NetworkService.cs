@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Ahsoka.Services.Network;
 
 [AhsokaService(Name)]
-public class NetworkService : AhsokaTCPServiceBase<NetworkMessageTypes.Ids>
+public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
 {
     #region Fields
     readonly NetworkPlatformImplementationBase networkInterface;

@@ -9,7 +9,7 @@ using System.Linq;
 namespace Ahsoka.Services.Data;
 
 [AhsokaService(DataService.Name)]
-public class DataService : AhsokaTCPServiceBase<DataMessageTypes.Ids>
+public class DataService : AhsokaServiceBase<DataMessageTypes.Ids>
 {
     #region Fields
     readonly static object syncRoot = new();

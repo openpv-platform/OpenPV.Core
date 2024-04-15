@@ -15,7 +15,9 @@ internal class StoryboardInstallerPlugin : InstallerPlugin
 {
     internal override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
     {
-        if (packageInformation.UserInterfaceType != UserInterfaceType.Storyboard)
+        // Search for Plugin Output
+        var hasStoryboard = Directory.GetFiles(packageInformation.GetApplicationFullPath(), "Ahsoka.Storyboard.*", SearchOption.AllDirectories);
+        if (hasStoryboard.Length == 0)
             return;
 
         if (!packageInformation.Licenses.Any(x => x.LicenseName == "Storyboard Runtime") 

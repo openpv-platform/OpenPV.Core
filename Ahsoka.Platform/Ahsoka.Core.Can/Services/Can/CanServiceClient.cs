@@ -7,7 +7,7 @@ namespace Ahsoka.Services.Can;
 /// <summary>
 /// Services for Managing Communications on a CAN Network via an outboard Real Time CAN Gateway
 /// </summary>
-public class CanServiceClient : AhsokaTCPClientBase<CanMessageTypes.Ids>
+public class CanServiceClient : AhsokaClientBase<CanMessageTypes.Ids>
 {
     /// <summary>
     /// Get Active Calibrations

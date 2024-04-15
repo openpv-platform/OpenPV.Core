@@ -16,7 +16,7 @@ namespace Ahsoka.Services.Install;
 /// <summary>
 /// Client used to communicate with a running install process.
 /// </summary>
-public class InstallServiceClient : AhsokaTCPClientBase<InstallMessageTypes.Ids>
+public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 {
     #region Fields
     IInstallerUI installerUI;

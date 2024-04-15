@@ -4,7 +4,7 @@ using Ahsoka.System;
 
 namespace Ahsoka.Services.Bluetooth;
 
-public class BluetoothServiceClient : AhsokaTCPClientBase<BluetoothMessageTypes.Ids>
+public class BluetoothServiceClient : AhsokaClientBase<BluetoothMessageTypes.Ids>
 {
     #region Fields
     #endregion

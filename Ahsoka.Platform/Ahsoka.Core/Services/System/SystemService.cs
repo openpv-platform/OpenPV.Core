@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Ahsoka.Services.System;
 
 [AhsokaService(Name)]
-public class SystemService : AhsokaTCPServiceBase<SystemMessageTypes.Ids>
+public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 {
     #region Fields
     public const string Name = "SystemService";

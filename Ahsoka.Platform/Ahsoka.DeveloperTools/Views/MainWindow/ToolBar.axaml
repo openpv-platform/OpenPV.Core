@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:material="using:Material.Icons.Avalonia"
-	         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="65"
+	         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="55"
              x:Class="Ahsoka.DeveloperTools.Views.ToolBar">
 	<UserControl.Styles>
 		<Style Selector="Grid#Rotate[IsVisible=true]">
@@ -21,106 +21,135 @@
 			<Button MinWidth="56" Margin="8,3,3,3" Command="{Binding OpenNewPackage}" IsEnabled="{Binding LoggedIn}">
 				<DockPanel>
 					<StackPanel>
-						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="PaperOutline"></material:MaterialIcon>
-						<TextBlock HorizontalAlignment="Center" FontSize="12" Text="New..."/>
+						<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="PaperOutline"></material:MaterialIcon>
+						<TextBlock HorizontalAlignment="Center" FontSize="11" Text="New..."/>
 					</StackPanel>
 				</DockPanel>
 			</Button>
 
-			<Button MinWidth="56" Command="{Binding OpenPackage}" Margin="3" IsEnabled="{Binding LoggedIn}">
+			<Button MinWidth="55" Command="{Binding OpenPackage}" Margin="3" IsEnabled="{Binding LoggedIn}">
 				<StackPanel>
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="FolderOpenOutline"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="12"  Text="Open..."/>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="FolderOpenOutline"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Open..."/>
 				</StackPanel>
 			</Button>
 
-			<Button Margin="3" IsVisible="{Binding SelectedPackage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" MinWidth="65"  Command="{Binding SavePackage}">
+			<Button Margin="3" IsVisible="{Binding SelectedPackage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" 
+					MinWidth="55"  Command="{Binding SavePackage}">
 				<StackPanel>
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="FloppyDisc"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="12" Text="Save..."/>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="FloppyDisc"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11" Text="Save..."/>
 				</StackPanel>
 			</Button>
 
-			<Button Margin="3,3,5,3" DockPanel.Dock="Right"   MinWidth="65" HorizontalAlignment="Right" 
+			<Button Margin="3,3,5,3" DockPanel.Dock="Right"   
+					MinWidth="55" HorizontalAlignment="Right" 
 					Command="{Binding ShowSparkUpdates}" 
 					IsEnabled="{Binding !IsOffline}">
 				<Grid>
 					<StackPanel IsVisible="{Binding Updates.UpdateAvailable, FallbackValue=true}">
 						<Grid Name="Rotate" >
-							<material:MaterialIcon Width="24" Height="24" Foreground="DodgerBlue" ToolTip.Tip="Updates Available" Kind="Update"/>
+							<material:MaterialIcon Width="20" Height="20" Foreground="DodgerBlue" ToolTip.Tip="Updates Available" Kind="Update"/>
 						</Grid>
-						<TextBlock HorizontalAlignment="Center" FontSize="12" ToolTip.Tip="Updates Available"  Text="Updates"/>
+						<TextBlock HorizontalAlignment="Center" FontSize="11" ToolTip.Tip="Updates Available"  Text="Updates"/>
 					</StackPanel>
 					<StackPanel IsVisible="{Binding !Updates.UpdateAvailable, FallbackValue=false}">
-						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="LightningBolt"></material:MaterialIcon>
-						<TextBlock HorizontalAlignment="Center" FontSize="12"  Text="Updates"/>
+						<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="LightningBolt"></material:MaterialIcon>
+						<TextBlock HorizontalAlignment="Center" FontSize="11"  Text="Updates"/>
 					</StackPanel>
 				</Grid>
 			</Button>
 			
 
-			<Button Margin="3,3,5,3" DockPanel.Dock="Right"   MinWidth="65" 
+			<Button Margin="3,3,5,3" DockPanel.Dock="Right"   MinWidth="55" 
 					Command="{Binding ShowHelp}" >
 				<StackPanel>
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="HelpBox"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="12"  Text="Docs"/>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="HelpBox"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Docs"/>
 				</StackPanel>
 			</Button>
 
-			<Button Margin="3,3,5,3" 
-					IsVisible="{Binding SelectedPackage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" MinWidth="65" 
+
+
+			<Button Margin="3,3,5,3"
+					IsVisible="{Binding SelectedPackage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+					MinWidth="55"
 					Command="{Binding PromptSave}" >
 				<StackPanel>
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="CloseBox"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="12"  Text="Close"/>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="CloseBox"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Close"/>
 				</StackPanel>
 			</Button>
 
-			<Button Margin="3,3,5,3" DockPanel.Dock="Right"   MinWidth="65" HorizontalAlignment="Right"
+
+			<Button Margin="3,3,5,3" DockPanel.Dock="Right"   MinWidth="55" HorizontalAlignment="Right"
 					Command="{Binding OpenOptions}" 
 					IsEnabled="{Binding !IsOffline}">
 				<StackPanel>
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Account"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="12"  Text="Account"/>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Account"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Account"/>
 				</StackPanel>
 			</Button>
 			
 	
-			<Button Margin="3,3,5,3" DockPanel.Dock="Right"   MinWidth="65" HorizontalAlignment="Right" 
+			<Button Margin="3,3,5,3" DockPanel.Dock="Right"   MinWidth="55" HorizontalAlignment="Right" 
 					Command="{Binding OpenTeams}" 
 					IsEnabled="{Binding !IsOffline}">
 				<StackPanel>
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Toolbox"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="12"  Text="Projects"/>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Toolbox"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Projects"/>
 				</StackPanel>
 			</Button>
-			<Button Margin="3,3,25,3" DockPanel.Dock="Right"   MinWidth="65" HorizontalAlignment="Right" 
+			<Button Margin="3,3,15,3" DockPanel.Dock="Right"   MinWidth="55" HorizontalAlignment="Right" 
 					Command="{Binding Connections.OpenSettings}" 
 					IsEnabled="{Binding LoggedIn}">
 				<StackPanel>
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Connection"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="12"  Text="Targets"/>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Connection"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Targets"/>
 				</StackPanel>
 			</Button>
 			
-			<Button DockPanel.Dock="Right" MinWidth="65" Margin="3,3,3,3" 
+			<Button DockPanel.Dock="Right" MinWidth="55" Margin="3,3,3,3" 
 					Command="{Binding Plugins.OpenPopup}" 
 					IsEnabled="{Binding !IsOffline}">
 				<StackPanel>
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Download"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="12"  Text="Plugins"/>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Extension"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Plugins"/>
 				</StackPanel>
 			</Button>
 
-			<Button Margin="23,3,25,3" DockPanel.Dock="Right"   MinWidth="65" HorizontalAlignment="Right" 
+			<Button Margin="3,3,15,3" DockPanel.Dock="Right"   
+					MinWidth="55" HorizontalAlignment="Right" 
 					Command="{Binding ToggleConsole}" >
 				<StackPanel>
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Console"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="12"  Text="Console"/>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Console"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Console"/>
 				</StackPanel>
 			</Button>
-			
 
+			<Button Margin="3,3,15,3" 
+					DockPanel.Dock="Right" HorizontalAlignment="Right"
+					IsVisible="{Binding SelectedPackage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+					MinWidth="65"
+					Command="{Binding SelectedPackage.LoadToTarget}" >
+				<StackPanel>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Download"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Load"/>
+				</StackPanel>
+			</Button>
+
+			<Button Margin="3,3,3,3" 
+					DockPanel.Dock="Right" HorizontalAlignment="Right"
+					IsVisible="{Binding SelectedPackage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+					MinWidth="65"
+					Command="{Binding SelectedPackage.GenerateInstallPackage}" >
+				<StackPanel>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Webpack"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11" Text="Generate"/>
+				</StackPanel>
+			</Button>	
+			
+			
 		</DockPanel>
 	</Border>
 

@@ -7,32 +7,22 @@ namespace Ahsoka.ServiceFramework;
 
 #pragma warning disable CS1591
 
-public class AhsokaServiceAttribute : Attribute
-{
-    public string ServiceName { get; init; }
 
-    public AhsokaServiceAttribute(string serviceName) { ServiceName = serviceName; }
-}
-
-public class AhsokaServiceDataValues : Attribute
-{
-    public string ServiceName { get; init; }
-
-    public AhsokaServiceDataValues(string serviceName) { ServiceName = serviceName; }
-}
 public interface IAhsokaServiceEndpoint : IAhsokaEndPoint
 {
     int MessageReceiveCount { get; set; }
     int MessageSendCount { get; set; }
 
+    void ClientConnected();
+
     void ServiceDataReady();
 }
 
-public abstract class AhsokaServiceBase<TTransportIds, TAhsokaSocket> : AhsokaEndPoint<TTransportIds, TAhsokaSocket>, IAhsokaServiceEndpoint
-    where TTransportIds : Enum
-    where TAhsokaSocket : AhsokaSocket, new()
+public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTransportIds>, IAhsokaServiceEndpoint
+    where TTransportIds : Enum, new()
 {
     #region Fields
+    internal static bool IsServiceStarted { get; private set; }
     private string publisherId => ServiceConfig.ServiceName;
     #endregion
 
@@ -41,6 +31,14 @@ public abstract class AhsokaServiceBase<TTransportIds, TAhsokaSocket> : AhsokaEn
         base(config, messages)
     {
 
+    }
+
+    protected override IAhsokaSocket CreateSocket(ServiceConfiguration config)
+    {
+        if (config.SocketType == TransportSocketTypes.TcpSocket)
+            return new TCPServiceSocket() ;
+        else
+            throw new Exception("Socket Type is Not Supported");
     }
 
     protected virtual AhsokaMessageHeader CreateReplyMessageHeader(AhsokaMessageHeader header, TTransportIds transportId)
@@ -73,6 +71,22 @@ public abstract class AhsokaServiceBase<TTransportIds, TAhsokaSocket> : AhsokaEn
         return DataService.DefaultDataService?.UpdateKeyValue(this.ServiceConfig.ServiceName, key, value, publisherId);
     }
 
+    protected override void OnEndPointConnected()
+    {
+        base.OnEndPointConnected();
+        IsServiceStarted = true;
+    }
+
+    protected override void OnEndPointDisconnected()
+    {
+        base.OnEndPointDisconnected();
+        IsServiceStarted = false;
+    }
+
+    void IAhsokaServiceEndpoint.ClientConnected()
+    {
+        OnClientConnected();
+    }
     #endregion
 }
 

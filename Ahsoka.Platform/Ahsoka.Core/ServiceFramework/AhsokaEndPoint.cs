@@ -13,26 +13,27 @@ public interface IAhsokaEndPoint
 
     AhsokaRuntime CurrentRuntime { get; set; }
 
+    byte[] GetEndPointId();
+
     void Connect();
 
     void Disconnect();
-
-    void ClientConnected();
 }
 
-public abstract class AhsokaEndPoint<TTransportIds, TAhsokaSocket> : IAhsokaEndPoint
+public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
     where TTransportIds : Enum
-    where TAhsokaSocket : AhsokaSocket, new()
 {
     #region Fields
+    byte[] endpointId = Guid.NewGuid().ToByteArray();
     readonly AhsokaMessagesBase serviceMessageInfo;
     int messageReceiveCount = 0;
     int messageSendCount = 0;
     #endregion
 
     #region Properties
-    public bool IsRunning { get { return Socket.IsConnected; } }
-    protected TAhsokaSocket Socket { get; init; }
+    public byte[] GetEndPointId() { return endpointId; }
+    public bool IsRunning { get { return Socket == null ? false : Socket.IsConnected; } }
+    protected IAhsokaSocket Socket { get; private set; }
     public AhsokaRuntime CurrentRuntime { get; set; }
     public ServiceConfiguration ServiceConfig { get; private set; }
     public int MessageReceiveCount { get => messageReceiveCount; set => messageReceiveCount = value; }
@@ -42,7 +43,6 @@ public abstract class AhsokaEndPoint<TTransportIds, TAhsokaSocket> : IAhsokaEndP
 
     public AhsokaEndPoint(ServiceConfiguration config, AhsokaMessagesBase messages)
     {
-        Socket = new TAhsokaSocket() { EndPoint = this };
         ServiceConfig = config;
         serviceMessageInfo = messages;
 
@@ -53,7 +53,8 @@ public abstract class AhsokaEndPoint<TTransportIds, TAhsokaSocket> : IAhsokaEndP
 
     void IAhsokaEndPoint.Connect()
     {
-        Socket.Connect();
+        Socket = CreateSocket(ServiceConfig);
+        Socket.Connect(this);
         OnEndPointConnected();
     }
 
@@ -63,26 +64,21 @@ public abstract class AhsokaEndPoint<TTransportIds, TAhsokaSocket> : IAhsokaEndP
         OnEndPointDisconnected();
     }
 
-    void IAhsokaEndPoint.ClientConnected()
-    {
-        OnClientConnected();
-    }
-
     public void UpdateConfiguration(ServiceConfiguration config)
     {
-        bool wasConnected = this.Socket.IsConnected;
-        if (wasConnected) 
+        bool wasConnected = IsRunning;
+        if (wasConnected)
             this.Socket.Disconnect();
 
         this.ServiceConfig = config;
 
         if (wasConnected)
-            this.Socket.Connect();
+            this.Socket.Connect(this);
     }
 
     protected void SendMessageInternal(AhsokaMessageHeader messageHeader, object messageObject = null, bool sendAsNotification = false)
     {
-        if (Socket.IsConnected)
+        if (IsRunning)
         {
             messageObject ??= new EmptyNotification();
 
@@ -134,6 +130,8 @@ public abstract class AhsokaEndPoint<TTransportIds, TAhsokaSocket> : IAhsokaEndP
         return recievedMessage;
     }
 
+    abstract protected IAhsokaSocket CreateSocket(ServiceConfiguration config);
+
     abstract protected Type GetReceiptType(ServiceMessageInfo value);
 
     abstract protected void OnHandleReceive(AhsokaMessageHeader messageHeader, object message);
@@ -143,7 +141,6 @@ public abstract class AhsokaEndPoint<TTransportIds, TAhsokaSocket> : IAhsokaEndP
     protected virtual void OnEndPointConnected() { }
 
     protected virtual void OnClientConnected() { }
-
 }
 
 

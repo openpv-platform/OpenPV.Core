@@ -7,7 +7,7 @@ namespace Ahsoka.Services.Spark;
 /// <summary>
 /// Client used to talk to Spark IOT and OTA Services
 /// </summary>
-public class SparkServiceClient : AhsokaTCPClientBase<SparkMessageTypes.Ids>
+public class SparkServiceClient : AhsokaClientBase<SparkMessageTypes.Ids>
 {
     /// <summary>
     /// Default Constructor which uses Default Service Configuration

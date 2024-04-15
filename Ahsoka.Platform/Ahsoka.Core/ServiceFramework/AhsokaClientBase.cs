@@ -15,10 +15,9 @@ public interface IAhsokaClientEndpoint : IAhsokaEndPoint, IDispatchSource
     void NotificationDataReady();
 }
 
-public abstract class AhsokaClientBase<TTransportIds, TAhsokaSocket> : AhsokaEndPoint<TTransportIds, TAhsokaSocket>,
+public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTransportIds>,
     IAhsokaClientEndpoint
-    where TTransportIds : Enum
-    where TAhsokaSocket : AhsokaSocket, new()
+    where TTransportIds : Enum, new()
 {
     #region Service Notification Handler 
     public class AhsokaNotificationArgs : NotificationEventArgs<TTransportIds> { }
@@ -43,7 +42,7 @@ public abstract class AhsokaClientBase<TTransportIds, TAhsokaSocket> : AhsokaEnd
     #endregion
 
     #region Fields
-
+    List<IEndPointBehavior<TTransportIds>> behaviors = new ();
     int messageId = 0;
     #endregion
 
@@ -51,6 +50,18 @@ public abstract class AhsokaClientBase<TTransportIds, TAhsokaSocket> : AhsokaEnd
     protected AhsokaClientBase(ServiceConfiguration config, AhsokaMessagesBase messages) :
         base(config, messages)
     {
+        behaviors.Add(new AutoStartClientEndPointBehavior<TTransportIds>());
+
+        foreach (IEndPointBehavior<TTransportIds> behavior in behaviors)
+            behavior.Init(this, config);
+    }
+
+    protected override IAhsokaSocket CreateSocket(ServiceConfiguration config)
+    {
+        if (config.SocketType == TransportSocketTypes.TcpSocket)
+            return new TCPClientSocket();
+        else
+            throw new Exception("Socket Type is Not Supported");
     }
 
     void IAhsokaClientEndpoint.NotificationDataReady()
@@ -67,6 +78,11 @@ public abstract class AhsokaClientBase<TTransportIds, TAhsokaSocket> : AhsokaEnd
 
     public virtual T SendNotificationWithResponse<T>(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue) where T : class
     {
+
+        foreach (IEndPointBehavior<TTransportIds> behavior in behaviors)
+            behavior.BeforeSendMessage(requestObject);
+
+
         AhsokaMessageHeader header = new()
         {
             TransportId = transportId.EnumToInt(),
@@ -101,7 +117,6 @@ public abstract class AhsokaClientBase<TTransportIds, TAhsokaSocket> : AhsokaEnd
 
         return returnObject as T;
     }
-
 
     protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
     {

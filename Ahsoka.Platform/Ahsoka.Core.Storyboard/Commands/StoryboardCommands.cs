@@ -33,7 +33,7 @@ internal class StoryboardCodeGenerator : IExtensionGenerator
     {
         string configFile = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ConfigFile);
 
-        if (File.Exists(configFile) && packageInfo.UserInterfaceType == UserInterfaceType.Storyboard)
+        if (File.Exists(configFile))
         {
             var configInfo = JsonUtility.Deserialize<StoryboardDevelopmentConfiguration>(File.ReadAllText(configFile));
             

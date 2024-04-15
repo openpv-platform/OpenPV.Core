@@ -35,17 +35,17 @@ message RuntimeConfiguration
 
 message ServiceConfiguration
 {
+    TransportSocketTypes socket_type = 1;
     string service_name = 2;
     string tcp_listen_address = 3;
     string tcp_connection_address = 4;
     string ble_service_uuid_base = 5;
     int32 data_channel = 6;
     int32 notification_channel = 7;
-
     bool is_extension = 8;
-
-    repeated DataServiceKeyItem data_key_values = 9; // System Services to Start.
-    string configuration_file = 10; // System Services to Start.
+    EndPointBehaviors behaviors = 9; 
+    repeated DataServiceKeyItem data_key_values = 10; 
+    string configuration_file = 11; 
 }
 
 message DataServiceKeyItem
@@ -53,7 +53,6 @@ message DataServiceKeyItem
     string key_name = 3;
     DataAccessLevel data_access_level = 4;
 }
-
 
 enum MessageReplyStatus
 {
@@ -65,6 +64,19 @@ enum MessageReplyStatus
     CANCELLED = 5;
 }
 
+
+enum EndPointBehaviors
+{
+    NO_BEHAVIOR = 0;
+    AUTO_START = 1;
+    AUTO_START_DISABLED = 2;
+}
+
+enum TransportSocketTypes
+{
+    TCP_SOCKET = 0;
+    SERIAL_SOCKET = 1;
+}
 
 enum DataAccessLevel 
 {

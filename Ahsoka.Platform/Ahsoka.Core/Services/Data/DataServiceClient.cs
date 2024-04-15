@@ -10,7 +10,7 @@ namespace Ahsoka.Services.Data;
 /// <summary>
 /// Global Data Service Client For Service to Service Data Sharing
 /// </summary>
-public class DataServiceClient : AhsokaTCPClientBase<DataMessageTypes.Ids>
+public class DataServiceClient : AhsokaClientBase<DataMessageTypes.Ids>
 {
     /// <summary>
     /// The subscriber ID that has been generated for this client.
@@ -33,7 +33,7 @@ public class DataServiceClient : AhsokaTCPClientBase<DataMessageTypes.Ids>
     public DataServiceClient(ServiceConfiguration config) :
         base(config, new DataServiceMessages())
     {
-        SubscriberIds.Add(Socket.clientId.ToGuidString());
+        SubscriberIds.Add(this.GetEndPointId().ToGuidString());
     }
 
 
@@ -155,4 +155,21 @@ public partial class KeyList
     {
         return this.Keys.Find(x => x.Origin == origin && x.Key == key);
     }
+}
+
+/// <summary>
+/// Attribute for Adorning KnownKeyObjects
+/// </summary>
+public class AhsokaServiceDataValues : Attribute
+{
+    /// <summary>
+    /// Associated Service
+    /// </summary>
+    public string ServiceName { get; init; }
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="serviceName"></param>
+    public AhsokaServiceDataValues(string serviceName) { ServiceName = serviceName; }
 }

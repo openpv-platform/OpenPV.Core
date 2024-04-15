@@ -6,9 +6,8 @@ namespace Ahsoka.ServiceFramework;
 
 #pragma warning disable CS1591
 
-public abstract class AhsokaSerialServiceBase<TTransportIds, TAhsokaSocket> : AhsokaServiceBase<TTransportIds, TAhsokaSocket>
-    where TTransportIds : Enum
-    where TAhsokaSocket : AhsokaSocket, new()
+public abstract class AhsokaSerialServiceBase<TTransportIds> : AhsokaServiceBase<TTransportIds>
+    where TTransportIds : Enum, new()
 {
     protected AhsokaSerialServiceBase(ServiceConfiguration config, AhsokaMessagesBase messages) :
         base(config, messages)

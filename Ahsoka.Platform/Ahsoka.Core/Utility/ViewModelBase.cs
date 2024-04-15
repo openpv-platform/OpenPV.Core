@@ -56,6 +56,7 @@ public class ViewModelBase : INotifyPropertyChanged, IHasParent
     public event PropertyChangedEventHandler PropertyChanged;
 
     private DataServiceClient dataClient = null;
+  
     /// <summary>
     /// The data service client that is going to be used to write the values.
     /// </summary>
@@ -69,8 +70,7 @@ public class ViewModelBase : INotifyPropertyChanged, IHasParent
         {
             dataClient = value;
 
-            DataServiceInfoAttribute DSInfo =
-                (DataServiceInfoAttribute)Attribute.GetCustomAttribute(GetType(), typeof(DataServiceInfoAttribute));
+            DataServiceInfoAttribute DSInfo = (DataServiceInfoAttribute)Attribute.GetCustomAttribute(GetType(), typeof(DataServiceInfoAttribute));
             bool subscribeToValue = DSInfo != null && DSInfo.Subscribe;
 
             foreach (var item in GetType().GetProperties())

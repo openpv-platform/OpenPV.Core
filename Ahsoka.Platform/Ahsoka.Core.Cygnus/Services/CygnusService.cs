@@ -11,7 +11,7 @@ using CygnusCommandInfo = Cygnus.Reach.CommandInfo;
 namespace Ahsoka.Services.Cygnus;
 
 [AhsokaService(Name)]
-internal class CygnusService : AhsokaTCPServiceBase<CygnusMessageTypes.Ids>
+internal class CygnusService : AhsokaServiceBase<CygnusMessageTypes.Ids>
 {
     public const string Name = "CygnusService";
 

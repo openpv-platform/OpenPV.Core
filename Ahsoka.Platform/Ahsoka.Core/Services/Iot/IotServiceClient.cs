@@ -7,7 +7,7 @@ namespace Ahsoka.Services.Iot;
 /// <summary>
 /// IotService Client supporting MQTT for IoT Systems.
 /// </summary>
-public class IotServiceClient : AhsokaTCPClientBase<IotMessageTypes.Ids>
+public class IotServiceClient : AhsokaClientBase<IotMessageTypes.Ids>
 {
     /// <summary>
     /// Default Constructor that uses the System Default Configuration

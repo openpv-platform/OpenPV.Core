@@ -1,19 +1,11 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Data;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using Avalonia.Controls;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.IO.Compression;
-using System.IO;
 using System.Linq;
-using static NetMQ.NetMQSelector;
-using Ahsoka.DeveloperTools.ViewModel;
-using System.ComponentModel;
-using Ahsoka.Services.Data;
+using System.Net.Sockets;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -25,6 +17,9 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
     public ServiceEnableDisable[] ServiceEnableDisableItems { get; init; } = Enum.GetValues<ServiceEnableDisable>();
     
     public DataAccessLevel[] DataAccessLevels { get; init; } = Enum.GetValues<DataAccessLevel>();
+
+    public TransportSocketTypes[] SocketTypes { get; init; } = Enum.GetValues<TransportSocketTypes>();
+
 
     public ObservableCollection<ServiceConfigurationViewModel> Services
     {
@@ -127,14 +122,17 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
 
             if (value && CurrentServiceConfiguration == null)
             {
-                var item = new ServiceConfiguration() {
+                var item = new ServiceConfiguration()
+                {
                     ServiceName = defaultValues.ServiceName,
                     TcpConnectionAddress = defaultValues.TcpConnectionAddress,
                     TcpListenAddress = defaultValues.TcpListenAddress,
                     BleServiceUuidBase = defaultValues.BleServiceUuidBase,
                     DataChannel = defaultValues.DataChannel,
                     NotificationChannel = defaultValues.NotificationChannel,
-                    IsExtension = defaultValues.IsExtension
+                    IsExtension = defaultValues.IsExtension,
+                    Behaviors = defaultValues.Behaviors,
+                    SocketType = defaultValues.SocketType
                 };
 
                 ParentViewModel.ParentViewModel.ServiceConfiguration.Services.Add(item);
@@ -159,6 +157,46 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
             foreach (var key in keyValues.GetDataValues())
                 Keys.Add(new DataKeyItemViewModel(this, key));
     }
+
+
+    public bool ClientAutoStart
+    {
+        get
+        {
+            if (CurrentServiceConfiguration != null)
+                return CurrentServiceConfiguration.Behaviors.HasFlag(EndPointBehaviors.AutoStart);
+            else
+                return false;
+        }
+        set
+        {
+            if (value)
+                CurrentServiceConfiguration.Behaviors = EndPointBehaviors.AutoStart;
+            else
+                CurrentServiceConfiguration.Behaviors = EndPointBehaviors.AutoStartDisabled;
+
+            OnPropertyChanged();
+        }
+    }
+
+
+    public TransportSocketTypes SocketType
+    {
+        get
+        {
+            if (CurrentServiceConfiguration != null)
+                return CurrentServiceConfiguration.SocketType;
+            else
+                return TransportSocketTypes.TcpSocket;
+        }
+        set
+        {
+            CurrentServiceConfiguration.SocketType = value;
+            OnPropertyChanged();
+        }
+    }
+
+
 
     public int ServicePort
     {

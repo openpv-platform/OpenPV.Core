@@ -13,13 +13,12 @@ using EnovationCloud.Core.Utilities;
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 
 namespace Ahsoka.Services.Spark;
 
 [AhsokaService(Name)]
-public class SparkService : AhsokaTCPServiceBase<SparkMessageTypes.Ids>
+public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 {
     #region Fields
     CancellationTokenSource source = new();

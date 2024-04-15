@@ -194,20 +194,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
     }
 
-    public UserInterfaceType UserInterfaceType
-    {
-        get
-        {
-            return PackageInfo.UserInterfaceType;
-        }
-        set
-        {
-            PackageInfo.UserInterfaceType = value;
-            UpdateUserInterfaceViewModel();
-            OnPropertyChanged();
-        }
-    }
-
     public bool IncludeInstallerUI
     {
         get
@@ -420,14 +406,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
     }
 
-    public UserInterfaceType[] UserInterfaceTypes
-    {
-        get
-        {
-            return Enum.GetValues<UserInterfaceType>().ToArray();
-        }
-    }
-
     public List<string> PlatformDescriptions
     {
         get
@@ -554,7 +532,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         Deps.CheckDependencies(SystemInfo.CurrentPlatform, PackageInfo.PlatformFamily);
 
         UpdateApplicationViewModel();
-        UpdateUserInterfaceViewModel();
         LoadStartLogo();
 
         HandleHardwareInfoChanges();
@@ -862,59 +839,21 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         ParentViewModel.Console.Cancel();
     }
 
-    internal void UpdateUserInterfaceViewModel()
-    {
-        switch (UserInterfaceType)
-        {
-            case UserInterfaceType.None:
-                break;
-            case UserInterfaceType.Qt:
-                if (ApplicationType is ApplicationType.PowerVision or ApplicationType.CODESYS or ApplicationType.Dotnet)
-                    ApplicationType = ApplicationType.Cpp;
-                break;
-            case UserInterfaceType.Storyboard:
-                if (ApplicationType is ApplicationType.PowerVision or ApplicationType.CODESYS or ApplicationType.Cpp)
-                    ApplicationType = ApplicationType.Dotnet;
-                break;
-            case UserInterfaceType.PowerVision:
-                PowerVisionViewModel = new PowerVisionViewModel(this);
-                if (ApplicationType != ApplicationType.PowerVision)
-                    ApplicationType = ApplicationType.PowerVision;
-                break;
-            case UserInterfaceType.CODESYS:
-                if (ApplicationType != ApplicationType.CODESYS)
-                    ApplicationType = ApplicationType.CODESYS;
-                break;
-            default:
-                break;
-        }
-
-        OnPropertyChanged(nameof(PowerVisionViewModel));
-    }
-
     private void UpdateApplicationViewModel()
     {
         switch (ApplicationType)
         {
             case ApplicationType.Dotnet:
                 DotNetViewModel = new DotNetViewModel(ParentViewModel, PackageInfo);
-                if (UserInterfaceType is UserInterfaceType.PowerVision or UserInterfaceType.CODESYS)
-                    UserInterfaceType = UserInterfaceType.None;
                 break;
             case ApplicationType.Cpp:
                 CppViewModel = new CppViewModel(ParentViewModel, PackageInfo);
-                if (UserInterfaceType is UserInterfaceType.PowerVision or UserInterfaceType.CODESYS)
-                    UserInterfaceType = UserInterfaceType.None;
                 break;
             case ApplicationType.PowerVision:
-                UserInterfaceType = UserInterfaceType.PowerVision;
                 break;
             case ApplicationType.CODESYS:
-                UserInterfaceType = UserInterfaceType.CODESYS;
                 break;
             default:
-                if (UserInterfaceType is UserInterfaceType.PowerVision or UserInterfaceType.CODESYS)
-                    UserInterfaceType = UserInterfaceType.None;
                 break;
         }
 

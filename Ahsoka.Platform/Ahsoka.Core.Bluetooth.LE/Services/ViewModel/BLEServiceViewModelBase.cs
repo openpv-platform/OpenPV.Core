@@ -44,7 +44,7 @@ public abstract class BLEServiceViewModelBase : ViewModelBase
         this.client.NotificationReceived += NotificationReceived;
     }
 
-    private void NotificationReceived(object sender, AhsokaTCPClientBase<BLEMessageTypes.Ids>.AhsokaNotificationArgs e)
+    private void NotificationReceived(object sender, AhsokaClientBase<BLEMessageTypes.Ids>.AhsokaNotificationArgs e)
     {
         if (e.TransportId == BLEMessageTypes.Ids.CharacteristicValueWrite
             && e.NotificationObject is BLECharacteristicValue newValue)

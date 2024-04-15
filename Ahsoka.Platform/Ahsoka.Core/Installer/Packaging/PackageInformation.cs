@@ -18,7 +18,6 @@ public class PackageInformation : PackageHeader
     // Package Type
     public string Version { get; set; }
     public ApplicationType ApplicationType { get; set; } = ApplicationType.Dotnet;
-    public UserInterfaceType UserInterfaceType { get; set; } = UserInterfaceType.Storyboard;
     public Orientation SystemOrientation { get; set; } = Orientation.DefaultOrientation;
     public string ExecCommand { get; set; }
     public string PackageName { get; set; }
@@ -31,10 +30,6 @@ public class PackageInformation : PackageHeader
     public bool IncludeInstallerUI { get; set; } = false;
 
     public List<ModuleLicense> Licenses { get; set; } = new();
-
-    public StoryboardInformation StoryboardInfo { get; set; }
-
-    public QtInformation QtInfo { get; set; }
 
     public DotNetInformation DotNetInfo { get; set; }
 
@@ -109,11 +104,6 @@ public class PackageInformation : PackageHeader
     }
 }
 
-public class StoryboardInformation
-{
-
-}
-
 public class DotNetInformation
 {
     public string ProjectPath { get; set; }
@@ -123,11 +113,6 @@ public class DotNetInformation
 public class CppInformation
 {
     public string ProjectPath { get; set; }
-}
-
-public class QtInformation
-{
-
 }
 
 public class ServiceInfo

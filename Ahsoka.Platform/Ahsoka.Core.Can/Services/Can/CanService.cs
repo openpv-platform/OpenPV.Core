@@ -15,7 +15,7 @@ namespace Ahsoka.Services.Can;
 /// Service for Interacting with CAN via the CAN Service Implementation (typically MCU)
 /// </summary>
 [AhsokaService(Name)]
-public class CanService : AhsokaTCPServiceBase<CanMessageTypes.Ids>
+public class CanService : AhsokaServiceBase<CanMessageTypes.Ids>
 {
     #region Fields
     /// <summary>

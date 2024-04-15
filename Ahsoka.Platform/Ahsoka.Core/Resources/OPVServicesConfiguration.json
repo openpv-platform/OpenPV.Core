@@ -1,60 +1,74 @@
 {
   "services": [
     {
+      "socketType": "TcpSocket",
       "serviceName": "InstallService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5000,
-      "notificationChannel": 6000
+      "notificationChannel": 6000,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "SystemService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5001,
-      "notificationChannel": 6001
+      "notificationChannel": 6001,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "SparkService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5002,
-      "notificationChannel": 6002
+      "notificationChannel": 6002,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "NetworkService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5003,
-      "notificationChannel": 6003
+      "notificationChannel": 6003,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "IotService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5005,
-      "notificationChannel": 6005
+      "notificationChannel": 6005,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "IOService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5006,
-      "notificationChannel": 6006
+      "notificationChannel": 6006,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "DataService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5009,
-      "notificationChannel": 6009
+      "dataChannel": 5009,
+      "notificationChannel": 6009,
+      "behaviors": "AutoStart"
     }
   ]
 }

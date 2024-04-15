@@ -19,8 +19,8 @@ public interface ICygnusOutgoingEndpoints
 /// 
 /// </summary>
 /// <typeparam name="TAhsokaSocket"></typeparam>
-public class CygnusServerInterfaceService<TAhsokaSocket> : AhsokaSerialServiceBase<ReachMessageTypes, TAhsokaSocket> , ICygnusOutgoingEndpoints
-    where TAhsokaSocket : AhsokaSocket, new()
+public class CygnusServerInterfaceService<TAhsokaSocket> : AhsokaSerialServiceBase<ReachMessageTypes> , ICygnusOutgoingEndpoints
+    where TAhsokaSocket : IAhsokaSocket, new()
 {
     #region Fields
     /// <summary>

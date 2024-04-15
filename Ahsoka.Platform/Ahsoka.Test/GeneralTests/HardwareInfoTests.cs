@@ -1,5 +1,6 @@
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
+using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
@@ -40,9 +41,13 @@ public class HardwareInfoTests
             NotificationChannel = 6100,
             TcpListenAddress = "127.0.0.1",
             TcpConnectionAddress = "127.0.0.1",
-            ServiceName = "FakeConfig"
-
+            ServiceName = "FakeConfig",
+            SocketType = TransportSocketTypes.SerialSocket,
+            Behaviors =  EndPointBehaviors.AutoStart
         });
+
+        string result = JsonUtility.Serialize(runtimeconfig);
+        var decoded = JsonUtility.Deserialize<RuntimeConfiguration>(result);
 
         ConfigurationLoader.SetRuntimeConfiguration(runtimeconfig);
 

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Ahsoka.Services.Install;
 
 [AhsokaService(Name)]
-public class InstallService : AhsokaTCPServiceBase<InstallMessageTypes.Ids>
+public class InstallService : AhsokaServiceBase<InstallMessageTypes.Ids>
 {
     public const string Name = "InstallService";
     InstallProgressInfo lastInfo;

@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text.Json.Serialization;
 
 namespace Ahsoka.System;
@@ -131,6 +132,13 @@ public partial class RuntimeConfiguration : ICanDeserializeBase
 /// </summary>
 public partial class ServiceConfiguration : ICanDeserializeBase
 {
+    internal override void ParseComplete()
+    {
+        base.ParseComplete();
+        if (Behaviors == EndPointBehaviors.NoBehavior)
+            Behaviors = EndPointBehaviors.AutoStart;
+    }
+
     internal override void SetProperty(string propertyName, string value)
     {
         if (propertyName == "serviceName")
@@ -145,6 +153,12 @@ public partial class ServiceConfiguration : ICanDeserializeBase
             this.TcpConnectionAddress = value;
         else if (propertyName == "bleServiceUuidBase")
             this.BleServiceUuidBase = value;
+        else if (propertyName == "socketType")
+            this.SocketType = Enum.Parse<TransportSocketTypes>(value, true);
+        else if (propertyName == "isExtension")
+            this.IsExtension = bool.Parse(value);
+        else if (propertyName == "behaviors")
+            this.Behaviors = Enum.Parse<EndPointBehaviors>(value, true);
     }
 
     /// <summary>

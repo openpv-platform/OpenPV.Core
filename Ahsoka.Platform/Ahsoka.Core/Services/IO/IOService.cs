@@ -12,7 +12,7 @@ using System.IO;
 namespace Ahsoka.Services.IO;
 
 [AhsokaService(Name)]
-public class IOService : AhsokaTCPServiceBase<IOMessageTypes.Ids>
+public class IOService : AhsokaServiceBase<IOMessageTypes.Ids>
 {
     #region Fields
     public const string Name = "IOService";

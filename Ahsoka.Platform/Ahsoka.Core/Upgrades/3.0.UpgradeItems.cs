@@ -56,3 +56,35 @@ internal class UpgradeItemsPackage_3_0 : UpgradeMethod
 
     }
 }
+
+
+internal class UpgradeItemsPackage_3_1 : UpgradeMethod
+{
+    public UpgradeItemsPackage_3_1() : base(packageUpgradeExtension, "3.1.0") { }
+
+    public override void UpgradeData(JsonNode document, Dictionary<string, object> context)
+    {
+        var serviceInfo = document["serviceInfo"];
+        if (serviceInfo == null)
+            serviceInfo = document["serviceInfo"] = new JsonObject();
+
+        var runtimeConfig = serviceInfo["runtimeConfiguration"];
+        if (runtimeConfig == null)
+            runtimeConfig = document["runtimeConfiguration"] = new JsonObject();
+
+        var services = runtimeConfig["services"];
+        if (services == null)
+            services = document["services"] = new JsonArray();
+
+        foreach (var item in services.AsArray())
+        {
+            if (item["behaviors"] == null)
+            {
+                item["behaviors"] = "AutoStart";
+                return;
+            }
+        }
+    }
+
+    
+}

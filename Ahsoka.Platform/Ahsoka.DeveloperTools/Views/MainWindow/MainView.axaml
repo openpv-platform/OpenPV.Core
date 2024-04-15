@@ -10,7 +10,7 @@
    		 x:Class="Ahsoka.DeveloperTools.Views.MainView">
 	<Grid>
 		<Grid.RowDefinitions>
-			<RowDefinition Height="60"/>
+			<RowDefinition Height="55"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="40"/>
 		</Grid.RowDefinitions>

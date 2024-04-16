@@ -1,4 +1,7 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Ahsoka.Services.Can;
 
@@ -22,6 +25,19 @@ internal class CanServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(CanMessageTypes.Ids.CanServiceIsReadyNotification, typeof(EmptyNotification));
         this.RegisterServiceNotification(CanMessageTypes.Ids.CoprocessorIsReadyNotification, typeof(EmptyNotification), false, true);
         this.RegisterServiceRequest(CanMessageTypes.Ids.CoprocessorHeartbeat, typeof(EmptyNotification), typeof(EmptyNotification), false, true);
+    }
+
+    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    {
+        var result = base.GetAdditionalClientResources(type);
+        result.Add("CanServiceClientExtensions.h", UTF8Encoding.UTF8.GetBytes(Properties.CANResources.CanServiceClientExtensionsH));
+        result.Add("IHasCanData.h", UTF8Encoding.UTF8.GetBytes(Properties.CANResources.IHasCanData));
+        result.Add("CanServiceClientIncludes.h", UTF8Encoding.UTF8.GetBytes(Properties.CANResources.CanServiceClientIncludes));
+
+        if (includeImplementation) 
+            result.Add("CanServiceClientExtensions.cxx", UTF8Encoding.UTF8.GetBytes(Properties.CANResources.CanServiceClientExtensionsCXX));
+
+        return result;
     }
 }
 

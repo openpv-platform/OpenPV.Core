@@ -103,7 +103,7 @@ internal class CanInstallerComponent : InstallEngineComponent
                 }
 
                 // Create Start Script
-                string start = Properties.Resources.Ahsoka_Can_Start;
+                string start = Properties.CANResources.Ahsoka_Can_Start;
                 string pathToInterface = canConfig.CanPortConfiguration.MessageConfiguration.Ports.First().CanInterfacePath;
                 string localIPAddress = canConfig.CanPortConfiguration.CommunicationConfiguration.LocalIpAddress;
                 string remoteIPAddress = canConfig.CanPortConfiguration.CommunicationConfiguration.RemoteIpAddress;

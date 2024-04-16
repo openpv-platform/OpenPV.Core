@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 namespace Ahsoka.Application.Storyboard;
+
 internal class ApplicationViewModelRoot
 {
     #region fields

@@ -26,15 +26,18 @@ FILE(GLOB Headers *.h)
 FILE(GLOB Sources *.cpp *.hpp)
 FILE(GLOB Forms *.ui)
 FILE(GLOB Resources *.qrc)
+File(GLOB Generated Generated/*.cpp)
 
-# Beginning in OpenPV 3.0, Command Line Code Generators have been simplified and now execute as part of the 
-# SDK Installation so this the targets (ExportCanClasses) / properties (Can Generator Properties) below are no 
-# longer needed. With this change, the Developer Toolkit will generate your CAN Models as part of the SDK Update 
+
+# Beginning in OpenPV 3.0, Command Line Code Generators have been simplified and now execute as part of the
+# SDK Installation so this the targets (ExportCanClasses) / properties (Can Generator Properties) below are no
+# longer needed. With this change, the Developer Toolkit will generate your CAN Models as part of the SDK Update
 # or after Changes to the CanConfiguration.
 
-# NOTE: For developers that prefer to keep the model generation here as part of their local build system, you can set the 
-# condition below to True to continue using the older style code generation method.  You 
+# NOTE: For developers that prefer to keep the model generation here as part of their local build system, you can set the
+# condition below to True to continue using the older style code generation method.  You
 # will need to disable the Code Generation in the Associated CAN Extension as well to avoid conflict
+
 
 # This Command runs the Ahsoka CAN Code Generator to Generate CAN Model Objects
 # Note we also copy the Can Calibration File to the Command Line Folder
@@ -49,16 +52,18 @@ if(false)
 	)
 endif()
 
+#Add Ahsoka Library Subdirectory
+add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
+
 # CREATE Executable called Ahsoka.QT.CAN
 add_executable(Ahsoka.QT.CAN
     ${Sources}
     ${Forms}
     ${Resources}
-    ${CMAKE_CURRENT_SOURCE_DIR}/Generated/CANModels.generated.cpp
+    ${AhsokaSources}
+    ${Generated}
 )
 
-#Add Ahsoka Library Subdirectory
-add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
 add_ahsoka(Ahsoka.QT.CAN)
 
 # Required to Deploy to the Target

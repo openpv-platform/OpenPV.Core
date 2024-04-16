@@ -1,6 +1,6 @@
 #include "DefaultServiceClient.h"
 #include "DefaultServiceMessages.hpp"
-#include "AhsokaClientEndPoint.hpp"
+#include "AhsokaClientEndPoint.h"
 
 using namespace std;
 using namespace DefaultNameSpace;

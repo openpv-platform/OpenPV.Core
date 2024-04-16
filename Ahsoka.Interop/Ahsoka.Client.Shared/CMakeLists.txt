@@ -6,9 +6,6 @@ cmake_minimum_required (VERSION 3.8)
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-Wdeprecated-declarations HAVE_DEPRECATED_DECLARATIONS)
 
-#Include the Service Configuration
-embed_resource("../../Ahsoka.Platform/Ahsoka.Core/Resources/OPVServicesConfiguration.json" "ServiceFramework/ServiceConfiguration.hpp" "ServiceConfig")
-
 # Add source to this project's executable.
 FILE(GLOB ServiceFramework ServiceFramework/*.cpp)
 FILE(GLOB Service Services/*.cpp)

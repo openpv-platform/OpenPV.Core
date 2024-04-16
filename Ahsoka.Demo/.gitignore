@@ -393,3 +393,4 @@ FodyWeavers.xsd
 *.buildpath
 Ahsoka.OpenPV.Installer\Components.wxs
 *.opv
+*/Ahsoka.Client.Shared/*

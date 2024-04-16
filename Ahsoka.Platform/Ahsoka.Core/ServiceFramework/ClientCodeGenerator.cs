@@ -1,26 +1,40 @@
-﻿using Ahsoka.Utility;
+﻿#pragma warning disable CS1591
+using Ahsoka.Installer;
+using Ahsoka.Spark;
+using Ahsoka.Utility;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
 namespace Ahsoka.ServiceFramework;
 
-internal class ClientCodeGenerator
+public class ClientCodeGenerator
 {
-    internal static void GenerateClients(string pathToOutputFolder)
+    static string includes = "";
+    static string usings = "";
+    public static void GenerateClients(PackageInformation packageInfo, string pathToOutputFolder)
     {
         // Create Output Directory
         if (!Directory.Exists(pathToOutputFolder)) { Directory.CreateDirectory(pathToOutputFolder); }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"");
+        includes = "#pragma once\n#include \"AhsokaRuntimeBuilder.h\"\n#include \"AhsokaConfiguration.h\"\n#include \"Services.pb.h\"\n";
+        usings = "using namespace AhsokaServiceFramework;\n";
 
         foreach (var item in ClassLoader.GetItemsWithInterface(typeof(AhsokaMessagesBase)))
         {
-            string name = item.Name.Replace("Messages", "");
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Found Client / Messages to Generate Named {name}");
-            GenerateClientsForCPP(name, ProcessNameSpace(name), pathToOutputFolder, item);
+            if (packageInfo.ServiceInfo.RuntimeConfiguration.Services.Any(x => item.FullName.Contains(x.ServiceName)))
+            {
+                string name = item.Name.Replace("Messages", "");
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Found Client / Messages to Generate Named {name}");
+                GenerateClientsForCPP(name, ProcessNameSpace(name), pathToOutputFolder, item);
+            }    
         }
+
+        File.WriteAllText(Path.Combine(pathToOutputFolder, "AhsokaServices.h"), includes + usings);
     }
 
     private static void GenerateClientsForCPP(string name, string nameSpace, string pathToOutput, Type messageType)
@@ -29,6 +43,22 @@ internal class ClientCodeGenerator
 
         GenerateClientHeaders(name, nameSpace, pathToOutput, messageType);
         GenerateClientImplementations(name, nameSpace, pathToOutput, messageType);
+
+        GenerateAdditionalResources(name,  pathToOutput, nameSpace, messageType);
+    }
+
+    private static void GenerateAdditionalResources(string name, string pathToOutput, string nameSpace, Type messageType)
+    {
+        var messages = ClassLoader.CreateType(messageType) as AhsokaMessagesBase;
+
+        foreach (var file in messages.GetAdditionalClientResources(ApplicationType.Cpp)) 
+        {
+            File.WriteAllBytes(Path.Combine(pathToOutput, file.Key), file.Value);
+        }
+
+        includes += messages.GetInteropIncludes(name, ApplicationType.Cpp);
+
+        usings += $"using namespace {nameSpace};\n";
     }
 
     private static void GenerateClientHeaders(string name, string nameSpace, string pathToOutput, Type messageType)

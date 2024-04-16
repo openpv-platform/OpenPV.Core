@@ -23,6 +23,10 @@ get_filename_component(Library lib/libAhsoka.Client.Shared.so ABSOLUTE)
 set(AhsokaHeaders ${Headers} PARENT_SCOPE)
 set(AhsokaLibs ${Library} zmq protobuf PARENT_SCOPE)
 
+#Get Client Implementations
+FILE(GLOB Clients inc/services/*.cpp)
+set(AhsokaSources ${Clients} PARENT_SCOPE)
+
 function(add_ahsoka target_name)
 
     target_include_directories(${target_name} PRIVATE ${AhsokaHeaders})  # Include Headers or Ahsoka

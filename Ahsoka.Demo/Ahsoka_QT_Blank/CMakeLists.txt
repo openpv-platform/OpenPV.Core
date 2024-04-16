@@ -27,14 +27,17 @@ FILE(GLOB Sources *.cpp)
 FILE(GLOB Forms *.ui)
 FILE(GLOB Resources *.qrc)
 
+#Add Ahsoka Library Subdirectory
+add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
+
 add_executable(Ahsoka.QT.Blank
     ${Sources}
     ${Forms}
     ${Resources}
+    ${AhsokaSources}
 )
 
-#Add Ahsoka Library Subdirectory
-add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
+
 
 add_ahsoka(Ahsoka.QT.Blank)
 

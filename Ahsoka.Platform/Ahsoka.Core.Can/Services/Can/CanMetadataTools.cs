@@ -289,6 +289,12 @@ internal static class CanMetadataTools
             Directory.CreateDirectory(directory);
 
         string canCalibration = package.ServiceInfo.RuntimeConfiguration.Services.FirstOrDefault(x => x.ServiceName == "CanService")?.ConfigurationFile;
+        if (canCalibration.IsNullOrEmpty())
+        {
+            Console.WriteLine($"Config does not contain a CAN configuration file");
+            return;
+        }
+
         var calPath = Path.Combine(pathToSearch, canCalibration);
         if (!File.Exists(calPath))
         {
@@ -308,6 +314,10 @@ internal static class CanMetadataTools
 
             GenerateCPP(nameSpace, baseClass, calPath, outputFileData, outputFileDataCPP, pathToDestinationFile);
             File.WriteAllText(fileName, outputFileDataCPP.ToString());
+
+            var path = Path.GetDirectoryName(pathToDestinationFile);
+            File.WriteAllText(Path.Combine(path, "CanPropertyInfo.h"), Properties.CANResources.CanPropertyInfo);
+            File.WriteAllText(Path.Combine(path, "CanViewModelBase.h"), Properties.CANResources.CanViewModelBase);
         }
 
         File.WriteAllText(pathToDestinationFile, outputFileData.ToString());

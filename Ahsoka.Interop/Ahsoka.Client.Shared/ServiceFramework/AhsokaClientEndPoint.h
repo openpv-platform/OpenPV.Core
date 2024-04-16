@@ -1,10 +1,9 @@
 #pragma once
-#include "AhsokaBaseEndPoint.hpp"
+#include "AhsokaBaseEndPoint.h"
 #include <memory>
 #include "Services.pb.h"
 #include "Configuration.pb.h"
-#include "AhsokaMessagesBase.hpp"
-#include "AhsokaSocket.hpp"
+#include "AhsokaMessagesBase.h"
 
 namespace AhsokaServiceFramework
 {

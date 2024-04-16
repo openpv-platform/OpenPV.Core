@@ -50,6 +50,7 @@ class CANDemo
             std::cout << "Starting CAN Channel" << std::endl;
             canClient.OpenCommunicationChannel();
 
+            std::cout << "CAN Channel Started" << std::endl;
             //Here we are using a simple Model Object (from the generator)
             // to set values on our MotorCommand object
             DEMO_CAN::MOTOR_CMD canMessage;

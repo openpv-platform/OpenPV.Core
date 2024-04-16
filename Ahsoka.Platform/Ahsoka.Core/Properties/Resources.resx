@@ -127,9 +127,6 @@
   <data name="Ahsoka.Application.Start" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ahsoka.application.start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="Ahsoka.Can.Start" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\ahsoka.can.start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="Ahsoka.Installer" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ahsoka.installer.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -181,14 +178,8 @@
   <data name="WirelessClientStatic" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\linuxnetworkunits\wirelessclientstatic.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="CPPClientCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="CPPClientHeader" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ClientTemplates\CPPClientHeader.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="CPPClientMessages" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ClientTemplates\CPPClientMessages.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="UntrustedPrivateKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\UntrustedPrivateKeyPEM.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -227,7 +218,16 @@
   <data name="OpenViewS70HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\openviews70hardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="StandardCanDefinitions" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\standardcandefinitions.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="SystemServiceClientExtensionsCXX" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SystemServiceClientExtensions.cxx;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="SystemServiceClientExtensionsH" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SystemServiceClientExtensions.h;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="CPPClientMessages" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ClientTemplates\CPPClientMessages.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="CPPClientCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

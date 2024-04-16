@@ -1,6 +1,9 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Utility;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Ahsoka.Services.System;
 
@@ -36,6 +39,17 @@ internal class SystemServiceMessages : AhsokaMessagesBase
 
         this.RegisterServiceNotification(SystemMessageTypes.Ids.IgnitionOffNotification, typeof(EmptyNotification));
         this.RegisterServiceNotification(SystemMessageTypes.Ids.IgnitionOnNotification, typeof(EmptyNotification));
+    }
+
+    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    {
+        var result = base.GetAdditionalClientResources(type);
+        result.Add("SystemServiceClientExtension.h", UTF8Encoding.UTF8.GetBytes(Properties.Resources.SystemServiceClientExtensionsH));
+
+        if (includeImplementation)
+            result.Add("SystemServiceClientExtension.cxx", UTF8Encoding.UTF8.GetBytes(Properties.Resources.SystemServiceClientExtensionsCXX));
+
+        return result;
     }
 }
 

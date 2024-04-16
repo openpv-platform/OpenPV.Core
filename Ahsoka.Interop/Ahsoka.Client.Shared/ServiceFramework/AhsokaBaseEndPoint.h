@@ -4,8 +4,8 @@
 #include "Services.pb.h"
 #include "Configuration.pb.h"
 #include "AhsokaRuntime.h"
-#include "AhsokaMessagesBase.hpp"
-#include "AhsokaSocket.hpp"
+#include "AhsokaMessagesBase.h"
+#include "AhsokaSocket.h"
 
 namespace AhsokaServiceFramework
 {	

@@ -182,7 +182,7 @@ public partial class AhsokaRuntime
 
             List<IAhsokaServiceEndpoint> services = new();
             foreach (var item in config.Services)
-            {
+            {           
                 var type = types.FirstOrDefault(x => x.Key.ServiceName == item.ServiceName);
                 if (type.Value == null)
                     throw new ArgumentException($"Could not find service to match {item.ServiceName}");

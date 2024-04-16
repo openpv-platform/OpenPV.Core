@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ahsoka.Installer;
+using System;
 using System.Collections.Generic;
 
 namespace Ahsoka.ServiceFramework;
@@ -24,6 +25,16 @@ public abstract class AhsokaMessagesBase
     {
         Info.TryGetValue(transportType, out ServiceMessageInfo returnValue);
         return returnValue;
+    }
+
+    public virtual Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
+    {
+        return new();
+    }
+
+    public virtual string GetInteropIncludes(string name, ApplicationType type)
+    {
+        return $"#include \"{name}.pb.h\"\n#include \"{name}Client.h\"\n"; ;
     }
 }
 

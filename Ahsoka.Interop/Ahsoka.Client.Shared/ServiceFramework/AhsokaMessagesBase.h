@@ -2,7 +2,7 @@
 #include <typeinfo>
 #include <map>
 #include <functional>
-#include "IAhsokaEndPoint.hpp"
+#include "IAhsokaEndPoint.h"
 #include "AhsokaEndPoint.h"
 
 namespace AhsokaServiceFramework

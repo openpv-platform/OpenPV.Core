@@ -28,7 +28,7 @@ internal class CanSystemInfo
 
     private static CanClientCalibration LoadCanMessages()
     {
-        return JsonUtility.Deserialize<CanClientCalibration>(Properties.Resources.StandardCanDefinitions);
+        return JsonUtility.Deserialize<CanClientCalibration>(Properties.CANResources.StandardCanDefinitions);
     }
 
 }

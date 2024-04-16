@@ -164,7 +164,10 @@ internal class Extensions
                     asm = Assembly.UnsafeLoadFrom(item);
 
                 if (!ExtensionLibraries.Contains(asm))
+                {
                     ExtensionLibraries.Insert(0, asm);
+                    ClassLoader.AddAssembly(asm);
+                }
             }
             catch
             {

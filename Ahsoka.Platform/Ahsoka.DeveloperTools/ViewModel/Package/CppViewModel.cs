@@ -2,11 +2,13 @@
 using Ahsoka.Installer;
 using Ahsoka.System;
 using Ahsoka.Utility;
+using Ahsoka.ServiceFramework;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -181,9 +183,11 @@ internal class CppViewModel : ViewModelBase
                     // Copy SDK to Output
                     string pathToSDKOutput = Path.Combine(directoryForFramework, platform.ToString(), "SDK");
                     parentViewModel.Console.AddConsoleLine($"Installing Ahsoka Services Application to {pathToSDKOutput}");
-                    FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, progressString);
+                    FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, progressString);          
 
-                    // Install CommandLine
+                    ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput, "inc", "services"));
+
+
                     return DotNetViewModel.InstallCommandLine(directoryForFramework, platform, parentViewModel, progressString);
                 });
             }

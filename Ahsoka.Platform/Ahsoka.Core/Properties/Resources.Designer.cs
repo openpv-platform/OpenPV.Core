@@ -115,29 +115,6 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #!/bin/sh
-        ///echo &quot;CAN Start Time&quot; $(date +%T.%3N)
-        ///
-        ///#Start Application
-        ///echo start &gt; /sys/class/remoteproc/remoteproc0/state
-        ///
-        ///until [ -e ${InterfacePath} ]; do
-        ///    echo &quot;Waiting for CAN App to Start...&quot;
-        ///    sleep 1
-        ///done
-        ///
-        ///#Start Application
-        ///slattach -p slip -L -m ${InterfacePath} &amp;
-        ///ifconfig sl0 ${IpAddressLocal} pointtopoint ${IpAddressRemote} up
-        ///.
-        /// </summary>
-        internal static string Ahsoka_Can_Start {
-            get {
-                return ResourceManager.GetString("Ahsoka.Can.Start", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to [Unit]
         ///Description=Early Ahsoka startup target
         ///
@@ -213,7 +190,7 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #include &quot;DefaultServiceClient.h&quot;
         ///#include &quot;DefaultServiceMessages.hpp&quot;
-        ///#include &quot;AhsokaClientEndPoint.hpp&quot;
+        ///#include &quot;AhsokaClientEndPoint.h&quot;
         ///
         ///using namespace std;
         ///using namespace DefaultNameSpace;
@@ -223,7 +200,7 @@ namespace Ahsoka.Properties {
         ///    typedef AhsokaClientEndPoint&lt;DefaultTransportIdEnum&gt; DefaultService_t;
         ///	
         ///	DefaultServiceClient::DefaultServiceClient():
-        ///       AhsokaServiceFramework::AhsokaEndPointWithCallback&lt;DefaultTransportIdEnum&gt;(new DefaultService_t(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServic [rest of string was truncated]&quot;;.
+        ///       AhsokaServiceFramework::AhsokaEndPointWithCallback&lt;DefaultTransportIdEnum&gt;(new DefaultService_t(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceM [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CPPClientCode {
             get {
@@ -265,7 +242,7 @@ namespace Ahsoka.Properties {
         ///   Looks up a localized string similar to #pragma once
         ///
         ///#include &lt;string&gt;
-        ///#include &quot;AhsokaMessagesBase.hpp&quot;
+        ///#include &quot;AhsokaMessagesBase.h&quot;
         ///#include &lt;functional&gt;
         ///#include &quot;AhsokaServices.h&quot;
         ///
@@ -583,7 +560,7 @@ namespace Ahsoka.Properties {
         ///      &quot;tcpListenAddress&quot;: &quot;*&quot;,
         ///      &quot;tcpConnectionAddress&quot;: &quot;localhost&quot;,
         ///      &quot;bleServiceUuidBase&quot;: &quot;96730000-8f5d-4cef-8289-744c8faa1a66&quot;,
-        ///      &quot;dataChannel&quot; : 5000,
+        ///      &quot;dataChannel&quot;: 5000,
         ///      &quot;notificationChannel&quot;: 6000
         ///    },
         ///    {
@@ -591,8 +568,8 @@ namespace Ahsoka.Properties {
         ///      &quot;tcpListenAddress&quot;: &quot;*&quot;,
         ///      &quot;tcpConnectionAddress&quot;: &quot;localhost&quot;,
         ///      &quot;bleServiceUuidBase&quot;: &quot;96730000-8f5d-4cef-8289-744c8faa1a66&quot;,
-        ///      &quot;dataChannel&quot; : 5001,
-        ///      &quot;n [rest of string was truncated]&quot;;.
+        ///      &quot;dataChannel&quot;: 5001,
+        ///      &quot;not [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OPVServicesConfiguration {
             get {
@@ -632,37 +609,6 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {
-        ///	&quot;name&quot;: &quot;StandardCanDefinitions&quot;,
-        ///	&quot;canPort&quot;: &quot;can1&quot;,
-        ///	&quot;baudRate&quot;: &quot;Baud250kb&quot;,
-        ///	&quot;canInterface&quot;: &quot;Coprocessor&quot;,
-        ///	&quot;localIpAddress&quot;: &quot;0&quot;,
-        ///	&quot;remoteIpAddress&quot;: &quot;0&quot;,
-        ///	&quot;nodes&quot;: [
-        ///		{
-        ///			&quot;idValid&quot;: 255,
-        ///			&quot;id&quot;: 255,
-        ///			&quot;name&quot;: &quot;ANY&quot;,
-        ///			&quot;comment&quot;: &quot;&quot;,
-        ///			&quot;nodeType&quot;: &quot;Any&quot;,
-        ///			&quot;transportProtocol&quot;: &quot;J1939&quot;,
-        ///			&quot;j1939Info&quot;: {
-        ///				&quot;addressOneValid&quot;: 255,
-        ///				&quot;addressTwoValid&quot;: 0,
-        ///				&quot;addressThreeValid&quot;: 0,
-        ///				&quot;addressType&quot;: &quot;Static&quot;,
-        ///				&quot;addressValueOne&quot;: 255,
-        ///				&quot;addressValueTwo&quot;: 0,
-        ///			 [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string StandardCanDefinitions {
-            get {
-                return ResourceManager.GetString("StandardCanDefinitions", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to [
         ///  {
         ///    &quot;PackageName&quot;: &quot;Google Protocol Buffers&quot;,
@@ -681,6 +627,38 @@ namespace Ahsoka.Properties {
         internal static string StaticLicenses {
             get {
                 return ResourceManager.GetString("StaticLicenses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///std::string SystemServiceClient::Echo(std::string value)
+        ///{
+        ///	AhsokaSystem::EchoValue request;
+        ///    request.set_data_value(value);
+        ///    auto resultObject = GetEndPoint&lt;SystemService_t&gt;()-&gt;SendNotificationWithResponse&lt;AhsokaSystem::EchoValue&gt;(SystemMessageTypes_Ids_ECHO, &amp;request);
+        ///    return resultObject-&gt;data_value();
+        ///}
+        ///
+        ///void SystemServiceClient::RequestServiceShutdown(ShutdownTypes type, int exitCode)
+        ///{
+        ///    AhsokaSystem::ShutdownInformation request;
+        ///    request.set_shutdown_type(type);
+        ///    request.set_shutdo [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string SystemServiceClientExtensionsCXX {
+            get {
+                return ResourceManager.GetString("SystemServiceClientExtensionsCXX", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to void RequestServiceShutdown(ShutdownTypes type = SHUTDOWN_SERVICES, int exitCode = 0);
+        ///std::string Echo(std::string value);.
+        /// </summary>
+        internal static string SystemServiceClientExtensionsH {
+            get {
+                return ResourceManager.GetString("SystemServiceClientExtensionsH", resourceCulture);
             }
         }
         

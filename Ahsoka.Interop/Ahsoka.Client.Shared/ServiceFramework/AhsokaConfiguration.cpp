@@ -9,39 +9,40 @@ using namespace std;
 
 namespace AhsokaServiceFramework
 {
-	#include "ServiceConfiguration.hpp"
 
 	RuntimeConfiguration AhsokaConfiguration::runtimeConfig;
 
 	void AhsokaConfiguration::LoadConfiguration(const string& configurationFile)
 	{
-		// Load File
-		std::ifstream t(configurationFile);
-		std::stringstream buffer;
-		buffer << t.rdbuf();
-
-		//std::cout << buffer.str() << std::endl;
-		JsonStringToMessage(buffer.str(), &AhsokaConfiguration::runtimeConfig);
+		std::ifstream ifs(configurationFile, std::ifstream::in);
+		AhsokaConfiguration::runtimeConfig.ParseFromIstream(&ifs);
 	}
 
 	ServiceConfiguration AhsokaConfiguration::GetServiceConfiguration(const string& serviceName)
 	{
-		std::string serviceConfig(ServiceConfig, sizeof(ServiceConfig));
-		
 		// Load Default Configuration
 		if (runtimeConfig.services_size() == 0)
 		{
-			auto result = JsonStringToMessage(serviceConfig, &AhsokaConfiguration::runtimeConfig);
+			LoadConfiguration(".appinfo/AutoStartServiceConfig.pbuff");
 		}
 
 		// Find Service Configuration;
+		bool found = false;
 		ServiceConfiguration configuration;
 		for (auto config : runtimeConfig.services())
 		{
 			if (config.service_name() == serviceName)
+			{
 				configuration = config;
+				found = true;
+			}
+				
 		}
+
+		if (!found)
+			throw std::logic_error(("Service Config not found for %s", serviceName));
 
 		return configuration;
 	}
+
 }

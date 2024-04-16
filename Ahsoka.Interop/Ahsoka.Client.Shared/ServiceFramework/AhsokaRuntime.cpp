@@ -1,7 +1,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "IAhsokaEndPoint.hpp"
+#include "IAhsokaEndPoint.h"
 #include "AhsokaRuntimeProcess.hpp"
 #include "AhsokaRuntime.h"
 #include "AhsokaRuntimeBuilder.h"

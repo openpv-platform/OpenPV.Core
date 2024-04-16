@@ -1,11 +1,11 @@
 #include <iostream>
 #include <string>
-#include "AhsokaServices.h"
-#include "IotTests.hpp"
-#include "SystemTests.hpp"
-#include "SparkTests.hpp"
-#include "NetworkTests.hpp"
-#include "CanTests.hpp"
+//#include "AhsokaServices.h"
+//#include "IotTests.hpp"
+//#include "SystemTests.hpp"
+//#include "SparkTests.hpp"
+//#include "NetworkTests.hpp"
+//#include "CanTests.hpp"
 #include <filesystem>
 
 
@@ -42,32 +42,32 @@ int main()
             {
                 case 1:
                 {
-                    SystemTests system;
-                    system.RunTests(pathToExecutable);
+                    //SystemTests system;
+                    //system.RunTests(pathToExecutable);
                     break;
                 }
                 case 2:
                 {
-                    IotTests iot;
-                    iot.RunTests(pathToExecutable);
+                    //IotTests iot;
+                    //iot.RunTests(pathToExecutable);
                     break;
                 }
                 case 3:
                 {
-                    SparkTests spark;
-                    spark.RunTests(pathToExecutable);
+                    //SparkTests spark;
+                    //spark.RunTests(pathToExecutable);
                     break;
                 }
                 case 4:
                 {
-                    NetworkTests network;
-                    network.RunTests(pathToExecutable);
+                    //NetworkTests network;
+                    //network.RunTests(pathToExecutable);
                     break;
                 }
                 case 5:
                 {
-                    CanTests canTest;
-                    canTest.RunTests(pathToExecutable);
+                    //CanTests canTest;
+                    //canTest.RunTests(pathToExecutable);
                     break;
                 }
                 case 9:

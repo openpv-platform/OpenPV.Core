@@ -231,6 +231,29 @@ internal class CanInstallerComponent : InstallEngineComponent
                 if (!OperatingSystem.IsWindows())
                     new UnixFileInfo(pathToStartScript).FileAccessPermissions |= FileAccessPermissions.UserExecute;
             }
+
+            // Set Baud Rate of Ports
+            using var fs = new FileStream(pathToConfig, FileMode.Open);
+            fs.Seek(0, SeekOrigin.Begin);
+            var calibration = ProtoBuf.Serializer.Deserialize<CanApplicationCalibration>(fs);
+            foreach (var port in calibration.CanPortConfiguration.MessageConfiguration.Ports)
+            {
+                string rate = "";
+                switch (port.BaudRate)
+                {
+                    case CanBaudRate.Baud1mb:
+                        rate = "1000000";
+                        break;
+                    case CanBaudRate.Baud500kb:
+                        rate = "500000";
+                        break;
+                    default:
+                        rate = "250000";
+                        break;
+                }
+                ProcessUtility.RunProcessScript($"sed -i -r \"s/(BitRate=[0-9]*)/BitRate={rate}/g\" /etc/systemd/network/80-can{port.Port}.network", null, out stdOut, out stdErr);
+            }
+
         }
         catch (Exception ex)
         {

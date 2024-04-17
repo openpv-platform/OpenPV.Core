@@ -21,6 +21,7 @@ namespace Ahsoka.ServiceFramework;
 public partial class AhsokaRuntime
 {
     #region Fields
+    private const int MillisecondsTimeout = 5000;
     bool isRunning = false;
     readonly AutoResetEvent shutDownEvent = new(false);
     #endregion
@@ -40,18 +41,28 @@ public partial class AhsokaRuntime
     /// </summary>
     public void RequestShutdown()
     {
+        try
+        {
+            lock (syncRoot)
+                if (isRunning)
+                {
+                    // Disconnect Blocks Until Threads End.
+                    foreach (var item in EndPoints)
+                    {
+                        try
+                        {
+                            item.Value.Disconnect();
+                        }
+                        catch { }
+                    }
 
-        lock (syncRoot)
-            if (isRunning)
-            {
-                // Disconnect Blocks Until Threads End.
-                foreach (var item in EndPoints)
-                    item.Value.Disconnect();
-
-                isRunning = false;
-            }
-
-        shutDownEvent.Set();
+                    isRunning = false;
+                }
+        }
+        finally
+        {
+            shutDownEvent.Set();
+        }
     }
 
     /// <summary>
@@ -59,7 +70,9 @@ public partial class AhsokaRuntime
     /// </summary>
     public void WaitForShutdown()
     {
-        shutDownEvent.WaitOne();
+        bool waitResult = shutDownEvent.WaitOne(MillisecondsTimeout);
+        if (!waitResult)
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "WaitForShutdown did not recieve a shutdown signal but exited Anyway.");
 
         lock (syncRoot)
             currentRuntimes.Remove(this);

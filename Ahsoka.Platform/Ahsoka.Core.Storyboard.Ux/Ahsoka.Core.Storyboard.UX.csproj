@@ -57,7 +57,7 @@
 	<!--To help Debugging since this is loaded dynamically-->
 	<Target Name="AfterExtensionBuild" AfterTargets="Build">
 		<Message Text="Building.." Importance="high" />
-		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Storyboard.Ux\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Storyboard.UX.dll" DestinationFiles="$(SolutionDir)\Extensions\Storyboard Extension\ux\Ahsoka.Core.Storyboard.UX.dll" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Storyboard.Ux\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Storyboard.UX.dll" DestinationFiles="$(SolutionDir)..\Extensions\Storyboard Extension\ux\Ahsoka.Core.Storyboard.UX.dll" />
 	</Target>
 	
 	<ItemGroup>

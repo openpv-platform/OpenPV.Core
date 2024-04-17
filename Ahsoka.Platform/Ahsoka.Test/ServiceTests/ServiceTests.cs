@@ -165,8 +165,8 @@ public class ServiceTests
             Console.WriteLine(info);
         });
 
-        var prep = RemoteTargetToolFactory.GetToolsForPlatform( PlatformFamily.Windows64);
-     
+        var prep = RemoteTargetToolFactory.GetToolsForPlatform(PlatformFamily.Windows64);
+
         // Create Hardware Info
         HardwareInfo hardware = HardwareInfo.GetHardwareInfo(PlatformFamily.Windows64, "Desktop");
 
@@ -255,8 +255,6 @@ public class ServiceTests
         // Stop the Runtimes
         AhsokaRuntime.ShutdownAll();
     }
-
-
 }
 
 

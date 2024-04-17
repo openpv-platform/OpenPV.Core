@@ -3,7 +3,6 @@ using Ahsoka.Utility;
 
 namespace Ahsoka.Application.Storyboard;
 
-[DataServiceInfo("DisplayBrightness", true)]
 public partial class BEEBrightnessStatus
 {
     public override void OnUpdateStoryboard()

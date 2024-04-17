@@ -5,7 +5,6 @@ using Ahsoka.Utility;
 
 namespace Ahsoka.Application.Storyboard;
 
-[DataServiceInfo("Buzzer", true)]
 public partial class BEEBuzzerStatus
 {
 

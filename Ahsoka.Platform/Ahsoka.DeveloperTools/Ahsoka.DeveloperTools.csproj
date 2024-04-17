@@ -208,7 +208,7 @@
 
 	<PropertyGroup Label="Debian Packaging">
 		<PublishSelfContained>true</PublishSelfContained>
-		<PackageDir>..\SparkUpload</PackageDir>
+		<PackageDir>..\..\SparkUpload</PackageDir>
 	</PropertyGroup>
 	
 	<ItemGroup Label="Debian Packaging">

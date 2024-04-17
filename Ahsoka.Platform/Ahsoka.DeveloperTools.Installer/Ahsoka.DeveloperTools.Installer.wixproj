@@ -6,7 +6,7 @@
     <UpdateAssemblyInfo>false</UpdateAssemblyInfo>
     <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
     <SuppressIces>ICE60;ICE61</SuppressIces>
-    <OutputPath>..\SparkUpload\</OutputPath>
+    <OutputPath>..\..\SparkUpload\</OutputPath>
     <DebugType>Full</DebugType>
   </PropertyGroup>
   <ItemGroup>
@@ -20,13 +20,14 @@
     <Content Include="OpenPV-Icon.ico" />
   </ItemGroup>
   <PropertyGroup>
-    <LinkerBaseInputPaths>..\PlatformSupport\Ahsoka.Tools\Windows64</LinkerBaseInputPaths>
-    <DefineConstants>BasePath=..\PlatformSupport\Ahsoka.Tools\Windows64</DefineConstants>
+    <LinkerBaseInputPaths>..\..\PlatformSupport\Ahsoka.Tools\Windows64</LinkerBaseInputPaths>
+    <DefineConstants>BasePath=..\..\PlatformSupport\Ahsoka.Tools\Windows64</DefineConstants>
   </PropertyGroup>
   <Target Name="CustomBeforeBuild" BeforeTargets="BeforeBuild">
     <Message Text="RUN HEAT  $(WixHeatTasksPath)" Importance="high" />
     <Exec Command="dotnet publish ..\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj -p:PublishProfile=WindowsOutputs" />
-    <HeatDirectory OutputFile="obj\Components.wxs" DirectoryRefId="INSTALLDIR" ComponentGroupName="OpenPVOutputs" SuppressCom="true" Directory="..\PlatformSupport\Ahsoka.Tools\Windows64" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" AutoGenerateGuids="false" GenerateGuidsNow="true" ToolPath="$(WixToolPath)" PreprocessorVariable="var.BasePath" Transforms="FilterEXE.xslt" />
+    <HeatDirectory OutputFile="obj\Components.wxs" DirectoryRefId="INSTALLDIR" ComponentGroupName="OpenPVOutputs" SuppressCom="true" 
+				   Directory="..\..\PlatformSupport\Ahsoka.Tools\Windows64" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" AutoGenerateGuids="false" GenerateGuidsNow="true" ToolPath="$(WixToolPath)" PreprocessorVariable="var.BasePath" Transforms="FilterEXE.xslt" />
     <ItemGroup>
       <Compile Include="obj\Components.wxs" />
     </ItemGroup>

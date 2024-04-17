@@ -14,7 +14,6 @@ class StoryboardMessageSerializer
     static readonly Dictionary<Type, StoryboardMessageSerializer> eventMap = new();
     static readonly Dictionary<string, StoryboardMessageSerializer> nameMap = new();
     static readonly Dictionary<Type, SBFieldType> typeTranslation = new();
-    private static readonly Dictionary<string, Tuple<PropertyInfo, Type>> KeyToMessagePropertyAndType = new();
     static readonly object syncRoot = new();
 
     static StoryboardMessageSerializer()
@@ -91,25 +90,6 @@ class StoryboardMessageSerializer
                 attribute.FieldType = GetSBType(item.PropertyType);
                 attribute.Count = attribute.FieldType == SBFieldType.String_1s ? 0 : attribute.Count;
 
-                DataServiceInfoAttribute originNameAttribute =
-                    (DataServiceInfoAttribute)Attribute.GetCustomAttribute(type, typeof(DataServiceInfoAttribute));
-                // NOTE: BMG (Dec. 17, 2023) We are only going to create a dictionary for the incoming message because
-                // whenever there is a change from the data service, we are going to want to emulate an incoming
-                // storyboard message in order to simplify the handling of any change in the application.
-                if (eventAttr.EventDirection.Equals(StoryboardMessageDirection.In.GetMessageDirectionString()))
-                {
-                    if (originNameAttribute != null)
-                    {
-                        string propertyName = $"{originNameAttribute.Origin}_{item.Name}";
-                        KeyToMessagePropertyAndType.Add(propertyName, new(item, type));
-                    }
-                    else
-                    {
-                        string propertyName = $"{type.Name}_{item.Name}";
-                        KeyToMessagePropertyAndType.Add(propertyName, new(item, type));
-                    }
-                }
-
                 // Capture Info.
                 propertyData.Add(new KeyValuePair<PropertyInfo, SBFieldAttribute>(item, attribute));
             }
@@ -121,60 +101,7 @@ class StoryboardMessageSerializer
         Format = string.Join(" ", propertyData.Select(x => $"{x.Value.FieldType.GetDescription()}{x.Value.Count} {x.Value.FieldName}"));
     }
 
-    public static bool TryGetSBMessageObject(KeyValue keyValue, out object sbMessageObject)
-    {
-        string propertyDataServiceKey = $"{keyValue.KeyInfo.Origin}_{keyValue.KeyInfo.Key}";
-
-        if (!KeyToMessagePropertyAndType.TryGetValue(propertyDataServiceKey, out Tuple<PropertyInfo, Type> propertyInfoAndMessage))
-        {
-            sbMessageObject = null;
-            return false;
-        }
-
-        Type sbMessageType = propertyInfoAndMessage.Item2;
-        PropertyInfo sbMessagePropertyInfo = propertyInfoAndMessage.Item1;
-        sbMessageObject = Activator.CreateInstance(sbMessageType);
-
-        Type sbMessagePropertyType = sbMessagePropertyInfo.PropertyType;
-        if (sbMessagePropertyType == typeof(float))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToSingle(keyValue.GetValue()));
-        else if (sbMessagePropertyType == typeof(UInt64))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToUInt64(keyValue.GetValue()));
-        else if (sbMessagePropertyType == typeof(UInt32))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToUInt32(keyValue.GetValue()));
-        else if (sbMessagePropertyType == typeof(UInt16))
-        {
-            UInt32 tempInt = Convert.ToUInt32(keyValue.GetValue());
-            sbMessagePropertyInfo.SetValue(sbMessageObject, (UInt16)tempInt);
-        }
-        else if (sbMessagePropertyType == typeof(byte))
-        {
-            UInt32 tempInt = Convert.ToUInt32(keyValue.GetValue());
-            sbMessagePropertyInfo.SetValue(sbMessageObject, (byte)tempInt);
-        }
-        else if (sbMessagePropertyType == typeof(Int64))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToInt64(keyValue.GetValue()));
-        else if (sbMessagePropertyType == typeof(Int32))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToInt32(keyValue.GetValue()));
-        else if (sbMessagePropertyType == typeof(Int16))
-        {
-            UInt32 tempInt = Convert.ToUInt32(keyValue.GetValue());
-            sbMessagePropertyInfo.SetValue(sbMessageObject, (Int16)tempInt);
-        }
-        else if (sbMessagePropertyType == typeof(sbyte))
-        {
-            UInt32 tempInt = Convert.ToUInt32(keyValue.GetValue());
-            sbMessagePropertyInfo.SetValue(sbMessageObject, (sbyte)tempInt);
-        }
-        else if (sbMessagePropertyType == typeof(string))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToString(keyValue.GetValue()));
-        else
-            throw new Exception("The value stored in the data service doesn't match up with the " +
-                                "storyboard type for some reason. This is a problem.");
-
-        return true;
-    }
-
+  
     private SBFieldType GetSBType(Type propertyType)
     {
         if (propertyType.IsArray)

@@ -9,6 +9,7 @@ using Ahsoka.Utility.WiFi;
 using System;
 
 namespace Ahsoka.Demo.Storyboard;
+
 internal class DemoViewModelRoot
 {
     #region Fields

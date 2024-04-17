@@ -1,5 +1,5 @@
 #!/bin/bash
-PATH_NAME="../PlatformSupport/MacOSARM64_TargetSupport"
+PATH_NAME="../../PlatformSupport/MacOSARM64_TargetSupport"
 ENTITLEMENTS="../MyAppEntitlements.entitlements"
 SIGNING_IDENTITY="Developer ID Application: Enovation Controls LLC (C28LL293G6)"
 

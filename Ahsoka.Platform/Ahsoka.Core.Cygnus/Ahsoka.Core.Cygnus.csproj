@@ -34,8 +34,8 @@
 	<!--To help Debugging since this is loaded dynamically-->
 	<Target Name="AfterCygnusBuild" AfterTargets="Build">
 		<Message Text="Copy Cygnus Extension..." Importance="high" />
-		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.extensioninfo.json" DestinationFiles="$(SolutionDir)\Extensions\Cygnus Service Extension\Ahsoka.Core.Cygnus.extensioninfo.json" />
-		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Cygnus\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Cygnus.dll" DestinationFiles="$(SolutionDir)\Extensions\Cygnus Service Extension\lib\Ahsoka.Core.Cygnus.dll" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.extensioninfo.json" DestinationFiles="$(SolutionDir)..\Extensions\Cygnus Service Extension\Ahsoka.Core.Cygnus.extensioninfo.json" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Cygnus\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Cygnus.dll" DestinationFiles="$(SolutionDir)..\Extensions\Cygnus Service Extension\lib\Ahsoka.Core.Cygnus.dll" />
 	</Target>
 
 </Project>

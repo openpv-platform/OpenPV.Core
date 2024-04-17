@@ -3,10 +3,8 @@ using Ahsoka.Utility;
 
 namespace Ahsoka.Application.Storyboard;
 
-[DataServiceInfo("DigitalOutput1", true)]
 public partial class BEEDigitalOutput1Status
 {
-
     private bool Initialized = false;
 
     public void Update(PinState requestedState, SetOutputResponse response)

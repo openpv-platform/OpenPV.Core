@@ -27,9 +27,11 @@ public class ConfigurationLoader
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Reading Default TCP Configuration");
         var config = JsonUtility.Deserialize<RuntimeConfiguration>(Properties.Resources.OPVServicesConfiguration);
         if (includeExtensions)
+        {
+            Extensions.LoadExtensions();
             foreach (var item in Extensions.Configurations)
                 config.Services.AddRange(item.ServiceConfigurations);
-
+        }
         return config;
     }
 

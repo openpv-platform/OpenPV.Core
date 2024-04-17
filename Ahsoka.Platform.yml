@@ -91,22 +91,22 @@ stages:
       displayName: 'Notorize OpenPV Application'
       inputs:
         script: |
-            echo $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/
-            xcrun notarytool submit  $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/MacOS.DeveloperToolkit.zip   --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
-            xcrun stapler staple $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app
-            ditto -c -k --sequesterRsrc --keepParent $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app $(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/MacOS.DeveloperToolkit.zip
+            echo $(Build.SourcesDirectory)/PlatformSupport/Ahsoka.Tools/MacOS/
+            xcrun notarytool submit  $(Build.SourcesDirectory)/PlatformSupport/Ahsoka.Tools/MacOS/MacOS.DeveloperToolkit.zip   --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
+            xcrun stapler staple $(Build.SourcesDirectory)/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app
+            ditto -c -k --sequesterRsrc --keepParent $(Build.SourcesDirectory)/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app $(Build.SourcesDirectory)/SparkUpload/MacOS.DeveloperToolkit.zip
 
     - task: CmdLine@2
       displayName: 'Notorize Command Line Items'
       inputs:
         script: |
-            echo $(Build.SourcesDirectory)$(Build.SourcesDirectory)/PlatformSupport/MacOSARM64_TargetSupport/
-            xcrun notarytool submit  $(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/MacOSARM64_TargetSupport.zip  --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
+            echo $(Build.SourcesDirectory)/PlatformSupport/MacOSARM64_TargetSupport/
+            xcrun notarytool submit  $(Build.SourcesDirectory)/SparkUpload/MacOSARM64_TargetSupport.zip  --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
 
     - task: CopyFiles@2
       displayName: 'Moving Files to Upload Area'
       inputs:
-        Contents: '$(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/**'
+        Contents: '$(Build.SourcesDirectory)/SparkUpload/**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/SparkUpload'
         CleanTargetFolder: true
         OverWrite: true
@@ -227,7 +227,7 @@ stages:
     - task: CopyFiles@2
       displayName: 'Moving Spark Artifacts to Upload Area'
       inputs:
-        Contents: '$(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/**'
+        Contents: '$(Build.SourcesDirectory)/SparkUpload/**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/SparkUpload'
         OverWrite: true
         flattenFolders: true
@@ -243,7 +243,7 @@ stages:
     - task: CopyFiles@2
       displayName: 'Moving CLI to Upload Area'
       inputs:
-        Contents: '$(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Windows64_TargetSupport/CommandLine/**/*'
+        Contents: '$(Build.SourcesDirectory)/PlatformSupport/Windows64_TargetSupport/CommandLine/**/*'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/cli'
         OverWrite: true
         flattenFolders: true

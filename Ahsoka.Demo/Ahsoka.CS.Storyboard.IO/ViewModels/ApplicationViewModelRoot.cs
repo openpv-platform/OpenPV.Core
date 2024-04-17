@@ -180,7 +180,7 @@ internal class ApplicationViewModelRoot
         };
 
         // Creates a Client Object to handle Messages Into and Out of Storyboard
-        ApplicationViewModelBase.StorybardClient = new StoryboardClient(sbConfig, dataClient: dataClient);
+        ApplicationViewModelBase.StorybardClient = new StoryboardClient(sbConfig);
 
         // Start the UI and Channels
         ApplicationViewModelBase.StorybardClient.StartStoryboardUI();
@@ -261,19 +261,30 @@ internal class ApplicationViewModelRoot
 
     private void InitModels()
     {
+        var sbClient = ApplicationViewModelBase.StorybardClient;
+        
         //Brightness
-        BrightnessModel.DataClient = dataClient;
+        BrightnessModel.AddBehavior(new DataServiceViewModelListener(dataClient, "DisplayBrightness"));
         BrightnessModel.UpdateStoryboard();
 
         //Buzzer
-        BuzzerModel.DataClient = dataClient;
+        BuzzerModel.AddBehavior(new DataServiceViewModelListener(dataClient,"Buzzer"));
         BuzzerModel.UpdateStoryboard();
 
-        DigitalOutput1.DataClient = dataClient;
+        // IO's
+        DigitalOutput1.AddBehavior(new DataServiceViewModelListener(dataClient,"DigitalOutput1"));
         DigitalOutput1.UpdateStoryboard();
-        DigitalOutput2.DataClient = dataClient;
+        DigitalOutput2.AddBehavior(new DataServiceViewModelListener(dataClient, "DigitalOutput2"  ));
         DigitalOutput2.UpdateStoryboard();
 
+
+        // Initialize Storyboard Notification Behaviors (Notifies SB if DataService Has Changes to a Model)
+        dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEBrightnessRequest), "DisplayBrightness"));
+        dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEDigitalOutput1Request), "DigitalOutput1"));
+        dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEDigitalOutput2Request), "DigitalOutput2"));
+        dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEBuzzerRequest), "Buzzer"));
+
+       
         //System Info
         Default.TouchHardwareVersionModel?.UpdateStoryboard();
         Default.TouchFirmwareVersionModel?.UpdateStoryboard();
@@ -291,6 +302,7 @@ internal class ApplicationViewModelRoot
         DigitalOutput1Request.Init();
         FEEDigitalOutput2Request DigitalOutput2Request = new();
         DigitalOutput2Request.Init();
+
 
         cygnusClient.AddFile(new()
         {

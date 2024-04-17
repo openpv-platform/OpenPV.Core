@@ -16,7 +16,7 @@ public partial class BrightnessUpdate : DemoViewModelBase
 	public UInt16 Percentage 
 	{
 		get { return _percentage;}
-		set { OnSetValue<UInt16>(ref _percentage, value);} 
+		set { OnSetValue<UInt16>(ref _percentage, value); } 
 	}
 
 	#endregion

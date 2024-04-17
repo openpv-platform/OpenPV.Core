@@ -29,7 +29,6 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
     readonly AutoResetEvent shutDownEvent = new(false);
     readonly StartupConfiguration configuration;
     readonly IStoryboardAPI sbioAPI;
-    readonly DataServiceClient dataClient;
     bool uiStarted = false;
     bool channelsOpen = false;
     private BlockingCollection<StoryboardMessage> MessageQueue = new();
@@ -73,20 +72,16 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
 
     #region Methods
 
-
     /// <summary>
     /// Constructs a new SB Client
     /// </summary>
     /// <param name="sbConfig">Configures how the SB Application will be started</param>
     /// <param name="api"></param>
-    /// <param name="dataClient"></param>
-    public StoryboardClient(StartupConfiguration sbConfig = null, IStoryboardAPI api = null, DataServiceClient dataClient = null)
+    public StoryboardClient(StartupConfiguration sbConfig = null, IStoryboardAPI api = null)
     {
         api ??= GetInterop();
 
         sbioAPI = api;
-
-        this.dataClient = dataClient;
 
         sbConfig ??= new StartupConfiguration() { StoryboardInputChannel = "backend", StoryboardOutputChannel = "frontend", UseEarlyStart = false };
 
@@ -215,23 +210,8 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Ahsoka Application Shut Down due to Error in Storyboard Event Channel");
             Environment.Exit(0);
         }
-
     }
 
-    private void DataClientValueChangeNotificationHandler(object sender, DataServiceClient.AhsokaNotificationArgs notificationInfo)
-    {
-        if (notificationInfo.TransportId == DataMessageTypes.Ids.NotifyKeyValueChanged)
-        {
-            KeyValueNotification notif = notificationInfo.NotificationObject as KeyValueNotification;
-            for (int i = 0; i < notif.KeyValues.Count; i++)
-            {
-                if (!StoryboardMessageSerializer.TryGetSBMessageObject(notif.KeyValues[i], out object sbMessageObject))
-                    continue;
-
-                MessageQueue.Add(new StoryboardMessage(sbMessageObject));
-            }
-        }
-    }
 
     /// <summary>
     ///  Starts the Listener Thread to listen for Incoming SBIO Messages / Events.
@@ -247,11 +227,7 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
                 try
                 {
                     var resultObject = inputChannel.ReceiveMessage(10000);
-                    // Queue the Storyboard Event to the message Queue to be processed.
-                    if (resultObject != null)
-                    {
-                        MessageQueue.Add(resultObject);
-                    }
+                    QueueMessage(resultObject);
                 }
                 catch (OperationCanceledException) { }
             }
@@ -259,9 +235,6 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
             shutDownEvent.Set();
 
         }, cancelToken.Token);
-
-        if (dataClient != null)
-            dataClient.NotificationReceived += DataClientValueChangeNotificationHandler;
 
         MessageQueueConsumerTask = Task.Run(() =>
         {
@@ -283,6 +256,12 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
         }, cancelToken.Token);
     }
 
+    internal void QueueMessage(StoryboardMessage message)
+    {
+        if (message != null)
+            MessageQueue.Add(message);
+    }
+
     /// <summary>
     /// Stops the Storyboard Listener Thread
     /// </summary>
@@ -299,9 +278,6 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
         }
         uiStarted = false;
         inputChannel.CloseChannel();
-
-        if (dataClient != null)
-            dataClient.NotificationReceived -= DataClientValueChangeNotificationHandler;
 
         Task.WaitAll(MessageQueueConsumerTask, StoryboardInputChannelTask);
 

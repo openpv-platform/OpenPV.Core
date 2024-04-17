@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace Ahsoka.Application.Storyboard;
 
-[DataServiceInfo("DigitalOutput2")]
 public partial class FEEDigitalOutput2Request
 {
 

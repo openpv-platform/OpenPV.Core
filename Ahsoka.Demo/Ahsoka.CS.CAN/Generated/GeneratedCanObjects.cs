@@ -21,7 +21,6 @@ public partial class DriverHeartbeat : CanViewModelBase
 	#endregion
 
 	#region Auto Generated Methods
-	static Dictionary<string, CanPropertyInfo> metadata = new();
 	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.GetMetadata(100); }
 	public DriverHeartbeat() : base(100,1) { } // CANID: 0x64
 	public DriverHeartbeat(CanMessageData message) : base(message) { }
@@ -341,27 +340,27 @@ public enum EngineRequestedTorqueHighResolutionValues
 }
 
 
-    public static class CanModelMetadata
-    {
-        internal static Dictionary<uint,Dictionary<string, CanPropertyInfo>> metadata = new();
-        internal static Dictionary<string, CanPropertyInfo> GetMetadata(uint canID) { return metadata[canID]; }
-        internal static void AddMetadata(uint canID, Dictionary<string, CanPropertyInfo> properties) 
-        {
-            metadata.Add(canID, properties);
-        }
+public static class CanModelMetadata
+{
+	internal static Dictionary<uint, Dictionary<string, CanPropertyInfo>> metadata = new();
+	internal static Dictionary<string, CanPropertyInfo> GetMetadata(uint canID) { return metadata[canID]; }
+	internal static void AddMetadata(uint canID, Dictionary<string, CanPropertyInfo> properties)
+	{
+		metadata.Add(canID, properties);
+	}
 
-        internal static CanPropertyInfo GetPropertyInfo(uint canID, uint signalID)
-        {
-            return metadata[canID].Values.FirstOrDefault(x=>x.SignalId == signalID );
-        }
+	internal static CanPropertyInfo GetPropertyInfo(uint canID, uint signalID)
+	{
+		return metadata[canID].Values.FirstOrDefault(x => x.SignalId == signalID);
+	}
 
-        internal static CanPropertyInfo GetPropertyInfo(uint canID, string signalName)
-        {
-            return metadata[canID][signalName];
-        }
+	internal static CanPropertyInfo GetPropertyInfo(uint canID, string signalName)
+	{
+		return metadata[canID][signalName];
+	}
 
-        static CanModelMetadata()
-        {
+	static CanModelMetadata()
+	{
 
 		// Decode Info for DriverHeartbeat 100
 		metadata.Add(100, new Dictionary<string, CanPropertyInfo>()
@@ -422,5 +421,5 @@ public enum EngineRequestedTorqueHighResolutionValues
 			{nameof(TSC1.MessageChecksum), new( 60, 4, ByteOrder.LittleEndian, ValueType.Unsigned, 1, 0, 4207, 0, 0, 15)},
 		});
 
-        }
-    }
+	}
+}

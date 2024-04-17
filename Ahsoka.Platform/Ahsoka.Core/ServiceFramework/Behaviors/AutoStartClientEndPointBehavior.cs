@@ -3,20 +3,13 @@ using Ahsoka.System;
 using System;
 
 namespace Ahsoka.ServiceFramework;
-interface  IEndPointBehavior<TTransportIds> where TTransportIds : Enum, new()
-{
-    void BeforeSendMessage(object requestObject);
-    abstract internal void Init(AhsokaClientBase<TTransportIds> client, ServiceConfiguration config);
-}
 
-
-internal class AutoStartClientEndPointBehavior<TTransportIds> : IEndPointBehavior<TTransportIds>, ICanAutoStart where TTransportIds : Enum, new()
+internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointBehavior<TTransportIds>, ICanAutoStart where TTransportIds : Enum, new()
 {
     #region AutoStart
     IAhsokaClientEndpoint endPoint;
     bool autoStartUsed = false;
     bool autoStartEnabled = false;
-
 
     public void Init(AhsokaClientBase<TTransportIds> client, ServiceConfiguration config)
     {
@@ -29,7 +22,7 @@ internal class AutoStartClientEndPointBehavior<TTransportIds> : IEndPointBehavio
         }
     }
 
-    public void BeforeSendMessage(object requestObject)
+    public void OnSendMessage(TTransportIds transportId, object requestObject)
     {
         // Try AutoStart
         lock (endPoint)
@@ -82,7 +75,12 @@ internal class AutoStartClientEndPointBehavior<TTransportIds> : IEndPointBehavio
         }
     }
 
-   
+    public void OnNotificationMessageRecieved(TTransportIds transportId, object requestObject)
+    {
+        // Not Used
+    }
+
+
 
     #endregion
 

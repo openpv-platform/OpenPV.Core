@@ -589,7 +589,6 @@ internal static class CanMetadataTools
         StringBuilder methodBuilder = new();
         methodBuilder.AppendLine();
         methodBuilder.AppendLine("\t#region Auto Generated Methods");
-        methodBuilder.AppendLine("\tstatic Dictionary<string, CanPropertyInfo> metadata = new();");
         methodBuilder.AppendLine($"\tprotected override Dictionary<string, CanPropertyInfo> GetMetadata() {{ return CanModelMetadata.GetMetadata({definition.Id}); }}");
         methodBuilder.AppendLine($"\tpublic {className}() : base({definition.Id},{byteLength}) {{ }} // CANID: 0x{definition.Id.ToString("x")}");
         methodBuilder.AppendLine($"\tpublic {className}(CanMessageData message) : base(message) {{ }}\r\n");

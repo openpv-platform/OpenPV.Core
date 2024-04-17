@@ -42,7 +42,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
     #endregion
 
     #region Fields
-    List<IEndPointBehavior<TTransportIds>> behaviors = new ();
+    List<IClientEndPointBehavior<TTransportIds>> behaviors = new ();
     int messageId = 0;
     #endregion
 
@@ -50,10 +50,8 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
     protected AhsokaClientBase(ServiceConfiguration config, AhsokaMessagesBase messages) :
         base(config, messages)
     {
-        behaviors.Add(new AutoStartClientEndPointBehavior<TTransportIds>());
-
-        foreach (IEndPointBehavior<TTransportIds> behavior in behaviors)
-            behavior.Init(this, config);
+        if (config.Behaviors.HasFlag(EndPointBehaviors.AutoStart))
+            AddBehavior(new AutoStartClientEndPointBehavior<TTransportIds>());
     }
 
     protected override IAhsokaSocket CreateSocket(ServiceConfiguration config)
@@ -62,6 +60,12 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
             return new TCPClientSocket();
         else
             throw new Exception("Socket Type is Not Supported");
+    }
+
+    public void AddBehavior(IClientEndPointBehavior<TTransportIds> behavior)
+    {
+        behavior.Init(this, ServiceConfig);
+        behaviors.Add(behavior);
     }
 
     void IAhsokaClientEndpoint.NotificationDataReady()
@@ -78,10 +82,8 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
     public virtual T SendNotificationWithResponse<T>(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue) where T : class
     {
-
-        foreach (IEndPointBehavior<TTransportIds> behavior in behaviors)
-            behavior.BeforeSendMessage(requestObject);
-
+        foreach (IClientEndPointBehavior<TTransportIds> behavior in behaviors)
+            behavior.OnSendMessage(transportId, requestObject);
 
         AhsokaMessageHeader header = new()
         {
@@ -120,11 +122,17 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
     protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
     {
-        NotificationReceived?.Invoke(this, new AhsokaNotificationArgs()
+        var args = new AhsokaNotificationArgs()
         {
             TransportId = messageHeader.TransportId.IntToEnum<TTransportIds>(),
             NotificationObject = message
-        });
+        };
+
+        foreach (IClientEndPointBehavior<TTransportIds> behavior in behaviors)
+            behavior.OnNotificationMessageRecieved(args.TransportId, args.NotificationObject);
+
+
+        NotificationReceived?.Invoke(this, args);
     }
 
     protected override Type GetReceiptType(ServiceMessageInfo value)

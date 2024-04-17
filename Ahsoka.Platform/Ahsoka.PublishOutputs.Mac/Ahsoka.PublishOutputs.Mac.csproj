@@ -5,7 +5,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<BuildDir>$(ProjectDir)../</BuildDir>
+		<BuildDir>$(ProjectDir)../../</BuildDir>
 	</PropertyGroup>
 
 	<Target Name="Clean Platform Support Folders" BeforeTargets="BeforeClean">
@@ -25,30 +25,30 @@
 		<Exec Command="dotnet msbuild ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj --t:BundleApp  -p:UseAppHost=true -p:TargetFramework=net7.0 -p:RuntimeIdentifier=osx-arm64" />
 
 		<ItemGroup>
-			<MacTools Include="$(BuildDir)Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/**/*" />
-			<MacTools Remove="$(BuildDir)Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/linux*/**/*" />
-			<MacTools Remove="$(BuildDir)Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/win*/**/*" />
-			<MacTools Remove="$(BuildDir)Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/unix*/**/*" />
+			<MacTools Include="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/**/*" />
+			<MacTools Remove="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/linux*/**/*" />
+			<MacTools Remove="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/win*/**/*" />
+			<MacTools Remove="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/unix*/**/*" />
 		</ItemGroup>
 
 		<MakeDir ContinueOnError="true" Directories="$(BuildDir)SparkUpload/" />
 		<Copy SourceFiles="@(MacTools)" DestinationFolder="$(BuildDir)PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app/%(RecursiveDir)" />
 		<Copy SourceFiles="../Ahsoka.DeveloperTools/Assets/OpenPV.icns" DestinationFiles="$(BuildDir)PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app/Contents/Resources/OpenPV.icns" />
 
-		<Exec IgnoreExitCode="true" Command="chmod +x $(BuildDir)SignApp.sh" />
-		<Exec IgnoreExitCode="true" Command="$(BuildDir)SignApp.sh" />
+		<Exec IgnoreExitCode="true" Command="chmod +x $(BuildDir)/Ahsoka.Platform/SignApp.sh" />
+		<Exec IgnoreExitCode="true" Command="$(BuildDir)/Ahsoka.Platform/SignApp.sh" />
 
 		<!--Create Zip File Compatible with NotoryTools -->
 		<Exec Command="ditto -c -k --sequesterRsrc --keepParent $(BuildDir)PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app $(BuildDir)PlatformSupport/Ahsoka.Tools/MacOS/MacOS.DeveloperToolkit.zip" />
 
-		<Copy SourceFiles="OpenPV for MacOS.release.json" DestinationFiles="../SparkUpload/OpenPV for MacOS.release.json" />
+		<Copy SourceFiles="OpenPV for MacOS.release.json" DestinationFiles="$(BuildDir)SparkUpload/OpenPV for MacOS.release.json" />
 
 		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=MacOSOutputs" />
 		<Exec Command="chmod +x $(BuildDir)PlatformSupport/MacOSARM64_TargetSupport/CommandLine/Ahsoka.CommandLine" />
 		<WriteLinesToFile File="$(BuildDir)/PlatformSupport/MacOSARM64_TargetSupport/MacOSARM64_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
 
-		<Exec IgnoreExitCode="true" Command="chmod +x $(BuildDir)SignCLI.sh" />
-		<Exec IgnoreExitCode="true" Command="$(BuildDir)SignCLI.sh" />
+		<Exec IgnoreExitCode="true" Command="chmod +x $(BuildDir)/Ahsoka.Platform/SignCLI.sh" />
+		<Exec IgnoreExitCode="true" Command="$(BuildDir)/Ahsoka.PlatformSignCLI.sh" />
 
 		<!--Create Zip File Compatible with NotoryTools - NOTE We notorize this one in place since we have no need to staple-->
 		<Exec Command="ditto -c -k --sequesterRsrc $(BuildDir)/PlatformSupport/MacOSARM64_TargetSupport/ $(BuildDir)/SparkUpload/MacOSARM64_TargetSupport.zip" />

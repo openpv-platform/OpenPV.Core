@@ -154,17 +154,28 @@ public class NetworkServiceTest
 
         // Start client for NetworkService
         var client = new NetworkServiceClient();
-        WiFiNetworkManager manager = new();
-        manager.Init(client);
-        manager.ConnectionStateChanged += (o, a) => { reset.Set(); };
-        manager.SelectedNetworkChanged += (o, e) => { };
-        manager.NetworkListChanged += (o, e) => { };
-        manager.AdapterEnabledChanged += (o, e) => { reset.Set(); };
-
         var networkAdapters = client.GetNetworkAdapters();
+        if (networkAdapters.Adapters.Any(x => x.AdapterType == NetworkAdapterType.WifiClient))
+        {
+            WiFiNetworkManager manager = new();
+            manager.Init(client);
 
-        manager.MoveDown();
-        manager.MoveUp();
+            manager.ConnectionStateChanged += (o, a) =>
+            {
+                // Connection State will trigger 
+                // once the init is completed and the firrst discover happens if needed.
+                reset.Set();
+            };
+            manager.SelectedNetworkChanged += (o, e) => { };
+            manager.NetworkListChanged += (o, e) => { };
+            manager.AdapterEnabledChanged += (o, e) => { };
+
+            // Wait for Init to Complete
+            reset.WaitOne();
+
+            manager.MoveDown();
+            manager.MoveUp();
+        }
 
         // Stop the Runtimes
         AhsokaRuntime.ShutdownAll();

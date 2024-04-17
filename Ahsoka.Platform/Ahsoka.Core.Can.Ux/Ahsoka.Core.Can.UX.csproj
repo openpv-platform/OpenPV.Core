@@ -57,7 +57,7 @@
 	<!--To help Debugging since this is loaded dynamically-->
 	<Target Name="AfterExtensionBuild" AfterTargets="Build">
 		<Message Text="Building.." Importance="high" />
-		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Can.Ux\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Can.UX.dll" DestinationFiles="$(SolutionDir)\Extensions\CAN Service Extension\ux\Ahsoka.Core.Can.UX.dll" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Can.Ux\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Can.UX.dll" DestinationFiles="$(SolutionDir)..\Extensions\CAN Service Extension\ux\Ahsoka.Core.Can.UX.dll" />
 	</Target>
 	
 	<ItemGroup>

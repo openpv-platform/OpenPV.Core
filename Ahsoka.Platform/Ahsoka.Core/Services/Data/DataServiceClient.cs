@@ -3,14 +3,13 @@ using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
-using System.Net.Sockets;
 
 namespace Ahsoka.Services.Data;
 
 /// <summary>
 /// Global Data Service Client For Service to Service Data Sharing
 /// </summary>
-public class DataServiceClient : AhsokaClientBase<DataMessageTypes.Ids>
+public class DataServiceClient : AhsokaClientBase<DataMessageTypes.Ids> 
 {
     /// <summary>
     /// The subscriber ID that has been generated for this client.

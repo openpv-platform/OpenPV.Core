@@ -13,6 +13,8 @@ internal class Program
     [STAThread]
     public static int Main(string[] args)
     {
+        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+
         if (args.Length > 0) 
             MainViewModel.StartupArg = args[args.Length - 1];
 
@@ -23,6 +25,11 @@ internal class Program
         var builder = BuildAvaloniaApp();
 
         return builder.StartWithClassicDesktopLifetime(args, Avalonia.Controls.ShutdownMode.OnMainWindowClose);
+    }
+
+    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+    {
+        // Show the Exception Dialog before Exiting.
     }
 
     private static void SilenceConsole()

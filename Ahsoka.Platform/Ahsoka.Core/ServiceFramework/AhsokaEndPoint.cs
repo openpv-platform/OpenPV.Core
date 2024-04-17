@@ -60,8 +60,11 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     void IAhsokaEndPoint.Disconnect()
     {
-        Socket.Disconnect();
-        OnEndPointDisconnected();
+        lock (Socket)
+        {
+            Socket.Disconnect();
+            OnEndPointDisconnected();
+        }
     }
 
     public void UpdateConfiguration(ServiceConfiguration config)

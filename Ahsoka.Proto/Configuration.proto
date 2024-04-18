@@ -44,14 +44,7 @@ message ServiceConfiguration
     int32 notification_channel = 7;
     bool is_extension = 8;
     EndPointBehaviors behaviors = 9; 
-    repeated DataServiceKeyItem data_key_values = 10; 
     string configuration_file = 11; 
-}
-
-message DataServiceKeyItem
-{
-    string key_name = 3;
-    DataAccessLevel data_access_level = 4;
 }
 
 enum MessageReplyStatus
@@ -78,12 +71,6 @@ enum TransportSocketTypes
     SERIAL_SOCKET = 1;
 }
 
-enum DataAccessLevel 
-{
-    InternalOnly = 0;
-    Diagnostic = 1;
-    Public = 2;
-}
 
 enum StartOptions
 {

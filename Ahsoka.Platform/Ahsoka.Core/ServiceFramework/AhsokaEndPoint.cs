@@ -31,6 +31,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
     #endregion
 
     #region Properties
+
     public byte[] GetEndPointId() { return endpointId; }
     public bool IsRunning { get { return Socket == null ? false : Socket.IsConnected; } }
     protected IAhsokaSocket Socket { get; private set; }

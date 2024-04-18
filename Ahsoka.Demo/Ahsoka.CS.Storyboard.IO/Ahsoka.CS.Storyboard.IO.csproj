@@ -15,6 +15,7 @@
 		<PackageReference Include="Ahsoka.Core.Bluetooth.LE" Version="(3.*,4.0)" />
 		<PackageReference Include="Ahsoka.Core.Cygnus" Version="(3.*,4.0)" />
 		<PackageReference Include="Ahsoka.Core.Storyboard" Version="(3.*,4.0)" />
+		<PackageReference Include="Ahsoka.Core.DataService" Version="(3.*,4.0)" />
 	</ItemGroup>
 
 	<Import Label="Ahsoka Local Build Properties" Condition="Exists('../../Demo.Build.props')" Project="../../Demo.Build.props" />

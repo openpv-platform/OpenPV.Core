@@ -1,5 +1,4 @@
-﻿using Ahsoka.Services.Data;
-using Ahsoka.System;
+﻿using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 
@@ -17,6 +16,7 @@ public interface IAhsokaServiceEndpoint : IAhsokaEndPoint
 
     void ServiceDataReady();
 }
+
 
 public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTransportIds>, IAhsokaServiceEndpoint
     where TTransportIds : Enum, new()
@@ -66,11 +66,6 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
         }
     }
 
-    internal KeyInfo UpdateDataServiceKey(string key, object value)
-    {
-        return DataService.DefaultDataService?.UpdateKeyValue(this.ServiceConfig.ServiceName, key, value, publisherId);
-    }
-
     protected override void OnEndPointConnected()
     {
         base.OnEndPointConnected();
@@ -87,6 +82,15 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
     {
         OnClientConnected();
     }
+
+    public int UpdateCacheValue(string key, object value)
+    {
+        if (IServiceCache.Default == null)
+            return -1;
+
+        return IServiceCache.Default.UpdateCacheValue(this.ServiceConfig.ServiceName, key, value, publisherId);
+    }
+
     #endregion
 }
 

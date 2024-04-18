@@ -85,7 +85,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         {
             cancelNotifications = new CancellationTokenSource();
 
-            UpdateDataServiceKey(SystemServiceDataKeys.CurrentIgnitionState, IgnitionStates.Unknown.EnumToInt());
+            UpdateCacheValue(SystemServiceDataKeys.CurrentIgnitionState, IgnitionStates.Unknown.EnumToInt());
 
             Task.Factory.StartNew(() =>
             {
@@ -112,7 +112,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
                             };
 
                             // Update Ignition in Data Service
-                            UpdateDataServiceKey(SystemServiceDataKeys.CurrentIgnitionState, ignitionState.EnumToInt());
+                            UpdateCacheValue(SystemServiceDataKeys.CurrentIgnitionState, ignitionState.EnumToInt());
 
                             SendMessageInternal(header, new EmptyNotification(), true);
                         }
@@ -147,8 +147,8 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             }
         }
 
-        UpdateDataServiceKey(SystemServiceDataKeys.Available, true);
-        UpdateDataServiceKey(SystemServiceDataKeys.CurrentApplicationName, applicationName);
+        UpdateCacheValue(SystemServiceDataKeys.Available, true);
+        UpdateCacheValue(SystemServiceDataKeys.CurrentApplicationName, applicationName);
     }
 
     internal static string GetSystemInfo(out string applicationName, out string applicationDescription, out string applicationVersion, out string sdkVersion )
@@ -204,7 +204,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
         // Add Keys to Data Service
         foreach(var item in platformVersions)
-            UpdateDataServiceKey(item.Key, item.Value);
+            UpdateCacheValue(item.Key, item.Value);
     }
 
     ~SystemService()

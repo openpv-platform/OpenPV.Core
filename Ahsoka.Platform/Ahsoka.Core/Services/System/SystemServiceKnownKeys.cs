@@ -1,12 +1,10 @@
 ﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Data;
 
 namespace Ahsoka.Services.System;
 
 /// <summary>
 /// List of Key Values Available in this Service
 /// </summary>
-[AhsokaServiceDataValues(SystemService.Name)]
 public class SystemServiceDataKeys : KnownDataKeys
 {
     /// <summary>

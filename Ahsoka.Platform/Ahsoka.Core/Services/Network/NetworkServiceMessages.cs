@@ -23,6 +23,11 @@ internal class NetworkServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(NetworkMessageTypes.Ids.NetworkAdapterReady, typeof(AdapterInfo));
         this.RegisterServiceNotification(NetworkMessageTypes.Ids.WirelessSignalChanged, typeof(WirelessNetworkInfo));
     }
+
+    public override KnownDataKeys GetKnownValues()
+    {
+        return new NetworkServiceDataKeys();
+    }
 }
 
 /// <summary>

@@ -1,5 +1,4 @@
 syntax = "proto3";
-import "Configuration.proto";
 package AhsokaData;
 option csharp_namespace = "Ahsoka.Services.Data";
 
@@ -8,7 +7,8 @@ message DataMessageTypes
     enum Ids
     {
         NONE = 0;
-        SEARCH_AVAILABLE_KEYS = 1;
+        ENABLE_CACHE = 1;
+        SEARCH_AVAILABLE_KEYS = 2;
         GET_KEY_VALUES = 3;
         SET_KEY_VALUES = 4;
         SUBSCRIBE_TO_KEYS = 5;
@@ -26,7 +26,7 @@ message AvailableKeySearchInfo
     string origin_filter = 1;
     string key_filter = 2;
     string subscriber_id_filter = 3;
-    AhsokaSystem.DataAccessLevel mininum_access_level = 4; 
+    DataAccessLevel mininum_access_level = 4; 
     bool invert_filters = 5;
 }
 
@@ -35,6 +35,20 @@ message KeyList
     repeated KeyInfo Keys = 1;
 }
 
+
+message DataServiceKeyItem
+{
+    string key_name = 3;
+    DataAccessLevel data_access_level = 4;
+}
+
+
+enum DataAccessLevel 
+{
+    InternalOnly = 0;
+    Diagnostic = 1;
+    Public = 2;
+}
 
 message KeyValueList
 {
@@ -46,7 +60,7 @@ message KeyInfo
     string origin = 1;
     string key = 2;
     int32 value_id = 3; // used for faster lookup.
-    AhsokaSystem.DataAccessLevel mininum_access_level = 4; 
+    DataAccessLevel mininum_access_level = 4; 
     string publisher_id = 5;
 }
 

@@ -1,12 +1,11 @@
-﻿using Ahsoka.Services.Data;
-using System.Reflection;
+﻿using Ahsoka.Dispatch;
+using Ahsoka.Services.Data;
+using Ahsoka.Utility;
 using System;
-using Ahsoka.Storyboard;
 using System.Collections.Generic;
-using Ahsoka.ServiceFramework;
-using static NetMQ.NetMQSelector;
+using System.Reflection;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.ServiceFramework;
 
 /// <summary>
 /// Behavior / Decorator to Notify the Client with SB Objects 
@@ -16,23 +15,22 @@ public class DataServiceListener : IDataServiceBehavior
 {
     #region Fields
     Dictionary<string, Tuple<PropertyInfo, Type>> notificationProperties = new();
-    StoryboardClient sbClient;
+    ICanQueue queueClient;
     Type type;
     string originName;
     DataServiceClient dataServiceClient;
     #endregion
 
     /// <summary>
-    /// Constructs the Behavior tied to the specified sbClient.  Thisclient will be notified
-    /// on any changes that impact the specified 'subscribeToTypes'.   Note you can also add the types
-    /// by using the AddSubscription method.
+    /// Constructs the Behavior tied to the specified output queue.  This queue will be enqueued
+    /// on any changes that impact the specified 'subscribeToTypes'. 
     /// </summary>
-    /// <param name="sbClient">Data Service Client for the Behavior to use</param>
+    /// <param name="queueClient">Data Service Client for the Behavior to use</param>
     /// <param name="objectType">Object to Listen For</param>
     /// <param name="dataServiceOriginName">Origin Name to Listen For</param>
-    public DataServiceListener(StoryboardClient sbClient, Type objectType, string dataServiceOriginName = null)
+    public DataServiceListener(ICanQueue queueClient, Type objectType, string dataServiceOriginName = null)
     {
-        this.sbClient = sbClient;
+        this.queueClient = queueClient;
         type = objectType;
         originName = dataServiceOriginName;
     }
@@ -51,10 +49,10 @@ public class DataServiceListener : IDataServiceBehavior
             KeyValueNotification notif = requestObject as KeyValueNotification;
             for (int i = 0; i < notif.KeyValues.Count; i++)
             {
-                if (!TryGetSBMessageObject(notif.KeyValues[i], out object sbMessageObject))
+                if (!TryGetViewModelObject(notif.KeyValues[i], out object messageObject))
                     continue;
 
-                sbClient.QueueMessage(new StoryboardMessage(sbMessageObject));
+                queueClient.Enqueue(messageObject);
             }
         }
     }
@@ -90,7 +88,7 @@ public class DataServiceListener : IDataServiceBehavior
         {
             Key = keyString,
             Origin = originaName,
-            MininumAccessLevel = System.DataAccessLevel.Public,
+            MininumAccessLevel = DataAccessLevel.Public,
         };
         KeyValue keyValue = new()
         {
@@ -116,53 +114,53 @@ public class DataServiceListener : IDataServiceBehavior
         client.SubscribeToKeys(subRequest);
     }
 
-    bool TryGetSBMessageObject(KeyValue keyValue, out object sbMessageObject)
+    bool TryGetViewModelObject(KeyValue keyValue, out object messageObject)
     {
         string propertyDataServiceKey = $"{keyValue.KeyInfo.Origin}_{keyValue.KeyInfo.Key}";
 
         if (!notificationProperties.TryGetValue(propertyDataServiceKey, out Tuple<PropertyInfo, Type> propertyInfoAndMessage))
         {
-            sbMessageObject = null;
+            messageObject = null;
             return false;
         }
 
         Type sbMessageType = propertyInfoAndMessage.Item2;
-        PropertyInfo sbMessagePropertyInfo = propertyInfoAndMessage.Item1;
-        sbMessageObject = Activator.CreateInstance(sbMessageType);
+        PropertyInfo messagePropertyInfo = propertyInfoAndMessage.Item1;
+        messageObject = Activator.CreateInstance(sbMessageType);
 
-        Type sbMessagePropertyType = sbMessagePropertyInfo.PropertyType;
+        Type sbMessagePropertyType = messagePropertyInfo.PropertyType;
         if (sbMessagePropertyType == typeof(float))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToSingle(keyValue.GetValue()));
+            messagePropertyInfo.SetValue(messageObject, Convert.ToSingle(keyValue.GetValue()));
         else if (sbMessagePropertyType == typeof(UInt64))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToUInt64(keyValue.GetValue()));
+            messagePropertyInfo.SetValue(messageObject, Convert.ToUInt64(keyValue.GetValue()));
         else if (sbMessagePropertyType == typeof(UInt32))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToUInt32(keyValue.GetValue()));
+            messagePropertyInfo.SetValue(messageObject, Convert.ToUInt32(keyValue.GetValue()));
         else if (sbMessagePropertyType == typeof(UInt16))
         {
             UInt32 tempInt = Convert.ToUInt32(keyValue.GetValue());
-            sbMessagePropertyInfo.SetValue(sbMessageObject, (UInt16)tempInt);
+            messagePropertyInfo.SetValue(messageObject, (UInt16)tempInt);
         }
         else if (sbMessagePropertyType == typeof(byte))
         {
             UInt32 tempInt = Convert.ToUInt32(keyValue.GetValue());
-            sbMessagePropertyInfo.SetValue(sbMessageObject, (byte)tempInt);
+            messagePropertyInfo.SetValue(messageObject, (byte)tempInt);
         }
         else if (sbMessagePropertyType == typeof(Int64))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToInt64(keyValue.GetValue()));
+            messagePropertyInfo.SetValue(messageObject, Convert.ToInt64(keyValue.GetValue()));
         else if (sbMessagePropertyType == typeof(Int32))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToInt32(keyValue.GetValue()));
+            messagePropertyInfo.SetValue(messageObject, Convert.ToInt32(keyValue.GetValue()));
         else if (sbMessagePropertyType == typeof(Int16))
         {
             UInt32 tempInt = Convert.ToUInt32(keyValue.GetValue());
-            sbMessagePropertyInfo.SetValue(sbMessageObject, (Int16)tempInt);
+            messagePropertyInfo.SetValue(messageObject, (Int16)tempInt);
         }
         else if (sbMessagePropertyType == typeof(sbyte))
         {
             UInt32 tempInt = Convert.ToUInt32(keyValue.GetValue());
-            sbMessagePropertyInfo.SetValue(sbMessageObject, (sbyte)tempInt);
+            messagePropertyInfo.SetValue(messageObject, (sbyte)tempInt);
         }
         else if (sbMessagePropertyType == typeof(string))
-            sbMessagePropertyInfo.SetValue(sbMessageObject, Convert.ToString(keyValue.GetValue()));
+            messagePropertyInfo.SetValue(messageObject, Convert.ToString(keyValue.GetValue()));
         else
             throw new Exception("The value stored in the data service doesn't match up with the " +
                                 "storyboard type for some reason. This is a problem.");

@@ -1,4 +1,5 @@
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.System;
 
 namespace Ahsoka.Services.IO;
 
@@ -26,6 +27,11 @@ internal class IOServiceMessages : AhsokaMessagesBase
 
         this.RegisterServiceRequest(IOMessageTypes.Ids.GetPollInterval, typeof(EmptyNotification), typeof(PollingInterval));
 
+    }
+
+    public override KnownDataKeys GetKnownValues()
+    {
+        return new IOServiceDataKeys();
     }
 }
 

@@ -71,7 +71,7 @@ public class DataServiceViewModelListener : IViewModelBehavior
             {
                 Key = keyString,
                 Origin = dataServiceOriginName,
-                MininumAccessLevel = System.DataAccessLevel.Public,
+                MininumAccessLevel = DataAccessLevel.Public,
             }
         };
 

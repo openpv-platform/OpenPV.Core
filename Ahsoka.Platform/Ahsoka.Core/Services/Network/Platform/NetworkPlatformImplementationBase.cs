@@ -167,7 +167,7 @@ internal abstract class NetworkPlatformImplementationBase
         }
 
         // Update IPAddress 
-        this.NetworkService.UpdateDataServiceKey(NetworkServiceDataKeys.IPAddress, ipInfo.IPAddress);
+        this.NetworkService.UpdateCacheValue(NetworkServiceDataKeys.IPAddress, ipInfo.IPAddress);
 
         return ipInfo;
     }

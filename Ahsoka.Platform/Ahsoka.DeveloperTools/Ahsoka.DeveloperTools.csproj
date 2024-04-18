@@ -65,6 +65,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Ahsoka.Core.CAN\Ahsoka.Core.Can.csproj" />
 		<ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
+		<ProjectReference Include="..\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
 		<ProjectReference Include="..\Ahsoka.DeveloperTools.Core\Ahsoka.DeveloperTools.Core.csproj" />
 	</ItemGroup>
 

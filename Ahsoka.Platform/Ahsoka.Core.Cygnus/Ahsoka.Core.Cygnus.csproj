@@ -15,6 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
 	  <ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
 	  <ProjectReference Include="..\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
 	</ItemGroup>

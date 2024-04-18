@@ -21,7 +21,6 @@ public interface IDataServiceBehavior : IClientEndPointBehavior<DataMessageTypes
     /// <param name="requestObject"></param>
     void OnDataServiceNotificationReceived(DataMessageTypes.Ids transportId, object requestObject);
 
-
     #region Adapter for IClientEndPointBehavior
     void IClientEndPointBehavior<DataMessageTypes.Ids>.OnNotificationMessageRecieved(DataMessageTypes.Ids transportId, object requestObject)
     {

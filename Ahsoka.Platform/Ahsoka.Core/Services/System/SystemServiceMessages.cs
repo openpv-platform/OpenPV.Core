@@ -51,6 +51,11 @@ internal class SystemServiceMessages : AhsokaMessagesBase
 
         return result;
     }
+
+    public override KnownDataKeys GetKnownValues()
+    {
+        return new SystemServiceDataKeys();
+    }
 }
 
 /// <summary>

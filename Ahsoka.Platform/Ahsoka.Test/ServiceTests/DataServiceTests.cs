@@ -26,6 +26,7 @@ public class DataServiceTests
         // Start IO Service
         // Start client for NetworkService
         var dataClient = new DataServiceClient();
+        dataClient.EnableCache(); // Starts Cache Service
      
         // Create a System Service and Start it.
         // We only start this so we have Service Data in the Global Data Service

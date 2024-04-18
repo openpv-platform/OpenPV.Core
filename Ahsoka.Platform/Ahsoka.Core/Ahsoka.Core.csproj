@@ -23,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AdditionalFiles Include="..\..\Ahsoka.Proto\*.proto" Exclude="..\..\Ahsoka.Proto\Can*.proto;..\..\Ahsoka.Proto\BLE*.proto;..\..\Ahsoka.Proto\Cygnus*.proto;..\..\Ahsoka.Proto\reach.proto">
+		<AdditionalFiles Include="..\..\Ahsoka.Proto\*.proto" Exclude="..\..\Ahsoka.Proto\Can*.proto;..\..\Ahsoka.Proto\BLE*.proto;..\..\Ahsoka.Proto\Cygnus*.proto;..\..\Ahsoka.Proto\reach.proto; ..\..\Ahsoka.Proto\DataService*.proto">
 			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
 		</AdditionalFiles>
 	</ItemGroup>

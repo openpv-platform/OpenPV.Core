@@ -1,5 +1,4 @@
-﻿using Ahsoka.Services.Data;
-using Ahsoka.System;
+﻿using Ahsoka.System;
 using Ahsoka.Utility;
 using Microsoft.Extensions.Hosting.Systemd;
 using System;
@@ -188,12 +187,7 @@ public partial class AhsokaRuntime
                     throw new ArgumentException($"Could not find service to match {item.ServiceName}");
                 else
                 {
-                    IAhsokaServiceEndpoint service;
-                    if (type.Value == typeof(DataService))
-                        service = DataService.DefaultDataService;
-                     else
-                        service = ClassLoader.CreateType(type.Value, item) as IAhsokaServiceEndpoint;
-
+                    IAhsokaServiceEndpoint service = ClassLoader.CreateType(type.Value, item) as IAhsokaServiceEndpoint;
                     services.Add(service);
                     stopwatch.ResetTiming($"{service.ServiceConfig.ServiceName} Added To List");
                 }

@@ -8,8 +8,11 @@ using System.Linq;
 
 namespace Ahsoka.Services.Data;
 
+/// <summary>
+/// Basic Implementation of a Service Cache
+/// </summary>
 [AhsokaService(DataService.Name)]
-public class DataService : AhsokaServiceBase<DataMessageTypes.Ids>
+public class DataService : AhsokaServiceBase<DataMessageTypes.Ids>,IServiceCache
 {
     #region Fields
     readonly static object syncRoot = new();
@@ -18,44 +21,19 @@ public class DataService : AhsokaServiceBase<DataMessageTypes.Ids>
     readonly List<ValueItem> valueCache = new(); // Stores Values
     #endregion
 
-    static DataService()
-    {
-        DefaultDataService = new DataService();
-    }
-
-    internal static DataService DefaultDataService { get; private set; }
-
-    internal static void InitDataService(ServiceConfiguration config)
-    {
-        lock (syncRoot)
-        {
-            DefaultDataService?.UpdateConfiguration(config);
-            DefaultDataService?.UpdateDataServiceKey("Available", "true");
-        }
-    }
-
     #region Methods
-    private DataService() :
+    public DataService() : 
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
-        // Load any PreCached Values from FileSystem Configuration
-        // These Values Override Values Specified in the Base Configuration.
-        var overrideConfig = ConfigurationLoader.LoadFromFileSystem();
-        if (overrideConfig != null)
-            foreach (var item in overrideConfig.Services)
-            {
-                foreach (var key in item.DataKeyValues)
-                {
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Loading Data Key for {item.ServiceName} {key.KeyName} with access level {key.DataAccessLevel}");
-                    CreateKeyIfNotExists(new KeyInfo() { Origin = item.ServiceName, Key = key.KeyName, MininumAccessLevel = key.DataAccessLevel });
-                }
-            }
+       
     }
 
-    private DataService(ServiceConfiguration config) :
+    public DataService(ServiceConfiguration config) :
         base(config, new DataServiceMessages())
     {
+        IServiceCache.Default = this;
 
+        this.UpdateCacheValue("Available", "true");
     }
 
     /// <summary>
@@ -65,7 +43,7 @@ public class DataService : AhsokaServiceBase<DataMessageTypes.Ids>
     /// <param name="key"></param>
     /// <param name="value"></param>
     /// <param name="publisherId"></param>
-    public KeyInfo UpdateKeyValue(string origin, string key, object value, string publisherId)
+    int IServiceCache.UpdateCacheValue(string origin, string key, object value, string publisherId)
     {
         lock (syncRoot)
         {
@@ -74,7 +52,7 @@ public class DataService : AhsokaServiceBase<DataMessageTypes.Ids>
             KeyInfo returnKeyInfo = UpdateValue(valueID, value, notifications, publisherId);
 
             SendNotifications(notifications);
-            return returnKeyInfo;
+            return valueID;
         }
     }
 
@@ -95,6 +73,10 @@ public class DataService : AhsokaServiceBase<DataMessageTypes.Ids>
         {
             switch (messageHeader.TransportId.IntToEnum<DataMessageTypes.Ids>())
             {
+                case DataMessageTypes.Ids.EnableCache:
+                    HandleEnableCache(messageHeader);
+                    break;
+
                 case DataMessageTypes.Ids.SearchAvailableKeys:
                     HandleGetAvailableKeys(messageHeader, message as AvailableKeySearchInfo);
                     break;
@@ -116,7 +98,17 @@ public class DataService : AhsokaServiceBase<DataMessageTypes.Ids>
                     break;
             }
         }
-    } 
+    }
+
+    /// <summary>
+    /// Note that this is effectively an "Echo" call so that the Service is custructed
+    /// and added as the "Default" cache.  
+    /// </summary>
+    /// <param name="messageHeader"></param>
+    private void HandleEnableCache(AhsokaMessageHeader messageHeader)
+    {
+        SendMessageInternal(messageHeader);
+    }
 
     private void HandleGetAvailableKeys(AhsokaMessageHeader messageHeader, AvailableKeySearchInfo availableKeySearchInfo)
     {
@@ -290,6 +282,7 @@ public class DataService : AhsokaServiceBase<DataMessageTypes.Ids>
         SendMessageInternal(header, keyList, true);
     }
 
+  
     #endregion
 
     class ValueItem

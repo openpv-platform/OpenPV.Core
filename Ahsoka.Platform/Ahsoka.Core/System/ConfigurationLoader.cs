@@ -40,7 +40,7 @@ public class ConfigurationLoader
     /// </summary>
     private static void LoadRuntimeConfig()
     {
-        configuration = LoadFromFileSystem();
+        configuration = GetRuntimeConfiguration();
 
         if (configuration == null || configuration.Services.Count == 0)
             configuration = CreateDefaultConfiguration();
@@ -83,7 +83,7 @@ public class ConfigurationLoader
         return result;
     }
 
-    internal static RuntimeConfiguration LoadFromFileSystem()
+    internal static RuntimeConfiguration GetRuntimeConfiguration()
     {
         try
         {

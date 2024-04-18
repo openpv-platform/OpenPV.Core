@@ -36,6 +36,8 @@ public abstract class AhsokaMessagesBase
     {
         return $"#include \"{name}.pb.h\"\n#include \"{name}Client.h\"\n"; ;
     }
+
+    public virtual KnownDataKeys GetKnownValues() { return null; }
 }
 
 #region ServiceRequestInfo

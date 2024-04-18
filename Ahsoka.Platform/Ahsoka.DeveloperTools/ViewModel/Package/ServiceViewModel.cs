@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Sockets;
+using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -20,7 +21,6 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
 
     public TransportSocketTypes[] SocketTypes { get; init; } = Enum.GetValues<TransportSocketTypes>();
 
-
     public ObservableCollection<ServiceConfigurationViewModel> Services
     {
         get;
@@ -34,7 +34,19 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
         {
             selectedService = value;
             OnPropertyChanged();
+
+            if (selectedService != null && ParentViewModel.ExtensionsViewModel != null)
+            {
+                HasUx = ParentViewModel.ExtensionsViewModel.AvailableExtensions.Any(x => x.ExtensionConfiguration.ServiceConfigurations.Any(x => x.ServiceName == SelectedService.ServiceName));
+                OnPropertyChanged(nameof(HasUx));
+            }
         }
+    }
+
+    public bool HasUx
+    {
+        get;
+        set;
     }
 
     public bool KeyListShown { get => keysShown; set { keysShown = value; OnPropertyChanged(); } }
@@ -47,15 +59,19 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
 
     private void LoadServiceInfo()
     {
-        var items = ClassLoader.GetItemsWithAttribute<AhsokaServiceDataValues>();
-     
+        var items = ClassLoader.GetItemsWithInterface(typeof(AhsokaMessagesBase));
+
         foreach (var config in ConfigurationLoader.CreateDefaultConfiguration(false).Services) // Don't load extensions they get loaded later
         {
+            var serviceInfo = items.FirstOrDefault(x => x.Name.Contains(config.ServiceName));
+
             KnownDataKeys keyValues = null;
-            var keyItem = items.Keys.FirstOrDefault(x => x.ServiceName == config.ServiceName);
-            if (keyItem != null)
-                keyValues = ClassLoader.CreateType(items[keyItem], null) as KnownDataKeys;
-        
+            if (serviceInfo != null)
+            {
+                var messages = ClassLoader.CreateType(serviceInfo, null) as AhsokaMessagesBase;
+                keyValues = messages.GetKnownValues();
+            }
+
             var viewModel = new ServiceConfigurationViewModel(this, config, keyValues);
             Services.Add(viewModel);
         }
@@ -71,6 +87,11 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
         KeyListShown = !KeyListShown;
     }
 
+    public void ShowUX()
+    {
+        var ext = ParentViewModel.ExtensionsViewModel.AvailableExtensions.FirstOrDefault(x => x.ExtensionConfiguration.ServiceConfigurations.Any(x => x.ServiceName == SelectedService.ServiceName));
+        ParentViewModel.ExtensionsViewModel.ShowUx(ext.ExtensionName);
+    }
 }
 
 internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewModel>
@@ -300,7 +321,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
 
         public DataServiceKeyItem CurrentKeyItem
         {
-            get { return ParentViewModel.CurrentServiceConfiguration.DataKeyValues.FirstOrDefault(x => x.KeyName == this.Key); }
+            get { return null; } // ParentViewModel.CurrentServiceConfiguration.DataKeyValues.FirstOrDefault(x => x.KeyName == this.Key); }
         }
 
         public bool IsIncluded
@@ -316,11 +337,11 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
 
                 if (value && CurrentKeyItem == null)
                 {
-                    ParentViewModel.CurrentServiceConfiguration.DataKeyValues.Add(new DataServiceKeyItem() {  KeyName = this.Key, DataAccessLevel = DataAccessLevel.Diagnostic });
+                //    ParentViewModel.CurrentServiceConfiguration.DataKeyValues.Add(new DataServiceKeyItem() {  KeyName = this.Key, DataAccessLevel = DataAccessLevel.Diagnostic });
                 }
                 else
                 {
-                    ParentViewModel.CurrentServiceConfiguration.DataKeyValues.Remove(CurrentKeyItem);
+                //    ParentViewModel.CurrentServiceConfiguration.DataKeyValues.Remove(CurrentKeyItem);
                 }
 
                 ParentViewModel.ParentViewModel.ParentViewModel.NeedsSDKUpdate();

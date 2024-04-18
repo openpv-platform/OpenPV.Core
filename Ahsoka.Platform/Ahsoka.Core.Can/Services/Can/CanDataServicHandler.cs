@@ -92,7 +92,7 @@ internal class CanDataServicHandler
             }
 
             if (value != null)
-                service.UpdateDataServiceKey(item.Name, value);
+                service.UpdateCacheValue(item.Name, value);
         }
         catch 
         {

@@ -1,4 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Network;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
@@ -35,7 +36,6 @@ public class DataServiceClient : AhsokaClientBase<DataMessageTypes.Ids>
         SubscriberIds.Add(this.GetEndPointId().ToGuidString());
     }
 
-
     /// <summary>
     /// The function defining how the client is going to handle the notifications that are received from the socket.
     /// </summary>
@@ -60,15 +60,21 @@ public class DataServiceClient : AhsokaClientBase<DataMessageTypes.Ids>
     }
 
     /// <summary>
-    /// Creates a Service for Use with this Client when running Local Services
+    /// Create a Data Service Object
     /// </summary>
     /// <returns></returns>
     protected override IAhsokaServiceEndpoint OnCreateDefaultService()
     {
-        // Re-Init using our Local Config
-        DataService.InitDataService(this.ServiceConfig);
+        return new DataService(this.ServiceConfig);
+    }
 
-        return DataService.DefaultDataService;
+    /// <summary>
+    /// Starts the Service to manage the DataService Cache for all Other.
+    /// This is only needed if you are not using a dispatcher and relying on auto start.
+    /// </summary>
+    public void EnableCache(int timeoutInMs = int.MaxValue)
+    {
+        SendNotificationWithResponse(DataMessageTypes.Ids.EnableCache, timeoutInMs);
     }
 
     /// <summary>

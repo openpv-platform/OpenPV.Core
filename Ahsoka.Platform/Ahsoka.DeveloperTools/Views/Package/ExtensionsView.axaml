@@ -35,7 +35,7 @@
 					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="ServiceToolbox"></material:MaterialIcon>
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"
 							   ToolTip.Tip="Edit this Extension."
-							   Text="Show Extension Setup..."/>
+							   Text="Configure Extension..."/>
 				</StackPanel>
 			</Button>
 		</StackPanel>

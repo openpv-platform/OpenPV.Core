@@ -29,14 +29,14 @@
 			<Button Margin="3,3,5,3"
 							HorizontalAlignment="Stretch"
 							Height="38"
-							IsEnabled="{Binding SelectedService.IsIncluded}"
+							IsEnabled="{Binding HasUx}"
 							VerticalContentAlignment="Center"
-							Command="{Binding ShowKeys}">
+							Command="{Binding ShowUX}">
 				<StackPanel Orientation="Horizontal">
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="KeyVariant"></material:MaterialIcon>
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="ServiceToolbox"></material:MaterialIcon>
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13" 
-							   ToolTip.Tip="Show and Configure Data Keys for this Service."
-							   Text="DataService Config..."/>
+							   ToolTip.Tip="Show Extension Configuration."
+							   Text="Configure Extension..."/>
 				</StackPanel>
 			</Button>
 		</StackPanel>

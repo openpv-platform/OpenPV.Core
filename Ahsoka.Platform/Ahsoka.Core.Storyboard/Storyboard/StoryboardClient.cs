@@ -1,6 +1,5 @@
 using Ahsoka.Dispatch;
 using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Data;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
@@ -8,7 +7,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,7 +17,7 @@ namespace Ahsoka.Storyboard;
 /// Client used to connect to Storyboard over SBIO
 /// Defines an Input and Output Channel pair.
 /// </summary>
-public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
+public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable, ICanQueue
 {
     #region Fields
     Process sbProcess;
@@ -227,7 +225,7 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
                 try
                 {
                     var resultObject = inputChannel.ReceiveMessage(10000);
-                    QueueMessage(resultObject);
+                    ((ICanQueue)this).Enqueue(resultObject);
                 }
                 catch (OperationCanceledException) { }
             }
@@ -256,10 +254,15 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable
         }, cancelToken.Token);
     }
 
-    internal void QueueMessage(StoryboardMessage message)
+    void ICanQueue.Enqueue(object message)
     {
         if (message != null)
-            MessageQueue.Add(message);
+        {
+            if (message is StoryboardMessage)
+                MessageQueue.Add(message as StoryboardMessage);
+            else
+                MessageQueue.Add(new StoryboardMessage(message));
+        }
     }
 
     /// <summary>

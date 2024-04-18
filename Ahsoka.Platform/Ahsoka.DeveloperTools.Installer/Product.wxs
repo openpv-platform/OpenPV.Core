@@ -7,7 +7,7 @@
 			 Language="1033" 
 			 Version="$(var.ProductVersion)"
 			 Manufacturer="Enovation Controls" 
-			 UpgradeCode="adb2a200-46dd-4c69-b139-308002b00352" 
+			 UpgradeCode="C40AB1B4-71B6-4A9C-8571-63595448C7A4" 
 			 InstallerVersion="200">
 
 		<MajorUpgrade AllowDowngrades="yes" />

@@ -20,7 +20,6 @@ public abstract class CanViewModelBase : INotifyPropertyChanged, IHasCanData
     /// </summary>
     public uint Id { get { return message.Id; } set { message.Id = value; } }
 
-
     /// <summary>
     /// Event Handler raised when a Property has Changed or OnPropertyChanged() is called.
     /// </summary>
@@ -60,7 +59,6 @@ public abstract class CanViewModelBase : INotifyPropertyChanged, IHasCanData
         for (int i = 0; i < data.Length; i++)
             data[i] = BitConverter.ToUInt64(dataAdjusted, i * 8);
     }
-
 
     /// <summary>
     /// Get the CAN Message.

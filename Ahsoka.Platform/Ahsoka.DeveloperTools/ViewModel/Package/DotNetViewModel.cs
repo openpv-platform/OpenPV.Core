@@ -1,11 +1,7 @@
-﻿using Ahsoka.Core;
-using Ahsoka.DeveloperTools.Core;
-using Ahsoka.DeveloperTools.ViewModel;
+﻿using Ahsoka.DeveloperTools.Core;
 using Ahsoka.Installer;
 using Ahsoka.System;
-using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
-using AvaloniaProgressRing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

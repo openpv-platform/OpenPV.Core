@@ -29,6 +29,11 @@ internal class Extensions
         
     }
 
+    internal static void AddPrivateExtension(Assembly assembly)
+    {
+        ExtensionLibraries.Add(assembly);
+    }
+
     internal static void InstallExtension(string basePath, string extensionName, IProgress<string> progress = null)
     {
         Dictionary<string, byte[]> additionalFiles = new Dictionary<string, byte[]> ();
@@ -127,7 +132,7 @@ internal class Extensions
         {
             foreach (var item in assembly.DefinedTypes)
             {
-                if (item.IsSubclassOf(typeof(T)))
+                if (typeof(T).IsAssignableFrom(item))
                     installers.Add(ClassLoader.CreateType(item) as T);
             }
         }
@@ -207,6 +212,8 @@ internal class Extensions
 
         return commands;
     }
+
+   
 }
 
 /// <summary>

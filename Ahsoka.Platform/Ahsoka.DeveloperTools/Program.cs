@@ -1,5 +1,8 @@
-﻿using Avalonia;
+﻿using Ahsoka.Utility;
+using Avalonia;
 using Avalonia.Svg.Skia;
+using EnovationCloud.Core.Client;
+using MsBox.Avalonia;
 using System;
 using System.Threading;
 
@@ -13,10 +16,11 @@ internal class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
-
+    
         if (args.Length > 0) 
             MainViewModel.StartupArg = args[args.Length - 1];
+
+        AppDomain.CurrentDomain.UnhandledException += MainViewModel.ErrorOccurred;
 
         GC.KeepAlive(typeof(SvgImageExtension).Assembly);
         GC.KeepAlive(typeof(Avalonia.Svg.Skia.Svg).Assembly);
@@ -27,10 +31,6 @@ internal class Program
         return builder.StartWithClassicDesktopLifetime(args, Avalonia.Controls.ShutdownMode.OnMainWindowClose);
     }
 
-    private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-    {
-        // Show the Exception Dialog before Exiting.
-    }
 
     private static void SilenceConsole()
     {

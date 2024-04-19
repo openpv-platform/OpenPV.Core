@@ -277,13 +277,11 @@ internal class ApplicationViewModelRoot
         DigitalOutput2.AddBehavior(new DataServiceViewModelListener(dataClient, "DigitalOutput2"  ));
         DigitalOutput2.UpdateStoryboard();
 
-
         // Initialize Storyboard Notification Behaviors (Notifies SB if DataService Has Changes to a Model)
         dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEBrightnessRequest), "DisplayBrightness"));
         dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEDigitalOutput1Request), "DigitalOutput1"));
         dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEDigitalOutput2Request), "DigitalOutput2"));
         dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEBuzzerRequest), "Buzzer"));
-
        
         //System Info
         Default.TouchHardwareVersionModel?.UpdateStoryboard();

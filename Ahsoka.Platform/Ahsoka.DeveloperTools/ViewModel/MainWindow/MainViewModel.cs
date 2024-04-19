@@ -803,6 +803,41 @@ internal class MainViewModel : ViewModelBase
         OnPropertyChanged(nameof(RecentItems));
         this.SaveSettings();
     }
+
+    internal static void ErrorOccurred(object sender, UnhandledExceptionEventArgs e)
+    {
+        // Try to retrieve Spark account
+        SparkAccountDTO account = null;
+        try
+        {
+            account = SparkAccountClient.SharedSparkClient.GetAccount();
+        }
+        catch {}
+
+        var error = new ErrorReportDTO()
+        {
+            Device = $"({Environment.MachineName})",
+            Environment = Environment.OSVersion.VersionString,
+            ErrorType = "Exception",
+            ErrorDetails = e.ExceptionObject.ToString(),
+            Is64Bit = Environment.Is64BitOperatingSystem,
+            NameIdentifier = account?.AccountID,
+            Software = $"{Process.GetCurrentProcess().ProcessName}",
+            UserName = account?.Login ?? "Unknown",
+            Version = Assembly.GetExecutingAssembly().GetName().Version.ToString()
+        };
+
+        try
+        {
+            _ = SparkAccountClient.SharedSparkClient.ReportError(error);
+        }
+        catch { }
+
+        string criticalErrorFile = CustomerToolPaths.GetSettingsPath($"ErrorReport-{DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss")}.json");
+        string errorText = JsonUtility.Serialize(error);
+        File.WriteAllText(criticalErrorFile, errorText);
+    }
+
     #endregion
 }
 

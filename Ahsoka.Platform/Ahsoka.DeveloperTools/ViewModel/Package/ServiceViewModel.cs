@@ -1,12 +1,9 @@
 ﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Data;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net.Sockets;
-using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -17,7 +14,7 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
 
     public ServiceEnableDisable[] ServiceEnableDisableItems { get; init; } = Enum.GetValues<ServiceEnableDisable>();
     
-    public DataAccessLevel[] DataAccessLevels { get; init; } = Enum.GetValues<DataAccessLevel>();
+   //public DataAccessLevel[] DataAccessLevels { get; init; } = Enum.GetValues<DataAccessLevel>();
 
     public TransportSocketTypes[] SocketTypes { get; init; } = Enum.GetValues<TransportSocketTypes>();
 
@@ -280,14 +277,14 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
 
     public void SelectAll()
     {
-        foreach (var key in Keys)
-            key.IsIncluded = true;
+        //foreach (var key in Keys)
+        //    key.IsIncluded = true;
     }
 
     public void UnselectAll()
     {
-        foreach (var key in Keys)
-            key.IsIncluded = false;
+        //foreach (var key in Keys)
+        //    key.IsIncluded = false;
     }
 
     public ServiceConfigurationViewModel(ServiceViewModel model, ServiceConfiguration config, KnownDataKeys keyValues, ExtensionViewModel extension = null)
@@ -311,20 +308,20 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
 
     internal class DataKeyItemViewModel : ChildViewModelBase<ServiceConfigurationViewModel>
     {
-        public DataAccessLevel DataAccessLevel
+        /*public DataAccessLevel DataAccessLevel
         {
             get { return CurrentKeyItem != null ? CurrentKeyItem.DataAccessLevel : DataAccessLevel.InternalOnly; }
             set { if (CurrentKeyItem != null) CurrentKeyItem.DataAccessLevel = value; }
-        }
+        }*/
 
         public string Key { get; }
 
-        public DataServiceKeyItem CurrentKeyItem
+        /*public DataServiceKeyItem CurrentKeyItem
         {
             get { return null; } // ParentViewModel.CurrentServiceConfiguration.DataKeyValues.FirstOrDefault(x => x.KeyName == this.Key); }
-        }
+        }*/
 
-        public bool IsIncluded
+       /* public bool IsIncluded
         {
             get
             {
@@ -349,7 +346,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(DataAccessLevel));
             }
-        }
+        }*/
 
         public DataKeyItemViewModel(ServiceConfigurationViewModel model, string keyValue)
             : base(model)
@@ -359,7 +356,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
 
         public void IncludeChanged()
         {
-            IsIncluded = !IsIncluded;
+           // IsIncluded = !IsIncluded;
             OnPropertyChanged(nameof(IsIncluded));
         }
     }

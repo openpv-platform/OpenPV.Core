@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using static Ahsoka.Services.Can.J1939Helper;
 using ValueType = Ahsoka.Services.Can.ValueType;
@@ -294,6 +295,9 @@ public class CanServiceTests
             ConfigurationFile = canConfigFile
         });
 
+        // Load Test Generator
+        Extensions.AddPrivateExtension(Assembly.GetExecutingAssembly());
+
         File.WriteAllText(canPackageInfoFile, JsonUtility.Serialize(packageInformation));
 
         string outputFileNameDotNet = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".generated.cs");
@@ -302,14 +306,30 @@ public class CanServiceTests
         CanMetadataTools.GenerateMessageClasses(canPackageInfoFile, outputFileNameDotNet, "TestNameSpace", null, Installer.ApplicationType.Dotnet);
         string classFileContent = File.ReadAllText(outputFileNameDotNet);
         Assert.IsTrue(classFileContent.Length > 0);
+        
+        Assert.IsTrue(classFileContent.Contains("/*ExtendHeader*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendConstructor*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendSetter*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendMethods*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendAfterClassOutput*/"));
 
         CanMetadataTools.GenerateMessageClasses(canPackageInfoFile, outputFileNameCPP, "TestNameSpace", null, Installer.ApplicationType.Cpp);
         classFileContent = File.ReadAllText(outputFileNameCPP);
         Assert.IsTrue(classFileContent.Length > 0);
 
+        Assert.IsTrue(classFileContent.Contains("/*ExtendHeader+Header*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendMethods+Header*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendAfterClassOutput*/"));
+
         string cppFile = Path.Combine(Path.GetDirectoryName(outputFileNameCPP),Path.GetFileNameWithoutExtension(outputFileNameCPP) + ".cpp");
         classFileContent = File.ReadAllText(cppFile);
         Assert.IsTrue(classFileContent.Length > 0);
+
+        Assert.IsTrue(classFileContent.Contains("/*ExtendHeader+Impl*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendConstructor*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendSetter*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendMethods+Impl*/"));
+       
 
         // Generate Class File.
         File.Delete(outputFileNameDotNet);

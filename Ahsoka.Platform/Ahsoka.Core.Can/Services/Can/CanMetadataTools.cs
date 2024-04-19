@@ -277,6 +277,8 @@ internal static class CanMetadataTools
         Console.WriteLine($"Reading Package Info at {pathToPackageInfo}");
         Console.WriteLine();
 
+        var generatorExtensions = new GeneratorUtility("Ahsoka.Core.Can", type); 
+        
         string pathToSearch = string.Empty;
         if (Environment.CurrentDirectory != Path.GetDirectoryName(pathToPackageInfo))
             pathToSearch = Path.GetDirectoryName(pathToPackageInfo);
@@ -305,14 +307,14 @@ internal static class CanMetadataTools
         StringBuilder outputFileData = new();
 
         if (type == ApplicationType.Dotnet)
-            GenerateDotNet(nameSpace, baseClass, calPath, outputFileData);
+            GenerateDotNet(nameSpace, baseClass, calPath, outputFileData, generatorExtensions);
 
         else if (type == ApplicationType.Cpp)
         {
             string fileName = Path.Combine(Path.GetDirectoryName(pathToDestinationFile), Path.GetFileNameWithoutExtension(pathToDestinationFile) + ".cpp");
             StringBuilder outputFileDataCPP = new();
 
-            GenerateCPP(nameSpace, baseClass, calPath, outputFileData, outputFileDataCPP, pathToDestinationFile);
+            GenerateCPP(nameSpace, baseClass, calPath, outputFileData, outputFileDataCPP, pathToDestinationFile, generatorExtensions);
             File.WriteAllText(fileName, outputFileDataCPP.ToString());
 
             var path = Path.GetDirectoryName(pathToDestinationFile);
@@ -324,7 +326,7 @@ internal static class CanMetadataTools
     }
 
     #region Generate CPP
-    private static void GenerateCPP(string nameSpace, string baseClass, string pathToCalibration, StringBuilder outputFileData, StringBuilder outputFileDataCPP, string headerFileName)
+    private static void GenerateCPP(string nameSpace, string baseClass, string pathToCalibration, StringBuilder outputFileData, StringBuilder outputFileDataCPP, string headerFileName, GeneratorUtility generatorExtensions)
     {
         // Add Header
         outputFileData.AppendLine("#pragma once");
@@ -332,6 +334,10 @@ internal static class CanMetadataTools
         outputFileData.AppendLine("#include <string>");
         outputFileData.AppendLine("#include \"AhsokaServices.h\"");
         outputFileData.AppendLine("#include \"CanViewModelBase.h\"");
+
+        // Allow Plugin to Extend the Header Using / Import Statements
+        generatorExtensions.ExtendHeader(outputFileData, nameSpace, true);
+
         outputFileData.AppendLine();
         outputFileData.Append($"namespace {nameSpace}\r\n{{");
 
@@ -339,6 +345,10 @@ internal static class CanMetadataTools
         outputFileDataCPP.AppendLine("#include <string>");
         outputFileDataCPP.AppendLine($"#include \"{Path.GetFileName(headerFileName)}\"");
         outputFileDataCPP.AppendLine();
+
+        // Allow Plugin to Extend the Header Using / Import Statements
+        generatorExtensions.ExtendHeader(outputFileDataCPP, nameSpace, false);
+
         outputFileDataCPP.Append($"namespace {nameSpace}\r\n{{");
 
         StringBuilder metadataBuilder = new();
@@ -351,7 +361,7 @@ internal static class CanMetadataTools
             // Create Message Class
             try
             {
-                GenerateClassCpp(item, outputFileData, metadataBuilder, metadataAccessors, outputFileDataCPP, baseClass);
+                GenerateClassCpp(item, outputFileData, metadataBuilder, metadataAccessors, outputFileDataCPP, baseClass, generatorExtensions);
                 outputFileData.AppendLine();
             }
             catch (Exception ex)
@@ -379,7 +389,7 @@ internal static class CanMetadataTools
         outputFileData.AppendLine("}"); // Close Namespace.
     }
 
-    private static void GenerateClassCpp(MessageDefinition definition, StringBuilder fileOutputBuilder, StringBuilder metadataBuilder, StringBuilder metadataAccessors, StringBuilder outputFileDataCPP, string baseClass = null)
+    private static void GenerateClassCpp(MessageDefinition definition, StringBuilder fileOutputBuilder, StringBuilder metadataBuilder, StringBuilder metadataAccessors, StringBuilder outputFileDataCPP, string baseClass = null, GeneratorUtility generatorExtensions = null)
     {
         StringBuilder enumBuilder = new();
         StringBuilder propBuilder = new();
@@ -399,7 +409,7 @@ internal static class CanMetadataTools
 
         // Add Props First
         foreach (MessageSignalDefinition signalDefinition in definition.Signals)
-            WriteMessagePropertyCPP(propEnumBuilder, propBuilder, enumBuilder, metadataBuilder, outputFileDataCPP, signalDefinition, className);
+            WriteMessagePropertyCPP(propEnumBuilder, propBuilder, enumBuilder, metadataBuilder, outputFileDataCPP, signalDefinition, className, generatorExtensions);
 
         metadataBuilder.AppendLine($"\t\tmetadata[{definition.Id}] = {className}Props;");
 
@@ -430,18 +440,31 @@ internal static class CanMetadataTools
 
         // Public Methods
         fileOutputBuilder.AppendLine();
-        fileOutputBuilder.AppendLine($"\t\t\t{className}();// CANID: 0x{definition.Id.ToString("x")}");
+        fileOutputBuilder.AppendLine($"\t\t\t{className}(); // CANID: 0x{definition.Id.ToString("x")}");
         fileOutputBuilder.AppendLine($"\t\t\t{className}(CanMessageData message); // CANID: 0x{definition.Id.ToString("x")}");
+        
+        // Extend Header Methods
+        generatorExtensions.ExtendMethods(fileOutputBuilder, className, true);
 
         outputFileDataCPP.AppendLine();
-        outputFileDataCPP.AppendLine($"\t{className}::{className}() : {baseClass}({definition.Id},{byteLength}) {{ }} // CANID: 0x{definition.Id.ToString("x")}");
-        outputFileDataCPP.AppendLine($"\t{className}::{className}(CanMessageData message) : {baseClass}(message) {{ }} // CANID: 0x{definition.Id.ToString("x")}");
+        outputFileDataCPP.AppendLine($"\t{className}::{className}() : {baseClass}({definition.Id},{byteLength})  // CANID: 0x{definition.Id.ToString("x")}");
+        outputFileDataCPP.AppendLine($"\t{{");
+        generatorExtensions.ExtendConstructor(outputFileDataCPP,className);
+        outputFileDataCPP.AppendLine($"\t}}");
 
+        outputFileDataCPP.AppendLine($"\t{className}::{className}(CanMessageData message) : {baseClass}(message)  // CANID: 0x{definition.Id.ToString("x")}");
+        outputFileDataCPP.AppendLine($"\t{{");
+        generatorExtensions.ExtendConstructor(outputFileDataCPP, className);
+        outputFileDataCPP.AppendLine($"\t}}");
+
+        // Extend Header outputFileDataCPP
+        generatorExtensions.ExtendMethods(outputFileDataCPP, className, false);
 
         // Generate Property Enumeration
         if (propBuilder.Length > 0)
             fileOutputBuilder.AppendLine(propBuilder.ToString());
 
+       
         // Generate Property Enumeration
         metadataBuilder.AppendLine("");
         metadataAccessors.AppendLine($"\tstd::map<int, CanPropertyInfo>& {className}::GetMetadata() {{ return CanModelMetadata::GetMetadata({definition.Id}); }}");
@@ -451,9 +474,11 @@ internal static class CanMetadataTools
 
         // Finish Main
         fileOutputBuilder.AppendLine("\t};"); // End Class
+
+        generatorExtensions.ExtendAfterClassOutput(fileOutputBuilder,className);
     }
 
-    private static void WriteMessagePropertyCPP(StringBuilder propEnum, StringBuilder propMethods, StringBuilder enumOutput, StringBuilder metadata, StringBuilder outputFileDataCPP, MessageSignalDefinition definition, string className)
+    private static void WriteMessagePropertyCPP(StringBuilder propEnum, StringBuilder propMethods, StringBuilder enumOutput, StringBuilder metadata, StringBuilder outputFileDataCPP, MessageSignalDefinition definition, string className, GeneratorUtility generatorUtility)
     {
         string propName = definition.Name.AsIdentifier();
 
@@ -517,8 +542,9 @@ internal static class CanMetadataTools
 
         outputFileDataCPP.AppendLine();
         outputFileDataCPP.AppendLine($"\t{type} {className.AsIdentifier()}::Get{propName}() {{ return OnGetValue<{type}>({propName}); }}");
-        outputFileDataCPP.AppendLine($"\tvoid {className.AsIdentifier()}::Set{propName}({type} value) {{ OnSetValue<{type}>(value, {propName}); }}");
-
+        outputFileDataCPP.Append($"\tvoid {className.AsIdentifier()}::Set{propName}({type} value) {{ OnSetValue<{type}>(value, {propName});");
+        generatorUtility.ExtendSetter(outputFileDataCPP, propName, type);
+        outputFileDataCPP.AppendLine("}}");
 
         // Add Metadata to Static Dictionary.
         string endianness = definition.ByteOrder == ByteOrder.LittleEndian ? "ByteOrder::LittleEndian" : "ByteOrder::BigEndian";
@@ -527,7 +553,7 @@ internal static class CanMetadataTools
     #endregion
 
     #region Generate Dotnet
-    private static void GenerateDotNet(string nameSpace, string baseClass, string pathToCalibration, StringBuilder outputFileData)
+    private static void GenerateDotNet(string nameSpace, string baseClass, string pathToCalibration, StringBuilder outputFileData, GeneratorUtility generatorExtensions)
     {
         // Add Header
         outputFileData.AppendLine("using Ahsoka.System;");
@@ -537,9 +563,13 @@ internal static class CanMetadataTools
         outputFileData.AppendLine("using System.Linq;");
         outputFileData.AppendLine("using ValueType = Ahsoka.Services.Can.ValueType;");
 
+        // Allow Plugin to Extend the Header Using / Import Statements
+        generatorExtensions.ExtendHeader(outputFileData, nameSpace);
+       
         outputFileData.AppendLine();
         outputFileData.AppendLine($"namespace {nameSpace};"); //need generic solution here
         outputFileData.AppendLine();
+
 
         StringBuilder metadataItems = new();
         
@@ -550,7 +580,7 @@ internal static class CanMetadataTools
             // Create Message Class
             try
             {
-                GenerateClassDotNet(item, outputFileData, metadataItems, baseClass);
+                GenerateClassDotNet(item, outputFileData, metadataItems, baseClass, generatorExtensions);
             }
             catch (Exception ex)
             {
@@ -563,7 +593,7 @@ internal static class CanMetadataTools
         outputFileData.AppendLine(Properties.Resources.CSharpMetadataDictionary.Replace("%METADATA_BODY%", metadataItems.ToString()));
     }
 
-    private static void GenerateClassDotNet(MessageDefinition definition, StringBuilder fileOutputBuilder, StringBuilder metadataBuilder, string baseClass = null)
+    private static void GenerateClassDotNet(MessageDefinition definition, StringBuilder fileOutputBuilder, StringBuilder metadataBuilder, string baseClass = null, GeneratorUtility generatorExtensions = null)
     {
         baseClass ??= "CanViewModelBase";
         definition.Id &= 0x1FFFFFFF;
@@ -590,8 +620,18 @@ internal static class CanMetadataTools
         methodBuilder.AppendLine();
         methodBuilder.AppendLine("\t#region Auto Generated Methods");
         methodBuilder.AppendLine($"\tprotected override Dictionary<string, CanPropertyInfo> GetMetadata() {{ return CanModelMetadata.GetMetadata({definition.Id}); }}");
-        methodBuilder.AppendLine($"\tpublic {className}() : base({definition.Id},{byteLength}) {{ }} // CANID: 0x{definition.Id.ToString("x")}");
-        methodBuilder.AppendLine($"\tpublic {className}(CanMessageData message) : base(message) {{ }}\r\n");
+        methodBuilder.AppendLine($"\tpublic {className}() : base({definition.Id},{byteLength}) // CANID: 0x{definition.Id.ToString("x")}");
+        methodBuilder.AppendLine($"\t{{");
+
+        generatorExtensions.ExtendConstructor( methodBuilder, className); 
+
+        methodBuilder.AppendLine($"\t}} ");
+        methodBuilder.AppendLine($"\tpublic {className}(CanMessageData message) : base(message) ");
+        methodBuilder.AppendLine($"\t{{");
+        
+        generatorExtensions.ExtendConstructor(methodBuilder, className);
+        
+        methodBuilder.AppendLine($"\t}}\r\n");
 
         metadataBuilder.AppendLine($"\r\n\t\t// Decode Info for {className} {definition.Id}");
         metadataBuilder.AppendLine($"\t\tmetadata.Add({definition.Id}, new Dictionary<string, CanPropertyInfo>()");
@@ -602,18 +642,19 @@ internal static class CanMetadataTools
 
         // Add Props First
         foreach (MessageSignalDefinition signalDefinition in definition.Signals)
-            WriteMessagePropertyDotNet(fileOutputBuilder, methodBuilder, enumBuilder, signalDefinition, metadataBuilder, className);
+            WriteMessagePropertyDotNet(fileOutputBuilder, methodBuilder, enumBuilder, signalDefinition, metadataBuilder, className, generatorExtensions);
 
         metadataBuilder.AppendLine("\t\t});");
-
 
         // Finish Props
         fileOutputBuilder.AppendLine();
         fileOutputBuilder.AppendLine("\t#endregion");
 
+        generatorExtensions.ExtendMethods(methodBuilder, className, false);
+
         // Finish Methods
         methodBuilder.AppendLine("\t#endregion");
-
+     
         // Add Methods to Main
         fileOutputBuilder.Append(methodBuilder);
 
@@ -624,9 +665,11 @@ internal static class CanMetadataTools
         if (enumBuilder.Length > 0)
             fileOutputBuilder.AppendLine(enumBuilder.ToString());
 
+        generatorExtensions.ExtendAfterClassOutput(fileOutputBuilder, className);
+
     }
 
-    private static void WriteMessagePropertyDotNet(StringBuilder mainOutput, StringBuilder methodBody, StringBuilder enumOutput, MessageSignalDefinition definition, StringBuilder metadataBuilder, string className)
+    private static void WriteMessagePropertyDotNet(StringBuilder mainOutput, StringBuilder methodBody, StringBuilder enumOutput, MessageSignalDefinition definition, StringBuilder metadataBuilder, string className, GeneratorUtility generatorExtensions)
     {
         string propName = definition.Name.AsIdentifier().ToCamelCase();
 
@@ -682,12 +725,18 @@ internal static class CanMetadataTools
             }
         }
 
-        string getValue = $"get {{ return OnGetValue<{type}>(); }}";
-        string setValue = $"set {{ OnSetValue(value); }}";
+        string getValue = $"get {{ return OnGetValue<{type}>();  }}";
+
+        StringBuilder setBuilder = new StringBuilder($"set {{ OnSetValue(value);");
+
+        // Extend Setter
+        generatorExtensions.ExtendSetter(setBuilder, propName.AsIdentifier(), type);
+        setBuilder.Append($" }}");
+
         string endianNess = definition.ByteOrder == ByteOrder.LittleEndian ? "ByteOrder.LittleEndian" : "ByteOrder.BigEndian";
 
         // Add Property
-        mainOutput.AppendLine($"\r\n\tpublic {type} {propName.AsIdentifier()} \r\n\t{{\r\n\t\t{getValue}\r\n\t\t{setValue} \r\n\t}}");
+        mainOutput.AppendLine($"\r\n\tpublic {type} {propName.AsIdentifier()} \r\n\t{{\r\n\t\t{getValue}\r\n\t\t{setBuilder.ToString()} \r\n\t}}");
 
         // Add Metadata to Static Dictionary.
         metadataBuilder.AppendLine($"\t\t\t{{nameof({className}.{propName}), new( {definition.StartBit}, {definition.BitLength}, {endianNess}, {canType}, {definition.Scale}, {definition.Offset}, {definition.Id}, {definition.DefaultValue}, {definition.Minimum}, {definition.Maximum})}},");

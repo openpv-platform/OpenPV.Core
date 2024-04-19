@@ -103,8 +103,10 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)
     {
-        ValidateLicenses(context, item);
-
+        var valid = ValidateLicenses(context, item);
+        if (!valid)
+            context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"One or more licenses were not valid." });
+        
         var result = base.OnInstallComponent(context, item);
 
         if (OperatingSystem.IsLinux())
@@ -184,6 +186,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
     private bool ValidateLicenses(InstallContext context, PackageComponent item)
     {
+        bool licensesValid = true;
         context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Validating Licenses" });
 
         foreach (var attributeValue in item.Attributes)
@@ -194,12 +197,12 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Validating License for Module {licenseKeyName}" });
                 if (!ModuleLicenseManager.IsLicensed(attributeValue.Value))
                 {
-                    context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to find License for Module {licenseKeyName} on Target but may be available in Spark"});
-                    return false;
+                    licensesValid = false;
+                    context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to find License for Module {licenseKeyName} on Target but may be available in Spark" });
                 }
             }
         }
-        return true;
+        return licensesValid;
     }
 
     private void AddScript(InstallContext context, string fileToCopy)

@@ -36,7 +36,7 @@
 		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
-	<Target Name="AfterDrawingBuild" AfterTargets="Build">
+	<Target Name="AfterDrawingBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'">
 		<Message Text="Copy Storyboard Extension..." Importance="high" />
 		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.extensioninfo.json" DestinationFiles="$(SolutionDir)..\Extensions\Storyboard Extension\Ahsoka.Core.Storyboard.extensioninfo.json" />
 		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Storyboard\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Storyboard.dll" DestinationFiles="$(SolutionDir)..\Extensions\Storyboard Extension\lib\Ahsoka.Core.Storyboard.dll" />

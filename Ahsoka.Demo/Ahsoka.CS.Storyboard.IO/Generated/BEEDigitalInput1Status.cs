@@ -1,7 +1,7 @@
 using Ahsoka.Storyboard;
 using System;
 
-namespace Ahsoka.Application.Storyboard;
+namespace  Ahsoka.Application.Storyboard;
 
 [SBMessageEventName("BEE_DigitalInput1Status", "0x40")]
 public partial class BEEDigitalInput1Status : ApplicationViewModelBase

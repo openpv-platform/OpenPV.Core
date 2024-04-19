@@ -24,13 +24,13 @@
 	
 	<Target Name="CreateExtensions" AfterTargets="PostBuildEvent">
 
-		<Exec Command="dotnet build --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can.Ux\Ahsoka.Core.Can.Ux.csproj" />
-		<Exec Command="dotnet build --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.csproj" />
-		<Exec Command="dotnet build --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
-		<Exec Command="dotnet build --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
-		<Exec Command="dotnet build --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
-		<Exec Command="dotnet build --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Storyboard.Ux\Ahsoka.Core.Storyboard.Ux.csproj" />
-		<Exec Command="dotnet build --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
+		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can.Ux\Ahsoka.Core.Can.Ux.csproj" />
+		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.csproj" />
+		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
+		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
+		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
+		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Storyboard.Ux\Ahsoka.Core.Storyboard.Ux.csproj" />
+		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
 
 		<!-- Create Extension Package Info.  System will use these nuget packages to download the libraries-->
 		<ItemGroup>

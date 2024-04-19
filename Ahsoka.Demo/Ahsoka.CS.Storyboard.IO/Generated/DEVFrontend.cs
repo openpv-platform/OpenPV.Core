@@ -1,7 +1,7 @@
 using Ahsoka.Storyboard;
 using System;
 
-namespace Ahsoka.Application.Storyboard;
+namespace  Ahsoka.Application.Storyboard;
 
 [SBMessageEventName("DEV_Frontend", "0x20")]
 public partial class DEVFrontend : ApplicationViewModelBase

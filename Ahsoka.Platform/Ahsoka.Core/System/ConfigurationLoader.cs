@@ -1,12 +1,9 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Linq;
-using System.Net.Sockets;
-using System.Text.Json.Serialization;
 
 namespace Ahsoka.System;
 
@@ -77,7 +74,28 @@ public class ConfigurationLoader
         {
             var defaultConfig = CreateDefaultConfiguration();
             result = defaultConfig.Services.FirstOrDefault(x => x.ServiceName == serviceName);
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Falling back to Default Configuration for Service {serviceName}");
+            if (result != null)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Configuration not Found, Falling back to Default Configuration for Service {serviceName}");
+            }
+            else
+            {
+                result = new()
+                {
+                    ServiceName = serviceName,
+                    DataChannel = Math.Min(7000, configuration.Services.Max(x => x.DataChannel) + 1),
+                    NotificationChannel = Math.Min(configuration.Services.Max(y => y.NotificationChannel) + 1, 8000),
+                    Behaviors = EndPointBehaviors.AutoStart,
+                    IsExtension = true,
+                    SocketType = TransportSocketTypes.TcpSocket,
+                     TcpListenAddress = "*",
+                      TcpConnectionAddress = "localhost",
+                };
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Configuration not Found, AutoGenerating Local Only Configuration for Service {serviceName} at DataChannel{result.DataChannel}.");
+            }
+
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"To prevent his message, add the service to your service configuration.");
+            configuration.Services.Add(result);
         }
 
         return result;

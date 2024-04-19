@@ -32,8 +32,8 @@
 	</ItemGroup>
 
 	<!--To help Debugging since this is loaded dynamically-->
-	<Target Name="AfterCanBuild" AfterTargets="Build">
-		<Message Text="Copy CAN Extension..." Importance="high" />
+	<Target Name="AfterCanBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'" >
+		<Message Text="Copy CAN Extension...$(SolutionName)" Importance="high" />
 		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Can.dll" DestinationFiles="$(SolutionDir)..\\Extensions\Can Service Extension\lib\Ahsoka.Core.Can.dll" />
 		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.extensioninfo.json" DestinationFiles="$(SolutionDir)..\\Extensions\Can Service Extension\Ahsoka.Core.Can.extensioninfo.json" />
 	</Target>

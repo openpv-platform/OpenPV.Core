@@ -270,6 +270,7 @@ public partial class AhsokaRuntime
 /// <summary>
 /// Attribute used to Describe Services
 /// </summary>
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
 public class AhsokaServiceAttribute : Attribute
 {
     /// <summary>

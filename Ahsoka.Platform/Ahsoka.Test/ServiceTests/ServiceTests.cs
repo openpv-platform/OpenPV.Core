@@ -119,6 +119,16 @@ public class ServiceTests
     }
 
     [TestMethod]
+    public void TestMissingServiceConfig()
+    {
+        var service1 = ConfigurationLoader.GetServiceConfig("TestConfig");
+        var service2 = ConfigurationLoader.GetServiceConfig("TestConfig2");
+
+        Assert.IsFalse(service1.DataListenURI.Equals(service2.DataListenURI));
+    }
+
+
+    [TestMethod]
     public void TestBaseServiceExternalComponents()
     {
         // Test Configuration Builder

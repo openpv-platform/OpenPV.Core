@@ -4,9 +4,9 @@
   "generatorOutputFolder": "Generated",
   "generatorNameSpace": " Ahsoka.Application.Storyboard",
   "generatorProjectPath": "StoryboardProject",
-  "generatorModelBaseClass": "DemoViewModelBase",
+  "generatorModelBaseClass": "ApplicationViewModelBase",
   "storyboardAppProgramFolder": "C:\\Program Files\\Crank_Software",
   "storyboardAppExportFolder": "StoryboardExport",
-  "storyboardAppVersion": "8.0-stable.202304090148",
-  "storyboardAppName": "Demo"
+  "storyboardAppVersion": "",
+  "storyboardAppName": "Demo-s70"
 }

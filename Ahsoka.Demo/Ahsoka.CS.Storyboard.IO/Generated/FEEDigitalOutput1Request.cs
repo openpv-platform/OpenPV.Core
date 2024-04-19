@@ -1,7 +1,7 @@
 using Ahsoka.Storyboard;
 using System;
 
-namespace Ahsoka.Application.Storyboard;
+namespace  Ahsoka.Application.Storyboard;
 
 [SBMessageEventName("FEE_DigitalOutput1Request", "0x20")]
 public partial class FEEDigitalOutput1Request : ApplicationViewModelBase

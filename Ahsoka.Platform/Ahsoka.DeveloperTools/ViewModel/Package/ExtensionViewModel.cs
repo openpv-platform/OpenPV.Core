@@ -174,8 +174,8 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         {
             if (ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.Extensions.Contains(item.ExtensionName))
             {
-                var vm = extensionUXExtensions[item.ExtensionName];
-                vm.Save(packageInfoFolder);
+                if (extensionUXExtensions.TryGetValue(item.ExtensionName, out var extension))
+                    extension.Save(packageInfoFolder);
             }
         }
     }

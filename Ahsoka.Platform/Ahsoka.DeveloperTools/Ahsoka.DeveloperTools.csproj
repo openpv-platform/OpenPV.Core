@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
 		<OutputType>WinExe</OutputType>
 		<RuntimeIdentifiers>win-x64;linux-arm;linux-x64;osx-arm64</RuntimeIdentifiers>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<SignAssembly>False</SignAssembly>
+		<UseRidGraph>true</UseRidGraph>
 		<NoWarn>CS0618</NoWarn>	<!--Until Spark Is Upgraded-->
 		<TrimMode>copyused</TrimMode>
 		<AssemblyName>OpenPV.DeveloperToolkit</AssemblyName>
@@ -46,14 +46,14 @@
 		<PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.0-beta1" />
 		<PackageReference Include="Avalonia.Desktop" Version="11.1.0-beta1" />
 		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-beta1" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.17" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.18" />
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-beta1" />
-		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.0" />
+		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.9" />
 		<PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.6" />
 		<PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="8.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="8.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.4" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Include="NuGet.Protocol" Version="6.9.1" />
 		<PackageReference Include="Packaging.Targets" Version="0.1.220-*">

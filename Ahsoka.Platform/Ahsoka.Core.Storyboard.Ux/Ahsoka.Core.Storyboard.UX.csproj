@@ -1,12 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net7.0</TargetFramework>
 		<RuntimeIdentifiers>win-x64;linux-arm;linux-x64;osx-arm64</RuntimeIdentifiers>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<SignAssembly>False</SignAssembly>
 		<TrimMode>copyused</TrimMode>
 		<DebugType>portable</DebugType>
+		<UseRidGraph>true</UseRidGraph>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 	</PropertyGroup>

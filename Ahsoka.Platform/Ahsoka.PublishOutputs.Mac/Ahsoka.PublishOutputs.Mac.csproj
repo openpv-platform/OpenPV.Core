@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -22,13 +22,13 @@
 		<Exec Condition="false" ContinueOnError="true" Command="dotnet tool uninstall --global dotnet-project-licenses" />
 		<Exec ContinueOnError="true" Command="dotnet tool install --global dotnet-project-licenses --version 2.7.1" />
 
-		<Exec Command="dotnet msbuild ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj --t:BundleApp  -p:UseAppHost=true -p:TargetFramework=net7.0 -p:RuntimeIdentifier=osx-arm64" />
+		<Exec Command="dotnet msbuild ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj --t:BundleApp  -p:UseAppHost=true -p:TargetFramework=net8.0 -p:RuntimeIdentifier=osx-arm64" />
 
 		<ItemGroup>
-			<MacTools Include="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/**/*" />
-			<MacTools Remove="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/linux*/**/*" />
-			<MacTools Remove="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/win*/**/*" />
-			<MacTools Remove="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net7.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/unix*/**/*" />
+			<MacTools Include="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net8.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/**/*" />
+			<MacTools Remove="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net8.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/linux*/**/*" />
+			<MacTools Remove="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net8.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/win*/**/*" />
+			<MacTools Remove="$(BuildDir)Ahsoka.Platform/Ahsoka.DeveloperTools/bin/Debug/net8.0/osx-arm64/publish/OpenPV.DeveloperToolkit.app/Contents/MacOS/runtimes/unix*/**/*" />
 		</ItemGroup>
 
 		<MakeDir ContinueOnError="true" Directories="$(BuildDir)SparkUpload/" />

@@ -4,7 +4,7 @@
 		<OutputType>Exe</OutputType>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<Platforms>AnyCPU;x64</Platforms>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<RootNamespace>Ahsoka.Demo.Storyboard</RootNamespace>
 	</PropertyGroup>
 

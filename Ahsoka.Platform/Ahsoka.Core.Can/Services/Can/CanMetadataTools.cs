@@ -161,12 +161,14 @@ internal static class CanMetadataTools
                 Id = message.ID,
                 MessageType = message.IsExtID ? MessageType.RawExtendedFrame : MessageType.RawStandardFrame,
                 Name = message.Name,
-                Rate = message.CycleTime,
                 UserDefined = true,
                 TransmitNodes = nodeFound ? new int[] {-1, node.Id } : new int[] { -1, -1 },
                 ReceiveNodes = new int[] { -1, -1 }
             };
 
+            if (message.CycleTime(out int cycleTime))
+                messageDef.Rate = cycleTime;
+             
             if (message.IsExtID)
             {
                 bool isJ1939 = message.Signals.SelectMany(x => x.CustomProperties).Any(x => x.Key == "SPN");

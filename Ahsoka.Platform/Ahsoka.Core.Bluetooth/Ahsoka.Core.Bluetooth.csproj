@@ -24,7 +24,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Linux.Bluetooth" Version="5.66.0" />
-		<PackageReference Include="Tmds.DBus" Version="0.16.0" />
+		<PackageReference Include="Tmds.DBus" Version="0.17.0" />
 	</ItemGroup>
 
 	<ItemGroup Label="Windows Only Modules - If Only I could Figure Out how to Exclude Them???">

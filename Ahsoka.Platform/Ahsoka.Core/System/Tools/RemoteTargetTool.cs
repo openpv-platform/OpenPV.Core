@@ -607,7 +607,7 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
                           SshClient sshClient, ScpClient scpClient)
     {
         string ahsokaDepFolder = info.TargetPathInfo.GetRootPaths(RootPaths.DependencyRoot);
-        string ahsokaDepExe = ahsokaDepFolder + "/dotnet.7.0/dotnet";
+        string ahsokaDepExe = ahsokaDepFolder + "/dotnet/dotnet";
 
         progress.Report($"Remove Ahsoka Dependencies");
         var commandResult = sshClient.RunCommand($"rm -r {ahsokaDepFolder}");

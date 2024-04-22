@@ -173,7 +173,7 @@ internal class ApplicationViewModelRoot
         // such as the Project, Arguements and Channel Names
         var sbConfig = new StartupConfiguration()
         {
-            StoryboardProjectPath = "StoryboardExport/Demo.gapp",
+            StoryboardProjectPath = "StoryboardExport/Demo-s70.gapp",
             StartupArguements = " ",
             StoryboardOutputChannel = "ToFrontend_channel",
             StoryboardInputChannel = "ToBackend_channel"

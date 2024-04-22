@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
 		<RuntimeIdentifiers>win-x64;linux-arm;linux-x64;osx-arm64</RuntimeIdentifiers>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<SignAssembly>False</SignAssembly>
+		<UseRidGraph>true</UseRidGraph>
 		<TrimMode>copyused</TrimMode>
 		<AssemblyName>OpenPV.DeveloperToolkit.Core</AssemblyName>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
@@ -28,13 +28,13 @@
 		<PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.1.0-beta1" />
 		<PackageReference Include="Avalonia.Desktop" Version="11.1.0-beta1" />
 		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.1.0-beta1" />
-		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.17" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.18" />
 		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-beta1" />
-		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.0" />
+		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.9" />
 		<PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.6" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="8.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.3" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="8.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.4" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.4" />
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
 		<PackageReference Include="Packaging.Targets" Version="0.1.220-*">
 			<PrivateAssets>all</PrivateAssets>

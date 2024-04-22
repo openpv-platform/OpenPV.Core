@@ -1,5 +1,5 @@
 # DotNet 
-export DOTNET_ROOT=/usr/local/Ahsoka/dependency/dotnet.7.0
+export DOTNET_ROOT=/usr/local/Ahsoka/dependency/dotnet
 export PATH=$PATH:$DOTNET_ROOT
 
 export XDG_RUNTIME_DIR=/tmp/xdg-runtime-dir

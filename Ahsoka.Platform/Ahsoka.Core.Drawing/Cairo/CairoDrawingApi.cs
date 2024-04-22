@@ -233,14 +233,12 @@ public class CairoDrawingApi : DrawingApiBase<Context>
     {
         if (SystemInfo.CurrentPlatform == PlatformFamily.Windows64)
         {
-            // Should this be st
-            WindowsFontConfig.AddFont(fileName);
-            var fontSet = WindowsFontConfig.GetFontSet();
-            return new DrawingTypeface(fontSet, typefaceName);
+            //TODO: Support Fonts on PC - Uses Local Fonts
+            return new DrawingTypeface(new object(), typefaceName);
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.MacosArm64)
         {
-            //TODO: Support Fonts on Mac
+            //TODO: Support Fonts on Mac - Uses Local Fonts.
             return new DrawingTypeface(new object(), typefaceName);
         }
         else

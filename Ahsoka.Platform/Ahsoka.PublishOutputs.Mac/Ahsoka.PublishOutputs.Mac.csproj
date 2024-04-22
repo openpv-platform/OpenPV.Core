@@ -48,7 +48,7 @@
 		<WriteLinesToFile File="$(BuildDir)/PlatformSupport/MacOSARM64_TargetSupport/MacOSARM64_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
 
 		<Exec IgnoreExitCode="true" Command="chmod +x $(BuildDir)/Ahsoka.Platform/SignCLI.sh" />
-		<Exec IgnoreExitCode="true" Command="$(BuildDir)/Ahsoka.PlatformSignCLI.sh" />
+		<Exec IgnoreExitCode="true" Command="$(BuildDir)/Ahsoka.Platform/SignCLI.sh" />
 
 		<!--Create Zip File Compatible with NotoryTools - NOTE We notorize this one in place since we have no need to staple-->
 		<Exec Command="ditto -c -k --sequesterRsrc $(BuildDir)/PlatformSupport/MacOSARM64_TargetSupport/ $(BuildDir)/SparkUpload/MacOSARM64_TargetSupport.zip" />

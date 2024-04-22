@@ -118,15 +118,6 @@
 				</StackPanel>
 			</Button>
 
-			<Button Margin="3,3,15,3" DockPanel.Dock="Right"   
-					MinWidth="55" HorizontalAlignment="Right" 
-					Command="{Binding ToggleConsole}" >
-				<StackPanel>
-					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Console"></material:MaterialIcon>
-					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Console"/>
-				</StackPanel>
-			</Button>
-
 			<Button Margin="3,3,15,3" 
 					DockPanel.Dock="Right" HorizontalAlignment="Right"
 					IsVisible="{Binding SelectedPackage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
@@ -148,7 +139,15 @@
 					<TextBlock  HorizontalAlignment="Center" FontSize="11" Text="Generate"/>
 				</StackPanel>
 			</Button>	
-			
+
+			<Button Margin="3,3,15,3" DockPanel.Dock="Right"   
+					MinWidth="55" HorizontalAlignment="Right" 
+					Command="{Binding ToggleConsole}" >
+				<StackPanel>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Console"></material:MaterialIcon>
+					<TextBlock  HorizontalAlignment="Center" FontSize="11"  Text="Console"/>
+				</StackPanel>
+			</Button>
 			
 		</DockPanel>
 	</Border>

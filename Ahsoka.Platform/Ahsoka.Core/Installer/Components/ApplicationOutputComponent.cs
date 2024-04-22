@@ -142,6 +142,9 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             string appCommand = item.Attributes[ExecCommandKeyAttribute];
             string workingDirectory = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
 
+            context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Application Type {projectType} found with app command {appCommand}" });
+
+
             // Run Installer Plugin to handle 
             InstallerPlugin appPlugin = InstallerPlugin.GetApplicationPlugin(projectType);
             appPlugin?.ModifyTargetInstall(workingDirectory, appCommand);
@@ -165,7 +168,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         {
             string workingDirectory = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot),"CommandLine");
 
-            string tempFile = Path.GetTempFileName();
+            string tempFile = SystemInfo.HardwareInfo.TargetPathInfo.GetTempFileName();
             using (FileStream installer = new(tempFile, FileMode.Create))
                 context.InstallEngine.ExtractPackage(CommandLineComponent.CommandLineComponentType, installer, context.Progress);
 

@@ -43,8 +43,14 @@ stages:
     - task: UseDotNet@2
       displayName: Load DotNet 7
       inputs:
+        packageType: 'runtime'
         version: '7.x'
         
+    - task: UseDotNet@2
+      displayName: Load DotNet 8
+      inputs:
+        version: '8.x'
+
     - task: gitversion/setup@0
       displayName: Install GitVersion
       inputs:
@@ -143,9 +149,9 @@ stages:
         configFilePath: 'GitVersion.yml'
 
     - task: UseDotNet@2
-      displayName: Load DotNet 7
+      displayName: Load DotNet 8
       inputs:
-        version: '7.x'
+        version: '8.x'
 
     - task: NuGetAuthenticate@0
       displayName: 'NuGet Authenticate'

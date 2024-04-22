@@ -3,10 +3,10 @@ using Ahsoka.Services.Install;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 
 namespace Ahsoka.Installer.Components;
@@ -37,17 +37,17 @@ internal class StartLogoComponent : InstallEngineComponent
         var data = new MemoryStream(File.ReadAllBytes(logoPath));
         if (info.SystemOrientation != Orientation.DefaultOrientation)
         {
-            var image = Image.FromStream(data);
+            var image = Image.Load(data);
             if (info.SystemOrientation == Orientation.Rotate180)
-                image.RotateFlip(RotateFlipType.Rotate180FlipNone);
+                image.Mutate(x => x.Rotate(180));
             else if (info.SystemOrientation == Orientation.Rotate270)
-                image.RotateFlip(RotateFlipType.Rotate270FlipNone);
+                image.Mutate(x => x.Rotate(270));
             else if (info.SystemOrientation == Orientation.Rotate90)
-                image.RotateFlip(RotateFlipType.Rotate90FlipNone);
+                image.Mutate(x => x.Rotate(90));
 
             data.Dispose();
             data = new MemoryStream();
-            image.Save(data, ImageFormat.Png);
+            image.SaveAsPng(data);
             data.Seek(0, SeekOrigin.Begin);
         }
 

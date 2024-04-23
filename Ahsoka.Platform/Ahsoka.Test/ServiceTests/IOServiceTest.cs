@@ -7,7 +7,7 @@ using System.Linq;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class IOServiceTests
+public class IOServiceTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 

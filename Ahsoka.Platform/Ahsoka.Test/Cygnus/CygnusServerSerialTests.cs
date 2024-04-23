@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Ahsoka.Test;
 
 // [TestClass]
-public class CygnusServerSerialTests
+public class CygnusServerSerialTests : LinearTestBase
 {
     protected DataServiceClient dataClient = new DataServiceClient();
     protected SystemServiceClient systemClient = new SystemServiceClient();

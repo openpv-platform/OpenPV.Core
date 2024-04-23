@@ -18,7 +18,7 @@ using ValueType = Ahsoka.Services.Can.ValueType;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class CanServiceTests
+public class CanServiceTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
     readonly AutoResetEvent stateReceived = new(false);
@@ -50,6 +50,8 @@ public class CanServiceTests
 
         File.Delete(canDBCFile);
         File.Delete(canConfigFile);
+
+        AhsokaRuntime.ShutdownAll();
     }
 
     private static CanApplicationCalibration TestAppConfigFile(string canConfigFile)

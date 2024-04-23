@@ -8,7 +8,7 @@ using System.Linq;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class HardwareInfoTests
+public class HardwareInfoTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 

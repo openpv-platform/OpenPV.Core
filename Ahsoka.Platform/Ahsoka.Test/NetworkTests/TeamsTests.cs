@@ -16,7 +16,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class SparkTeamsTests
+public class SparkTeamsTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 
@@ -82,6 +82,7 @@ public class SparkTeamsTests
 
         // Wait For Logout
         loginEvent.WaitOne(TimeSpan.FromSeconds(10));
+
     }
 
     private void ProvisionDisplayForContainer(TeamDTO team, ReleaseDTO container)
@@ -157,6 +158,9 @@ public class SparkTeamsTests
             File.Delete(path);
         }
         SparkProjectTools.RemoveTeamDevice(team, device);
+
+        AhsokaRuntime.ShutdownAll();
+
     }
 
     private ReleaseDTO TestContainers(TeamDTO team)

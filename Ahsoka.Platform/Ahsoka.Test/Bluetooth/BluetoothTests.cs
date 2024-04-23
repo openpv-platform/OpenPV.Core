@@ -8,7 +8,7 @@ using System.Linq;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class BluetoothTests
+public class BluetoothTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 

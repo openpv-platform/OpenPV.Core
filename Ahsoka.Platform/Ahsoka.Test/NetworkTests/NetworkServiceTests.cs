@@ -13,7 +13,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class NetworkServiceTest
+public class NetworkServiceTest : LinearTestBase
 {
     static readonly bool testEnabled = false;// Disabled for local builds so it doesn't disable your wifi.
 

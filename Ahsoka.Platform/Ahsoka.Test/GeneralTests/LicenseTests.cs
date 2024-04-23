@@ -8,7 +8,7 @@ using System.IO;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class LicenseTests
+public class LicenseTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 

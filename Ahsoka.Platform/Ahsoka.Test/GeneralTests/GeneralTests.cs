@@ -15,7 +15,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class GeneralTests : ViewModelBase
+public class GeneralTests : LinearTestBase
 {
     private object myValue = null;
     public object MyValue { get { return this.LazyLoad(ref myValue); } }
@@ -66,7 +66,6 @@ public class GeneralTests : ViewModelBase
         Assert.IsTrue(interfaces.Any());
     }
 
-
     [TestMethod]
     public void GeneralCoverageTests()
     {
@@ -92,8 +91,6 @@ public class GeneralTests : ViewModelBase
         Assert.IsNotNull(this.MyValue); // Test Lazy Loader
     }
 
-
-
     [TestMethod]
     public void ProcessUtilityTests()
     {
@@ -102,8 +99,6 @@ public class GeneralTests : ViewModelBase
         ProcessUtility.RunProcessInWindow("cmd", "/c dir", false, ".");
         var _ = ProcessUtility.CreateProcessInWindow("cmd", "/c dir", "."); // Don't start.
     }
-
-
 
     [TestMethod]
     public void FilePathTests()
@@ -235,20 +230,44 @@ public class GeneralTests : ViewModelBase
     [TestMethod]
     public void SimpleViewModelTest()
     {
-        TestViewModel model = new(this)
+        TestViewModelParent parent = new();
+
+        TestViewModel model = new(parent)
         {
             ValueObject = this,
             Value = 1234
         };
 
-        Assert.AreEqual(model.ParentViewModel, this);
+        Assert.AreEqual(model.ParentViewModel, parent);
         Assert.AreEqual(model.ValueObject, this);
         Assert.AreEqual(model.Value, 1234);
     }
 
-    public class TestViewModel : ChildViewModelBase<GeneralTests>
+
+    public class TestViewModelParent : ViewModelBase
     {
-        public TestViewModel(GeneralTests tests) :
+        public TestViewModelParent()
+        { }
+
+        private int myValue;
+        private GeneralTests myValueObject;
+
+        public int Value
+        {
+            get { return myValue; }
+            set { OnSetValue(ref myValue, value); }
+        }
+
+        public GeneralTests ValueObject
+        {
+            get { return myValueObject; }
+            set { OnSetObject(ref myValueObject, value); }
+        }
+    }
+
+    public class TestViewModel : ChildViewModelBase<TestViewModelParent>
+    {
+        public TestViewModel(TestViewModelParent tests) :
             base(tests)
         { }
 

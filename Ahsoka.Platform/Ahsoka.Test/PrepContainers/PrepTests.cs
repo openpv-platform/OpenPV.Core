@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class RemoteLinuxTests
+public class RemoteLinuxTests : LinearTestBase
 {
 
     readonly string containerName = "Ahsoka.Test";

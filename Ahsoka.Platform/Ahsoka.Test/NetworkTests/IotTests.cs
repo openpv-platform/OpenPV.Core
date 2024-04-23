@@ -9,7 +9,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class IotTests
+public class IotTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
     ClientMessage topicMessageResult = null;

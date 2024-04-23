@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class ServiceTests
+public class ServiceTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 

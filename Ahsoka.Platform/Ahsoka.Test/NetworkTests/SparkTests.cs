@@ -13,7 +13,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class SparkTests
+public class SparkTests : LinearTestBase
 {
     public static string DefaultTestSparkServer = "sparkservicedev.azurewebsites.net";
 

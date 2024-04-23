@@ -17,7 +17,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class PackagingTests
+public class PackagingTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
     static readonly Dictionary<string, PackageInformation> packageInfo = new();
@@ -117,7 +117,11 @@ public class PackagingTests
 
         client.StartServiceAndInstall(newTempFile, "PassCode", runInProc);
 
+
         File.Delete(newTempFile);
+
+        client.CurrentRuntime.RequestShutdown();
+        AhsokaRuntime.ShutdownAll();
     }
 
 

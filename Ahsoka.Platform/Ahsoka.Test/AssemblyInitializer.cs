@@ -7,7 +7,7 @@ using System;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class TestInitializer
+public class TestInitializer : LinearTestBase
 {
    [AssemblyInitialize]
     public static void AssemblyInit(TestContext context)

@@ -11,7 +11,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class StoryboardTests
+public class StoryboardTests : LinearTestBase
 {
     readonly Queue<TestSBIOObject> resultObjects = new();
     readonly Semaphore resultSem = new(0, 100);

@@ -12,7 +12,7 @@ using ShimSkiaSharp;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class DataServiceTests
+public class DataServiceTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 

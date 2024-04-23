@@ -20,6 +20,8 @@ internal class PlatformSupportPackage : ViewModelBase
 
     public string FirmwareSparkChannelName { get; set; }
 
+    public string DistributionUpgradeSparkChannelName { get; set; }
+
     public string ExtensionSparkChannelName { get; set; }
 
     public string ExtensionSparkVersionFilter { get { return GetCurrentMajorMinor(); } }

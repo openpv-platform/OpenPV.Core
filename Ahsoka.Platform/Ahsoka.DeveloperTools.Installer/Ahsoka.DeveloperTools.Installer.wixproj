@@ -1,4 +1,4 @@
-﻿<Project Sdk="WixToolset.Sdk/4.0.1">
+﻿<Project Sdk="WixToolset.Sdk/5.0.0">
   <PropertyGroup>
     <OutputName>OpenPV.Installer</OutputName>
     <Name>Ahsoka.OpenPV.Installer</Name>
@@ -15,7 +15,6 @@
     <PackageReference Include="WixToolset.Heat" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="FilterEXE.xslt" />
     <Content Include="OpenPV-Icon.ico" />
   </ItemGroup>
   <PropertyGroup>
@@ -23,12 +22,7 @@
     <DefineConstants>BasePath=..\..\PlatformSupport\Ahsoka.Tools\Windows64</DefineConstants>
   </PropertyGroup>
   <Target Name="CustomBeforeBuild" BeforeTargets="BeforeBuild">
-    <Message Text="RUN HEAT  $(WixHeatTasksPath)" Importance="high" />
-    <Exec Command="dotnet publish ..\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj -p:PublishProfile=WindowsOutputs" />
-    <HeatDirectory OutputFile="obj\Components.wxs" DirectoryRefId="INSTALLDIR" ComponentGroupName="OpenPVOutputs" SuppressCom="true" Directory="..\..\PlatformSupport\Ahsoka.Tools\Windows64" SuppressFragments="true" SuppressRegistry="true" SuppressRootDirectory="true" AutoGenerateGuids="false" GenerateGuidsNow="true" ToolPath="$(WixToolPath)" PreprocessorVariable="var.BasePath" Transforms="FilterEXE.xslt" />
-    <ItemGroup>
-      <Compile Include="obj\Components.wxs" />
-    </ItemGroup>
+    <Exec Condition="true" Command="dotnet publish ..\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj -p:PublishProfile=WindowsOutputs" />
   </Target>
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">

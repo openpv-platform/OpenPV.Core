@@ -9,16 +9,12 @@ namespace Ahsoka.DeveloperTools.Spark;
 
 public static class StringEncryption
 {
-    static readonly byte[] entropy = Encoding.Unicode.GetBytes("Salt Is Not A Password");
+    static readonly byte[] entropy = Encoding.Unicode.GetBytes("C931A392-9766-4BC0-B987-D1A33E791339");
+
     public static string EncryptString(SecureString input)
     {
         byte[] encryptedData;
-        var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var path = Path.Combine(appData, "CustomerTools");
-        var info = new DirectoryInfo(path);
-        var provider = DataProtectionProvider.Create(info);
-        var purpose = Uri.EscapeDataString("CustomerTools_" + Convert.ToBase64String(entropy));
-        var protector = provider.CreateProtector(purpose);
+        IDataProtector protector = CreateProtector();
         encryptedData = protector.Protect(Encoding.Unicode.GetBytes(ToInsecureString(input)));
         return Convert.ToBase64String(encryptedData);
     }
@@ -28,13 +24,51 @@ public static class StringEncryption
         try
         {
             byte[] decryptedData;
-            var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-            var path = Path.Combine(appData, "CustomerTools");
-            var info = new DirectoryInfo(path);
-            var provider = DataProtectionProvider.Create(info);
-            var purpose = Uri.EscapeDataString("CustomerTools_" + Convert.ToBase64String(entropy));
-            var protector = provider.CreateProtector(purpose);
+            IDataProtector protector = CreateProtector();
             decryptedData = protector.Unprotect(Convert.FromBase64String(encryptedData));
+            return ToSecureString(Encoding.Unicode.GetString(decryptedData));
+        }
+        catch
+        {
+            return new SecureString();
+        }
+    }
+    private static IDataProtector CreateProtector()
+    {
+        var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        var path = Path.Combine(appData, "AhsokaData", "SecureData");
+        var info = new DirectoryInfo(path);
+
+        var provider = DataProtectionProvider.Create(info, configuration =>
+        {
+            configuration.SetApplicationName("AhsokaData");
+            if (OperatingSystem.IsWindows())
+                configuration.ProtectKeysWithDpapi();
+        });
+
+        var purpose = Uri.EscapeDataString("AhsokaData_" + Convert.ToBase64String(entropy));
+        var protector = provider.CreateProtector(purpose);
+        return protector;
+    }
+
+
+
+    public static void CreateSecureFile(string path, string data)
+    {
+        byte[] encryptedData;
+        var protector = CreateProtector();
+        encryptedData = protector.Protect(Encoding.Unicode.GetBytes(data));
+        File.WriteAllBytes(path, encryptedData);
+    }
+
+    public static SecureString ReadSecureFile(string path)
+    {
+        try
+        {
+            byte[] decryptedData;
+            var protector = CreateProtector();
+            var encryptedData = File.ReadAllBytes(path);
+            decryptedData = protector.Unprotect(encryptedData);
             return ToSecureString(Encoding.Unicode.GetString(decryptedData));
         }
         catch

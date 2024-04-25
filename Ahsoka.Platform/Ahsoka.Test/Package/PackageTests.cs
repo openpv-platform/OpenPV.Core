@@ -23,7 +23,7 @@ public class PackagingTests : LinearTestBase
     static readonly Dictionary<string, PackageInformation> packageInfo = new();
 
     [AssemblyCleanup]
-    public static void Cleanup()
+    public static void TestCleanup()
     {
         string appOutputs = Path.Combine(Path.GetTempPath(), "AhsokaTestFolder");
 

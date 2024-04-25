@@ -1,3 +1,4 @@
+using Ahsoka.DeveloperTools.Spark;
 using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
@@ -226,6 +227,16 @@ public class GeneralTests : LinearTestBase
         Assert.AreEqual("Line1", builder.ToString());
     }
 
+    [TestMethod]
+    public void EncryptionTest() 
+    {
+        string testData = "TestData";
+        string path = Path.GetTempFileName();
+        StringEncryption.CreateSecureFile(path, testData);
+        var result = StringEncryption.ReadSecureFile(path);
+        string readableResult = StringEncryption.ToInsecureString(result);
+        Assert.AreEqual(testData, readableResult);
+    }
 
     [TestMethod]
     public void SimpleViewModelTest()

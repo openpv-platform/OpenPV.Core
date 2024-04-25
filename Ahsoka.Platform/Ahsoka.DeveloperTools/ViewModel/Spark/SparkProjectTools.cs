@@ -1,4 +1,5 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.DeveloperTools.Spark;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
@@ -7,6 +8,7 @@ using EnovationCloud.Core.Security;
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -14,6 +16,9 @@ namespace Ahsoka.Spark;
 
 public static class SparkProjectTools
 {
+    internal const string deviceKey = "_DeviceKey";
+    internal const string appCert = "_AppCert";
+
     public static bool Login(string url, string login, string password)
     {
         try
@@ -162,34 +167,28 @@ public static class SparkProjectTools
         return SparkAccountClient.SharedSparkClient.GetArtifacts(team.TeamID, "", "SecurityData");
     }
 
-
-    public static void CreateDevelopmentKey(TeamDTO team, string keyName)
+    public static void CreateDevelopmentKey(TeamDTO team, string keyName, KeyTypes artifactType)
     {
-        KeyFileInfo keysFiles = null;
         string artifactName;
 
-        artifactName = GetArtifactName(keyName);
-
+        artifactName = GetArtifactName(keyName, artifactType);
+       
+        // Generate Artifact Request (Upload or Download
+        ArtifactDTOCollection artifactRequest = new()
+        {
+            new ArtifactDTO() { ArtifactGroup = "SecurityData", TeamID = team.TeamID, ArtifactName = artifactName, ArtifactCreator = team.MemberEmailAddress }
+        };
+       
         var keyFile = GetTeamDevelopmentKeys(team);
 
         if (!keyFile.Any(x => x.ArtifactName == artifactName))
         {
             // Create New Key
-            keysFiles = SshUtility.CreateKeyFile(keyName);
+            DeviceKeyInfo key = artifactType == KeyTypes.DeviceKey ? 
+                GetUploadInfo(keyName) :   // Generates an ssh key
+                GetCertInfo(keyName);      // Generates a key pair stored encrypted in cert folder. 
 
-            // Generate Upload Tokens
-            ArtifactDTOCollection artifactToUpload = new()
-            {
-                new ArtifactDTO() { ArtifactGroup = "SecurityData", TeamID = team.TeamID, ArtifactName = artifactName, ArtifactCreator = team.MemberEmailAddress }
-            };
-            var uploadTokens = SparkAccountClient.SharedSparkClient.GetArtifactUploadTokens(team.TeamID, artifactToUpload);
-
-            // Create Key Data
-            DeviceKeyInfo key = new()
-            {
-                PublicKey = File.ReadAllText(keysFiles.PublicKeyPath),
-                PrivateKey = File.ReadAllText(keysFiles.PrivateKeyPath)
-            };
+            var uploadTokens = SparkAccountClient.SharedSparkClient.GetArtifactUploadTokens(team.TeamID, artifactRequest);
 
             // Serialize to text
             string result = JsonUtility.Serialize(key);
@@ -201,35 +200,94 @@ public static class SparkProjectTools
         else
         {
             // Check if Keys are Already Local...if not download them directly into their correct location.
-            keysFiles = SshUtility.GetKeyFileNames(keyName);
-
-            if (!File.Exists(keysFiles.PublicKeyPath) || !File.Exists(keysFiles.PrivateKeyPath))
+            bool isLocal = false;
+            string certFilePath = null;
+            KeyFileInfo deviceKeyInfo = null;
+            if (artifactType == KeyTypes.DeviceKey)
             {
-                ArtifactDTOCollection artifactsToUpload = new()
-                {
-                    new ArtifactDTO() { ArtifactGroup = "SecurityData", TeamID = team.TeamID, ArtifactName = artifactName, ArtifactCreator = team.MemberEmailAddress }
-                };
-                var downloadTokens = SparkAccountClient.SharedSparkClient.GetArtifactDownloadTokens(team.TeamID, artifactsToUpload);
+                deviceKeyInfo = SshUtility.GetKeyFileNames(keyName);
+                isLocal = deviceKeyInfo.IsLocal;
+            }
+            else
+            {
+                certFilePath = GetCertPath(keyName);
+                isLocal = File.Exists(certFilePath);
+            }
+
+
+            if (!isLocal)
+            {
+                var downloadTokens = SparkAccountClient.SharedSparkClient.GetArtifactDownloadTokens(team.TeamID, artifactRequest);
 
                 using var stream = new MemoryStream();
                 SparkAccountClient.SharedSparkClient.DownloadDTO(downloadTokens.First(), stream);
 
-                DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(UTF8Encoding.UTF8.GetString(stream.ToArray()));
+                DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(Encoding.UTF8.GetString(stream.ToArray()));
 
-                if (!Directory.Exists(Path.GetDirectoryName(keysFiles.PublicKeyPath)))
-                    Directory.CreateDirectory(Path.GetDirectoryName(keysFiles.PublicKeyPath));
+                if (artifactType == KeyTypes.DeviceKey)
+                {
+                    if (!Directory.Exists(Path.GetDirectoryName(deviceKeyInfo.PublicKeyPath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(deviceKeyInfo.PublicKeyPath));
 
-                File.WriteAllText(keysFiles.PrivateKeyPath, info.PrivateKey);
-                File.WriteAllText(keysFiles.PublicKeyPath, info.PublicKey);
+                    File.WriteAllText(deviceKeyInfo.PrivateKeyPath, info.PrivateKey);
+                    File.WriteAllText(deviceKeyInfo.PublicKeyPath, info.PublicKey);
+                }
+                else
+                {
+                    if (!Directory.Exists(Path.GetDirectoryName(certFilePath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(certFilePath));
+
+                    StringEncryption.CreateSecureFile(certFilePath, JsonUtility.Serialize(info));
+                }
             }
         }
     }
 
-    public static string GetArtifactName(string keyName)
+    private static DeviceKeyInfo GetCertInfo(string keyName)
+    {
+        // Generate Key Pair
+        var keygen = new SshKeyGenerator(2048);
+        string pathToCerts = GetCertPath(keyName);
+
+        if (!Directory.Exists(Path.GetDirectoryName(pathToCerts)))
+            Directory.CreateDirectory(Path.GetDirectoryName(pathToCerts));
+
+        var keyData = new DeviceKeyInfo()
+        {
+            PublicKey = keygen.ToPublicKey(),
+            PrivateKey = keygen.ToRfcPublicKey()
+        };
+
+        StringEncryption.CreateSecureFile(pathToCerts, JsonUtility.Serialize(keyData));
+
+        return keyData;
+    }
+
+    public static string GetCertPath(string keyName)
+    {
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AhsokaData", "AhsokaCerts", keyName + ".cert");
+    }
+
+    private static DeviceKeyInfo GetUploadInfo(string keyName)
+    {
+        KeyFileInfo keysFiles = SshUtility.CreateKeyFile(keyName);
+
+        // Create Key Data
+        return new DeviceKeyInfo()
+        {
+            PublicKey = File.ReadAllText(keysFiles.PublicKeyPath),
+            PrivateKey = File.ReadAllText(keysFiles.PrivateKeyPath)
+        };
+    }
+
+    public static string GetArtifactName(string keyName, KeyTypes type)
     {
         string deviceKeyName = GetKeyName(keyName);
 
-        return $"{deviceKeyName}_DeviceKey";
+        if (type == KeyTypes.DeviceKey)
+            return $"{deviceKeyName}{deviceKey}";
+        else
+            return $"{deviceKeyName}{appCert}";
     }
 
     public static string GetKeyName(string keyName)
@@ -246,4 +304,8 @@ public static class SparkProjectTools
     }
 }
 
-
+public enum KeyTypes
+{
+    DeviceKey,
+    AppCert
+}

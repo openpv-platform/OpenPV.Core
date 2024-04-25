@@ -186,9 +186,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                         HostName = item.HostName,
                         SystemServicePort = item.SystemServicePort,
                         PrivateKeyFile = item.PrivateKeyFile,
-                        TeamID = item.TeamID,
                         UserName = item.UserName,
-                        TeamKey = item.TeamKey,
                         IsFavorite = item.IsFavorite
 
                     };
@@ -288,20 +286,12 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
         {
             string keyName = string.Empty;
             KeyFileInfo keyFileInfo = null;
-            if (this.EditConfigurationInfo.SelectedTeam != null)
+
+            if (File.Exists(this.EditConfigurationInfo.PrivateKeyFile))
             {
-                if (this.EditConfigurationInfo.SelectedKey == null)
-                    return "Please select a 'Key' to use when securing a 'Team' display.   \r\nIf no keys are availalble, you can create one in the Team Setup Window.";
-
-                // Download the Key
-                if (this.EditConfigurationInfo.SelectedKey == null || !this.EditConfigurationInfo.SelectedKey.IsLocal)
-                    SparkProjectTools.CreateDevelopmentKey(this.EditConfigurationInfo.SelectedTeam.Model, this.EditConfigurationInfo.SelectedKey.DeviceKeyName);
-
-                // Get Key Paths
-                keyFileInfo = SshUtility.GetKeyFileNames(this.EditConfigurationInfo.SelectedKey.DeviceKeyName);
-
-                // Get Key Name
-                keyName = this.EditConfigurationInfo.SelectedKey.DeviceKeyName;
+                // Use File Name if Local Key
+                keyName = Path.GetFileName(EditConfigurationInfo.PrivateKeyFile);
+                keyFileInfo = SshUtility.CreateKeyFile(keyName);
             }
             else
             {
@@ -310,10 +300,10 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
 
                 // Load from Machine or Create and Add Configuration
                 keyFileInfo = SshUtility.CreateKeyFile(this.EditConfigurationInfo.Description);
-            }
 
-            // Update Key File Path and Save Path.
-            this.EditConfigurationInfo.PrivateKeyFile = keyFileInfo.PrivateKeyPath;
+                // Update Key File Path and Save Path.
+                this.EditConfigurationInfo.PrivateKeyFile = keyFileInfo.PrivateKeyPath;
+            }
 
             SaveConnectionInfo();
 
@@ -323,7 +313,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             // Add Key To Display
             var result = SshUtility.AddSshPublicKey(this.EditConfigurationInfo, keyFileInfo);
 
-            return $"Keys Available for Login {this.EditConfigurationInfo.UserName}@{keyFileInfo.Name}";
+            return $"Keys Loaded. The target is now available to connect to using ssh with the address \"{this.EditConfigurationInfo.UserName}@{keyFileInfo.Name}\"";
 
         }).ContinueWith(result =>
         {
@@ -335,7 +325,11 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                     status += "\r\n" + result.Exception?.Message;
             }
             else
+            {
                 status = result.Result;
+
+                ParentViewModel.Dialog.ShowDialog("Lock Display Complete", status, "Ok");
+            }
 
             ParentViewModel.FinishProcess(status, result.Status == TaskStatus.RanToCompletion);
         });
@@ -737,48 +731,7 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
     bool isFavorite;
     string userName;
     string privateKeyFile;
-    Guid teamID;
-    string teamKey;
     PlatformFamily family;
-
-    [JsonIgnore]
-    public KeyArtifactViewModel SelectedKey
-    {
-        get
-        {
-            return SelectedTeam?.Artifacts.DevelopmentKeys.FirstOrDefault(x => x.DeviceKeyName == TeamKey);
-        }
-        set
-        {
-            if (value != null)
-                TeamKey = value?.DeviceKeyName;
-            OnPropertyChanged();
-        }
-    }
-
-    [JsonIgnore]
-    public SparkProjectViewModel SelectedTeam
-    {
-        get
-        {
-            return TeamsList.FirstOrDefault(x => Guid.Parse(x.TeamID) == TeamID);
-        }
-        set
-        {
-            TeamID = value == null ? Guid.Empty : Guid.Parse(value.TeamID);
-            OnPropertyChanged();
-        }
-    }
-
-    [JsonIgnore]
-    public ObservableCollection<SparkProjectViewModel> TeamsList
-    {
-        get
-        {
-            return ParentViewModel.ParentViewModel.TeamsViewModel.Teams;
-        }
-        set { }
-    }
 
     public bool IsFavorite
     {
@@ -786,26 +739,6 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
         set
         {
             isFavorite = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public Guid TeamID
-    {
-        get { return teamID; }
-        set
-        {
-            teamID = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string TeamKey
-    {
-        get { return teamKey; }
-        set
-        {
-            teamKey = value;
             OnPropertyChanged();
         }
     }
@@ -926,12 +859,6 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
     internal string GetReleaseName()
     {
         return family.ToString();
-    }
-
-    internal void RemoveTeam()
-    {
-        TeamID = Guid.Empty;
-        OnPropertyChanged(nameof(SelectedTeam));
     }
 
     public void FavoriteChanged()

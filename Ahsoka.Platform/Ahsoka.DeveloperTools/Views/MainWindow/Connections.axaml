@@ -207,33 +207,9 @@
 								<TextBlock Text="Login Name:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
 								<TextBox HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.UserName}" Grid.Row="4" Grid.Column="1" Margin="5" Width="200"/>
 
+								<TextBlock Text="Key File:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
 
-								<TextBlock Text="Use Team Keys:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-
-								<StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1"  Width="200"  Margin="5" HorizontalAlignment="Left" >
-									<ComboBox  PlaceholderText="No Team Selected" SelectedItem="{Binding EditConfigurationInfo.SelectedTeam}" ItemsSource="{Binding EditConfigurationInfo.TeamsList}" Grid.Row="4" Grid.Column="1" Width="250" HorizontalContentAlignment="Left" />
-									<Button Margin="6,4,4,4" Grid.Column="2" Grid.Row="0" Width="24" Height="24"
-											HorizontalAlignment="Right"
-											VerticalAlignment="Center" ToolTip.Tip="Clear Team"
-											Command="{Binding EditConfigurationInfo.RemoveTeam}"
-											Background="Transparent">
-										<material:MaterialIcon Padding="5"  Background="Transparent"
-															   Foreground="SteelBlue" Kind="Close"/>
-									</Button>
-								</StackPanel>
-
-								<TextBlock IsVisible="{Binding EditConfigurationInfo.SelectedTeam, Converter={x:Static ObjectConverters.IsNotNull}}"
-									   Text="Selected Key:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-
-								<ComboBox MinWidth="200" Height="32" Grid.Row="6" Grid.Column="1"
-										 IsVisible="{Binding EditConfigurationInfo.SelectedTeam, Converter={x:Static ObjectConverters.IsNotNull}}"
-									     SelectedItem="{Binding  EditConfigurationInfo.SelectedKey}" ItemsSource="{Binding EditConfigurationInfo.SelectedTeam.DevelopmentKeys}"
-										 HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5"/>
-
-								<TextBlock IsVisible="{Binding EditConfigurationInfo.SelectedTeam, Converter={x:Static ObjectConverters.IsNull}}"
-										   Text="Key File:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-
-								<StackPanel  IsVisible="{Binding EditConfigurationInfo.SelectedTeam, Converter={x:Static ObjectConverters.IsNull}}" Orientation="Horizontal" Grid.Row="6" Grid.Column="1"  HorizontalAlignment="Left" >
+								<StackPanel  Orientation="Horizontal" Grid.Row="5" Grid.Column="1"  HorizontalAlignment="Left" >
 									<TextBox IsReadOnly="True" Background="WhiteSmoke" HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.PrivateKeyFile}" Grid.Row="6" Grid.Column="1" Margin="5" Width="300"/>
 									<Button Margin="0,4,4,4" Width="24" Height="24"
 												HorizontalAlignment="Right"
@@ -244,6 +220,10 @@
 															   Foreground="SteelBlue" Kind="Edit"/>
 									</Button>
 								</StackPanel>
+
+								<TextBlock FontSize="12" Text="* To create a key, use the Project Editor and select the generated file from the ~/.ssh/Ahsoka folder."
+								   Grid.Row="7" Foreground="Gray" Grid.Column="1" VerticalAlignment="Center" Margin="5" TextWrapping="Wrap"/>
+
 							</Grid>
 						</Border>
 						<Border DockPanel.Dock="Bottom" Margin="20" Padding="10" BorderBrush="Gainsboro" BorderThickness="1" Background="WhiteSmoke">

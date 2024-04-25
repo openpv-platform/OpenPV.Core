@@ -804,4 +804,9 @@ public class KeyFileInfo
     public string Name { get; init; }
     public string PrivateKeyPath { get; init; }
     public string PublicKeyPath { get => $"{PrivateKeyPath}.pub"; }
+
+    public bool IsLocal
+    {
+        get { return File.Exists(PrivateKeyPath) && File.Exists(PublicKeyPath); }
+    }
 }

@@ -2,6 +2,8 @@
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System.IO;
+using static Ahsoka.Spark.SparkProjectTools;
+using Ahsoka.Spark;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -21,9 +23,14 @@ internal class KeyArtifactViewModel : ChildViewModelBase<SparkProjectViewModel>
         get { return this.Model.ArtifactName; }
     }
 
+    public KeyTypes ArtifactType
+    {
+        get { return ArtifactName.Contains(deviceKey) ? KeyTypes.DeviceKey : KeyTypes.AppCert; }
+    }
+
     public string DeviceKeyName
     {
-        get { return ArtifactName.Replace("_DeviceKey", ""); }
+        get { return ArtifactName.Replace(deviceKey, "").Replace(appCert, ""); }
     }
 
     public string ArtifactCreator
@@ -35,8 +42,16 @@ internal class KeyArtifactViewModel : ChildViewModelBase<SparkProjectViewModel>
     {
         get
         {
-            var path = SshUtility.GetKeyFileNames(model.ArtifactName.Replace("_DeviceKey", ""));
-            return File.Exists(path.PrivateKeyPath) && File.Exists(path.PublicKeyPath);
+            if (ArtifactType ==  KeyTypes.DeviceKey)
+            {
+                var path = SshUtility.GetKeyFileNames(DeviceKeyName);
+                return File.Exists(path.PrivateKeyPath) && File.Exists(path.PublicKeyPath);
+            }
+            else
+            {
+                var path = GetCertPath(DeviceKeyName);
+                return File.Exists(path);
+            }
         }
     }
 

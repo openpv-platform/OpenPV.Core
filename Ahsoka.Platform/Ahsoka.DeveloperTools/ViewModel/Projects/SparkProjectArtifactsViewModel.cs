@@ -3,9 +3,12 @@ using Ahsoka.Spark;
 using Ahsoka.Utility;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using static Ahsoka.Spark.SparkProjectTools;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -83,6 +86,15 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
             {
                 SparkProjectTools.RemoveDevelopmentKey(this.ParentViewModel.Model, SelectedDevelopmentKey.Model);
 
+                // Delete Local if App Cert
+                if (SelectedDevelopmentKey.ArtifactType == KeyTypes.AppCert)
+                {
+                    string path = SparkProjectTools.GetCertPath(SelectedDevelopmentKey.DeviceKeyName);
+                    if (File.Exists(path))
+                        File.Delete(path);
+                }
+
+
             }).ContinueWith(result =>
             {
                 Dispatcher.UIThread.InvokeAsync(() =>
@@ -113,7 +125,7 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
 
             Task.Run(() =>
             {
-                SparkProjectTools.CreateDevelopmentKey(ParentViewModel.Model, SelectedDevelopmentKey.ArtifactName.Replace("_DeviceKey", ""));
+                SparkProjectTools.CreateDevelopmentKey(ParentViewModel.Model, SelectedDevelopmentKey.DeviceKeyName, SelectedDevelopmentKey.ArtifactType);
 
             }).ContinueWith(result =>
             {
@@ -142,14 +154,33 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
         {
             Hint = "Key will be created and shared with the team as well as added to the .ssh folder.",
             Label = "Key Name:",
-            Title = "Create SSH Key",
-            ItemAccepted = CreateKeyAccepted,
-            ItemCancelled = Cancel
+            Title = "Create Device SSH Key",
+            ItemAccepted = CreateAccepted,
+            ItemCancelled = Cancel,
+            Tag = KeyTypes.DeviceKey
         };
         this.addItemView = new NewItemView() { DataContext = model };
 
         this.FindParent<MainViewModel>().Popup.ShowPopup(addItemView);
     }
+
+
+    internal void CreateAppCert()
+    {
+        var model = new NewItemViewModel()
+        {
+            Hint = "Certificate will be created and shared with the team for use when compiling applications.",
+            Label = "Key Name:",
+            Title = "Create Application Certificate",
+            ItemAccepted = CreateAccepted,
+            ItemCancelled = Cancel,
+            Tag = KeyTypes.AppCert
+        };
+        this.addItemView = new NewItemView() { DataContext = model };
+
+        this.FindParent<MainViewModel>().Popup.ShowPopup(addItemView);
+    }
+
 
     internal void Cancel()
     {
@@ -159,12 +190,13 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
         addItemView = null;
     }
 
-    internal void CreateKeyAccepted()
+    internal void CreateAccepted()
     {
         string keyName = ((NewItemViewModel)addItemView.DataContext).ItemText;
+        KeyTypes type = (KeyTypes)((NewItemViewModel)addItemView.DataContext).Tag;
 
         // Need to move this
-        string artifactName = SparkProjectTools.GetArtifactName(keyName);
+        string artifactName = SparkProjectTools.GetArtifactName(keyName, type);
 
         if (DevelopmentKeys.Any(x => x.ArtifactName == artifactName))
         {
@@ -177,7 +209,7 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
 
         Task.Run(() =>
         {
-            SparkProjectTools.CreateDevelopmentKey(ParentViewModel.Model, keyName);
+            SparkProjectTools.CreateDevelopmentKey(ParentViewModel.Model, keyName, type);
 
         }).ContinueWith(result =>
         {
@@ -200,4 +232,5 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
             teamVM.IsWorking = false;
         });
     }
+
 }

@@ -1,4 +1,6 @@
-﻿using Ahsoka.System.Hardware;
+﻿using Ahsoka.Services.System;
+using Ahsoka.Spark;
+using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Renci.SshNet;
 using Renci.SshNet.Common;
@@ -211,6 +213,7 @@ internal class SshUtility
     {
         string sshKeyFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh\\Ahsoka");
         string sshFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
+
         return new KeyFileInfo()
         {
             PrivateKeyPath = Path.Combine(sshKeyFolder, keyName),

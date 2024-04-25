@@ -9,6 +9,7 @@ public class NewItemViewModel : ViewModelBase
     public string Label { get; set; }
     public string ItemText { get; set; }
     public string Hint { get; set; }
+    public object Tag { get; set; }
 
     public Action ItemAccepted { get; set; }
     public Action ItemCancelled { get; set; }

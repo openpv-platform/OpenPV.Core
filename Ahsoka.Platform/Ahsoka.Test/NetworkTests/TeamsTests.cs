@@ -225,7 +225,7 @@ public class SparkTeamsTests : LinearTestBase
         string keyName = "TestFile";
         var keysFiles = SshUtility.CreateKeyFile(keyName);
 
-        SparkProjectTools.CreateDevelopmentKey(team, keyName);
+        SparkProjectTools.CreateDevelopmentKey(team, keyName, KeyTypes.DeviceKey);
         var artifacts = SparkProjectTools.GetTeamDevelopmentKeys(team);
         Assert.IsTrue(artifacts.First().ArtifactName.StartsWith(keyName)); // Should be One Artifact now.
 
@@ -236,7 +236,7 @@ public class SparkTeamsTests : LinearTestBase
         if (File.Exists(keysFiles.PrivateKeyPath))
             File.Delete(keysFiles.PrivateKeyPath);
 
-        SparkProjectTools.CreateDevelopmentKey(team, keyName);
+        SparkProjectTools.CreateDevelopmentKey(team, keyName, KeyTypes.DeviceKey);
 
         // Delete the DevKeys Online and Local
         SparkProjectTools.RemoveDevelopmentKey(team, artifacts.First());

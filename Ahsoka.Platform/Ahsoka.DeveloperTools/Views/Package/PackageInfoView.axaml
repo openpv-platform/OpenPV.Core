@@ -64,43 +64,7 @@
 				</StackPanel>
 			</Button>
 
-			<TextBlock FontSize="18"
-				   VerticalAlignment="Top"
-				   HorizontalAlignment="Center"
-				   Margin="12,24,12,12"
-				   Foreground="DimGray"
-				   Text="Provisioning"
-				   Grid.Column="1"/>
-
-			<Button Margin="3,3,5,3"
-							HorizontalAlignment="Stretch"
-							Height="38"
-							VerticalContentAlignment="Center"
-							Command="{Binding SelectedPackage.SparkViewModel.ProvisionDisplay}"
-							ToolTip.Tip="Provision Display for OTA and Other Software Modules.">
-				<Button.IsEnabled>
-					<MultiBinding Converter="{x:Static BoolConverters.And}">
-						<Binding Path="ActiveConnection.IsConnected"/>
-						<Binding Path="!IsOffline"/>
-					</MultiBinding>
-				</Button.IsEnabled>
-				<StackPanel Orientation="Horizontal">
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="License"></material:MaterialIcon>
-					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="License Target"/>
-				</StackPanel>
-			</Button>
-
-			<Button Margin="3,3,5,3"
-					HorizontalAlignment="Stretch"
-					Height="38"
-					VerticalContentAlignment="Center"
-					IsEnabled="{Binding !IsOffline}"
-					Command="{Binding SelectedPackage.SparkViewModel.UploadToSpark}">
-				<StackPanel Orientation="Horizontal">
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Upload"></material:MaterialIcon>
-					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Upload To Spark"/>
-				</StackPanel>
-			</Button>
+			
 
 			<TextBlock FontSize="18"
 				   VerticalAlignment="Top"
@@ -173,31 +137,7 @@
 						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeInstallerUI}" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Width="325"/>
 					</Grid>
 				</Border>
-				<Border Margin="20,0,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,1,0,0">
-					<Grid Margin="5" ColumnDefinitions="150,Auto" RowDefinitions="*,auto">
-						<TextBlock Text="Provisioning Project:"  Grid.Column="0"/>
-						<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
-							<ComboBox  SelectedItem="{Binding SparkViewModel.SelectedTeam}" ItemsSource="{Binding SparkViewModel.OTATeamsList}" Grid.Row="4" Grid.Column="1" Width="250"  />
-							<TextBlock Text="(Used for Licensing and OTA)" Grid.Row="1" Grid.Column="0"/>
-						</StackPanel>
-						<TextBlock IsVisible="{Binding SparkViewModel.HasModules}" Text="Licensed Modules:" VerticalAlignment="Top" Margin="5,8" Grid.Column="0" Grid.Row="1"/>
-						<ItemsRepeater IsVisible="{Binding SparkViewModel.HasModules}" Grid.Row="1" Grid.Column="1" Width="450" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
-									   ItemsSource="{Binding SparkViewModel.AvailableModules}">
-							<ItemsRepeater.Layout>
-								<StackLayout Spacing="0" Orientation="Vertical"/>
-							</ItemsRepeater.Layout>
-							<ItemsRepeater.ItemTemplate>
-								<DataTemplate>
-									<Grid ColumnDefinitions="*">
-										<CheckBox Background="White" Margin="0,3" 
-												  VerticalAlignment="Top" IsChecked="{Binding IsSelected}" 
-												  Content="{Binding ModuleName, StringFormat='Require License for {0}' FallbackValue='Require License For None'}"/>
-									</Grid>
-								</DataTemplate>
-							</ItemsRepeater.ItemTemplate>
-						</ItemsRepeater>
-					</Grid>
-				</Border>
+				
 				<Border IsVisible="{Binding IsOpenView}" Margin="20,0,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,1,0,1">
 					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
 						<TextBlock Text="System Orientation:" Grid.Row="0" Grid.Column="0"/>

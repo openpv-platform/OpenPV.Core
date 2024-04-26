@@ -13,7 +13,7 @@ enum PlatformFamily
     OPEN_VIEW_LINUX = 4;
     OPEN_VIEW_LINUX_PRO = 5;
     UBUNTU_64 = 8;
-    RASPBERRY_PI_OS_32 = 16 [(.protobuf_net.enumvalopt).name = "RaspberryPiOS32"];
+    //RESERVED = 16;
     POWERVISION = 32 [(.protobuf_net.enumvalopt).name = "PowerVision"];
 }
 

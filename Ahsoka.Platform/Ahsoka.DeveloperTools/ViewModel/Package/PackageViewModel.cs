@@ -31,7 +31,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     string originalJsonText = string.Empty;
     CancellationTokenSource source;
     private DotNetViewModel dotNetModel;
-    private PowerVisionViewModel pvModel;
     private StartupOptionsViewModel serviceStartModel;
     private ServiceViewModel dataServiceModel;
     ExtensionsViewModel extensionsViewModel;
@@ -318,12 +317,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get { return ApplicationType == ApplicationType.Dotnet ? dotNetModel : null; }
         set { dotNetModel = value; OnPropertyChanged(); }
-    }
-
-    public PowerVisionViewModel PowerVisionViewModel
-    {
-        get { return ApplicationType == ApplicationType.PowerVision ? pvModel : null; }
-        set { pvModel = value; OnPropertyChanged(); }
     }
 
     public StartupOptionsViewModel StartupViewModel

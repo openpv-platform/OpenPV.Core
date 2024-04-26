@@ -44,17 +44,7 @@
 								<CustomerTools:PluginDownloadView/>
 							</DockPanel>
 						</DockPanel>
-						<StackPanel Margin="0,0,255,0" Orientation="Horizontal" HorizontalAlignment="Right">
-							<TextBlock FontSize="15"
-								   VerticalAlignment="Bottom"
-								   HorizontalAlignment="Right"
-								   Margin="0,18,20,19"
-								   Foreground="DimGray" Text="Target Platform:"/>
-							<ComboBox Margin="0,15,0,12" HorizontalAlignment="Right"
-									VerticalAlignment="Bottom"
-									SelectedItem="{Binding SelectedPlatformSupport}"
-									ItemsSource="{Binding PlatformInfo}" Width="250" />
-						</StackPanel>
+						
 					</Grid>
 				</TabItem>
 			</TabControl>

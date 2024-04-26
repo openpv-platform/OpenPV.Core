@@ -174,7 +174,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
             context.Log?.Report(new InstallLogInfo()
             {
-                LogMessage = $"Inflating CommandLine to {workingDirectory}"
+                LogMessage = $"Inflating CommandLine to {workingDirectory}", LogMessageType = LogMessageType.Information,
             });
 
             // Extract Zip to Output Area

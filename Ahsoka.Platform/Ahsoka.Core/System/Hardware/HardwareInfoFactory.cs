@@ -48,6 +48,12 @@ public partial class HardwareInfo
         openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.PowerVisionDisplayHardwareConfiguration);
         hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
 
+        openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.OpenViewLinuxProHardwareConfiguration);
+        hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
+     
+        openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.Arm64HardwareConfiguration);
+        hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
+
     }
 
     /// <summary>

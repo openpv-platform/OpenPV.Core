@@ -96,6 +96,9 @@
 	  <Compile Update="Views\Package\DeveloperView.axaml.cs">
 	    <DependentUpon>DeveloperView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Package\LicensingView.axaml.cs">
+	    <DependentUpon>LicensingView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Package\PackageInfoView.axaml.cs">
 	    <DependentUpon>PackageInfoView.axaml</DependentUpon>
 	  </Compile>
@@ -107,9 +110,6 @@
 	  </Compile>
 	  <Compile Update="Views\Package\StartupOptionsView.axaml.cs">
 	    <DependentUpon>StartupOptionsView.axaml</DependentUpon>
-	  </Compile>
-	  <Compile Update="Views\Package\PowerVisionView.axaml.cs">
-	    <DependentUpon>PowerVisionView.axaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Package\OpenPackageView.axaml.cs">
 	    <DependentUpon>OpenPackageView.axaml</DependentUpon>

@@ -26,6 +26,7 @@ public class PackageInformation : PackageHeader
     public string PackageApplicationFolder { get; set; }
     public string PackageOutputDirectory { get; set; }
     public string StartupLogoPath { get; set; }
+    public string ApplicacationCertFile { get; set; }
 
     public bool IncludeInstallerUI { get; set; } = false;
 

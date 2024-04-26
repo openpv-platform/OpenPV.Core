@@ -252,6 +252,8 @@ public static class SparkProjectTools
         if (!Directory.Exists(Path.GetDirectoryName(pathToCerts)))
             Directory.CreateDirectory(Path.GetDirectoryName(pathToCerts));
 
+        // TODO: Should I use a real X509 here?
+
         var keyData = new DeviceKeyInfo()
         {
             PublicKey = keygen.ToPublicKey(),

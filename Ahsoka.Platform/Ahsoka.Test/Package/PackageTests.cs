@@ -117,7 +117,6 @@ public class PackagingTests : LinearTestBase
 
         client.StartServiceAndInstall(newTempFile, "PassCode", runInProc);
 
-
         File.Delete(newTempFile);
 
         client.CurrentRuntime.RequestShutdown();

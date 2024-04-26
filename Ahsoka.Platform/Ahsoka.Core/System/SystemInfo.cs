@@ -192,8 +192,6 @@ public static class SystemInfo
         {
             if (Environment.Is64BitProcess)
                 return PlatformFamily.Ubuntu64;
-            else if (RuntimeInformation.OSDescription.ToLower().Contains("raspbian"))
-                return PlatformFamily.RaspberryPiOS32;
             else
                 return PlatformFamily.OpenViewLinux;
         }

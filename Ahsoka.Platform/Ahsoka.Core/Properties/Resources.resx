@@ -230,4 +230,10 @@
   <data name="CPPClientCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="Arm64HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Arm64HardwareConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="OpenViewLinuxProHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\OpenViewLinuxProHardwareConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
 </root>

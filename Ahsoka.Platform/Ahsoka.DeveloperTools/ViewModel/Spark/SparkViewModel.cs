@@ -46,10 +46,31 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
         {
             ParentViewModel.SelectedPackage.PackageInfo.ApplicationId = value == null ? Guid.Empty : Guid.Parse(value.TeamID);
             OnPropertyChanged();
-
             LoadModuleList();
         }
     }
+
+
+
+    public KeyArtifactViewModel SelectedCert
+    {
+        get
+        {
+            return AvailableCerts.FirstOrDefault(x=>x.ArtifactName == ParentViewModel.SelectedPackage.PackageInfo.ApplicacationCertFile);
+        }
+        set
+        {
+            ParentViewModel.SelectedPackage.PackageInfo.ApplicacationCertFile = value == null ? String.Empty : value.ArtifactName;
+            OnPropertyChanged();
+        }
+    }
+
+    public ObservableCollection<KeyArtifactViewModel> AvailableCerts
+    {
+        get;
+        set;
+    } = new ObservableCollection<KeyArtifactViewModel>();
+
 
     public ObservableCollection<PackageModuleViewModel> AvailableModules
     {
@@ -106,6 +127,18 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
             foreach (var item in SelectedTeam.Modules.ModuleList)
             {
                 this.AvailableModules.Add(new PackageModuleViewModel(this, item));
+            }
+
+            OnPropertyChanged(nameof(HasModules));
+        }
+
+        AvailableCerts.Clear();
+        if (SelectedTeam != null)
+        {
+            foreach (var item in SelectedTeam.Artifacts.DevelopmentKeys)
+            {
+                if (item.ArtifactType == KeyTypes.AppCert)
+                    this.AvailableCerts.Add(item);
             }
 
             OnPropertyChanged(nameof(HasModules));

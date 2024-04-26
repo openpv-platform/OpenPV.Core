@@ -117,40 +117,18 @@ namespace Ahsoka.DeveloperTools.Properties {
         ///   Looks up a localized string similar to {
         ///  &quot;Platform&quot;: &quot;OpenViewLinux Select Series&quot;,
         ///  &quot;PlatformDescription&quot;: &quot;Support for the OpenView Select Line of Products including S50 and S70&quot;,
+        ///  &quot;TargetPlatform&quot;: &quot;OpenViewLinux&quot;,
         ///  &quot;FirmwareSparkChannelName&quot;: &quot;OpenPV Distribution&quot;,
+        ///  &quot;DistributionUpgradeSparkChannelName&quot;: &quot;OpenPV Distribution Upgrade&quot;,
         ///  &quot;DemoSparkChannelName&quot;: &quot;OpenPV Demos&quot;,
         ///  &quot;ExtensionSparkChannelName&quot;: &quot;OpenPV Extensions&quot;,
         ///  &quot;PlatformSupportSparkChannelName&quot;: &quot;OpenPV Dependencies&quot;,
-        ///  &quot;TargetPlatform&quot;: &quot;OpenViewLinux&quot;,
         ///  &quot;FirmwareResources&quot;: {
-        ///    &quot;Name&quot;: &quot;OpenView Firmware Resources&quot;,
-        ///    &quot;Description&quot;: &quot;Hardware Definitions as  [rest of string was truncated]&quot;;.
+        ///    &quot;Name&quot;: &quot;Op [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OpenViewPlatformSupport {
             get {
                 return ResourceManager.GetString("OpenViewPlatformSupport", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;Platform&quot;: &quot;OpenViewLinux Pro Series&quot;,
-        ///  &quot;TargetPlatform&quot;: &quot;OpenViewLinuxPro&quot;,
-        ///  &quot;PlatformDescription&quot;: &quot;Support for the OpenView Pro Line of Products&quot;,
-        ///  &quot;FirmwareSparkChannelName&quot;: &quot;&quot;,
-        ///  &quot;FirmwareSparkVersionFilter&quot;: &quot;&quot;,
-        ///  &quot;DemoSparkChannelName&quot;: &quot;OpenPV Demos&quot;,
-        ///  &quot;PlatformSupportSparkChannelName&quot;: &quot;OpenPV Dependencies&quot;,
-        ///  &quot;Tools&quot;: [
-        ///    {
-        ///      &quot;Name&quot;: &quot;QT Creator 5.x&quot;,
-        ///      &quot;Version&quot;: &quot;5.0&quot;,
-        ///      &quot;Description&quot;: &quot;Qt Creator IDE for C++ development in Linux&quot;,
-        ///      &quot;BaseClass&quot;: &quot;Ahsoka [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string OpenViewProPlatformSupport {
-            get {
-                return ResourceManager.GetString("OpenViewProPlatformSupport", resourceCulture);
             }
         }
     }

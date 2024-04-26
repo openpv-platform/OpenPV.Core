@@ -5,6 +5,7 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	</PropertyGroup>
 	
 	<ItemGroup>

@@ -159,7 +159,6 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         this.parentViewModel = customerToolsViewModel;
 
         platformInfo.Add(JsonUtility.Deserialize<PlatformSupportPackage>(Properties.Resources.OpenViewPlatformSupport));
-        platformInfo.Add(JsonUtility.Deserialize<PlatformSupportPackage>(Properties.Resources.OpenViewProPlatformSupport));
 
         ProfileDefinitions.Add(new ProfileDefinition()
         {

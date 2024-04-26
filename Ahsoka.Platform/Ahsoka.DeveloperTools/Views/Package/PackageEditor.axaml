@@ -49,6 +49,14 @@
 				</TabItem.Header>
 				<CustomerTools:DeveloperView/>
 			</TabItem>
+			<TabItem>
+				<TabItem.Header>
+					<TextBlock
+						FontSize="18"
+						Text="Licensing"/>
+				</TabItem.Header>
+				<CustomerTools:LicensingView/>
+			</TabItem>
 			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
 				<TabItem.Header>
 					<TextBlock

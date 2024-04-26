@@ -123,6 +123,7 @@ internal partial class SparkProjectViewModel : ChildViewModelBase<SparkProjectEd
     internal void Load()
     {
         Modules.GetTeamModules();
+        Artifacts.LoadKeys();
     }
 
     internal void FavoriteChanged()

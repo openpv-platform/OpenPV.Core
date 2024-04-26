@@ -1,12 +1,12 @@
 ﻿{
   "Platform": "OpenViewLinux Select Series",
   "PlatformDescription": "Support for the OpenView Select Line of Products including S50 and S70",
+  "TargetPlatform": "OpenViewLinux",
   "FirmwareSparkChannelName": "OpenPV Distribution",
   "DistributionUpgradeSparkChannelName": "OpenPV Distribution Upgrade",
   "DemoSparkChannelName": "OpenPV Demos",
   "ExtensionSparkChannelName": "OpenPV Extensions",
   "PlatformSupportSparkChannelName": "OpenPV Dependencies",
-  "TargetPlatform": "OpenViewLinux",
   "FirmwareResources": {
     "Name": "OpenView Firmware Resources",
     "Description": "Hardware Definitions as well as support files for Touch, WiFi and Bluetooth Firmware",

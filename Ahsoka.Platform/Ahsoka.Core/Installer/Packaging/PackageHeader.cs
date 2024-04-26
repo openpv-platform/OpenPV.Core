@@ -146,7 +146,7 @@ public static class PlatformExtensions
         {
             PlatformFamily.Windows64 => "win",
             PlatformFamily.MacosArm64 => "macOS",
-            PlatformFamily.OpenViewLinux or PlatformFamily.RaspberryPiOS32 => "linux",
+            PlatformFamily.OpenViewLinux => "linux",
             _ => "any",
         };
     }

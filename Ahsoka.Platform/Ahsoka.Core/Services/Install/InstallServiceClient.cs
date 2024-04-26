@@ -190,7 +190,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
         installerUI?.Log(new InstallLogInfo()
         {
-            LogMessage = $"Extracting Installer to {tempInstallerPackageFile}"
+            LogMessage = $"Extracting Installer to {tempInstallerPackageFile}", LogMessageType = LogMessageType.Information
         });
 
         using (FileStream installer = new(tempInstallerPackageFile, FileMode.Create))
@@ -210,7 +210,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
         installerUI?.Log(new InstallLogInfo()
         {
-            LogMessage = $"Inflating Installer to {installerRunPath}"
+            LogMessage = $"Inflating Installer to {installerRunPath}", LogMessageType= LogMessageType.Information
         });
 
         ZipFile.ExtractToDirectory(tempInstallerPackageFile, installerRunPath);
@@ -226,7 +226,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
         installerUI?.Log(new InstallLogInfo()
         {
-            LogMessage = $"Path: {pathToInstallerFile} Args:{installerArguements}"
+            LogMessage = $"Path: {pathToInstallerFile} Args:{installerArguements}", LogMessageType = LogMessageType.Information
         });
     }
     #endregion

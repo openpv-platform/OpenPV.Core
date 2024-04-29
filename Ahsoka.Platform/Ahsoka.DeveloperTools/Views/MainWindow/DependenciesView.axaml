@@ -5,7 +5,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Ahsoka.DeveloperTools.Views.DependenciesView" 
 			 Background="#00888888"
-			 IsVisible="{Binding !HasDependencies}" >
+			 IsVisible="{Binding !HasDependencies, FallbackValue=false}" >
 	<Border BorderThickness="0,0,0,0" Margin="0,0,0,0" >
 				<Border VerticalAlignment="Center" BoxShadow="5 5 10 2 DarkGray" Width="550" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="White" BorderThickness="1">
 					<Grid>

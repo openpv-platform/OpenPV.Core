@@ -103,7 +103,7 @@ public class RemoteLinuxTests : LinearTestBase
 
             SshUtility.AddSshPublicKey(targetInfo, keyFileInfo);
             SshUtility.AddToSshConfiguration(keyFileInfo, keyName, targetInfo.HostName, targetInfo.UserName);
-            SshUtility.UnlockDevice(targetInfo);
+            SshUtility.UnlockDevice(targetInfo, string.Empty);
 
             result = tools.Reboot(targetInfo);
             Console.WriteLine(result);

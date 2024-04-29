@@ -62,11 +62,14 @@ public class PackageContents : PackageHeader
         }
 
         // Read Signature
-        byte[] decryptedSignature = RSAEncryption.DecryptWithPEMKey(information.SignatureData, privateKey);
-
-        information.HeaderCRC = BitConverter.ToUInt32(decryptedSignature, 0);
-        information.IsSignatureValid = information.HeaderCRC == Crc32.CalculateCrc32(headerData);
-
+        try
+        {
+            byte[] decryptedSignature = RSAEncryption.DecryptWithPEMKey(information.SignatureData, privateKey);
+            information.HeaderCRC = BitConverter.ToUInt32(decryptedSignature, 0);
+            information.IsSignatureValid = information.HeaderCRC == Crc32.CalculateCrc32(headerData);
+        }
+        catch (Exception) { Console.WriteLine("Signature could not be validated"); }
+      
         return information;
     }
 

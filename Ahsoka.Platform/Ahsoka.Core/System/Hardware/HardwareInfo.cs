@@ -170,7 +170,7 @@ public interface IConnectionInfo
     /// <summary>
     /// Path to the Private Key to be used when communiating with the target over SSH, sFTP or SCP.
     /// </summary>
-    string PrivateKeyFile { get; set; }
+    string PrivateKeyFile { get; }
 
     /// <summary>
     ///  Optional Port for Connections over SSH 

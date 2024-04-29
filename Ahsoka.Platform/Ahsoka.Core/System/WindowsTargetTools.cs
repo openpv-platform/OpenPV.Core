@@ -78,10 +78,6 @@ internal class WindowsTargetTools : RemoteTargetTool
         filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(privateKey)));
         filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(publicKey)));
 
-        // Ad PowerVision Public Key to Display...this is the untrusted key used for integrity checking.
-        var publicPackagePEMKey = UTF8Encoding.UTF8.GetBytes(Properties.Resources.UntrustedPublicKeyPEM);
-        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwarePackageValidationKeyPEMFile), new MemoryStream(publicPackagePEMKey));
-
         // Create Manifest FileInfo
         FactoryManifest manifest = new()
         {

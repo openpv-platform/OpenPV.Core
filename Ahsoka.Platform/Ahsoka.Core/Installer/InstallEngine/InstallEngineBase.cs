@@ -47,6 +47,14 @@ public class InstallEngineBase
 
     public static InstallEngineBase GetInstallEngine(Stream fileStream, string privateKey = null)
     {
+        string appKey = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
+        if (File.Exists(appKey))
+        {
+            DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(File.ReadAllText(appKey));
+            privateKey = info.PrivateKey;
+            Console.WriteLine($"Using Private Device Key ({Path.GetFileName(appKey)}) to Read Package");
+        }
+
         privateKey ??= PrivateSigningkey;
 
         PackageContents packageContents = PackageContents.ReadPackageContents(fileStream, privateKey);
@@ -56,11 +64,11 @@ public class InstallEngineBase
     #endregion
 
     #region Methods
-    public static void PrintPackageManifest(string packageFile, IProgress<string> progress)
+    public static void PrintPackageManifest(string packageFile, string privateKey = null, IProgress<string> progress = null)
     {
         using FileStream stream = new(packageFile, FileMode.Open);
 
-        InstallEngineBase installEngine = InstallEngineBase.GetInstallEngine(stream);
+        InstallEngineBase installEngine = InstallEngineBase.GetInstallEngine(stream, privateKey);
 
         PackageContents contents = installEngine.PackageContents;
 
@@ -105,7 +113,7 @@ public class InstallEngineBase
         LoadComponents(packageInfo, components);
     }
 
-    public string CreateInstallPackage(string xmlPublicKey = null,
+    public string CreateInstallPackage(string pemKey = null,
         IProgress<PackageProgressInfo> progress = null)
     {
         RunGeneratorCommands(progress);
@@ -140,7 +148,7 @@ public class InstallEngineBase
         }
 
         // Select Key
-        xmlPublicKey ??= PublicSigningkey;
+        pemKey ??= PublicSigningkey;
 
         // Create Components to include in the package
         Dictionary<Guid, PackageComponent> data = new();
@@ -161,7 +169,7 @@ public class InstallEngineBase
             // Open the File
             using FileStream fs = new(outputPath, FileMode.Create);
             // Write File
-            WriteOutputPackage(PackageInformation, fs, data.Values.ToList(), xmlPublicKey);
+            WriteOutputPackage(PackageInformation, fs, data.Values.ToList(), pemKey);
         }
         catch { throw; }
         finally

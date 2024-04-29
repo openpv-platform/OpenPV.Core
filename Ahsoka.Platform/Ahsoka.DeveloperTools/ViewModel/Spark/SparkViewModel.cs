@@ -12,6 +12,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using EnovationCloud.Core.Client;
+using Ahsoka.Installer;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -56,11 +57,13 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
     {
         get
         {
-            return AvailableCerts.FirstOrDefault(x=>x.ArtifactName == ParentViewModel.SelectedPackage.PackageInfo.ApplicacationCertFile);
+            return AvailableCerts.FirstOrDefault(x=>x.DeviceKeyName == ParentViewModel.SelectedPackage.PackageInfo.PackageSigningCertFile);
         }
         set
         {
-            ParentViewModel.SelectedPackage.PackageInfo.ApplicacationCertFile = value == null ? String.Empty : value.ArtifactName;
+            string newValue = value == null ? String.Empty : value.DeviceKeyName;
+            if (newValue != ParentViewModel.SelectedPackage.PackageInfo.PackageSigningCertFile)
+                 ParentViewModel.SelectedPackage.PackageInfo.PackageSigningCertFile = newValue;
             OnPropertyChanged();
         }
     }
@@ -135,14 +138,17 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
         AvailableCerts.Clear();
         if (SelectedTeam != null)
         {
+            AvailableCerts.Add(new KeyArtifactViewModel(null, new ArtifactDTO() { ArtifactName = "No Value" }));
             foreach (var item in SelectedTeam.Artifacts.DevelopmentKeys)
             {
-                if (item.ArtifactType == KeyTypes.AppCert)
+                if (item.ArtifactType == KeyTypes.PackageSigningKey)
                     this.AvailableCerts.Add(item);
             }
 
             OnPropertyChanged(nameof(HasModules));
+            SelectedCert = AvailableCerts.FirstOrDefault(x => x.DeviceKeyName == this.ParentViewModel.SelectedPackage.PackageInfo.PackageSigningCertFile);
         }
+
     }
 
     internal void UpdateApplicationID()

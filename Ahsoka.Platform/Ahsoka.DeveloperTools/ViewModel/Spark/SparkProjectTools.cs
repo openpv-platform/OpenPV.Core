@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.DeveloperTools.Spark;
+using Ahsoka.Installer;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
@@ -210,10 +211,9 @@ public static class SparkProjectTools
             }
             else
             {
-                certFilePath = GetCertPath(keyName);
+                certFilePath = PackageInformation.GetPackageCertPath(keyName);
                 isLocal = File.Exists(certFilePath);
             }
-
 
             if (!isLocal)
             {
@@ -237,7 +237,7 @@ public static class SparkProjectTools
                     if (!Directory.Exists(Path.GetDirectoryName(certFilePath)))
                         Directory.CreateDirectory(Path.GetDirectoryName(certFilePath));
 
-                    StringEncryption.CreateSecureFile(certFilePath, JsonUtility.Serialize(info));
+                    File.WriteAllText(certFilePath, JsonUtility.Serialize(info));
                 }
             }
         }
@@ -246,8 +246,8 @@ public static class SparkProjectTools
     private static DeviceKeyInfo GetCertInfo(string keyName)
     {
         // Generate Key Pair
-        var keygen = new SshKeyGenerator(2048);
-        string pathToCerts = GetCertPath(keyName);
+        var keygen = RSAEncryption.GenerateNewKeyPair(true);
+        string pathToCerts = PackageInformation.GetPackageCertPath(keyName);
 
         if (!Directory.Exists(Path.GetDirectoryName(pathToCerts)))
             Directory.CreateDirectory(Path.GetDirectoryName(pathToCerts));
@@ -256,19 +256,15 @@ public static class SparkProjectTools
 
         var keyData = new DeviceKeyInfo()
         {
-            PublicKey = keygen.ToPublicKey(),
-            PrivateKey = keygen.ToRfcPublicKey()
+            PublicKey = keygen.Value,
+            PrivateKey = keygen.Key
         };
 
-        StringEncryption.CreateSecureFile(pathToCerts, JsonUtility.Serialize(keyData));
+        File.WriteAllText(pathToCerts, JsonUtility.Serialize(keyData));
 
         return keyData;
     }
 
-    public static string GetCertPath(string keyName)
-    {
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AhsokaData", "AhsokaCerts", keyName + ".cert");
-    }
 
     private static DeviceKeyInfo GetUploadInfo(string keyName)
     {
@@ -299,15 +295,11 @@ public static class SparkProjectTools
         return deviceKeyName;
     }
 
-    public class DeviceKeyInfo
-    {
-        public string PublicKey { get; set; }
-        public string PrivateKey { get; set; }
-    }
+
 }
 
 public enum KeyTypes
 {
     DeviceKey,
-    AppCert
+    PackageSigningKey
 }

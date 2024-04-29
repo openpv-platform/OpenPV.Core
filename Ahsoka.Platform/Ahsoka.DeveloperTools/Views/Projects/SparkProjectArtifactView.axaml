@@ -44,10 +44,10 @@
 				<StackPanel IsEnabled="{Binding IsAdmin}">
 
 					<Button Margin="3,8,5,3" DockPanel.Dock="Top"
-					HorizontalAlignment="Stretch"
-					Height="38" Width="185"
-					VerticalContentAlignment="Center"
-					Command="{Binding CreateKey}" >
+							HorizontalAlignment="Stretch"
+							Height="38" Width="185"
+							VerticalContentAlignment="Center"
+							Command="{Binding CreateKey}" >
 						<StackPanel Orientation="Horizontal">
 							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Plus"></material:MaterialIcon>
 							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="New Device Key"/>
@@ -55,28 +55,40 @@
 					</Button>
 
 					<Button Margin="3,3,5,3" DockPanel.Dock="Top"
-						HorizontalAlignment="Stretch"
-						Height="38" Width="185"
-						VerticalContentAlignment="Center"
-						Command="{Binding CreateAppCert}" >
+							HorizontalAlignment="Stretch"
+							Height="38" Width="185"
+							VerticalContentAlignment="Center"
+							Command="{Binding CreateAppCert}" >
 						<StackPanel Orientation="Horizontal">
 							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Plus"></material:MaterialIcon>
-							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="New Application Cert"/>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="New Signing Key"/>
 						</StackPanel>
 					</Button>
 
 					
 					<Button Margin="3,18,5,3" DockPanel.Dock="Top"
-						HorizontalAlignment="Stretch"
-						Height="38" Width="185"
-						VerticalContentAlignment="Center"
-						Command="{Binding RemoveKey}" >
+							HorizontalAlignment="Stretch"
+							Height="38" Width="185"
+							VerticalContentAlignment="Center"
+							Command="{Binding RemoveKey}" >
 						<StackPanel Orientation="Horizontal">
 							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Minus"></material:MaterialIcon>
 							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Remove Key"/>
 						</StackPanel>
 					</Button>
+					
 					<Button Margin="3,18,5,3" DockPanel.Dock="Top"
+							HorizontalAlignment="Stretch"
+							Height="38" Width="185"
+							VerticalContentAlignment="Center"
+							Command="{Binding ImportKeys}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Upload"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Import Key"/>
+						</StackPanel>
+					</Button>
+					
+					<Button Margin="3,8,5,3" DockPanel.Dock="Top"
 						HorizontalAlignment="Stretch"
 						Height="38" Width="185"
 						IsEnabled="{Binding !SelectedDevelopmentKey.IsLocal}}"
@@ -87,7 +99,9 @@
 							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Download Key"/>
 						</StackPanel>
 					</Button>
-					
+
+
+
 				</StackPanel>
 			</DockPanel>
 		</Grid>

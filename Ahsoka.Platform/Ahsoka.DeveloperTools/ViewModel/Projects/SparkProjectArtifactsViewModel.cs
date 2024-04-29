@@ -1,7 +1,10 @@
 ﻿using Ahsoka.DeveloperTools.Views;
+using Ahsoka.Installer;
 using Ahsoka.Spark;
 using Ahsoka.Utility;
+using Avalonia.Animation;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
 using Avalonia.Threading;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.ObjectModel;
@@ -87,9 +90,9 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
                 SparkProjectTools.RemoveDevelopmentKey(this.ParentViewModel.Model, SelectedDevelopmentKey.Model);
 
                 // Delete Local if App Cert
-                if (SelectedDevelopmentKey.ArtifactType == KeyTypes.AppCert)
+                if (SelectedDevelopmentKey.ArtifactType == KeyTypes.PackageSigningKey)
                 {
-                    string path = SparkProjectTools.GetCertPath(SelectedDevelopmentKey.DeviceKeyName);
+                    string path = PackageInformation.GetPackageCertPath(SelectedDevelopmentKey.DeviceKeyName);
                     if (File.Exists(path))
                         File.Delete(path);
                 }
@@ -174,11 +177,62 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
             Title = "Create Application Certificate",
             ItemAccepted = CreateAccepted,
             ItemCancelled = Cancel,
-            Tag = KeyTypes.AppCert
+            Tag = KeyTypes.PackageSigningKey
         };
         this.addItemView = new NewItemView() { DataContext = model };
 
         this.FindParent<MainViewModel>().Popup.ShowPopup(addItemView);
+    }
+
+    internal async void ImportKeys()
+    {
+        string certFilePath = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Blank"));
+        var fileInfo = await this.FindParent<MainViewModel>().FileLocatorAsync("Select Key (ssh or appcert)", "*", "Keys (ssh and *.cert)");
+
+        bool isAppCert = fileInfo.ToLower().EndsWith("cert");
+        string keyName = Path.GetFileNameWithoutExtension(fileInfo);
+        KeyTypes type = KeyTypes.PackageSigningKey;
+
+        if (isAppCert)
+        {
+            type = KeyTypes.PackageSigningKey;
+            bool isAppCertLocal = Path.GetDirectoryName(fileInfo) == certFilePath;
+           
+            if (!isAppCertLocal)
+                File.Copy(fileInfo, Path.Combine(certFilePath, keyName), true);
+        }
+        else
+        {
+            // Assumes the Key is in the .ssh folder
+            type = KeyTypes.DeviceKey;
+        }
+
+        // Upload Key
+        await Task.Run(() =>
+        {
+            SparkProjectTools.CreateDevelopmentKey(ParentViewModel.Model, keyName, type);
+
+        }).ContinueWith(result =>
+        {
+            var teamVM = this.FindParent<SparkProjectEditorViewModel>();
+
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                if (result.Status != TaskStatus.RanToCompletion && result.Exception?.InnerException != null)
+                {
+                    teamVM.SetResultText(result.Exception.InnerException.Message, true);
+                    return;
+                }
+
+                LoadKeys();
+
+                teamVM.SetResultText("Key Created", false);
+
+            });
+
+            teamVM.IsWorking = false;
+        });
+
     }
 
 

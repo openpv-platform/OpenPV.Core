@@ -67,10 +67,10 @@
 							<ComboBox  SelectedItem="{Binding SparkViewModel.SelectedTeam}" ItemsSource="{Binding SparkViewModel.OTATeamsList}" Grid.Row="4" Grid.Column="1" Width="250"  />
 							<TextBlock Text="(Used for Licensing and OTA)" Grid.Row="1" Grid.Column="0"/>
 						</StackPanel>
-						<TextBlock  Margin="3,0,0,20" Text="Application Cert:" Grid.Row="1"  Grid.Column="0"/>
+						<TextBlock  Margin="3,0,0,20" Text="Signing Key:" Grid.Row="1"  Grid.Column="0"/>
 						<StackPanel Margin="0,0,0,20" Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
 							<ComboBox  SelectedItem="{Binding SparkViewModel.SelectedCert}" ItemsSource="{Binding SparkViewModel.AvailableCerts}" Grid.Row="4" Grid.Column="1" Width="250"  />
-							<TextBlock Text="(Optional Cert used for Signing and Service Security)" Grid.Row="1" Grid.Column="0"/>
+							<TextBlock Text="(Key to be used when signing the opv package)" ToolTip.Tip="This feature requires that the display was prepped or locked with the signing key." Grid.Row="1" Grid.Column="0"/>
 						</StackPanel>
 
 						<TextBlock IsVisible="{Binding SparkViewModel.HasModules}" Text="Licensed Modules:" VerticalAlignment="Top" Margin="5,8" Grid.Column="0" Grid.Row="2"/>

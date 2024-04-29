@@ -1,12 +1,13 @@
 ﻿using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Spark;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
-using Newtonsoft.Json;
+using Renci.SshNet;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -185,7 +186,8 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                         PlatformFamily = item.PlatformFamily,
                         HostName = item.HostName,
                         SystemServicePort = item.SystemServicePort,
-                        PrivateKeyFile = item.PrivateKeyFile,
+                        PrivateKey = item.PrivateKey,
+                        PrivateAppKey = item.PrivateAppKey,
                         UserName = item.UserName,
                         IsFavorite = item.IsFavorite
 
@@ -265,7 +267,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
 
     internal async void SecureDevice()
     {
-        var continueWork = await ParentViewModel.Dialog.ShowDialog("Lock Display", "Lock the device will enable SSH Connections via RSA Keys and Disable Password Based Logins.  Are you sure you wish to Lock this device?", "Yes", "Cancel");
+        var continueWork = await ParentViewModel.Dialog.ShowDialog("Lock Target", "Locking the device will Disable Password Based Logins.  In addition, it will install ssh keys and application keys (if selected).  Are you sure you wish to Lock this device?", "Yes", "Cancel");
 
         if (!continueWork)
             return;
@@ -302,7 +304,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                 keyFileInfo = SshUtility.CreateKeyFile(this.EditConfigurationInfo.Description);
 
                 // Update Key File Path and Save Path.
-                this.EditConfigurationInfo.PrivateKeyFile = keyFileInfo.PrivateKeyPath;
+                this.EditConfigurationInfo.PrivateKey = Path.GetFileName(keyFileInfo.PrivateKeyPath);
             }
 
             SaveConnectionInfo();
@@ -312,6 +314,16 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
 
             // Add Key To Display
             var result = SshUtility.AddSshPublicKey(this.EditConfigurationInfo, keyFileInfo);
+
+            // Add Key To Display
+            if (File.Exists(editInfo.PrivateAppKeyFile))
+            {
+                var info = HardwareInfo.GetHardwareInfo(editInfo.PlatformFamily, editInfo.PlatformQualifier);
+                var targetSigningKey = info.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
+              
+                result += SshUtility.AddApplicationKey(this.EditConfigurationInfo, this.editInfo.PrivateAppKeyFile, targetSigningKey);
+            }
+
 
             return $"Keys Loaded. The target is now available to connect to using ssh with the address \"{this.EditConfigurationInfo.UserName}@{keyFileInfo.Name}\"";
 
@@ -354,7 +366,10 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
 
         await Task.Run(() =>
         {
-            var result = SshUtility.UnlockDevice(this.EditConfigurationInfo);
+            var info = HardwareInfo.GetHardwareInfo(editInfo.PlatformFamily, editInfo.PlatformQualifier);
+            var targetSigningKey = info.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
+
+            var result = SshUtility.UnlockDevice(EditConfigurationInfo, targetSigningKey);
 
             return $"Device Unlocked.";
 
@@ -730,7 +745,8 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
     int port;
     bool isFavorite;
     string userName;
-    string privateKeyFile;
+    string privateKey;
+    string privateAppKey;
     PlatformFamily family;
 
     public bool IsFavorite
@@ -765,6 +781,36 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
             OnPropertyChanged();
         }
     }
+
+    public List<String> SshKeys
+    {
+        get
+        {
+            List<string> returnList =
+            [
+                "(None)",
+                .. Directory.GetFiles(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),".ssh"), "*.pub", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension),
+            ];
+            return returnList;
+        }
+        set { }
+    }
+
+    public List<String> SigningKeys
+    {
+        get
+        {
+            string path = PackageInformation.GetPackageCertPath("Test");
+            List<string> returnList =
+            [
+                "(None)",
+                .. Directory.GetFiles(Path.GetDirectoryName(path), "*.cert").Select(Path.GetFileNameWithoutExtension),
+            ];
+            return returnList;
+        }
+        set { }
+    }
+
 
     public PlatformFamily PlatformFamily
     {
@@ -835,10 +881,62 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
 
     public string PrivateKeyFile
     {
-        get { return privateKeyFile; }
+        get 
+        {
+            string pathToKeys = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
+            string pathToKey = Path.Combine(pathToKeys, PrivateKey);
+            if (File.Exists(pathToKey))
+                return pathToKey;
+            else
+            {
+                pathToKey = Path.Combine(pathToKeys, "Ahsoka", PrivateKey);
+                if (File.Exists(pathToKey))
+                    return pathToKey;
+            }
+            return string.Empty; }
+       
+    }
+
+    public string PrivateKey
+    {
+        get
+        {
+            if (SshKeys.Contains(privateKey))
+                return privateKey;
+            else
+                return "(None)"; ; }
         set
         {
-            privateKeyFile = value;
+            privateKey = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public string PrivateAppKeyFile
+    {
+        get
+        {
+            string path = PackageInformation.GetPackageCertPath(PrivateAppKey);
+            if (File.Exists(path))
+                return path;
+            
+            return string.Empty;
+        }
+
+    }
+
+    public string PrivateAppKey
+    {
+        get
+        {
+            if (SigningKeys.Contains(privateAppKey))
+                return privateAppKey;
+            else
+                return "(None)";
+        }
+        set
+        {
+            privateAppKey = value;
             OnPropertyChanged();
         }
     }
@@ -865,13 +963,6 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
     {
         this.IsFavorite = !IsFavorite;
 
-    }
-
-    public async void SelectKeyFile()
-    {
-        var path = await ParentViewModel.ParentViewModel.FileLocatorAsync("Select Key File", "", "SSH Private Keys", PrivateKeyFile);
-        if (path != null)
-            PrivateKeyFile = path;
     }
 
     public ConnectionInfo(ConnectionsViewModel parentViewModel) : base(parentViewModel)

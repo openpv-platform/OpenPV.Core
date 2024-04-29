@@ -26,7 +26,7 @@ public class PackageInformation : PackageHeader
     public string PackageApplicationFolder { get; set; }
     public string PackageOutputDirectory { get; set; }
     public string StartupLogoPath { get; set; }
-    public string ApplicacationCertFile { get; set; }
+    public string PackageSigningCertFile { get; set; }
 
     public bool IncludeInstallerUI { get; set; } = false;
 
@@ -103,6 +103,16 @@ public class PackageInformation : PackageHeader
     {
         return originalFilePath;
     }
+    
+    public string GetPackageCertPath()
+    {
+        return GetPackageCertPath(this.PackageSigningCertFile);
+    }
+
+    public static string GetPackageCertPath(string keyName)
+    {
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AhsokaData", "AhsokaCerts", keyName + ".cert");
+    }
 }
 
 public class DotNetInformation
@@ -127,4 +137,10 @@ public class StartupEnvironmentValue
 {
     public string VariableName { get; set; }
     public string VariableValue { get; set; }
+}
+
+public class DeviceKeyInfo
+{
+    public string PublicKey { get; set; }
+    public string PrivateKey { get; set; }
 }

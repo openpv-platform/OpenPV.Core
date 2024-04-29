@@ -116,7 +116,21 @@ internal static class PackageCommands
             return;
         }
 
+        string signingSignature = null;
         PackageInformation package = PackageInformation.LoadPackageInformation(packageInfoPath);
+        if (!string.IsNullOrEmpty(package.PackageSigningCertFile))
+        {
+            string packageCert = package.GetPackageCertPath();
+            if (File.Exists(packageCert))
+            {
+                DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(File.ReadAllText(packageCert));
+                signingSignature = info.PublicKey;
+                Console.WriteLine($"Creating Package with Private Key {package.PackageSigningCertFile}");
+                Console.WriteLine($"  Note: Use of a private key requires the device be provisioned with this public key to install.");
+                Console.WriteLine($"");
+            }
+        }
+
 
         LocalProgress<PackageProgressInfo> progress = new(info =>
         {
@@ -129,7 +143,7 @@ internal static class PackageCommands
             InstallEngineBase createPackageEngine = InstallEngineBase.GetPackagingEngine(package);
 
             // Package the file.
-            string fileName = createPackageEngine.CreateInstallPackage(null, progress);
+            string fileName = createPackageEngine.CreateInstallPackage(signingSignature, progress);
 
             if (!File.Exists(fileName))
             {
@@ -140,7 +154,7 @@ internal static class PackageCommands
                 };
             }
 
-            PrintManifest(fileName);
+            PrintManifest(fileName, package.GetPackageCertPath());
 
             return new PackageCompleteInfo()
             {
@@ -165,15 +179,24 @@ internal static class PackageCommands
 
 
     [CommandLineMethod(@"     --PrintManifest: Print Contents of opv package file
-            [PathToPackageFile] Optional = File to print manifest for")]
-    private static void PrintManifest(string packageFile)
+            [PathToPackageFile] Optional = File to print manifest for
+            [PathToKeyFile] Optional = Private Key File used to Sign / Encrypt this Package")]
+    private static void PrintManifest(string packageFile, string pathToKeyFile)
     {
         IProgress<string> progress = new Progress<string>(info =>
         {
             Console.WriteLine(info);
         });
 
-        InstallEngineBase.PrintPackageManifest(packageFile, progress);
+        string key = null;
+        if (File.Exists(pathToKeyFile))
+        {
+            DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(File.ReadAllText(pathToKeyFile));
+            key = info.PrivateKey;
+            Console.WriteLine($"Using Private Device Key ({Path.GetFileName(pathToKeyFile)}) to Read Package");
+        }
+
+        InstallEngineBase.PrintPackageManifest(packageFile, key, progress);
     }
 
     [CommandLineMethod(@"     --Verify: Verify that Factory Folder is Complete and Valid")]

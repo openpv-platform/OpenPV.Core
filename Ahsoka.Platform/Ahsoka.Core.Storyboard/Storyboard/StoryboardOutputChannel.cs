@@ -1,4 +1,6 @@
-﻿namespace Ahsoka.Storyboard;
+﻿using Ahsoka.ServiceFramework;
+
+namespace Ahsoka.Storyboard;
 
 internal class StoryboardOutputChannel : StoryboardChannelBase
 {
@@ -17,13 +19,13 @@ internal class StoryboardOutputChannel : StoryboardChannelBase
     }
 
     public int SendEvent(StoryboardMessage message)
-    {
+    {       
         return Api.SendEvent(this.ChannelId, message);
     }
 
-    public int SendEvent(object message, string target = null)
+    public int SendEvent(StoryboardViewModelBase message, string target = null)
     {
-        return Api.SendEvent(this.ChannelId, new StoryboardMessage(message, target));
+        return Api.SendEvent(this.ChannelId, message.Message);
     }
     #endregion
 }

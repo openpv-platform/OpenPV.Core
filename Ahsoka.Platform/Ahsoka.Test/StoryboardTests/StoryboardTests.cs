@@ -1,11 +1,11 @@
 using Ahsoka.Storyboard;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace Ahsoka.Test;
@@ -13,7 +13,7 @@ namespace Ahsoka.Test;
 [TestClass]
 public class StoryboardTests : LinearTestBase
 {
-    readonly Queue<TestSBIOObject> resultObjects = new();
+    readonly Queue<StoryboardViewModelBase> resultObjects = new();
     readonly Semaphore resultSem = new(0, 100);
     readonly object syncRoot = new();
 
@@ -21,19 +21,19 @@ public class StoryboardTests : LinearTestBase
     public void StoryboardTest()
     {
         // Create Mock API for Testing
-        StoryboardClient runtime = new(api: new StoryboardAPIMock());
+        StoryboardClient runtime = new(metadata: StoryboardMetadata.EventMetadata, api: new StoryboardAPIMock());
         runtime.MessageReceived += Runtime_MessageReceived;
         runtime.StartEventListenerAsync();
 
         // Send First Object...It should be received above
-        TestSBIOObject myObject = CreateTestObject();
-        runtime.SendEvent(myObject);
+        TestSbioObject myObject = CreateTestObject();
+        runtime.SendEvent(myObject.Message);
 
         // Wait for Messages to Send.
-        TestSBIOObject resultObject = null;
+        TestSbioObject resultObject = null;
         resultSem.WaitOne();
         lock (syncRoot)
-            resultObject = resultObjects.Dequeue();
+            resultObject = (TestSbioObject)resultObjects.Dequeue();
 
         // Float Values
         Assert.AreEqual(myObject.ValueFloat, resultObject.ValueFloat, "Float Values did Not Match for Object1");
@@ -51,6 +51,7 @@ public class StoryboardTests : LinearTestBase
         Assert.AreEqual(myObject.ValueUInt8, resultObject?.ValueUInt8, "UInt8 Values did Not Match for Object1");
 
         // Compare String
+        Assert.IsFalse(myObject.ValueString.IsNullOrEmpty(), "String Value was not set correctly");
         Assert.AreEqual(myObject.ValueString, resultObject?.ValueString, "String Values did Not Match for Object1");
 
         // Compare Array Value
@@ -72,8 +73,8 @@ public class StoryboardTests : LinearTestBase
         for (int i = 0; i < count; i++)
         {
             // Send First Object...It should be received above
-            TestSBIOObject myObject = CreateTestObject();
-            runtime.SendEvent(myObject);
+            TestSbioObject myObject = CreateTestObject();
+            runtime.SendEvent(myObject.Message);
 
             // Wait for Messages to Send.
             resultSem.WaitOne();
@@ -91,7 +92,7 @@ public class StoryboardTests : LinearTestBase
     private void Runtime_MessageReceived(object sender, StoryboardEventArgs e)
     {
         // Decode Object
-        TestSBIOObject myObject = e.Message.GetObject<TestSBIOObject>();
+        var myObject = e.Message.GetObject<StoryboardViewModelBase>();
 
         lock (syncRoot)
             resultObjects.Enqueue(myObject);
@@ -99,9 +100,9 @@ public class StoryboardTests : LinearTestBase
         resultSem.Release();
     }
 
-    private static TestSBIOObject CreateTestObject()
+    private static TestSbioObject CreateTestObject()
     {
-        TestSBIOObject myObject1 = new()
+        TestSbioObject myObject1 = new()
         {
             ValueFloat = 100.4f,
             ValueInt64 = -64,
@@ -131,49 +132,149 @@ public class StoryboardTests : LinearTestBase
         //namespace to be used for the generated classes
         string nameSpace = "Ahsoka.Test";
 
-        CommandLine.Execute(new string[] { "--GenerateStoryboardClasses", pathToSource, pathToDestination, nameSpace, "StoryboardViewModelBase" });
-        //StoryboardTools.GenerateMessageClasses(pathToSource, pathToDestination, nameSpace, "StoryboardViewModelBase");
+        //CommandLine.Execute(new string[] { "--GenerateStoryboardClasses", pathToSource, pathToDestination, nameSpace, "StoryboardViewModelBase" });
+        StoryboardTools.GenerateMessageClasses(pathToSource, pathToDestination, nameSpace, "StoryboardViewModelBase");
 
-        string value = File.ReadAllText(Path.Combine(pathToDestination, "GenerateEventTest.cs"));
+        string value = File.ReadAllText(Path.Combine(pathToDestination, "GeneratedStoryboardObjects.cs"));
         Assert.IsTrue(value.Contains("using Ahsoka.Storyboard"));
         Directory.Delete(pathToDestination, true);
         File.Delete(pathToSource);
     }
 }
 
-[SBMessageEventName()]
-public class TestSBIOObject
+public class TestSbioObject : StoryboardViewModelBase
 {
-    [SBField(1)]
-    public float ValueFloat { get; set; }
+    public const string Name = "test_sbio_object";
+    public const string Format = "";
+    public const StoryboardMessageDirection Direction = StoryboardMessageDirection.In;
 
-    [SBField(2)]
-    public Int64 ValueInt64 { get; set; }
+    public float ValueFloat
+    {
+        get { return OnGetValue<float>(); }
+        set { OnSetValue(value); }
+    }
 
-    [SBField(3)]
-    public Int32 ValueInt32 { get; set; }
+    public Int64 ValueInt64
+    {
+        get { return OnGetValue<Int64>(); }
+        set { OnSetValue(value); }
+    }
 
-    [SBField(4)]
-    public Int16 ValueInt16 { get; set; }
+    public Int32 ValueInt32
+    {
+        get { return OnGetValue<Int32>(); }
+        set { OnSetValue(value); }
+    }
 
-    [SBField(5)]
-    public sbyte ValueInt8 { get; set; }
+    public Int16 ValueInt16
+    {
+        get { return OnGetValue<Int16>(); }
+        set { OnSetValue(value); }
+    }
 
-    [SBField(6)]
-    public UInt64 ValueUInt64 { get; set; }
+    public sbyte ValueInt8
+    {
+        get { return OnGetValue<sbyte>(); }
+        set { OnSetValue(value); }
+    }
 
-    [SBField(7)]
-    public UInt32 ValueUInt32 { get; set; }
+    public UInt64 ValueUInt64
+    {
+        get { return OnGetValue<UInt64>(); }
+        set { OnSetValue(value); }
+    }
 
-    [SBField(8)]
-    public UInt16 ValueUInt16 { get; set; }
+    public UInt32 ValueUInt32
+    {
+        get { return OnGetValue<UInt32>(); }
+        set { OnSetValue(value); }
+    }
 
-    [SBField(9)]
-    public byte ValueUInt8 { get; set; }
+    public UInt16 ValueUInt16
+    {
+        get { return OnGetValue<UInt16>(); }
+        set { OnSetValue(value); }
+    }
 
-    [SBField(10, 5)]
-    public int[] ValueIntArray { get; set; } = new int[5];
+    public byte ValueUInt8
+    {
+        get { return OnGetValue<byte>(); }
+        set { OnSetValue(value); }
+    }
 
-    [SBField(11)]
-    public string ValueString { get; set; }
+    public int[] ValueIntArray
+    {
+        get { return OnGetValue<int[]>(); }
+        set { OnSetValue(value); }
+    }
+
+    public string ValueString
+    {
+        get { return OnGetValue<string>(); }
+        set { OnSetValue(value); }
+    }
+
+    public override Dictionary<string, StoryboardPropertyInfo> GetMetadata() { return StoryboardMetadata.EventMetadata.GetMetadata(Name); }
+    public TestSbioObject() : base(Name, Format, Direction) { }
+    public TestSbioObject(StoryboardMessage message) : base(message) { }
+}
+
+public class StoryboardMetadata : IStoryboardMetadata
+{
+    Dictionary<string, Dictionary<string, StoryboardPropertyInfo>> metadata = new();
+
+    static StoryboardMetadata eventMetadata = null;
+
+    public Dictionary<string, Dictionary<string, StoryboardPropertyInfo>> GetMetadata() { return metadata; }
+
+    public Dictionary<string, StoryboardPropertyInfo> GetMetadata(string eventName) { return metadata[eventName]; }
+
+    public void AddMetadata(string eventName, Dictionary<string, StoryboardPropertyInfo> properties)
+    {
+        metadata.Add(eventName, properties);
+    }
+
+    public StoryboardPropertyInfo GetPropertyInfo(string eventName, string fieldName)
+    {
+        return metadata[eventName].Values.FirstOrDefault(x => x.FieldName == fieldName);
+    }
+
+    public StoryboardViewModelBase CreateObject(StoryboardMessage data)
+    {
+        switch (data.Name)
+        {
+            case TestSbioObject.Name:
+                return new TestSbioObject(data);
+            default:
+                return null;
+        }
+    }
+
+    public static StoryboardMetadata EventMetadata
+    {
+        get
+        {
+            if (eventMetadata == null)
+                eventMetadata = new();
+            return eventMetadata;
+        }
+    }
+
+    StoryboardMetadata()
+    {
+        metadata.Add(TestSbioObject.Name, new Dictionary<string, StoryboardPropertyInfo>()
+        {
+            {nameof(TestSbioObject.ValueFloat), new(1, SBFieldType.Float_4f, 0, 4, 1, nameof(TestSbioObject.ValueFloat)) },
+            {nameof(TestSbioObject.ValueInt64), new(2, SBFieldType.SignedInt64_8s, 4, 8, 1, nameof(TestSbioObject.ValueInt64)) },
+            {nameof(TestSbioObject.ValueInt32), new(3, SBFieldType.SignedInt32_4s, 12, 4, 1, nameof(TestSbioObject.ValueInt32)) },
+            {nameof(TestSbioObject.ValueInt16), new(4, SBFieldType.SignedInt16_2s, 16, 2, 1, nameof(TestSbioObject.ValueInt16)) },
+            {nameof(TestSbioObject.ValueInt8), new(5, SBFieldType.SignedInt8_1s, 18, 1, 1, nameof(TestSbioObject.ValueInt8)) },
+            {nameof(TestSbioObject.ValueUInt64), new(6, SBFieldType.Int64_8u, 19, 8, 1, nameof(TestSbioObject.ValueUInt64)) },
+            {nameof(TestSbioObject.ValueUInt32), new(7, SBFieldType.Int32_4u, 27, 4, 1, nameof(TestSbioObject.ValueUInt32)) },
+            {nameof(TestSbioObject.ValueUInt16), new(8, SBFieldType.Int16_2u, 31, 2, 1, nameof(TestSbioObject.ValueUInt16)) },
+            {nameof(TestSbioObject.ValueUInt8), new(9, SBFieldType.Int8_1u, 33, 1, 1, nameof(TestSbioObject.ValueUInt8)) },
+            {nameof(TestSbioObject.ValueIntArray), new(10, SBFieldType.SignedInt32_4s, 34, 4, 5, nameof(TestSbioObject.ValueIntArray)) },
+            {nameof(TestSbioObject.ValueString), new(11, SBFieldType.String_1s, 54, 1, 1, nameof(TestSbioObject.ValueString)) },
+        });
+    }
 }

@@ -23,7 +23,7 @@
 	<!--Storyboard Runtimes to be included in the Package-->
 	<PropertyGroup Label=" Storyboard Runtime Settings">
 		<StoryboardProgramFolder>C:\Program Files\Crank_Software</StoryboardProgramFolder>
-		<StoryboardVersion>8.0-stable.202304090148</StoryboardVersion>
+		<StoryboardVersion>8.1-stable.202402081352</StoryboardVersion>
 	</PropertyGroup>
 
 	<ItemGroup Label="Storyboard Runtimes and Application">

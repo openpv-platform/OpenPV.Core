@@ -1,14 +1,17 @@
-﻿using System;
+﻿using Ahsoka.Installer;
+using Ahsoka.Utility;
+using System;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Xml.Linq;
 
 namespace Ahsoka.Storyboard;
 
 internal class StoryboardTools
 {
-    public static void GenerateMessageClasses(string pathToSource, string pathToDestination, string nameSpace, string baseClass)
+    public static void GenerateMessageClasses(string pathToSource, string pathToDestination, string nameSpace, string baseClass, ApplicationType type = ApplicationType.Dotnet)
     {
         string pathToEventData = pathToSource;
         XDocument document = null;
@@ -18,24 +21,42 @@ internal class StoryboardTools
 
         bool didGenenerate = false;
 
+        StringBuilder outputFileData = new();
+        StringBuilder metadataBuilder = new();
+        StringBuilder metadataItems = new();
+        var generatorExtensions = new GeneratorUtility("Ahsoka.Core.Storyboard", type);
         document = File.Exists(pathToEventData) ? XDocument.Load(pathToEventData) : new XDocument(new XElement("eventdefinitions"));
 
         if (document != null)
         {
+            outputFileData.AppendLine("using Ahsoka.Storyboard;");
+            outputFileData.AppendLine("using System;");
+            outputFileData.AppendLine("using System.Collections.Generic;");
+            outputFileData.AppendLine("using System.Linq;");
+            generatorExtensions.ExtendHeader(outputFileData, nameSpace);
+
+            outputFileData.AppendLine();
+            outputFileData.AppendLine($"namespace {nameSpace};"); //need generic solution here
+            outputFileData.AppendLine();
+
             foreach (var item in document.Descendants("event"))
-            {
+            {        
                 try
                 {
                     string importName = item.Attribute("name").Value;
-                    string importType = item.Attribute("type").Value;
                     string importFormat = item.Attribute("format")?.Value ?? string.Empty;
+                    string importType = item.Attribute("type").Value;                      
 
                     if (importType.Equals(StoryboardMessageDirection.In.GetMessageDirectionString()) || // Incoming
                         importType.Equals(StoryboardMessageDirection.Out.GetMessageDirectionString())) // Outgoing
                     {
-                        StoryboardMessage storyboardMessage = new(importName, importFormat, importType, null);
-                        GenerateClass(storyboardMessage, pathToDestination, nameSpace, baseClass);
-                        didGenenerate = true;
+                        StoryboardMessage storyboardMessage = new()
+                        {
+                            Name = importName,
+                            Format = importFormat,
+                            Direction = importType.Equals(StoryboardMessageDirection.Out.GetMessageDirectionString()) ? StoryboardMessageDirection.Out : StoryboardMessageDirection.In
+                    };
+                        GenerateClass(storyboardMessage, baseClass, outputFileData, metadataItems, metadataBuilder, generatorExtensions);
                     }
                 }
                 catch (Exception ex)
@@ -44,62 +65,101 @@ internal class StoryboardTools
                     throw new Exception(ex.Message);
                 }
             }
+            didGenenerate = true;
         }
-
-        if (!didGenenerate)
-            File.WriteAllText(Path.Combine(pathToDestination,"NoEventsToGenerate.cs"), "");
+        
+        if (didGenenerate)
+        {
+            outputFileData.AppendLine();
+            outputFileData.AppendLine(Properties.StoryboardResources.CSharpMetadataDictionary.Replace("%METADATA_BUILDER%", metadataBuilder.ToString()).Replace("%METADATA_BODY%", metadataItems.ToString()));
+            File.WriteAllText(Path.Combine(pathToDestination, "GeneratedStoryboardObjects.cs"), outputFileData.ToString());
+        }    
+        else
+            File.WriteAllText(Path.Combine(pathToDestination, "NoEventsToGenerate.cs"), "");
     }
 
-    private static void GenerateClass(StoryboardMessage storyboardEvent, string pathToDestination, string nameSpace, string baseClass)
+    private static void GenerateClass(StoryboardMessage storyboardEvent, string baseClass, StringBuilder outputFileData, StringBuilder metadataItems, StringBuilder metadataBuilder, GeneratorUtility generatorExtensions = null)
     {
         if (String.IsNullOrEmpty(baseClass))
-            baseClass = "StoryboardViewModel";
+            baseClass = "StoryboardViewModelBase";
 
-        string className = FormatName(storyboardEvent.EventAttribute.EventName);
-        string pathToClass = Path.Combine(pathToDestination, className) + ".cs";
+        string className = FormatName(storyboardEvent.Name);
 
-        using StreamWriter sw = new(pathToClass);
-        sw.WriteLine("using Ahsoka.Storyboard;");
-        sw.WriteLine("using System;");
-        sw.WriteLine();
-        sw.WriteLine($"namespace {nameSpace};"); //need generic solution here
-        sw.WriteLine();
-        sw.WriteLine($"[SBMessageEventName(\"{storyboardEvent.EventAttribute.EventName}\", \"{storyboardEvent.EventAttribute.EventDirection}\")]");
-        sw.WriteLine($"public partial class {className} : {baseClass}");
-        sw.WriteLine("{");
+        outputFileData.AppendLine($"public partial class {className} : {baseClass}");
+        outputFileData.AppendLine("{");
+        outputFileData.AppendLine($"\tpublic const string Name = \"{storyboardEvent.Name}\";");
+        outputFileData.AppendLine($"\tpublic const string Format = \"{storyboardEvent.Format}\";");
+        outputFileData.AppendLine($"\tpublic const StoryboardMessageDirection Direction = StoryboardMessageDirection.{storyboardEvent.Direction};");
+        outputFileData.AppendLine();
+        outputFileData.AppendLine("\t#region Auto Generated Properties");
+        metadataItems.AppendLine($"\r\n\t\t// Decode Info for {className}");
+        metadataItems.AppendLine($"\t\tmetadata.Add({className}.Name, new Dictionary<string, StoryboardPropertyInfo>()");
+        metadataItems.AppendLine("\t\t{");
+
         string[] parts = storyboardEvent.Format.Split(' ');
 
-        StringWriter fieldWriter = new();
-        StringWriter propertyWriter = new();
-
+        var position = 0; 
         for (int i = 0; i < parts.Length - 1; i += 2)
         {
             var name = parts[i + 1];
             var typePart = parts[i].Substring(0, 2);
             var arrayLength = Int32.Parse(parts[i].Substring(2));
-            var type = arrayLength == 0 ? "string" :
-                StoryboardMessageSerializer.TypeTranslation.FirstOrDefault(x => x.Value == GetValueFromDescription<SBFieldType>(typePart)).Key.Name;
+            var typeLength = Int32.Parse(typePart.Substring(0,1));
+            var sbType = arrayLength == 0 ? SBFieldType.String_1s : GetValueFromDescription<SBFieldType>(typePart);
+            var type = StoryboardPropertyInfo.TypeTranslation.FirstOrDefault(x => x.Value == sbType).Key.Name;
             if (type == "Single") type = "float";
             bool isArray;
             if (arrayLength > 1)
                 isArray = true;
             else
                 isArray = false;
-
-            WriteEventProperty(fieldWriter, propertyWriter, i, name, type, arrayLength, isArray);
+         
+            WriteEventProperty(outputFileData, metadataItems, i, name, className, type, 
+                sbType, position, typeLength, arrayLength, isArray, generatorExtensions);
+            
+            position += typeLength * arrayLength;
         }
 
-        sw.WriteLine("\t#region Auto Generated Fields");
-        sw.Write(fieldWriter.ToString());
-        sw.WriteLine("\t#endregion");
-        sw.WriteLine();
-        sw.WriteLine("\t#region Auto Generated Properties");
-        sw.WriteLine(propertyWriter.ToString());
-        sw.WriteLine("\t#endregion");
-        sw.WriteLine("}");
+        metadataItems.AppendLine("\t\t});");
+        metadataBuilder.AppendLine($"\t\t\tcase {className}.Name:");
+        metadataBuilder.AppendLine($"\t\t\t\treturn new {className}(data);");
+
+        outputFileData.AppendLine("\t#endregion");
+        outputFileData.AppendLine();
+        outputFileData.AppendLine("\t#region Auto Generated Methods");
+        outputFileData.AppendLine($"\tpublic override Dictionary<string, StoryboardPropertyInfo> GetMetadata() {{ return StoryboardMetadata.EventMetadata.GetMetadata(Name); }}");
+
+        outputFileData.AppendLine($"\tpublic {className}() : base(Name, Format, Direction)");
+        outputFileData.AppendLine($"\t{{");
+        generatorExtensions.ExtendConstructor(outputFileData, className);
+        outputFileData.AppendLine($"\t}}");
+
+        outputFileData.AppendLine($"\tpublic {className}(StoryboardMessage message) : base(message)");
+        outputFileData.AppendLine($"\t{{");
+        generatorExtensions.ExtendConstructor(outputFileData, className);
+        outputFileData.AppendLine($"\t}}");
+        outputFileData.AppendLine("\t#endregion");
+        outputFileData.AppendLine("}");
     }
 
-    private static string FormatName(string input)
+    private static void WriteEventProperty(StringBuilder outputFileData, StringBuilder metadataItems, int index, string name, string className, string type,
+        SBFieldType sbType, int bytePosition, int elementSize, int arrayLength, bool isArray, GeneratorUtility generatorExtensions = null)
+    {
+        string arrayString = isArray ? "[]" : "";
+
+        outputFileData.AppendLine($"\tpublic {type}{arrayString} {FormatName(name)}");
+        outputFileData.AppendLine("\t{");
+        outputFileData.AppendLine($"\t\tget {{ return OnGetValue<{type}{arrayString}>(); }}");
+        outputFileData.AppendLine("\t\tset { OnSetValue(value); ");
+        generatorExtensions.ExtendSetter(outputFileData, name, type);
+        outputFileData.AppendLine("\t\t}");
+        outputFileData.AppendLine("\t}");
+
+        metadataItems.AppendLine($"\t\t\t{{nameof({className}.{FormatName(name)}),new({index + 1}, SBFieldType.{sbType}, {bytePosition}, {elementSize}," +
+            $" {arrayLength}, nameof({className}.{FormatName(name)}))}},");
+    }
+
+    public static string FormatName(string input)
     {
         string name = input;
         while (name.IndexOf("_") > 0)
@@ -114,21 +174,6 @@ internal class StoryboardTools
         }
         name = name.Substring(0, 1).ToUpper() + name.Substring(1);
         return name;
-    }
-
-    private static void WriteEventProperty(StringWriter fieldWriter,
-        StringWriter propertyWriter, int index, string name, string type, int arrayLength, bool isArray)
-    {
-        string arrayString = isArray ? "[]" : "";
-        fieldWriter.WriteLine($"\tprivate {type}{arrayString} _{name};");
-
-        string getValue = $"get {{ return _{name};}}";
-        string setValue = type == "string" || isArray ?
-            $"set {{ OnSetObject<{type}{arrayString}>(ref _{name}, value);}}" :
-            $"set {{ OnSetValue<{type}{arrayString}>(ref _{name}, value);}}";
-
-        propertyWriter.Write($"\r\n\t[SBField({index + 1}, {arrayLength}, \"{name}\")]");
-        propertyWriter.WriteLine($"\r\n\tpublic {type}{arrayString} {FormatName(name)} \r\n\t{{\r\n\t\t{getValue}\r\n\t\t{setValue} \r\n\t}}");
     }
 
     public static T GetValueFromDescription<T>(string description) where T : Enum

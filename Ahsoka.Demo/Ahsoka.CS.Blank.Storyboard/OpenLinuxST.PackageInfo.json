@@ -1,7 +1,6 @@
 {
-  "version": "3.0.1.10015",
+  "version": "3.0.1.10056",
   "applicationType": "Dotnet",
-  "userInterfaceType": "Storyboard",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Blank.Storyboard",
   "packageName": "Ahsoka.CS.Blank.Storyboard",
@@ -11,7 +10,6 @@
   "packageOutputDirectory": "../PackageOutput",
   "includeInstallerUI": false,
   "licenses": [],
-  "storyboardInfo": {},
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Blank.Storyboard.csproj",
     "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
@@ -20,6 +18,7 @@
     "runtimeConfiguration": {
       "services": [
         {
+          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -27,14 +26,15 @@
           "dataChannel": 5001,
           "notificationChannel": 6001,
           "isExtension": false,
-          "dataKeyValues": [],
+          "behaviors": "AutoStart",
           "configurationFile": ""
         }
       ],
-      "customServiceEnabled": "Enabled",
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
-      "extensions": [],
+      "extensions": [
+        "Storyboard Extension"
+      ],
       "startupDelay": 3
     },
     "environmentValues": []

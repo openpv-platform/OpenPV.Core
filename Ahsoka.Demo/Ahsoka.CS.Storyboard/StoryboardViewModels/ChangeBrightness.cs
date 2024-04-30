@@ -10,6 +10,7 @@ public partial class ChangeBrightness
                 Math.Max(DemoViewModelRoot.Default.BrightnessModel.Percentage - (short)Value, 5);
 
         var value = DemoViewModelRoot.Default.SystemClient.SetBrightness(new Services.System.BrightnessInfo() { Percentage = newBrightness });
-        DemoViewModelRoot.Default.BrightnessModel.Percentage = (ushort)value.Percentage;
+        DemoViewModelRoot.Default.BrightnessModel.HandleMessage(value);
+
     }
 }

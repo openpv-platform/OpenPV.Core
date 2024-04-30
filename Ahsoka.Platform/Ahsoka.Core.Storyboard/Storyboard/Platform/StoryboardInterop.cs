@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Ahsoka.Storyboard;
@@ -138,12 +139,15 @@ internal interface IStoryboardAPI<StoryboardIO> : IStoryboardAPI where Storyboar
                     Marshal.Copy(dataPtr, data, 0, numBytes);
                 }
             }
-
-            message = new StoryboardMessage(Marshal.PtrToStringAnsi(namePtr),
-                                            Marshal.PtrToStringAnsi(formatPtr),
-                                            StoryboardMessageDirection.In.GetMessageDirectionString(),
-                                            data,
-                                            Marshal.PtrToStringAnsi(targetPtr));
+           
+            message = new()
+            {
+                Name = Marshal.PtrToStringAnsi(namePtr),
+                Format = Marshal.PtrToStringAnsi(formatPtr),
+                Direction = StoryboardMessageDirection.In,
+                Data = data,
+                Target = Marshal.PtrToStringAnsi(targetPtr)
+            };
 
             StoryboardIO.gre_io_free_buffer(buffer);
         }
@@ -162,7 +166,7 @@ internal interface IStoryboardAPI<StoryboardIO> : IStoryboardAPI where Storyboar
         IntPtr channelBuffer = IntPtr.Zero;
         unsafe
         {
-            channelBuffer = StoryboardIO.gre_io_serialize(channelBuffer, message.Target, message.EventAttribute.EventName, message.Format, message.Data, message.Data.Length);
+            channelBuffer = StoryboardIO.gre_io_serialize(channelBuffer, message.Target, message.Name, message.Format, message.Data, message.Data.Length);
         }
 
         if (channelBuffer == IntPtr.Zero)

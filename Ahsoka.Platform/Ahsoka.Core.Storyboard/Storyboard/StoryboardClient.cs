@@ -74,9 +74,12 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable, ICa
     /// Constructs a new SB Client
     /// </summary>
     /// <param name="sbConfig">Configures how the SB Application will be started</param>
+    /// <param name="metadata">Configures the Events available to the application</param>
     /// <param name="api"></param>
-    public StoryboardClient(StartupConfiguration sbConfig = null, IStoryboardAPI api = null)
+    public StoryboardClient(StartupConfiguration sbConfig = null, IStoryboardMetadata metadata = null, IStoryboardAPI api = null)
     {
+        StoryboardExtension.Metadata = metadata;
+
         api ??= GetInterop();
 
         sbioAPI = api;
@@ -200,7 +203,7 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable, ICa
     /// </summary>
     /// <param name="message"></param>
     /// <param name="target"></param>
-    public void SendEvent(object message, string target = null)
+    public void SendEvent(StoryboardViewModelBase message, string target = null)
     {
         // Attempt to Send event. If Event can't be sent, abort application
         if (outputChannel.SendEvent(message, target) == -1)
@@ -260,8 +263,8 @@ public class StoryboardClient : IDispatchSource, ICanAutoStart, IDisposable, ICa
         {
             if (message is StoryboardMessage)
                 MessageQueue.Add(message as StoryboardMessage);
-            else
-                MessageQueue.Add(new StoryboardMessage(message));
+            else if (message is StoryboardViewModelBase)
+                MessageQueue.Add((message as StoryboardViewModelBase).Message);
         }
     }
 

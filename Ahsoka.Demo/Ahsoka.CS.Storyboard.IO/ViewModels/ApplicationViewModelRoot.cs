@@ -220,7 +220,7 @@ internal class ApplicationViewModelRoot
     {
         if (args is StoryboardEventArgs sbArg)
         {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Receiving message {sbArg.Message.EventAttribute.EventName}");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Receiving message {sbArg.Message.Name}");
 
             // This Call Constructs a Model Object from a Storyboard message in order to 
             // update our model objects.   Typically these are in response to User Inputs such as 
@@ -234,12 +234,12 @@ internal class ApplicationViewModelRoot
                 }
                 else
                 {
-                    throw new ApplicationException($"No object for Event {sbArg.Message.EventAttribute.EventName}");
+                    throw new ApplicationException($"No object for Event {sbArg.Message.Name}");
                 }
             }
             catch (ApplicationException ex)
             {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Encountered Application Exception Parsing Message {sbArg.Message.EventAttribute.EventName}: {ex.Message}");
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Encountered Application Exception Parsing Message {sbArg.Message.Name}: {ex.Message}");
             }
             catch (Exception ex)
             {

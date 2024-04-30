@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Ahsoka.Utility;
@@ -72,75 +73,37 @@ public enum SBFieldType
 }
 
 /// <summary>
-/// Attribute for Specifying the Name of a SBIO Event Object
-/// should be used on an object representing an SBIO Event.
+/// A set of string enumerations that define the direction of the Storyboard messages
 /// </summary>
-public class SBMessageEventName : Attribute
+public enum StoryboardMessageDirection
 {
     /// <summary>
-    /// Name of the SBIO Event...should match Storyboard Event Name
+    /// The Storyboard Message is coming into the C# application.
     /// </summary>
-    public string EventName { get; internal set; }
-
+    In,
     /// <summary>
-    /// Name of the Direction of the SBIO Event... Specifically if it is going to or from the Storyboard instance
+    /// The Storyboard Message is coming out from the C# application.
     /// </summary>
-    public string EventDirection {get; internal set; }
-
-    /// <summary>
-    /// Constructor
-    /// </summary>
-    /// <param name="eventName"></param>
-    /// <param name="eventDirection"></param>
-    public SBMessageEventName(string eventName = null, string eventDirection = null)
-    {
-        EventName = eventName;
-        EventDirection = eventDirection;
-    }
+    Out,
 }
 
 /// <summary>
-/// Attribute representing a SBIO Event Property
-/// Describes information necessary to serialize messages in SBIO. 
+/// A static class for containing extension methods
 /// </summary>
-public class SBFieldAttribute : ViewModelPropertyBaseAttribute 
+public static class StoryboardMessageExtensions
 {
     /// <summary>
-    /// Order of this event property in SBIO
+    /// Utility function used to Extract a Type Safe Object from SBIO
     /// </summary>
-    public int Ordinal { get; private set; }
-
-    /// <summary>
-    /// The Size of the Field in SBIO (For Arrays)
-    /// </summary>
-    public int Count { get; internal set; }
-
-    /// <summary>
-    /// Name of the Field
-    /// </summary>
-    public string FieldName { get; private set; }
-
-    /// <summary>
-    /// Type of Field
-    /// </summary>
-    public SBFieldType FieldType { get; internal set; }
-
-    /// <summary>
-    /// Constructor used to contruct DotNet Attribute.
-    /// </summary>
-    /// <param name="ordinal"></param>
-    /// <param name="count"></param>
-    /// <param name="fieldName"></param>
-    public SBFieldAttribute(int ordinal, int count = 1, [CallerMemberName] string fieldName = null)
+    internal static string GetMessageDirectionString(this StoryboardMessageDirection directionEnum)
     {
-        Ordinal = ordinal;
-
-        if (fieldName == null)
-            FieldName = $"variable{ordinal}";
-        else
-            FieldName = fieldName;
-
-        Count = count;
+        return directionEnum switch
+        {
+            StoryboardMessageDirection.In => "0x20",
+            StoryboardMessageDirection.Out => "0x40",
+            _ => throw new Exception("The direction provided isn't supported."),
+        };
     }
+
 }
 

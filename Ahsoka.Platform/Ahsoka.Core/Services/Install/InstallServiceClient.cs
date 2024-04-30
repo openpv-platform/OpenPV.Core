@@ -58,7 +58,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
     /// <returns></returns>
     public InstallResult StartServiceAndInstall(string installFile, string passCode, bool useLocalInstaller)
     {
-        AutoResetEvent serviceReady = new(false);
+        AutoResetEvent unpackReady = new(false);
         bool unpackSuccessful = false;
         AhsokaRuntime internalRuntime = null;
         var serviceTask = Task.Run(() =>
@@ -82,9 +82,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                 if (result && File.Exists(installerPath))
                 {
                     unpackSuccessful = true;
-
-                    // Signal Unpack was successful
-                    serviceReady.Set();
+                    unpackReady.Set();
 
                     // Start the Service
                     RunServiceOutOfProcess(installerPath, installerArgs); // Blocks until finished
@@ -99,7 +97,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Error Occurred");
 
                     // Signal Unpack was successful
-                    serviceReady.Set();
+                    unpackReady.Set();
                 }
             }
         });
@@ -109,12 +107,13 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
         {
             // Wait for Unpack if running Real Installer.
             if (!useLocalInstaller)
-                serviceReady.WaitOne();
+                unpackReady.WaitOne();
 
             if (!unpackSuccessful)
                 return new InstallCompleteInfo() { Message = "Unable to Read Package", Result = InstallResult.InvalidFile };
 
             return ExecuteInstall(installFile, passCode);
+
         });
 
         // Wait for Service Task to Complete
@@ -169,6 +168,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
         }
     }
 
+
     private InstallCompleteInfo ExecuteInstall(string installFile, string passKey)
     {
         return SendNotificationWithResponse<InstallCompleteInfo>(InstallMessageTypes.Ids.InstallPackage, new InstallPackageRequest() { InstallPackagePath = installFile, InstallPassKey = passKey });
@@ -201,8 +201,6 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
     private bool UnPackInstaller(string path, out string pathToInstallerFile, out string installerArguements)
     {
-        string pathToInstaller = string.Empty;
-
         string temp = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.TempRoot);
         if (!Directory.Exists(temp))
             Directory.CreateDirectory(temp);

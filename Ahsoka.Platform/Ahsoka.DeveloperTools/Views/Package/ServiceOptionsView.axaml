@@ -42,15 +42,24 @@
 		</StackPanel>
 
 		<Grid ColumnDefinitions="205,auto,*" 
-			  RowDefinitions="*,auto,20" Margin="20,0">
+			  RowDefinitions="*,auto,auto,20" Margin="20,0">
 
 			<Border Grid.ColumnSpan="3" Grid.Row="1" BorderBrush="Gainsboro"
 							BorderThickness="1" Background="WhiteSmoke"
-							Margin="20,0,20,20" Padding="10,10,10,10"
+							Margin="20,-10,20,20" Padding="10,10,10,10"
 							HorizontalAlignment="Stretch">
-				<TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Configure OpenPV Services for your Application. From here you can configure the service ports as well as any DataService Keys to make available in your application"
+				<TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Configure OpenPV Services for your Application.  These service are configured to work with your application. Note that if the service is not configured here, then it will not be able to start in your running application.   The services defined in Extensions can not be disabled."
 					 Foreground="SteelBlue" HorizontalAlignment="Left" />
 			</Border>
+			
+			<Grid Grid.Row="2" Margin="13,-10" ColumnDefinitions="Auto,Auto">
+				<TextBlock  Margin="3,0,0,20" Text="Service Security Key:" Grid.Row="1"  Grid.Column="0"/>
+				<StackPanel Margin="0,0,0,20" Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+					<ComboBox VerticalAlignment="Center" SelectedItem="{Binding PrivateServiceKey}" ItemsSource="{Binding SigningKeys}" Grid.Row="4" Grid.Column="1" Width="200"  />
+					<TextBlock FontSize="11" MaxWidth="400" TextWrapping="Wrap" Text="This Key to be used for generating Service Tokens when using the Security Service. When selected, the application must use the Security Service to aquire a token prior to talking to other OpenPV services)" ToolTip.Tip="This feature requires that the display was prepped or locked with the signing key." Grid.Row="1" Grid.Column="0"/>
+				</StackPanel>
+			</Grid>
+
 			<Border Margin="0,20,0,0" BorderBrush="Gainsboro" BorderThickness="0"
 					Grid.ColumnSpan="3" Grid.Row="0"
 					HorizontalAlignment="Stretch">
@@ -62,7 +71,7 @@
 						<ListBox  ItemsSource="{Binding Services}" SelectedItem="{Binding SelectedService}" Background="Transparent" >
 							<ListBox.ItemTemplate>
 								<DataTemplate>
-									<Grid ColumnDefinitions="30,*,auto,auto,auto,auto,auto,auto" Margin="-5" 
+									<Grid ColumnDefinitions="30,*,auto,auto,auto,auto,auto,auto,auto,auto" Margin="-5" 
 										  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 										<Button IsVisible="{Binding !IsExtension}" Margin="0,3,0,0" 
 												HorizontalAlignment="Left"
@@ -77,10 +86,10 @@
 												<material:MaterialIcon IsVisible="{Binding !IsIncluded}" Width="20" Height="20" Foreground="Gray" Kind="CheckboxBlank"></material:MaterialIcon>
 											</Grid>
 										</Button>
-										<Grid 
-												ToolTip.Tip="Automatically Included based on Imported Extension."
-												HorizontalAlignment="Left" Width="24"
-											    Height="24" Margin="0,3,0,0" IsVisible="{Binding IsExtension}">
+										<Grid
+											ToolTip.Tip="Automatically Included based on Imported Extension."
+											HorizontalAlignment="Left" Width="24"
+											Height="24" Margin="0,3,0,0" IsVisible="{Binding IsExtension}">
 											<material:MaterialIcon Width="20" Height="20" Foreground="DarkGray" Kind="CheckboxMarked"></material:MaterialIcon>
 										</Grid>
 
@@ -96,14 +105,27 @@
 												<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
 											</CheckBox.RenderTransform>
 										</CheckBox>
+										
+										<TextBlock IsVisible="{Binding IsIncluded}" Text="Secure:"
+												   Margin="0,3,20,0"  HorizontalAlignment="Stretch"
+												   FontSize="14" Grid.Column="4" TextWrapping="1" />
+										<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding UseSecurity}"
+												 Margin="-20,-1,10,-4"  HorizontalAlignment="Left"
+												 Grid.Column="5" VerticalAlignment="Center">
+											<CheckBox.RenderTransform>
+												<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
+											</CheckBox.RenderTransform>
+										</CheckBox>
+										
+										
 
 
-										<TextBlock IsVisible="{Binding IsIncluded}" Text="Port (TCP):" Margin="0,3,20,0"  
-												   HorizontalAlignment="Stretch" FontSize="14" Grid.Column="4" 
+										<TextBlock IsVisible="{Binding IsIncluded}" Text="Port:" Margin="0,3,0,0"  
+												   HorizontalAlignment="Stretch" FontSize="14" Grid.Column="6" 
 												   TextWrapping="1" />
 										<TextBox IsVisible="{Binding IsIncluded}" Text="{Binding ServicePort}"
-												 Margin="0,3,0,0"  HorizontalAlignment="Left"
-												 TextAlignment="Center" FontSize="12" Grid.Column="5"
+												 Margin="0,0,0,0"  HorizontalAlignment="Left"
+												 TextAlignment="Center" FontSize="12" Grid.Column="7"
 												 MaxHeight="24" Height="24" MinHeight="24" Padding="3"
 												 TextWrapping="1" />
 
@@ -118,12 +140,11 @@
 							</ListBox.ItemTemplate>
 						</ListBox>
 					</Border>
-
 					
 				</Grid>
 			</Border>
 		</Grid>
-		<Border Grid.ColumnSpan="2" IsVisible="{Binding KeyListShown, FallbackValue=true}"
+		<Border Grid.ColumnSpan="2" IsVisible="{Binding KeyListShown, FallbackValue=false}"
 				 BorderBrush="DarkGray" Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
 			<Border Background="Transparent">
 				<Grid VerticalAlignment="Stretch" HorizontalAlignment="Center" MaxHeight="500" Margin="30">

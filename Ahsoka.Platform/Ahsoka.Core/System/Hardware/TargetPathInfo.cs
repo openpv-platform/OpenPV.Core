@@ -57,6 +57,7 @@ public partial class TargetPathInfo
             case InstallerPaths.ApplicationSigningKeyPath:
                 return $"{fieldRoot}/signing_key.cert";
 
+
             case InstallerPaths.WatchFolder:
                 return $"{GetAhsokaPath("watcher")}";
 
@@ -84,8 +85,11 @@ public partial class TargetPathInfo
                 return $"/usr/share/psplash/splash.png";
 
             case InstallerPaths.ApplicationVersion:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.AppVersionFile);
-
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder, ApplicationOutputComponent.AppVersionFile);
+            
+            case InstallerPaths.ServiceKeyFile:
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.ServiceKeyFile);
+            
             case InstallerPaths.ApplicationDescription:
                 return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.AppDescriptionFile);
 
@@ -301,6 +305,11 @@ public enum InstallerPaths
     /// Signing Key used for Decrypting Applications
     /// </summary>
     ApplicationSigningKeyPath,
+
+    /// <summary>
+    /// Signing Key used for Service Security
+    /// </summary>
+    ServiceKeyFile,
 }
 
 /// <summary>

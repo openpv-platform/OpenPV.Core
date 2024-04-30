@@ -1,8 +1,11 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 
 namespace Ahsoka.DeveloperTools;
@@ -13,9 +16,52 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
     bool keysShown = false;
 
     public ServiceEnableDisable[] ServiceEnableDisableItems { get; init; } = Enum.GetValues<ServiceEnableDisable>();
-    
-   //public DataAccessLevel[] DataAccessLevels { get; init; } = Enum.GetValues<DataAccessLevel>();
 
+    public List<String> SigningKeys
+    {
+        get
+        {
+            string path = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Test"));
+            List<string> returnList = new List<string>() { "(None)" };
+
+            if (Path.Exists(path))
+                returnList.AddRange(Directory.GetFiles(path, "*.cert").Select(Path.GetFileNameWithoutExtension));
+
+            return returnList;
+        }
+        set { }
+    }
+
+    public string PrivateServiceKeyFile
+    {
+        get
+        {
+            string path = PackageInformation.GetPackageCertPath(PrivateServiceKey);
+            if (File.Exists(path))
+                return path;
+
+            return string.Empty;
+        }
+
+    }
+
+    public string PrivateServiceKey
+    {
+        get
+        {
+
+            if (SigningKeys.Contains(ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.SigningKey))
+                return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.SigningKey;
+            else
+                return "(None)";
+        }
+        set
+        {
+            ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.SigningKey = value;
+            OnPropertyChanged();
+        }
+    }
+    
     public TransportSocketTypes[] SocketTypes { get; init; } = Enum.GetValues<TransportSocketTypes>();
 
     public ObservableCollection<ServiceConfigurationViewModel> Services
@@ -176,6 +222,26 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                 Keys.Add(new DataKeyItemViewModel(this, key));
     }
 
+    public bool UseSecurity
+    {
+        get
+        {
+            if (CurrentServiceConfiguration != null)
+                return CurrentServiceConfiguration.Behaviors.HasFlag(EndPointBehaviors.SecurityEnabled);
+            else
+                return false;
+        }
+        set
+        {
+            if (value)
+                CurrentServiceConfiguration.Behaviors |= EndPointBehaviors.SecurityEnabled;
+            else
+                CurrentServiceConfiguration.Behaviors &= ~EndPointBehaviors.SecurityEnabled;
+
+            OnPropertyChanged();
+        }
+    }
+
 
     public bool ClientAutoStart
     {
@@ -189,14 +255,13 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
         set
         {
             if (value)
-                CurrentServiceConfiguration.Behaviors = EndPointBehaviors.AutoStart;
+                CurrentServiceConfiguration.Behaviors |= EndPointBehaviors.AutoStart;
             else
-                CurrentServiceConfiguration.Behaviors = EndPointBehaviors.AutoStartDisabled;
+                CurrentServiceConfiguration.Behaviors &= ~EndPointBehaviors.AutoStart;
 
             OnPropertyChanged();
         }
     }
-
 
     public TransportSocketTypes SocketType
     {
@@ -213,8 +278,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
             OnPropertyChanged();
         }
     }
-
-
 
     public int ServicePort
     {

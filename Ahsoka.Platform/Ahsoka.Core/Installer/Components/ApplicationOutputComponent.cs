@@ -22,7 +22,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
     public const string AppNameFile = "AppName.txt";
     public const string AppVersionFile = "AppVersion.txt";
     public const string AppTypeFile = "AppType.txt";
-    public const string AppCertFile = "AppCert.bin";
+    public const string ServiceKeyFile = "ServiceKey.cert";
     public const string AppDescriptionFile = "AppDescription.txt";
     public const string ComponentTypeGuid = "333C0904-F3D6-4381-B9E4-B230A21CB464";
     const string ApplicationTypeKeyAttribute = "applicationType";
@@ -64,6 +64,14 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
         if (info.PackageDescription != null)
             additionalFiles[$"{AppInfoFolder}/{AppDescriptionFile}"] = Encoding.UTF8.GetBytes(info.PackageDescription);
+
+
+        if (!string.IsNullOrEmpty(info.ServiceInfo.RuntimeConfiguration.SigningKey))
+        {
+            var fileData = File.ReadAllText(PackageInformation.GetPackageCertPath(info.ServiceInfo.RuntimeConfiguration.SigningKey));
+            var keyData = JsonUtility.Deserialize<DeviceKeyInfo>(fileData);
+            additionalFiles[$"{AppInfoFolder}/{ServiceKeyFile}"] = Encoding.UTF8.GetBytes(keyData.PrivateKey);
+        }
 
 
         additionalFiles[$"{AppInfoFolder}/{AppNameFile}"] = Encoding.UTF8.GetBytes(info.PackageName);

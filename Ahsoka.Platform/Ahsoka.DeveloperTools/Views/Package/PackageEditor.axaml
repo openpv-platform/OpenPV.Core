@@ -53,7 +53,7 @@
 				<TabItem.Header>
 					<TextBlock
 						FontSize="18"
-						Text="Licensing"/>
+						Text="Device"/>
 				</TabItem.Header>
 				<CustomerTools:LicensingView/>
 			</TabItem>

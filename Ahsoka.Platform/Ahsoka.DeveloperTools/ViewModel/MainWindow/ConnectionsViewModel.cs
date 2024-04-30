@@ -55,7 +55,6 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
         }
     }
 
-
     public bool ShowFactoryPrep
     {
         get { return showFactoryPrep; }

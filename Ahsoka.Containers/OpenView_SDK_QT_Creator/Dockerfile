@@ -14,6 +14,7 @@ RUN \
 		qtchooser \
 		qt5-qmake \
 		qtbase5-dev-tools \
+		libqt5charts5-dev \
         qt5-doc \
         qtdeclarative5-dev \
         qml-module-qtquick-controls2 \

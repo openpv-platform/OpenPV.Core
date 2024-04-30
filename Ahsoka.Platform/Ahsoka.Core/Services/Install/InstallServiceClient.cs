@@ -60,7 +60,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
     {
         AutoResetEvent serviceReady = new(false);
         bool unpackSuccessful = false;
-
+        AhsokaRuntime internalRuntime = null;
         var serviceTask = Task.Run(() =>
         {
             // Launch Installer....we will use this executable to run the installer...only for testing
@@ -69,16 +69,15 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                 unpackSuccessful = true;
 
                 // Start Async Service
-                AhsokaRuntime.CreateBuilder()
+                internalRuntime = AhsokaRuntime.CreateBuilder()
                             .AddServices(new InstallService())
-                            .StartLocalRuntime()
-                            .WaitForShutdown();
+                            .StartLocalRuntime();
             }
             else
             {
                 // Unpack Installer so we can execute the Service In a Separate Process
                 bool result = UnPackInstaller(installFile, out string installerPath, out string installerArgs);
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Installer was unpacked with result {result} .");
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Installer unpacked with result: {result}");
 
                 if (result && File.Exists(installerPath))
                 {
@@ -88,8 +87,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     serviceReady.Set();
 
                     // Start the Service
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Path = {installerPath}, Args = {installerArgs}");
-                    RunServiceOutOfProcess(installerPath, installerArgs);// Blocks
+                    RunServiceOutOfProcess(installerPath, installerArgs); // Blocks until finished
 
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Process Finished.");
 
@@ -103,8 +101,6 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     // Signal Unpack was successful
                     serviceReady.Set();
                 }
-
-
             }
         });
 
@@ -144,6 +140,12 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
             returnValue = InstallResult.UnknownError;
             installerUI?.InstallComplete(new InstallCompleteInfo() { Result = InstallResult.UnknownError, Message = "The install process did not end successfully" });
+        }
+
+        if (internalRuntime != null)
+        {
+            internalRuntime.RequestShutdown();
+            internalRuntime.WaitForShutdown();
         }
 
         // Remove opv Package
@@ -230,8 +232,6 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
             // Extract InstallerPackage.zip to temp runtime directory
             string installerRunPath = SystemInfo.HardwareInfo.TargetPathInfo.GetTempFileName();
             Directory.CreateDirectory(installerRunPath);
-            if (Directory.Exists(installerRunPath))
-                Directory.Delete(installerRunPath, true);
 
             installerUI?.InstallProgress(new InstallProgressInfo()
             {

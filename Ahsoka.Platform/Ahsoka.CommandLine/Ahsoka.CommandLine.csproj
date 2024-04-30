@@ -5,6 +5,7 @@
 		<TrimMode>copyused</TrimMode>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	</PropertyGroup>
 	
 	<PropertyGroup Label="Suppress Errors for GPIO Project">

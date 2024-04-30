@@ -75,9 +75,7 @@ public partial class AhsokaRuntime
     /// </summary>
     public void WaitForShutdown()
     {
-        bool waitResult = shutDownEvent.WaitOne(MillisecondsTimeout);
-        if (!waitResult)
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "WaitForShutdown did not recieve a shutdown signal but exited Anyway.");
+        shutDownEvent.WaitOne();
 
         lock (syncRoot)
             currentRuntimes.Remove(this);

@@ -786,11 +786,11 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
     {
         get
         {
-            List<string> returnList =
-            [
-                "(None)",
-                .. Directory.GetFiles(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),".ssh"), "*.pub", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension),
-            ];
+            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
+            List<string> returnList = new List<string>() { "(None)" };
+
+            if (Path.Exists(folder))
+                returnList.AddRange(Directory.GetFiles(folder, "*.pub", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension));
             return returnList;
         }
         set { }
@@ -800,12 +800,12 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
     {
         get
         {
-            string path = PackageInformation.GetPackageCertPath("Test");
-            List<string> returnList =
-            [
-                "(None)",
-                .. Directory.GetFiles(Path.GetDirectoryName(path), "*.cert").Select(Path.GetFileNameWithoutExtension),
-            ];
+            string path = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Test"));
+            List<string> returnList = new List<string>(){ "(None)" };
+
+            if (Path.Exists(path))
+                returnList.AddRange(Directory.GetFiles(path, "*.cert").Select(Path.GetFileNameWithoutExtension));
+
             return returnList;
         }
         set { }

@@ -342,11 +342,6 @@ public class InstallEngineBase
         var context = new InstallContext(this, service, passKey);
         context.OpenLog();
 
-        // Cleanup Previous Install Data
-        service.SendLog(new InstallLogInfo() { LogMessage = "Cleaning Previous Install Data", LogMessageType = LogMessageType.Information });
-        CleanupPreviousInstalls(service);
-
-
         try
         {
             // Validate the Package
@@ -393,6 +388,10 @@ public class InstallEngineBase
         {
             // Send Results
             installCompleteInfo = CreateFinalResultMessage(finalResult);
+
+            // Cleanup Previous Install Data
+            service.SendLog(new InstallLogInfo() { LogMessage = "Cleaning Previous Install Data", LogMessageType = LogMessageType.Information });
+            CleanupPreviousInstalls(service);
 
             context.CloseLog();
         }
@@ -591,10 +590,10 @@ public class InstallEngineBase
 
     private void CleanupPreviousInstalls(InstallService service)
     {
-
         // Search for Temp Files from Previous Installs
-        string currentDirectory = Path.GetDirectoryName(Environment.ProcessPath);
         string path = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.TempRoot);
+        service.SendLog(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Temp Path {path}" });
+
         if (Directory.Exists(path))
             foreach (var file in Directory.GetFiles(path))
                 if (File.Exists(file))
@@ -608,8 +607,10 @@ public class InstallEngineBase
                 }
 
         if (Directory.Exists(path))
-            foreach (var dir in Directory.GetDirectories(path))
-                if (dir == currentDirectory)
+        {
+            var list = new DirectoryInfo(path).GetDirectories().OrderBy(x=>x.CreationTime);
+            foreach (var dir in list)
+                if (dir == list.Last())
                 {
                     service.SendLog(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Skip Delete for Current Temp Files" });
                 }
@@ -619,10 +620,11 @@ public class InstallEngineBase
 
                     try
                     {
-                        Directory.Delete(dir, true);
+                        Directory.Delete(dir.FullName, true);
                     }
                     catch (Exception) { } // Fail Silently.
                 }
+        }
 
 
         // Clear the Logs Folder of all but last 5 logs.

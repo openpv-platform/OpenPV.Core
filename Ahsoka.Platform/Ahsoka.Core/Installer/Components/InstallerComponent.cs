@@ -37,7 +37,11 @@ internal class CommandLineComponent : PackageComponentBase
         var componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
         if (componentData != null)
         {
-            componentData.Attributes.Add(InstallerFileNameAttribute, "Ahsoka.CommandLine");
+            if (info.PlatformFamily == PlatformFamily.Windows64)
+                componentData.Attributes.Add(InstallerFileNameAttribute, "Ahsoka.CommandLine.exe");
+            else
+                componentData.Attributes.Add(InstallerFileNameAttribute, "Ahsoka.CommandLine");
+
             componentData.Attributes.Add(InstallerArgsAttribute, "--StartInstallService");
         }
         return componentData;

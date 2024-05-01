@@ -90,7 +90,10 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Process Finished.");
 
                     // Remove Installer Folder
-                    Directory.Delete(Path.GetDirectoryName(installerPath), true);
+                    string path = Path.GetDirectoryName(installerPath);
+                    while (Path.Exists(path))
+                        try { Directory.Delete(path, true); }
+                        catch { Task.Delay(100).Wait(); }
                 }
                 else
                 {
@@ -180,6 +183,8 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
         if (!OperatingSystem.IsWindows())
             Process.Start("chmod", "+x " + installerPath).WaitForExit();
 
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
         IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
         {
             try
@@ -189,14 +194,16 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     if (!info.Error)
                         installerUI?.Log(new InstallLogInfo() { LogMessage = info.Data, LogMessageType = LogMessageType.Information });
                     else
+                    {
                         installerUI?.Log(new InstallLogInfo() { LogMessage = info.Data, LogMessageType = LogMessageType.Error });
+                        cancellationTokenSource.Cancel(); // Stop Process on Error
+                    }
                 }
             }
             catch (Exception) { }
-
         });
 
-        ProcessUtility.RunProcessAsync(installerPath, installerArgs, null, progressText, CancellationToken.None);
+        ProcessUtility.RunProcessAsync(installerPath, installerArgs, null, progressText, cancellationTokenSource.Token);
     }
 
     private bool UnPackInstaller(string path, out string pathToInstallerFile, out string installerArguements)

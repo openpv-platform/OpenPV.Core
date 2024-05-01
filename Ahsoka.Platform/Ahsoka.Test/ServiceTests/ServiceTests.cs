@@ -148,17 +148,24 @@ public class ServiceTests : LinearTestBase
                      .StartWithExternalServices();
 
         // Run Sample Test Code
-        ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
-        ServiceSelfTests.PrintServerMetrics(systemClient);
+        var task = Task.Run(() =>
+        {
+            ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
+            ServiceSelfTests.PrintServerMetrics(systemClient);
 
-        var buzzerConfig = systemClient.GetBuzzerConfig();
-        systemClient.SetBuzzerConfig(buzzerConfig);
+            var buzzerConfig = systemClient.GetBuzzerConfig();
+            systemClient.SetBuzzerConfig(buzzerConfig);
 
-        // Request Service Shutdown
-        systemClient.RequestServiceShutdown();
+            // Request Service Shutdown
+            systemClient.RequestServiceShutdown();
+        });
+
+        var result = task.Wait(10000);
 
         // Stop the Runtimes
         AhsokaRuntime.ShutdownAll();
+
+        Assert.IsTrue(result,"The test process did not complete");
     }
 
     private void ApplicationServiceClient_NotificationReceived(object sender, NotificationEventArgs<SystemMessageTypes.Ids> e)

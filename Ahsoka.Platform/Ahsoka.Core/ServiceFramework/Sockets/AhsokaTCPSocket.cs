@@ -3,6 +3,7 @@ using NetMQ.Monitoring;
 using NetMQ.Sockets;
 using System;
 using System.Diagnostics;
+using System.Net.Sockets;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -114,11 +115,15 @@ internal sealed class TCPClientSocket : IAhsokaSocket
         NetMQSocket socket = receiveAsNotification ? NotificationSocket : Socket;
 
         NetMQMessage message = new();
-        if (socket != null && socket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(timeOutInMs), ref message, 2))
+        try
         {
-            header = message.Pop().Buffer;
-            data = message.Pop().Buffer;
+            if (socket != null && socket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(timeOutInMs), ref message, 2))
+            {
+                header = message.Pop().Buffer;
+                data = message.Pop().Buffer;
+            }
         }
+        catch (SocketException) { } // Catching Errors During Shutdown / Disconnect
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Received Client {(receiveAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");
 

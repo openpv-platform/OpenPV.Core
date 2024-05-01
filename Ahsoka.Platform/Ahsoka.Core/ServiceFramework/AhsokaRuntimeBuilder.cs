@@ -216,6 +216,8 @@ public partial class AhsokaRuntime
             if (!OperatingSystem.IsWindows())
                 Process.Start("chmod", "+x " + executablePath).WaitForExit();
 
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+
             IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
             {
                 if (!String.IsNullOrEmpty(info.Data))
@@ -223,14 +225,17 @@ public partial class AhsokaRuntime
                     if (!info.Error)
                         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "External Process Information: " + info.Data);
                     else
+                    {
                         AhsokaLogging.LogMessage(AhsokaVerbosity.High, "External Process Error: " + info.Data);
+                        tokenSource.Cancel();
+                    }
                 }
             });
 
             Task.Run(() =>
             {
-                ProcessUtility.RunProcessAsync(executablePath, $"--StartServices {configurationFile}", null, progressText, CancellationToken.None);
-            });
+                ProcessUtility.RunProcessAsync(executablePath, $"--StartServices {configurationFile}", null, progressText, tokenSource.Token);
+            },tokenSource.Token);
         }
         #endregion
     }

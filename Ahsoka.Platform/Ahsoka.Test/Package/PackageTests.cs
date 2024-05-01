@@ -7,6 +7,7 @@ using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -115,12 +116,17 @@ public class PackagingTests : LinearTestBase
         string newTempFile = Path.GetTempFileName();
         File.Copy(tempFilePath, newTempFile, true);
 
-        client.StartServiceAndInstall(newTempFile, "PassCode", runInProc);
+        try
+        {
+            var result = client.StartServiceAndInstall(newTempFile, "PassCode", runInProc);
+        }
+        finally
+        {
+            File.Delete(newTempFile);
 
-        File.Delete(newTempFile);
-
-        client.CurrentRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+            client.CurrentRuntime.RequestShutdown();
+            AhsokaRuntime.ShutdownAll();
+        }
     }
 
 

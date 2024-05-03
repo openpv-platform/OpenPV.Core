@@ -104,7 +104,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         var repository = new SourceRepository(source, providers);
 
         var search = await repository.GetResourceAsync<RawSearchResourceV3>();
-        var filter = new SearchFilter(includePrerelease: true);
+        var filter = new SearchFilter(true);
 
         var response = await search.Search($"packageid:{packageName}", filter, skip: 0, take: 20, NullLogger.Instance, CancellationToken.None);
         var versions = response.SelectMany(x => x["versions"]);
@@ -113,7 +113,11 @@ internal class PlatformExtensionsTool : SparkToolBase
         var results = versions.Select(x => new NuGetVersion((string)x.SelectToken("version")));
         var minVersion = new NuGetVersion(nugetVersion.Major, nugetVersion.Minor, 0);
 
-        string thisVersion = new VersionRange(minVersion, true, nugetVersion, true).FindBestMatch(results)?.ToFullString();
+        string thisVersion = null;
+        if (versions.Any(x => x.SelectToken("version").ToString() == nugetVersion.ToString()))
+            thisVersion = nugetVersion.ToFullString();
+        else
+           thisVersion = new VersionRange(minVersion, true, nugetVersion, true).FindBestMatch(results)?.ToFullString();
 
         if (thisVersion != null)
             await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, thisVersion, null, evaluateDeps);
@@ -162,7 +166,6 @@ internal class PlatformExtensionsTool : SparkToolBase
                 libEntry.ExtractToFile(Path.Combine(directory, libraryFile), true);
          
                 // TODO: Extract Any Include Files.
-                
                 if (evaluateDeps)
                 {
             

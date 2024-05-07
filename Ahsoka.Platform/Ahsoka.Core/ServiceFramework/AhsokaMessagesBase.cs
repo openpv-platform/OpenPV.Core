@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Installer;
+using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 
@@ -8,22 +9,28 @@ namespace Ahsoka.ServiceFramework;
 
 public abstract class AhsokaMessagesBase
 {
-    private readonly Dictionary<Enum, ServiceMessageInfo> info = new();
-    internal Dictionary<Enum, ServiceMessageInfo> Info => info;
+    private readonly Dictionary<Int32, ServiceMessageInfo> info = new();
+    internal Dictionary<Int32, ServiceMessageInfo> Info => info;
 
-    protected void RegisterServiceRequest(Enum transportId, Type requestType, Type replyType, bool generateImplementation = true, bool hideInGeneratedClients = false)
+    public AhsokaMessagesBase()
     {
-        Info.Add(transportId, new ServiceMessageInfo() { AutoGenerateImplementation = generateImplementation, HideInGeneratedClients = hideInGeneratedClients, TransportId = transportId, RequestType = requestType, ReplyType = replyType });
+        // Add Invalid Types to All Services
+        Info.Add(InvalidTransportIds.InvalidToken.EnumToInt(), new ServiceMessageInfo() { ReplyType = typeof(InvalidResponseNotification),  RequestType = typeof (InvalidResponseNotification), IsNotification = true, HideInGeneratedClients = true });
+    }
+
+    protected void RegisterServiceRequest(Enum transportId, Type requestType, Type replyType, bool generateImplementation = true, bool hideInGeneratedClients = false, bool requireSecurity = true)
+    {
+        Info.Add(transportId.EnumToInt(), new ServiceMessageInfo() { AutoGenerateImplementation = generateImplementation, HideInGeneratedClients = hideInGeneratedClients, TransportId = transportId, RequestType = requestType, ReplyType = replyType, RequiresSecurity = requireSecurity });
     }
 
     protected void RegisterServiceNotification(Enum transportId, Type notificationType, bool generateImplementation = true, bool hideInGeneratedClients = false)
     {
-        Info.Add(transportId, new ServiceMessageInfo() { AutoGenerateImplementation = generateImplementation, HideInGeneratedClients = hideInGeneratedClients, IsNotification = true, TransportId = transportId, RequestType = notificationType, ReplyType = notificationType });
+        Info.Add(transportId.EnumToInt(), new ServiceMessageInfo() { AutoGenerateImplementation = generateImplementation, HideInGeneratedClients = hideInGeneratedClients, IsNotification = true, TransportId = transportId, RequestType = notificationType, ReplyType = notificationType });
     }
 
     public ServiceMessageInfo GetMessageInfo(Enum transportType)
     {
-        Info.TryGetValue(transportType, out ServiceMessageInfo returnValue);
+        Info.TryGetValue(transportType.EnumToInt(), out ServiceMessageInfo returnValue);
         return returnValue;
     }
 
@@ -49,6 +56,7 @@ public class ServiceMessageInfo
     public Enum TransportId;
     public Type RequestType { get; internal set; }
     public Type ReplyType { get; internal set; }
+    public bool RequiresSecurity { get; internal set; } = true;
 }
 #endregion
 

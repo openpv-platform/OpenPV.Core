@@ -55,7 +55,7 @@ public partial class TargetPathInfo
         switch (path)
         {
             case InstallerPaths.ApplicationSigningKeyPath:
-                return $"{fieldRoot}/signing_key.cert";
+                return $"{fieldRoot}/signing_key.appcert";
 
 
             case InstallerPaths.WatchFolder:
@@ -87,8 +87,8 @@ public partial class TargetPathInfo
             case InstallerPaths.ApplicationVersion:
                 return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder, ApplicationOutputComponent.AppVersionFile);
             
-            case InstallerPaths.ServiceKeyFile:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.ServiceKeyFile);
+            case InstallerPaths.ServiceSecurityFile:
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.ServiceSecurityFile);
             
             case InstallerPaths.ApplicationDescription:
                 return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.AppDescriptionFile);
@@ -270,6 +270,11 @@ public enum InstallerPaths
     /// Path to the Application Version File
     /// </summary>
     ApplicationVersion,
+   
+    /// <summary>
+    /// Path to the Application ID
+    /// </summary>
+    ApplicationId,
 
     /// <summary>
     /// Path to the Application Description File
@@ -307,9 +312,9 @@ public enum InstallerPaths
     ApplicationSigningKeyPath,
 
     /// <summary>
-    /// Signing Key used for Service Security
+    /// Service Security Info
     /// </summary>
-    ServiceKeyFile,
+    ServiceSecurityFile,
 }
 
 /// <summary>

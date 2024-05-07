@@ -220,7 +220,7 @@ stages:
       inputs:
         command: test
         projects: '**/*Ahsoka.Test/*.csproj'
-        arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --blame-hang --blame-hang-timeout 120s --logger:"console;verbosity=detailed" --settings: Ahsoka.Platform/codecoverage.runsettings'
+        arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --blame-hang --blame-hang-timeout 120s -m:1 --logger:"console;verbosity=detailed" --settings: Ahsoka.Platform/codecoverage.runsettings'
 
     - task: CmdLine@2
       displayName: 'Remove User Secrets'

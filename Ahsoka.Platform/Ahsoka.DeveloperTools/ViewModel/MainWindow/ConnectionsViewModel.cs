@@ -799,11 +799,11 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
     {
         get
         {
-            string path = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Test"));
+            string path = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Test", KeyTypes.PackageSigningKey));
             List<string> returnList = new List<string>(){ "(None)" };
 
             if (Path.Exists(path))
-                returnList.AddRange(Directory.GetFiles(path, "*.cert").Select(Path.GetFileNameWithoutExtension));
+                returnList.AddRange(Directory.GetFiles(path, "*.appcert").Select(Path.GetFileNameWithoutExtension));
 
             return returnList;
         }
@@ -915,7 +915,7 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
     {
         get
         {
-            string path = PackageInformation.GetPackageCertPath(PrivateAppKey);
+            string path = PackageInformation.GetPackageCertPath(PrivateAppKey, KeyTypes.PackageSigningKey);
             if (File.Exists(path))
                 return path;
             

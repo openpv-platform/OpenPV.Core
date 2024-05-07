@@ -33,7 +33,7 @@ public class DataServiceClient : AhsokaClientBase<DataMessageTypes.Ids>
     public DataServiceClient(ServiceConfiguration config) :
         base(config, new DataServiceMessages())
     {
-        SubscriberIds.Add(this.GetEndPointId().ToGuidString());
+        SubscriberIds.Add(this.GetClientId().ToGuidString());
     }
 
     /// <summary>

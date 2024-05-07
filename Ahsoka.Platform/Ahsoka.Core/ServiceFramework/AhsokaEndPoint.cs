@@ -13,7 +13,7 @@ public interface IAhsokaEndPoint
 
     AhsokaRuntime CurrentRuntime { get; set; }
 
-    byte[] GetEndPointId();
+    byte[] GetClientId();
 
     void Connect();
 
@@ -24,7 +24,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
     where TTransportIds : Enum
 {
     #region Fields
-    byte[] endpointId = Guid.NewGuid().ToByteArray();
+    byte[] clientId = Guid.NewGuid().ToByteArray();
     readonly AhsokaMessagesBase serviceMessageInfo;
     int messageReceiveCount = 0;
     int messageSendCount = 0;
@@ -32,7 +32,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     #region Properties
 
-    public byte[] GetEndPointId() { return endpointId; }
+    public byte[] GetClientId() { return clientId; }
     public bool IsRunning { get { return Socket == null ? false : Socket.IsConnected; } }
     protected IAhsokaSocket Socket { get; private set; }
     public AhsokaRuntime CurrentRuntime { get; set; }
@@ -100,10 +100,11 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
         }
     }
 
-    protected bool ReceiveMessage(out AhsokaMessageHeader messageHeader, out object messageObject, bool isOutOfBand, int timoutInMs = int.MaxValue)
+    protected bool ReceiveMessage(out AhsokaMessageHeader messageHeader, out object messageObject, out ServiceMessageInfo messageInfo,  bool isOutOfBand, int timoutInMs = int.MaxValue)
     {
         messageObject = null;
         messageHeader = null;
+        messageInfo = null;
 
         bool recievedMessage = Socket.ReceiveMessage(out byte[] headerData, out byte[] messageData, out byte[] clientId, isOutOfBand, timoutInMs);
 
@@ -121,11 +122,11 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
             // Lookup and Decode Message
             TTransportIds transportType = messageHeader.TransportId.IntToEnum<TTransportIds>();
-            var value = serviceMessageInfo.GetMessageInfo(transportType);
+            messageInfo = serviceMessageInfo.GetMessageInfo(transportType);
 
-            if (value != null) // Not much we can do with a mesage we can't decode
+            if (messageInfo != null) // Not much we can do with a mesage we can't decode
                 using (MemoryStream objectData = new(messageData))
-                    messageObject = ProtoBuf.Serializer.Deserialize(GetReceiptType(value), objectData);
+                    messageObject = ProtoBuf.Serializer.Deserialize(GetReceiptType(messageInfo), objectData);
         }
 
         return recievedMessage;

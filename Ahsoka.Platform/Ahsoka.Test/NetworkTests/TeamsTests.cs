@@ -1,4 +1,5 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Spark;
 using Ahsoka.Spark;
 using Ahsoka.System;

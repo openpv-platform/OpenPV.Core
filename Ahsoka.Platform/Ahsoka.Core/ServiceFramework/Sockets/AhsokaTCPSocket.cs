@@ -31,7 +31,7 @@ internal sealed class TCPClientSocket : IAhsokaSocket
             SocketPoller = new NetMQPoller();
             Socket = new DealerSocket();
             Socket.Options.Linger = TimeSpan.FromSeconds(1);
-            Socket.Options.Identity = endPoint.GetEndPointId();
+            Socket.Options.Identity = endPoint.GetClientId();
 
             Socket.Connect(this.endPoint.ServiceConfig.DataURI);
 

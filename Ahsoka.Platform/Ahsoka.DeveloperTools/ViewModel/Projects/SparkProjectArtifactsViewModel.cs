@@ -90,9 +90,9 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
                 SparkProjectTools.RemoveDevelopmentKey(this.ParentViewModel.Model, SelectedDevelopmentKey.Model);
 
                 // Delete Local if App Cert
-                if (SelectedDevelopmentKey.ArtifactType == KeyTypes.PackageSigningKey)
+                if (SelectedDevelopmentKey.ArtifactType == KeyTypes.PackageSigningKey || SelectedDevelopmentKey.ArtifactType == KeyTypes.ServiceKey)
                 {
-                    string path = PackageInformation.GetPackageCertPath(SelectedDevelopmentKey.DeviceKeyName);
+                    string path = PackageInformation.GetPackageCertPath(SelectedDevelopmentKey.DeviceKeyName, SelectedDevelopmentKey.ArtifactType);
                     if (File.Exists(path))
                         File.Delete(path);
                 }
@@ -184,10 +184,28 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
         this.FindParent<MainViewModel>().Popup.ShowPopup(addItemView);
     }
 
+    internal void CreateServiceCert()
+    {
+        var model = new NewItemViewModel()
+        {
+            Hint = "Certificate will be created and shared with the team for use when compiling applications.",
+            Label = "Key Name:",
+            Title = "Create Service Certificate",
+            ItemAccepted = CreateAccepted,
+            ItemCancelled = Cancel,
+            Tag = KeyTypes.ServiceKey
+        };
+        this.addItemView = new NewItemView() { DataContext = model };
+
+        this.FindParent<MainViewModel>().Popup.ShowPopup(addItemView);
+    }
+
     internal async void ImportKeys()
     {
-        string certFilePath = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Blank"));
-        var fileInfo = await this.FindParent<MainViewModel>().FileLocatorAsync("Select Key (ssh or appcert)", "*", "Keys (ssh and *.cert)");
+        string certFilePath = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Blank", KeyTypes.DeviceKey));
+        var fileInfo = await this.FindParent<MainViewModel>().FileLocatorAsync("Select Key (ssh, appcert, serviceCert)", "*", "Keys (ssh, *.appcert and *.servicecert)");
+        if (fileInfo == null)
+            return;
 
         bool isAppCert = fileInfo.ToLower().EndsWith("cert");
         string keyName = Path.GetFileNameWithoutExtension(fileInfo);

@@ -1,8 +1,10 @@
 ﻿using Ahsoka.Dispatch;
+using Ahsoka.Services.Security;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
+using System.Security;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -12,6 +14,8 @@ public interface IAhsokaClientEndpoint : IAhsokaEndPoint, IDispatchSource
 {
     IAhsokaServiceEndpoint CreateDefaultService();
 
+    void SetToken(Token securityToken);
+
     void NotificationDataReady();
 }
 
@@ -19,6 +23,9 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
     IAhsokaClientEndpoint
     where TTransportIds : Enum, new()
 {
+
+    Token securityToken = null;
+
     #region Service Notification Handler 
     public class AhsokaNotificationArgs : NotificationEventArgs<TTransportIds> { }
 
@@ -62,6 +69,16 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
             throw new Exception("Socket Type is Not Supported");
     }
 
+    /// <summary>
+    /// Sets a Token to be used on each 
+    /// </summary>
+    /// <param name="securityToken"></param>
+    public void SetToken(Token securityToken)
+    {
+        this.securityToken = securityToken;
+    }
+
+
     public void AddBehavior(IClientEndPointBehavior<TTransportIds> behavior)
     {
         behavior.Init(this, ServiceConfig);
@@ -71,7 +88,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
     void IAhsokaClientEndpoint.NotificationDataReady()
     {
         // Recieve Out of Band Message and Process on Handler
-        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, true))
+        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out _, true))
             OnHandleReceive(responseHeader, returnObject);
     }
 
@@ -88,7 +105,8 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         AhsokaMessageHeader header = new()
         {
             TransportId = transportId.EnumToInt(),
-            ClientMessageId = messageId++
+            ClientMessageId = messageId++,
+            ServiceToken = securityToken?.ClientToken 
         };
 
         lock (Socket)
@@ -109,8 +127,11 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         // We found our Message or Timed out Waiting for Messages
         while (responseHeader?.TransportId != requestHeader.TransportId && cancelTime > DateTime.Now)
         {
-            if (ReceiveMessage(out responseHeader, out returnObject, false, timeoutInMs))
+            if (ReceiveMessage(out responseHeader, out returnObject, out _, false, timeoutInMs))
             {
+                if (responseHeader.TransportId == InvalidTransportIds.InvalidToken.EnumToInt())
+                    throw new SecurityException("The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked iwht a valid token");
+
                 // If Async Message...send to Out of Band Handler
                 if (responseHeader.TransportId != requestHeader.TransportId)
                     OnHandleReceive(responseHeader, returnObject);

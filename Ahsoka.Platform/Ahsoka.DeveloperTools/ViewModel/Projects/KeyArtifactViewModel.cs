@@ -5,6 +5,7 @@ using System.IO;
 using static Ahsoka.Spark.SparkProjectTools;
 using Ahsoka.Spark;
 using Ahsoka.Installer;
+using System.Linq;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -26,12 +27,12 @@ internal class KeyArtifactViewModel : ChildViewModelBase<SparkProjectViewModel>
 
     public KeyTypes ArtifactType
     {
-        get { return ArtifactName.Contains(deviceKey) ? KeyTypes.DeviceKey : KeyTypes.PackageSigningKey; }
+        get { return ArtifactName.Contains(deviceKey) ? KeyTypes.DeviceKey : (ArtifactName.Contains(serviceKey) ? KeyTypes.ServiceKey : KeyTypes.PackageSigningKey); }
     }
 
     public string DeviceKeyName
     {
-        get { return ArtifactName.Replace(deviceKey, "").Replace(appCert, ""); }
+        get { return ArtifactName.Replace(deviceKey, "").Replace(appCert, "").Replace(serviceKey,""); }
     }
 
     public string ArtifactCreator
@@ -50,7 +51,7 @@ internal class KeyArtifactViewModel : ChildViewModelBase<SparkProjectViewModel>
             }
             else
             {
-                var path = PackageInformation.GetPackageCertPath(DeviceKeyName);
+                var path = PackageInformation.GetPackageCertPath(DeviceKeyName, ArtifactType);
                 return File.Exists(path);
             }
         }

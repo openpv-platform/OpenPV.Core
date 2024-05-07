@@ -1,7 +1,9 @@
 ﻿using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Security;
 using Ahsoka.System;
 using Ahsoka.Utility;
+using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -13,19 +15,37 @@ namespace Ahsoka.DeveloperTools;
 internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
 {
     ServiceConfigurationViewModel selectedService;
-    bool keysShown = false;
+    bool securityShown = false;
+    string apiKey = string.Empty;
 
     public ServiceEnableDisable[] ServiceEnableDisableItems { get; init; } = Enum.GetValues<ServiceEnableDisable>();
+
+    public string ApiKey
+    {
+        get
+        {
+            return apiKey;
+        }
+        set
+        {
+            if (apiKey != value)
+                apiKey = value;
+
+            OnPropertyChanged();
+        }
+
+    }
+
 
     public List<String> SigningKeys
     {
         get
         {
-            string path = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Test"));
+            string path = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Test", KeyTypes.ServiceKey));
             List<string> returnList = new List<string>() { "(None)" };
 
             if (Path.Exists(path))
-                returnList.AddRange(Directory.GetFiles(path, "*.cert").Select(Path.GetFileNameWithoutExtension));
+                returnList.AddRange(Directory.GetFiles(path, "*.servicecert").Select(Path.GetFileNameWithoutExtension));
 
             return returnList;
         }
@@ -36,7 +56,7 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
     {
         get
         {
-            string path = PackageInformation.GetPackageCertPath(PrivateServiceKey);
+            string path = PackageInformation.GetPackageCertPath(PrivateServiceKey, KeyTypes.ServiceKey);
             if (File.Exists(path))
                 return path;
 
@@ -59,6 +79,7 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
         {
             ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.SigningKey = value;
             OnPropertyChanged();
+            OnPropertyChanged(nameof(ApiKey));
         }
     }
     
@@ -77,22 +98,10 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
         {
             selectedService = value;
             OnPropertyChanged();
-
-            if (selectedService != null && ParentViewModel.ExtensionsViewModel != null)
-            {
-                HasUx = ParentViewModel.ExtensionsViewModel.AvailableExtensions.Any(x => x.ExtensionConfiguration.ServiceConfigurations.Any(x => x.ServiceName == SelectedService.ServiceName));
-                OnPropertyChanged(nameof(HasUx));
-            }
         }
     }
 
-    public bool HasUx
-    {
-        get;
-        set;
-    }
-
-    public bool KeyListShown { get => keysShown; set { keysShown = value; OnPropertyChanged(); } }
+    public bool SecurityShown { get => securityShown; set { securityShown = value; OnPropertyChanged(); } }
 
     public ServiceViewModel(PackageViewModel parentViewModel)
         : base(parentViewModel)
@@ -125,16 +134,37 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
         SelectedService = Services.FirstOrDefault();
     }
 
-    public void ShowKeys()
+    public void GenerateKey()
     {
-        KeyListShown = !KeyListShown;
+        string path = PackageInformation.GetPackageCertPath(PrivateServiceKey, KeyTypes.ServiceKey);
+
+        if (!File.Exists(path))
+            return;
+
+        var teamID = ParentViewModel.PackageInfo.ApplicationId;
+        if (teamID == Guid.Empty)
+        {
+            ParentViewModel.ParentViewModel.Dialog.ShowDialog("Select a Project For this Package", "Please select a project on the Packaging Info page.  This Project ID will be used when validating the API key at runtime.", "Ok");
+            return;
+        }
+
+        var info = JsonUtility.Deserialize<DeviceKeyInfo>(File.ReadAllText(path));
+
+        var source = new AppKeyTokenSource( new()
+        {
+            TokenPublicKey = info.PublicKey,
+            ApplicationId = teamID.ToByteArray(),
+            TokenPrivateKey = info.PrivateKey
+        });
+
+        ApiKey = source.CreateApiKey(teamID.ToByteArray());
     }
 
-    public void ShowUX()
+    public void ShowSecurity()
     {
-        var ext = ParentViewModel.ExtensionsViewModel.AvailableExtensions.FirstOrDefault(x => x.ExtensionConfiguration.ServiceConfigurations.Any(x => x.ServiceName == SelectedService.ServiceName));
-        ParentViewModel.ExtensionsViewModel.ShowUx(ext.ExtensionName);
+        SecurityShown = !SecurityShown;
     }
+
 }
 
 internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewModel>
@@ -146,9 +176,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     string extentionName;
    
     public bool IsExtension { get; set; }
-    
-    public bool HasUx { get; set; }
-
+  
     public string ServiceName { get; private set; }
 
     public string ServiceNameFull { get; }
@@ -358,7 +386,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
         {
             this.extension = extension;
             this.IsExtension = true;
-            this.HasUx = extension.ExtensionConfiguration.HasUx;
             this.extentionName = extension.ExtensionConfiguration.ExtensionName;
         }
         this.ServiceName = $"{config.ServiceName}";

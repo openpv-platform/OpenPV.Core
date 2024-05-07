@@ -23,16 +23,6 @@ enum PlatformFamily
 message RuntimeConfiguration
 {
     repeated ServiceConfiguration services = 1; // System Services to Start.
-
-    StartOptions ServiceStartup = 4;
-
-    StartOptions ReleaseOption = 5;
-
-    repeated string extensions = 6;
-
-    int32 startup_delay = 7;
-    
-    string signing_key = 8;
 }
 
 message ServiceConfiguration

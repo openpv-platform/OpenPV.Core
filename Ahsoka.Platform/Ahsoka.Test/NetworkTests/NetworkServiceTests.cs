@@ -35,7 +35,9 @@ public class NetworkServiceTest : LinearTestBase
 
         string wifiAdapterId = null;
 
+        Console.WriteLine($"Getting Network Adapters");
         var networkAdapters = client.GetNetworkAdapters();
+        Console.WriteLine($"Adapters: {networkAdapters.Adapters.Count()}");
         foreach (var adapter in networkAdapters.Adapters)
         {
             Console.WriteLine();
@@ -139,10 +141,10 @@ public class NetworkServiceTest : LinearTestBase
             value = dataClient.GetKeyValues(keys.Keys.First().ToKeyList());
         }
 
-        client.DisableAdapter(new AdapterRequest() { AdapterId = wifiAdapterId });
+        if (wifiAdapterId != null)
+            client.DisableAdapter(new AdapterRequest() { AdapterId = wifiAdapterId });
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
         AhsokaRuntime.ShutdownAll();
     }
 

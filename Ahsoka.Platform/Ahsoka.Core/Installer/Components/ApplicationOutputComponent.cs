@@ -22,7 +22,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
     public const string AppNameFile = "AppName.txt";
     public const string AppVersionFile = "AppVersion.txt";
     public const string AppTypeFile = "AppType.txt";
-    public const string ServiceKeyFile = "ServiceKey.cert";
+    public const string ServiceSecurityFile = "ServiceKey.info";
     public const string AppDescriptionFile = "AppDescription.txt";
     public const string ComponentTypeGuid = "333C0904-F3D6-4381-B9E4-B230A21CB464";
     const string ApplicationTypeKeyAttribute = "applicationType";
@@ -56,8 +56,6 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         List<InstallerPlugin> installerPlugins, 
         IProgress<PackageProgressInfo> progress)
     {
-
-
         // Add Version Info to .appinfo Folder
         if (info.ApplicationVersion != null)
             additionalFiles[$"{AppInfoFolder}/{AppVersionFile}"] = Encoding.UTF8.GetBytes(info.ApplicationVersion);
@@ -68,11 +66,18 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
         if (!string.IsNullOrEmpty(info.ServiceInfo.RuntimeConfiguration.SigningKey))
         {
-            var fileData = File.ReadAllText(PackageInformation.GetPackageCertPath(info.ServiceInfo.RuntimeConfiguration.SigningKey));
+            var fileData = File.ReadAllText(PackageInformation.GetPackageCertPath(info.ServiceInfo.RuntimeConfiguration.SigningKey, KeyTypes.ServiceKey));
             var keyData = JsonUtility.Deserialize<DeviceKeyInfo>(fileData);
-            additionalFiles[$"{AppInfoFolder}/{ServiceKeyFile}"] = Encoding.UTF8.GetBytes(keyData.PrivateKey);
-        }
 
+            var securityConfig = new Services.Security.SecurityConfiguration()
+            {
+                ApplicationId = info.ApplicationId.ToByteArray(),
+                RequireChallenge = info.ServiceInfo.RuntimeConfiguration.RequireChallenge,
+                TokenPublicKey = keyData.PublicKey
+                // We Do not send Private Key to Display
+            };
+            additionalFiles[$"{AppInfoFolder}/{ServiceSecurityFile}"] = Encoding.UTF8.GetBytes(JsonUtility.Serialize(securityConfig));
+        }
 
         additionalFiles[$"{AppInfoFolder}/{AppNameFile}"] = Encoding.UTF8.GetBytes(info.PackageName);
         additionalFiles[$"{AppInfoFolder}/{AppTypeFile}"] = Encoding.UTF8.GetBytes(info.ApplicationType.ToString());
@@ -162,15 +167,19 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             AddInstaller(context, item);
 
             // Enable the Services for Application Startup.
-            output = Process.Start("systemctl", "disable Ahsoka.Installer.service");
+            output = Process.Start("systemctl", "disable Ahsoka.Installer.service -q");
             output.WaitForExit();
             if (output.ExitCode != 0)
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to disable Ahsoka.Installer.service" });
+            else
+                context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Disabled Ahsoka.Installer.service" });
 
-            output = Process.Start("systemctl", "enable Ahsoka.Application.service");
+            output = Process.Start("systemctl", "enable Ahsoka.Application.service -q");
             output.WaitForExit();
             if (output.ExitCode != 0)
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to enable Ahsoka.Application.service" });
+            else
+                context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Enabled Ahsoka.Application.service" });
         }
 
 

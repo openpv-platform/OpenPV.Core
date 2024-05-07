@@ -106,12 +106,15 @@ public class PackageInformation : PackageHeader
     
     public string GetPackageCertPath()
     {
-        return GetPackageCertPath(this.PackageSigningCertFile);
+        return GetPackageCertPath(this.PackageSigningCertFile, KeyTypes.PackageSigningKey);
     }
 
-    public static string GetPackageCertPath(string keyName)
+    public static string GetPackageCertPath(string keyName, KeyTypes type)
     {
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AhsokaData", "AhsokaCerts", keyName + ".cert");
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+            "AhsokaData",
+            "AhsokaCerts", 
+            (type == KeyTypes.PackageSigningKey ? keyName + ".appcert" : keyName + ".servicecert"));
     }
 }
 
@@ -141,6 +144,14 @@ public class StartupEnvironmentValue
 
 public class DeviceKeyInfo
 {
+    public KeyTypes KeyTypes { get; set; }
     public string PublicKey { get; set; }
     public string PrivateKey { get; set; }
+}
+
+public enum KeyTypes
+{
+    DeviceKey,
+    PackageSigningKey,
+    ServiceKey,
 }

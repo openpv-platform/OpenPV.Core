@@ -194,10 +194,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     if (!info.Error)
                         installerUI?.Log(new InstallLogInfo() { LogMessage = info.Data, LogMessageType = LogMessageType.Information });
                     else
-                    {
                         installerUI?.Log(new InstallLogInfo() { LogMessage = info.Data, LogMessageType = LogMessageType.Error });
-                        cancellationTokenSource.Cancel(); // Stop Process on Error
-                    }
                 }
             }
             catch (Exception) { }

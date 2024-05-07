@@ -18,6 +18,7 @@ namespace Ahsoka.Spark;
 public static class SparkProjectTools
 {
     internal const string deviceKey = "_DeviceKey";
+    internal const string serviceKey = "_ServiceKey";
     internal const string appCert = "_AppCert";
 
     public static bool Login(string url, string login, string password)
@@ -185,9 +186,9 @@ public static class SparkProjectTools
         if (!keyFile.Any(x => x.ArtifactName == artifactName))
         {
             // Create New Key
-            DeviceKeyInfo key = artifactType == KeyTypes.DeviceKey ? 
-                GetUploadInfo(keyName) :   // Generates an ssh key
-                GetCertInfo(keyName);      // Generates a key pair stored encrypted in cert folder. 
+            DeviceKeyInfo key = artifactType == KeyTypes.DeviceKey ?
+                GetUploadInfo(keyName, artifactType) :   // Generates an ssh key
+                GetCertInfo(keyName, artifactType);      // Generates a key pair stored encrypted in cert folder. 
 
             var uploadTokens = SparkAccountClient.SharedSparkClient.GetArtifactUploadTokens(team.TeamID, artifactRequest);
 
@@ -211,7 +212,7 @@ public static class SparkProjectTools
             }
             else
             {
-                certFilePath = PackageInformation.GetPackageCertPath(keyName);
+                certFilePath = PackageInformation.GetPackageCertPath(keyName, artifactType);
                 isLocal = File.Exists(certFilePath);
             }
 
@@ -243,11 +244,11 @@ public static class SparkProjectTools
         }
     }
 
-    private static DeviceKeyInfo GetCertInfo(string keyName)
+    private static DeviceKeyInfo GetCertInfo(string keyName, KeyTypes keyType)
     {
         // Generate Key Pair
-        var keygen = RSAEncryption.GenerateNewKeyPair(true);
-        string pathToCerts = PackageInformation.GetPackageCertPath(keyName);
+        var keygen = keyType == KeyTypes.PackageSigningKey ? RSAEncryption.GenerateNewKeyPair(true) : ECDsaEncryption.GenerateNewKeyPair();
+        string pathToCerts = PackageInformation.GetPackageCertPath(keyName, keyType);
 
         if (!Directory.Exists(Path.GetDirectoryName(pathToCerts)))
             Directory.CreateDirectory(Path.GetDirectoryName(pathToCerts));
@@ -256,6 +257,7 @@ public static class SparkProjectTools
 
         var keyData = new DeviceKeyInfo()
         {
+            KeyTypes = keyType,
             PublicKey = keygen.Value,
             PrivateKey = keygen.Key
         };
@@ -266,13 +268,14 @@ public static class SparkProjectTools
     }
 
 
-    private static DeviceKeyInfo GetUploadInfo(string keyName)
+    private static DeviceKeyInfo GetUploadInfo(string keyName, KeyTypes keyType)
     {
         KeyFileInfo keysFiles = SshUtility.CreateKeyFile(keyName);
 
         // Create Key Data
         return new DeviceKeyInfo()
         {
+            KeyTypes = keyType,
             PublicKey = File.ReadAllText(keysFiles.PublicKeyPath),
             PrivateKey = File.ReadAllText(keysFiles.PrivateKeyPath)
         };
@@ -284,8 +287,10 @@ public static class SparkProjectTools
 
         if (type == KeyTypes.DeviceKey)
             return $"{deviceKeyName}{deviceKey}";
-        else
+        else if (type == KeyTypes.PackageSigningKey)
             return $"{deviceKeyName}{appCert}";
+        else
+            return $"{deviceKeyName}{serviceKey}";
     }
 
     public static string GetKeyName(string keyName)
@@ -296,10 +301,4 @@ public static class SparkProjectTools
     }
 
 
-}
-
-public enum KeyTypes
-{
-    DeviceKey,
-    PackageSigningKey
 }

@@ -88,8 +88,8 @@ public class ConfigurationLoader
                     Behaviors = EndPointBehaviors.AutoStart,
                     IsExtension = true,
                     SocketType = TransportSocketTypes.TcpSocket,
-                     TcpListenAddress = "*",
-                      TcpConnectionAddress = "localhost",
+                    TcpListenAddress = "*",
+                    TcpConnectionAddress = "localhost",
                 };
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Configuration not Found, AutoGenerating Local Only Configuration for Service {serviceName} at DataChannel{result.DataChannel}.");
             }

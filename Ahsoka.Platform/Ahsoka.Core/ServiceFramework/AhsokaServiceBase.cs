@@ -1,5 +1,7 @@
-﻿using Ahsoka.System;
+﻿using Ahsoka.Services.Security;
+using Ahsoka.System;
 using Ahsoka.Utility;
+using Azure;
 using System;
 
 namespace Ahsoka.ServiceFramework;
@@ -60,8 +62,19 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
     void IAhsokaServiceEndpoint.ServiceDataReady()
     {
         // Recieve In Band Data
-        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, false))
+        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out ServiceMessageInfo info, false))
         {
+            // Validate Security
+            if (this.ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.SecurityEnabled) && info.RequiresSecurity)
+            {
+                if (responseHeader.ServiceToken == null || !TokenSource.Default.IsRequestValid(responseHeader.ServiceToken, responseHeader.ClientId))
+                {
+                    // Send Invalid Transport Value
+                    responseHeader.TransportId = InvalidTransportIds.InvalidToken.EnumToInt();
+                    SendMessageInternal(responseHeader, new InvalidResponseNotification());
+                    return;
+                }
+            }
             OnHandleReceive(responseHeader, returnObject);
         }
     }

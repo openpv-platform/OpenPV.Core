@@ -41,8 +41,6 @@ public static class SystemInfo
         }
     }
 
-
-
     /// <summary>
     /// Returns the Hardware Information for the Current Platform.
     /// </summary>
@@ -250,3 +248,37 @@ public class LicenseInfo
 }
 
 
+public partial class RuntimeConfiguration
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public StartOptions ServiceStartup { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public StartOptions ReleaseOption { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<string> Extensions { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public Int32 StartupDelay { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string SigningKey { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public bool RequireChallenge { get; set; }
+
+
+}

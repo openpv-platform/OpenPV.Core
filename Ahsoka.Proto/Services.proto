@@ -34,6 +34,9 @@ message AhsokaMessageHeader
     // Note: New for OpenPV / Ahsoka Message Architecture 
     bool is_message_compressed = 6;
 
+    // (Optional) Security Token used to protect service from unauthorized calls
+    // Tokens are created by the Security Service using the UnlockEndPoint() method
+    bytes service_token = 7;
 }
 
 //----------------------------
@@ -44,3 +47,20 @@ message EmptyNotification
 {
 
 }
+
+
+//----------------------------
+// Empty Object / Message used when no information is needed 
+// other than the TransportID
+//----------------------------
+message InvalidResponseNotification
+{
+
+}
+
+enum InvalidTransportIds
+{
+    None = 0;
+    InvalidToken = -1;
+}
+

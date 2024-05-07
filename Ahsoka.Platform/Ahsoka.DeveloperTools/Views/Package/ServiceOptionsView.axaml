@@ -29,14 +29,13 @@
 			<Button Margin="3,3,5,3"
 							HorizontalAlignment="Stretch"
 							Height="38"
-							IsEnabled="{Binding HasUx}"
 							VerticalContentAlignment="Center"
-							Command="{Binding ShowUX}">
+							Command="{Binding ShowSecurity}">
 				<StackPanel Orientation="Horizontal">
 					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="ServiceToolbox"></material:MaterialIcon>
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13" 
-							   ToolTip.Tip="Show Extension Configuration."
-							   Text="Configure Extension..."/>
+							   ToolTip.Tip="Service Security..."
+							   Text="Service Security..."/>
 				</StackPanel>
 			</Button>
 		</StackPanel>
@@ -52,13 +51,7 @@
 					 Foreground="SteelBlue" HorizontalAlignment="Left" />
 			</Border>
 			
-			<Grid Grid.Row="2" Margin="13,-10" ColumnDefinitions="Auto,Auto">
-				<TextBlock  Margin="3,0,0,20" Text="Service Security Key:" Grid.Row="1"  Grid.Column="0"/>
-				<StackPanel Margin="0,0,0,20" Orientation="Horizontal" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
-					<ComboBox VerticalAlignment="Center" SelectedItem="{Binding PrivateServiceKey}" ItemsSource="{Binding SigningKeys}" Grid.Row="4" Grid.Column="1" Width="200"  />
-					<TextBlock FontSize="11" MaxWidth="400" TextWrapping="Wrap" Text="This Key to be used for generating Service Tokens when using the Security Service. When selected, the application must use the Security Service to aquire a token prior to talking to other OpenPV services)" ToolTip.Tip="This feature requires that the display was prepped or locked with the signing key." Grid.Row="1" Grid.Column="0"/>
-				</StackPanel>
-			</Grid>
+			
 
 			<Border Margin="0,20,0,0" BorderBrush="Gainsboro" BorderThickness="0"
 					Grid.ColumnSpan="3" Grid.Row="0"
@@ -93,7 +86,9 @@
 											<material:MaterialIcon Width="20" Height="20" Foreground="DarkGray" Kind="CheckboxMarked"></material:MaterialIcon>
 										</Grid>
 
-										<TextBlock Text="{Binding ServiceNameFull}" Margin="0,3,0,0"  HorizontalAlignment="Stretch" FontSize="14" Grid.Column="1" TextWrapping="1" />
+										<TextBlock Text="{Binding ServiceNameFull}" ToolTip.Tip="{Binding ServiceNameFull}"
+												   Margin="0,3,0,0"  HorizontalAlignment="Stretch" 
+												   FontSize="14" Grid.Column="1" TextWrapping="NoWrap" />
 
 										<TextBlock IsVisible="{Binding IsIncluded}" Text="AutoStart:" 
 												   Margin="0,3,20,0"  HorizontalAlignment="Stretch" 
@@ -144,6 +139,55 @@
 				</Grid>
 			</Border>
 		</Grid>
+		<Border Grid.ColumnSpan="2" IsVisible="{Binding SecurityShown, FallbackValue=true}"
+				 BorderBrush="DarkGray" Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+			<Border VerticalAlignment="Center" Background="Transparent">
+				<Grid VerticalAlignment="Top" HorizontalAlignment="Center" MaxHeight="500" Margin="30">
+					<Border BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White" Padding="25">
+						<Grid RowDefinitions="auto,auto,auto,auto,auto" Margin="13,-10" ColumnDefinitions="Auto,Auto">
+							<Button Grid.Column="2" Margin="-30,-8" Grid.Row="0" Width="24" Height="24"
+									HorizontalAlignment="Right"
+									VerticalAlignment="Top"
+									Command="{Binding ShowSecurity}"
+									Background="Transparent">
+								<material:MaterialIcon Padding="5"  Background="Transparent"
+													   Foreground="SteelBlue" Kind="Close"/>
+							</Button>
+
+							<TextBlock Text="Security Setup" FontSize="25" Grid.ColumnSpan="2"
+								   VerticalAlignment="Top" Margin="0,0,8,0" />
+							<TextBlock HorizontalAlignment="Left" Grid.Row="1" Grid.ColumnSpan="2"
+								   MaxWidth="600" FontStyle="Italic" Foreground="SteelBlue"
+								   Text="Selecting a security key below will allow you to generate an application key that you can use for accessing the services from external applications and systems.  API Keys can be regenerated but are not saved." FontSize="12"
+								   VerticalAlignment="Top" TextWrapping="Wrap" Margin="0,0,0,8" />
+							<TextBlock  Margin="3,0,0,5" Text="App Key:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
+							
+							<StackPanel Margin="0,0,0,5" Orientation="Horizontal" Grid.Column="1" 
+										Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+								<ComboBox VerticalAlignment="Center" SelectedItem="{Binding PrivateServiceKey}" ItemsSource="{Binding SigningKeys}" Grid.Row="4" Grid.Column="1" Width="200"  />
+								<TextBlock FontSize="11" MaxWidth="400" TextWrapping="Wrap" Text="This key to be used for generating API Keys and is used by your app to validate the API key in your running application. " ToolTip.Tip="This feature requires that the display was prepped or locked with the signing key." Grid.Row="1" Grid.Column="0"/>
+							</StackPanel>
+							
+							<TextBlock  Margin="3,0,0,20" Text="API Key:" Grid.Row="3" Grid.Column="0"/>
+							
+							<StackPanel  Margin="0,0,0,20" Orientation="Horizontal" Grid.Column="1" 
+										Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+								<TextBox HorizontalAlignment="Center" Text="{Binding ApiKey}" FontSize="11" MinWidth="600" TextWrapping="Wrap" Grid.Column="0"/>
+								<Button  Margin="5,0"  Grid.Row="1" Grid.Column="2" Content="Regenerate Key..." Command="{Binding GenerateKey}"/>
+							</StackPanel>
+							<TextBlock HorizontalAlignment="Left" FontSize="11" MaxWidth="400" Grid.Row="4"
+									   VerticalAlignment="Top"
+									   Margin="0,-20,0,20"
+									   TextWrapping="Wrap" Grid.ColumnSpan="2" 
+									   Grid.Column="2"
+									   Text="API Keys are used to unlock / validate services in your application.  Changing the App Key will invalidate all previously created ApiKeys "/>
+
+						</Grid>	
+					</Border>
+				</Grid>
+			</Border>
+
+		</Border>
 		<Border Grid.ColumnSpan="2" IsVisible="{Binding KeyListShown, FallbackValue=false}"
 				 BorderBrush="DarkGray" Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
 			<Border Background="Transparent">

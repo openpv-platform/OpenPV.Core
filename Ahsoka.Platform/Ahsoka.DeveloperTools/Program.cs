@@ -17,8 +17,12 @@ internal class Program
     public static int Main(string[] args)
     {
     
+
         if (args.Length > 0) 
             MainViewModel.StartupArg = args[args.Length - 1];
+
+        // Initialing Assembly Resolver
+        AssemblyResolver.Init();
 
         AppDomain.CurrentDomain.UnhandledException += MainViewModel.ErrorOccurred;
 

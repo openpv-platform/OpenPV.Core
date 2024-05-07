@@ -14,6 +14,9 @@ public static class CommandLine
 {
     public static void Execute(string[] args)
     {
+        // Initialing Assembly Resolver
+        AssemblyResolver.Init();
+
         string pathToExecutable = Environment.ProcessPath;
 
         Console.WriteLine($"Loading Extensions ...");

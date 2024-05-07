@@ -8,17 +8,8 @@
 
 	<ItemGroup>
 		<Compile Remove="Properties\**" />
-		<Compile Remove="Spark\Client\**" />
-		<Compile Remove="Spark\DataTransferObjects\**" />
-		<Compile Remove="Spark\Security\**" />
 		<EmbeddedResource Remove="Properties\**" />
-		<EmbeddedResource Remove="Spark\Client\**" />
-		<EmbeddedResource Remove="Spark\DataTransferObjects\**" />
-		<EmbeddedResource Remove="Spark\Security\**" />
 		<None Remove="Properties\**" />
-		<None Remove="Spark\Client\**" />
-		<None Remove="Spark\DataTransferObjects\**" />
-		<None Remove="Spark\Security\**" />
 	</ItemGroup>
 
 	<ItemGroup>

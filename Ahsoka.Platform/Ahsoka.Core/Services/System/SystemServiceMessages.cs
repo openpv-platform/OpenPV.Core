@@ -32,7 +32,6 @@ internal class SystemServiceMessages : AhsokaMessagesBase
         this.RegisterServiceRequest(SystemMessageTypes.Ids.GetIgnitionPin, typeof(EmptyNotification), typeof(IgnitionState));
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.SetBootLogo, typeof(BootLogoInfo), typeof(EmptyNotification));
-
         this.RegisterServiceRequest(SystemMessageTypes.Ids.UpdateTouchTune, typeof(TouchTuneInfo), typeof(TouchTuneInfoReply));
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.RequestShutdown, typeof(ShutdownInformation), typeof(EmptyNotification));

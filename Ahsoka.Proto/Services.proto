@@ -48,6 +48,20 @@ message EmptyNotification
 
 }
 
+message SecurityConfiguration
+{
+	ChallengeOptions require_challenge = 1;
+	bytes application_id = 2;
+	string token_public_key = 3;
+	string token_private_key = 4;
+}
+
+enum ChallengeOptions
+{
+    NotRequired = 0;
+    RequireDisplayChallenge = 1;
+}
+
 
 //----------------------------
 // Empty Object / Message used when no information is needed 

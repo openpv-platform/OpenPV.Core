@@ -1,15 +1,21 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Iot;
 using Ahsoka.System;
-using System.Text;
+using Ahsoka.Utility;
+using System;
+using System.Collections.Generic;
+using System.Threading;
 
 namespace Ahsoka.Services.Security;
 
 /// <summary>
-/// IotService Client supporting MQTT for IoT Systems.
+/// Security Service for use in Authorizing Services for Clients
 /// </summary>
 public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
 {
+    AutoResetEvent waitForChallengeAccept = new(false);
+    Dictionary<Guid, Token> requests = new Dictionary<Guid, Token>();
+
     /// <summary>
     /// Default Constructor that uses the System Default Configuration
     /// </summary>
@@ -39,23 +45,19 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     }
 
     /// <summary>
-    /// Request an authorization token by sending data signed with the devices public key
+    /// Request an authorization token by sending an API Key to the Security service to get a token for the specified Clients.
     /// </summary>
-    /// <param name="tokenRequest">Connection Information for MQTT Broker</param>
+    /// <param name="tokenRequest">Token Request Info</param>
+    /// <param name="usingWaitMethod">Add the Request to the Wait List for use with WaitForToken method</param>
+    /// 
     /// <returns></returns>
-    public Token RequestToken(TokenRequestInfo tokenRequest)
+    public TokenRequestResponse RequestToken(TokenRequestInfo tokenRequest, bool usingWaitMethod = true)
     {
-        return SendNotificationWithResponse<Token>(SecurityMessageTypes.Ids.RequestToken, tokenRequest);
-    }
-
-    /// <summary>
-    /// For clients that do not have the devices public key, request a Challenge Response occcur on the Target
-    /// </summary>
-    /// <param name="challengeRequest">Challenge Request Including Client Generated Code</param>
-    /// <returns></returns>
-    public EmptyNotification RequestChallenge(ChallengeRequestInfo challengeRequest)
-    {
-        return SendNotificationWithResponse<EmptyNotification>(SecurityMessageTypes.Ids.RequestChallengeToken, challengeRequest);
+        var response = SendNotificationWithResponse<TokenRequestResponse>(SecurityMessageTypes.Ids.RequestToken, tokenRequest);
+        if (usingWaitMethod)
+            lock (requests)
+                requests.Add(response.RequestId.ToGuid(), null);
+        return response;
     }
 
     /// <summary>
@@ -67,4 +69,41 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
         return SendNotificationWithResponse<TopicResult>(SecurityMessageTypes.Ids.CompleteChallenge, completeInfo);
     }
 
+    /// <summary>
+    /// Handle Simple Token Requests
+    /// </summary>
+    /// <param name="messageHeader"></param>
+    /// <param name="message"></param>
+    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    {
+        if (messageHeader.TransportId == SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt() && message is Token token)
+        {
+            // Accept Challenge Token and Release WaitEvent
+            lock (requests)
+                requests[token.RequestId.ToGuid()] = token;
+
+            waitForChallengeAccept.Set();
+        }
+
+        base.OnHandleReceive(messageHeader, message);
+    }
+
+    /// <summary>
+    /// Waits for a token matching the requestid - Requires usingWaitMethod = True when calling RequestToken
+    /// </summary>
+    /// <param name="requestId"></param>
+    /// <returns></returns>
+    public Token WaitForToken(byte[] requestId)
+    {
+        var requestGuid = requestId.ToGuid();
+        waitForChallengeAccept.WaitOne();
+
+        lock (requests)
+        {
+            var token = requests[requestGuid];
+            requests.Remove(requestGuid);
+            return token;
+        }
+
+    }
 }

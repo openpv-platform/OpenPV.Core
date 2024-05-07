@@ -64,7 +64,17 @@ public static class AhsokaSocketExtensions
     /// <returns></returns>
     public static string ToGuidString(this byte[] bytes)
     {
-        return new Guid(bytes).ToString();
+        return bytes.ToGuid().ToString();
+    }
+
+    /// <summary>
+    /// Guid Convertion
+    /// </summary>
+    /// <param name="bytes"></param>
+    /// <returns></returns>
+    public static Guid ToGuid(this byte[] bytes)
+    {
+        return new Guid(bytes);
     }
 }
 

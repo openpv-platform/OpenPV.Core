@@ -63,13 +63,13 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         if (info.PackageDescription != null)
             additionalFiles[$"{AppInfoFolder}/{AppDescriptionFile}"] = Encoding.UTF8.GetBytes(info.PackageDescription);
 
-
-        if (!string.IsNullOrEmpty(info.ServiceInfo.RuntimeConfiguration.SigningKey))
+        string pathToCert = PackageInformation.GetPackageCertPath(info.ServiceInfo.RuntimeConfiguration.ServiceKey, KeyTypes.ServiceKey);
+        if (File.Exists(pathToCert))
         {
-            var fileData = File.ReadAllText(PackageInformation.GetPackageCertPath(info.ServiceInfo.RuntimeConfiguration.SigningKey, KeyTypes.ServiceKey));
+            var fileData = File.ReadAllText(pathToCert);
             var keyData = JsonUtility.Deserialize<DeviceKeyInfo>(fileData);
 
-            var securityConfig = new Services.Security.SecurityConfiguration()
+            var securityConfig = new ServiceFramework.SecurityConfiguration()
             {
                 ApplicationId = info.ApplicationId.ToByteArray(),
                 RequireChallenge = info.ServiceInfo.RuntimeConfiguration.RequireChallenge,

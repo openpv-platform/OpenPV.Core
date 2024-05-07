@@ -3,7 +3,6 @@ using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Security;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,6 +18,22 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
     string apiKey = string.Empty;
 
     public ServiceEnableDisable[] ServiceEnableDisableItems { get; init; } = Enum.GetValues<ServiceEnableDisable>();
+
+    public ChallengeOptions[] RequireChallengeOptions { get; init; } = Enum.GetValues<ChallengeOptions>();
+
+    public ChallengeOptions RequireChallenge
+    {
+        get
+        {
+            return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge;
+        }
+        set
+        {
+            ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge = value;
+            OnPropertyChanged();
+        }
+
+    }
 
     public string ApiKey
     {
@@ -36,8 +51,7 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
 
     }
 
-
-    public List<String> SigningKeys
+    public List<string> ServiceKeys
     {
         get
         {
@@ -70,14 +84,14 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
         get
         {
 
-            if (SigningKeys.Contains(ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.SigningKey))
-                return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.SigningKey;
+            if (ServiceKeys.Contains(ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.ServiceKey))
+                return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.ServiceKey;
             else
                 return "(None)";
         }
         set
         {
-            ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.SigningKey = value;
+            ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.ServiceKey = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(ApiKey));
         }
@@ -150,7 +164,7 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
 
         var info = JsonUtility.Deserialize<DeviceKeyInfo>(File.ReadAllText(path));
 
-        var source = new AppKeyTokenSource( new()
+        var source = new AppKeyTokenSource(new()
         {
             TokenPublicKey = info.PublicKey,
             ApplicationId = teamID.ToByteArray(),

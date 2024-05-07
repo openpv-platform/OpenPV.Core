@@ -9,47 +9,46 @@ message SecurityMessageTypes
 	{
 		NONE = 0;
 		REQUEST_TOKEN = 2;
-		REQUEST_CHALLENGE_TOKEN = 3;
         CHALLENGE_RECEIVED = 4;
         COMPLETE_CHALLENGE = 5;
 	    AUTHORIZATION_COMPLETE = 6;
 	}
 }
 
-message SecurityConfiguration
-{
-	bool require_challenge = 1;
-	bytes application_id = 2;
-	string token_public_key = 3;
-	string token_private_key = 4;
-}
 
 // Used for Cert based Auth (Client has Public Key)
 message TokenRequestInfo
 {
-    bytes client_id = 1;
-	string api_key = 2;
+    string api_key = 1;
+	repeated bytes client_ids = 2;
 	string client_description = 3;
 	string client_code = 4;
+}
+
+message TokenRequestResponse
+{
+   bytes request_id = 1;
 }
 
 // Used for Local Auth Operator Must Accept Challenge
 message ChallengeRequestInfo
 {
-   bytes client_id = 1;
-   string client_code = 2;
-	
+	bytes request_id = 1;
+	string client_code = 2;
+	string client_description = 3;
 }
 
 // Sent by UI when CHallenge is Completed
 message ChallengeCompleteInfo
 {
-    TokenRequestInfo token_request = 1;
-	string client_code = 2;
+ 	bytes request_id = 1;
+    string client_code = 2;
+	bool accept_request = 3;
 }
 
 message Token
 {
-    bytes client_token = 1;
-	bytes client_id = 2;
+	bytes request_id = 1;
+    bytes client_token = 2;	
+	bool token_is_valid = 3;
 }

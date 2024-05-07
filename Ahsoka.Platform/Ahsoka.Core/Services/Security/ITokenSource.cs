@@ -23,11 +23,19 @@ public interface ITokenSource
     /// <summary>
     /// Get a token for the given Endpoint ID
     /// </summary>
-    /// <param name="clientId"></param>
-    /// <param name="apiKey"></param>
+    /// <param name="tokenRequest"></param>
     /// <param name="appId"></param>
+    /// <param name="requestId"></param>
     /// <returns></returns>
-    Token UnlockEndPoint(byte[] clientId, string apiKey, byte[] appId);
+    Token RequestTokens(TokenRequestInfo tokenRequest, byte[] appId, out byte[] requestId);
+
+    /// <summary>
+    /// Enable a token after Challenge 
+    /// </summary>
+    /// <param name="requestId"></param>
+    /// <param name="clientCode"></param>
+    /// <returns></returns>
+    Token EnableToken(byte[] requestId, string clientCode);
 
     /// <summary>
     /// Validates a Token Given the Signed Data (clientId)
@@ -35,7 +43,7 @@ public interface ITokenSource
     /// <param name="clientToken"></param>
     /// <param name="clientId"></param>
     /// <returns></returns>
-    bool IsRequestValid(byte[] clientToken, byte[] clientId);
+    bool IsTokenValid(byte[] clientToken, byte[] clientId);
 }
 
 /// <summary>

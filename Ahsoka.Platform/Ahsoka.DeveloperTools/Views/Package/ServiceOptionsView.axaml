@@ -144,7 +144,7 @@
 			<Border VerticalAlignment="Center" Background="Transparent">
 				<Grid VerticalAlignment="Top" HorizontalAlignment="Center" MaxHeight="500" Margin="30">
 					<Border BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White" Padding="25">
-						<Grid RowDefinitions="auto,auto,auto,auto,auto" Margin="13,-10" ColumnDefinitions="Auto,Auto">
+						<Grid RowDefinitions="auto,auto,auto,auto,auto,auto" Margin="13,-10" ColumnDefinitions="Auto,Auto">
 							<Button Grid.Column="2" Margin="-30,-8" Grid.Row="0" Width="24" Height="24"
 									HorizontalAlignment="Right"
 									VerticalAlignment="Top"
@@ -160,22 +160,29 @@
 								   MaxWidth="600" FontStyle="Italic" Foreground="SteelBlue"
 								   Text="Selecting a security key below will allow you to generate an application key that you can use for accessing the services from external applications and systems.  API Keys can be regenerated but are not saved." FontSize="12"
 								   VerticalAlignment="Top" TextWrapping="Wrap" Margin="0,0,0,8" />
-							<TextBlock  Margin="3,0,0,5" Text="App Key:" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
+							<TextBlock  Margin="3,0,0,5" Text="Service Key: " VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
 							
 							<StackPanel Margin="0,0,0,5" Orientation="Horizontal" Grid.Column="1" 
 										Grid.Row="2" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
-								<ComboBox VerticalAlignment="Center" SelectedItem="{Binding PrivateServiceKey}" ItemsSource="{Binding SigningKeys}" Grid.Row="4" Grid.Column="1" Width="200"  />
-								<TextBlock FontSize="11" MaxWidth="400" TextWrapping="Wrap" Text="This key to be used for generating API Keys and is used by your app to validate the API key in your running application. " ToolTip.Tip="This feature requires that the display was prepped or locked with the signing key." Grid.Row="1" Grid.Column="0"/>
+								<ComboBox VerticalAlignment="Center" SelectedItem="{Binding PrivateServiceKey}" ItemsSource="{Binding ServiceKeys}" Grid.Row="4" Grid.Column="1" Width="250"  />
+								<TextBlock FontSize="11" MaxWidth="400" TextWrapping="Wrap" Text="This key to be used for generating API Keys and is used by your app to validate the API key in your running application. " Grid.Row="1" Grid.Column="0"/>
+							</StackPanel>
+
+							<TextBlock  Margin="3,0,0,5" Text="Challenge:" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0"/>
+							<StackPanel Margin="0,0,0,5" Orientation="Horizontal" Grid.Column="1"
+									Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+								<ComboBox VerticalAlignment="Center" SelectedItem="{Binding RequireChallenge}" ItemsSource="{Binding RequireChallengeOptions}" Grid.Row="4" Grid.Column="1" Width="250"  />
+								<TextBlock FontSize="11" MaxWidth="400" TextWrapping="Wrap" Text="If the API Key is valid, should the target Challenge the Local User before allowing access to services. " Grid.Row="1" Grid.Column="0"/>
 							</StackPanel>
 							
-							<TextBlock  Margin="3,0,0,20" Text="API Key:" Grid.Row="3" Grid.Column="0"/>
+							<TextBlock  Margin="3,0,0,20" Text="API Key:" Grid.Row="4" Grid.Column="0"/>
 							
 							<StackPanel  Margin="0,0,0,20" Orientation="Horizontal" Grid.Column="1" 
-										Grid.Row="3" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
-								<TextBox HorizontalAlignment="Center" Text="{Binding ApiKey}" FontSize="11" MinWidth="600" TextWrapping="Wrap" Grid.Column="0"/>
+										Grid.Row="4" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+								<TextBox HorizontalAlignment="Center" Text="{Binding ApiKey}" FontSize="11" MinWidth="650" TextWrapping="Wrap" Grid.Column="0"/>
 								<Button  Margin="5,0"  Grid.Row="1" Grid.Column="2" Content="Regenerate Key..." Command="{Binding GenerateKey}"/>
 							</StackPanel>
-							<TextBlock HorizontalAlignment="Left" FontSize="11" MaxWidth="400" Grid.Row="4"
+							<TextBlock HorizontalAlignment="Left" FontSize="11" MaxWidth="400" Grid.Row="5"
 									   VerticalAlignment="Top"
 									   Margin="0,-20,0,20"
 									   TextWrapping="Wrap" Grid.ColumnSpan="2" 

@@ -273,12 +273,13 @@ public partial class RuntimeConfiguration
     /// <summary>
     /// 
     /// </summary>
-    public string SigningKey { get; set; }
+    public string ServiceKey { get; set; }
 
     /// <summary>
     /// 
     /// </summary>
-    public bool RequireChallenge { get; set; }
-
-
+    public ChallengeOptions RequireChallenge { get; set; }
 }
+
+
+

@@ -2,18 +2,7 @@
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using BitMiracle.LibTiff.Classic;
-using MQTTnet;
-using MQTTnet.Client;
-using MQTTnet.Protocol;
-using SixLabors.ImageSharp;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Security.Authentication;
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Security;
 
@@ -69,14 +58,9 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
                 HandleCreateToken(messageHeader, message as TokenRequestInfo);
                 break;
 
-            case SecurityMessageTypes.Ids.RequestChallengeToken:
-
-                //HandleDestroyClient(messageHeader, message as ClientMessage);
-                break;
-
             case SecurityMessageTypes.Ids.CompleteChallenge:
 
-                //HandleTopic(messageHeader, message as TopicSubscription, true);
+                HandleCompleteChallenge(messageHeader, message as ChallengeCompleteInfo);
                 break;
 
         }
@@ -84,55 +68,38 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
 
     private void HandleCreateToken(AhsokaMessageHeader messageHeader, TokenRequestInfo tokenRequestInfo)
     {
-        var result = TokenSource.Default.UnlockEndPoint(tokenRequestInfo.ClientId, tokenRequestInfo.ApiKey, configuration.ApplicationId);
-        SendMessageInternal(messageHeader, result);
+        var resultToken = TokenSource.Default.RequestTokens(tokenRequestInfo, configuration.ApplicationId, out byte[] request);
+        SendMessageInternal(messageHeader, new TokenRequestResponse { RequestId = request });
+
+        // Return Token Or Issue Challenge.
+        if (configuration.RequireChallenge == ChallengeOptions.NotRequired)
+        {
+            messageHeader.TransportId = SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt();
+            SendMessageInternal(messageHeader, resultToken, true);
+        }
+        else
+        {
+            messageHeader.TransportId = SecurityMessageTypes.Ids.ChallengeReceived.EnumToInt();
+            SendMessageInternal(messageHeader, new ChallengeRequestInfo()
+            {
+                RequestId = request,
+                ClientCode = tokenRequestInfo.ClientCode,
+                ClientDescription = tokenRequestInfo.ClientDescription
+            }, true);
+        }
+
     }
-    /*
+    
+    private void HandleCompleteChallenge(AhsokaMessageHeader messageHeader, ChallengeCompleteInfo challengeCompleteInfo)
+    {
+        Token token = new Token() { RequestId = challengeCompleteInfo.RequestId };
+        if (challengeCompleteInfo.AcceptRequest)
+             token = TokenSource.Default.EnableToken(challengeCompleteInfo.RequestId, challengeCompleteInfo.ClientCode);
 
-private void HandlePublishTopic(AhsokaMessageHeader messageHeader, TopicMessage topicMessage)
-{
-   TopicResult result = null;
-   var client = GetClient(topicMessage.ClientId);
-   try
-   {
-       client.NativeClient.PublishBinaryAsync(topicMessage.TopicName, topicMessage.Payload);
-       result = new TopicResult() { ClientId = topicMessage.ClientId, Status = TopicResultStatus.Success };
-   }
-   catch (Exception ex)
-   {
-       result = new TopicResult() { ClientId = topicMessage.ClientId, Status = TopicResultStatus.Error, ResultText = ex.Message };
-   }
-
-   SendMessageInternal(messageHeader, result);
-}
-
-private void HandleTopic(AhsokaMessageHeader messageHeader, TopicSubscription topicSubscription, bool subscribe)
-{
-   TopicResult result = null;
-   var client = GetClient(topicSubscription.ClientId);
-   try
-   {
-       if (client.State == ClientState.Connected)
-       {
-           if (subscribe)
-               client.NativeClient.SubscribeAsync(topicSubscription.TopicName, (MqttQualityOfServiceLevel)(int)topicSubscription.QualityOfService);
-           else
-               client.NativeClient.UnsubscribeAsync(topicSubscription.TopicName);
-
-           result = new TopicResult() { ClientId = topicSubscription.ClientId, Status = TopicResultStatus.Success, ResultText = "Success" };
-       }
-       else
-           result = new TopicResult() { ClientId = topicSubscription.ClientId, Status = TopicResultStatus.Error, ResultText = "Not Connected" };
-
-   }
-   catch (Exception ex)
-   {
-       result = new TopicResult() { ClientId = topicSubscription.ClientId, Status = TopicResultStatus.Error, ResultText = ex.Message };
-   }
-
-   SendMessageInternal(messageHeader, result);
-}
-*/
+        // Send Notification Regardless to Release any Waiting Client
+        messageHeader.TransportId = SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt();
+        SendMessageInternal(messageHeader, token);
+    }
     #endregion
 
 }

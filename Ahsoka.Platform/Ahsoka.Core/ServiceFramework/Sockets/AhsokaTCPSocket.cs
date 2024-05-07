@@ -2,7 +2,6 @@
 using NetMQ.Monitoring;
 using NetMQ.Sockets;
 using System;
-using System.Diagnostics;
 using System.Net.Sockets;
 
 namespace Ahsoka.ServiceFramework;
@@ -74,7 +73,7 @@ internal sealed class TCPClientSocket : IAhsokaSocket
                 {
                     try { Socket.Disconnect(endPoint.ServiceConfig.NotificationURI); } catch { }
 
-                    SocketPoller.Stop();
+                    SocketPoller.StopAsync();
                     SocketPoller.RemoveAndDispose(Socket);
                 }
 
@@ -99,7 +98,6 @@ internal sealed class TCPClientSocket : IAhsokaSocket
             socket.SendMultipartMessage(message);
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client {(sendAsNotification ? "Notification" : "Message")} Completed from {endPoint.ServiceConfig.ServiceName} ");
-
     }
 
     bool IAhsokaSocket.ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool receiveAsNotification, int timeOutInMs)
@@ -180,9 +178,9 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
 
             Monitor.Accepted += (o, e) =>
             {
-                ((IAhsokaServiceEndpoint)endPoint).ClientConnected();
+                 ((IAhsokaServiceEndpoint)endPoint).ClientConnected();
             };
-          
+
             SocketPoller.RunAsync($"{endPoint.ServiceConfig.ServiceName}_Handler");
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Starting Service {endPoint.ServiceConfig.ServiceName} @ {endPoint.ServiceConfig.DataListenURI} with Result {IsConnected}");
@@ -203,7 +201,7 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
 
         IsConnected = false;
 
-        SocketPoller.Stop();
+        SocketPoller.StopAsync();
         SocketPoller.RemoveAndDispose(Socket);
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");

@@ -67,7 +67,7 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
             // Validate Security
             if (this.ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.SecurityEnabled) && info.RequiresSecurity)
             {
-                if (responseHeader.ServiceToken == null || !TokenSource.Default.IsRequestValid(responseHeader.ServiceToken, responseHeader.ClientId))
+                if (responseHeader.ServiceToken == null || !TokenSource.Default.IsTokenValid(responseHeader.ServiceToken, responseHeader.ClientId))
                 {
                     // Send Invalid Transport Value
                     responseHeader.TransportId = InvalidTransportIds.InvalidToken.EnumToInt();

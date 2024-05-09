@@ -96,6 +96,9 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
         if (challengeCompleteInfo.AcceptRequest)
              token = TokenSource.Default.EnableToken(challengeCompleteInfo.RequestId, challengeCompleteInfo.ClientCode);
 
+        // Reply To Challenge Complete
+        SendMessageInternal(messageHeader, token);
+
         // Send Notification Regardless to Release any Waiting Client
         messageHeader.TransportId = SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt();
         SendMessageInternal(messageHeader, token);

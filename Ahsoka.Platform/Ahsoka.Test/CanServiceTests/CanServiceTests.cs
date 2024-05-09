@@ -291,7 +291,6 @@ public class CanServiceTests : LinearTestBase
         {
             ServiceName = serviceConfiguration.ServiceName,
             DataChannel = serviceConfiguration.DataChannel,
-            NotificationChannel = serviceConfiguration.NotificationChannel,
             TcpConnectionAddress = serviceConfiguration.TcpConnectionAddress,
             TcpListenAddress = serviceConfiguration.TcpListenAddress,
             ConfigurationFile = canConfigFile

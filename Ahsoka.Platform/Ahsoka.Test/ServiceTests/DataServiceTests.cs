@@ -128,7 +128,6 @@ public class DataServiceTests : LinearTestBase
    // [TestMethod]
     public void TestDataServiceIOValues()
     {
-
         // Start clients
         var dataClient = new DataServiceClient();
         var ioclient = new IOServiceClient();

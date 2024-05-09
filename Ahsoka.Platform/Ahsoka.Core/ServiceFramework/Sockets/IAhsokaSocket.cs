@@ -48,6 +48,7 @@ public interface IAhsokaSocket
     /// <param name="timeOutInMs"></param>
     /// <returns></returns>
     bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool receiveAsNotification, int timeOutInMs = int.MaxValue);
+
 }
 #endregion
 

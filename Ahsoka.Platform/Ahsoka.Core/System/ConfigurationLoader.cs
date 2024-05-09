@@ -84,7 +84,6 @@ public class ConfigurationLoader
                 {
                     ServiceName = serviceName,
                     DataChannel = Math.Min(7000, configuration.Services.Max(x => x.DataChannel) + 1),
-                    NotificationChannel = Math.Min(configuration.Services.Max(y => y.NotificationChannel) + 1, 8000),
                     Behaviors = EndPointBehaviors.AutoStart,
                     IsExtension = true,
                     SocketType = TransportSocketTypes.TcpSocket,
@@ -165,8 +164,6 @@ public partial class ServiceConfiguration : ICanDeserializeBase
             this.ServiceName = value;
         else if (propertyName == "dataChannel")
             this.DataChannel = int.Parse(value);
-        else if (propertyName == "notificationChannel")
-            this.NotificationChannel = int.Parse(value);
         else if (propertyName == "tcpListenAddress")
             this.TcpListenAddress = value;
         else if (propertyName == "tcpConnectionAddress")
@@ -204,38 +201,6 @@ public partial class ServiceConfiguration : ICanDeserializeBase
         get
         {
             return $"tcp://{this.TcpListenAddress}:{this.DataChannel}";
-        }
-    }
-
-    /// <summary>
-    /// Produces the TCP URI for the notification communication channel that is typically used by sockets utilizing ZMQ
-    /// as the backing transport.
-    /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
-    public string NotificationURI
-    {
-        get
-        {
-            if (this.NotificationChannel != 0)
-                return $"tcp://{this.TcpConnectionAddress}:{this.NotificationChannel}";
-            else
-                return "";
-        }
-    }
-
-    /// <summary>
-    /// Produces the TCP URI for the notification listening channel that is typically used by sockets utilizing ZMQ as
-    /// the backing transport.
-    /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
-    public string NotificationListenURI
-    {
-        get
-        {
-            if (this.NotificationChannel != 0)
-                return $"tcp://{this.TcpListenAddress}:{this.NotificationChannel}";
-            else
-                return "";
         }
     }
 

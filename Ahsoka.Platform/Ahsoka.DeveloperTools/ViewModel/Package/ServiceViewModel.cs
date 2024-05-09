@@ -235,7 +235,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                     TcpListenAddress = defaultValues.TcpListenAddress,
                     BleServiceUuidBase = defaultValues.BleServiceUuidBase,
                     DataChannel = defaultValues.DataChannel,
-                    NotificationChannel = defaultValues.NotificationChannel,
                     IsExtension = defaultValues.IsExtension,
                     Behaviors = defaultValues.Behaviors,
                     SocketType = defaultValues.SocketType
@@ -368,7 +367,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     private void SetPort(ServiceConfiguration definition, int newPort)
     {
         definition.DataChannel = newPort;
-        definition.NotificationChannel = newPort + 1000;
 
         OnPropertyChanged(nameof(ServicePort));
     }

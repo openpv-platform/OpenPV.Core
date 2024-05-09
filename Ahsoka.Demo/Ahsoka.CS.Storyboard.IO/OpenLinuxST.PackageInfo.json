@@ -1,5 +1,5 @@
 {
-  "version": "3.0.1.10056",
+  "version": "3.0.1.10050",
   "applicationType": "Dotnet",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Storyboard.IO",
@@ -9,6 +9,7 @@
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
   "startupLogoPath": "StoryboardProject/images/LogoSplash.png",
+  "packageSigningCertFile": "",
   "includeInstallerUI": false,
   "licenses": [
     {
@@ -22,6 +23,16 @@
   },
   "serviceInfo": {
     "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensions": [
+        "Storyboard Extension",
+        "Data Service Extension",
+        "Cygnus Service Extension",
+        "Bluetooth LE Extension"
+      ],
+      "startupDelay": 3,
+      "requireChallenge": "NotRequired",
       "services": [
         {
           "socketType": "TcpSocket",
@@ -30,7 +41,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
-          "notificationChannel": 6001,
           "isExtension": false,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -42,7 +52,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5006,
-          "notificationChannel": 6006,
           "isExtension": false,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -54,7 +63,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5009,
-          "notificationChannel": 6009,
           "isExtension": true,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -66,7 +74,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5010,
-          "notificationChannel": 6010,
           "isExtension": true,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -78,7 +85,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5011,
-          "notificationChannel": 6011,
           "isExtension": true,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -90,7 +96,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5012,
-          "notificationChannel": 6012,
           "isExtension": true,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -102,21 +107,11 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5008,
-          "notificationChannel": 6008,
           "isExtension": true,
           "behaviors": "AutoStart",
           "configurationFile": ""
         }
-      ],
-      "serviceStartup": "NoAutoStart",
-      "releaseOption": "NoAutoStart",
-      "extensions": [
-        "Storyboard Extension",
-        "Data Service Extension",
-        "Cygnus Service Extension",
-        "Bluetooth LE Extension"
-      ],
-      "startupDelay": 3
+      ]
     },
     "environmentValues": []
   },

@@ -318,14 +318,14 @@ public class Dispatcher
     {
         // Pull Clients that Need a Runtime
         var ahsokaClients = from x in startupObjects
-                            where x is IAhsokaClientEndpoint endPoint && endPoint.CurrentRuntime == null
-                            select x as IAhsokaClientEndpoint;
+                            where x is IAutoStartServiceClient endPoint && endPoint.Client.CurrentRuntime == null
+                            select ((IAutoStartServiceClient)x).Client as IAhsokaClientEndpoint;
 
         AhsokaRuntime.CreateBuilder()
             .AddClients(ahsokaClients.ToArray())
             .StartWithInternalServices();
 
-        var nonRuntimes = startupObjects.Where(x => x is not IAhsokaClientEndpoint).ToList();
+        var nonRuntimes = startupObjects.Where(x => x is not IAutoStartServiceClient).ToList();
         foreach (var item in nonRuntimes)
             item.AutoStart(this);
 

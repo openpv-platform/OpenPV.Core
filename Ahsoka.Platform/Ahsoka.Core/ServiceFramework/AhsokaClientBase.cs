@@ -3,8 +3,12 @@ using Ahsoka.Services.Security;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -16,14 +20,17 @@ public interface IAhsokaClientEndpoint : IAhsokaEndPoint, IDispatchSource
 
     void SetToken(Token securityToken);
 
-    void NotificationDataReady();
+    void ClientDataReady();
 }
 
 public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTransportIds>,
     IAhsokaClientEndpoint
     where TTransportIds : Enum, new()
 {
-
+    Task notificationTask = null;
+    CancellationTokenSource source;
+    BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> incomingMessages;
+    BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> notificationMessages = new();
     Token securityToken = null;
 
     #region Service Notification Handler 
@@ -49,7 +56,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
     #endregion
 
     #region Fields
-    List<IClientEndPointBehavior<TTransportIds>> behaviors = new ();
+    List<IClientEndPointBehavior<TTransportIds>> behaviors = new();
     int messageId = 0;
     #endregion
 
@@ -61,6 +68,37 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
             AddBehavior(new AutoStartClientEndPointBehavior<TTransportIds>());
     }
 
+
+    protected override void OnEndPointConnected()
+    {
+        base.OnEndPointConnected();
+
+        // Start Notification Listener if this service has callbacks
+        if (this.ServiceMessageInfo.Info.Any(x => x.Value.IsNotification))
+        {
+            incomingMessages = new();
+            source = new CancellationTokenSource();
+            try
+            {
+                notificationTask = Task.Run(() =>
+                {
+                    while (!source.IsCancellationRequested)
+                        if (notificationMessages.TryTake(out var message, int.MaxValue, source.Token))
+                            OnHandleReceive(message.Key, message.Value);
+
+                }, source.Token);
+            }
+            catch (OperationCanceledException) { }
+        }
+    }
+
+    protected override void OnEndPointDisconnected()
+    {
+        base.OnEndPointDisconnected();
+        source.Cancel();
+        notificationTask?.Wait();
+    }
+
     protected override IAhsokaSocket CreateSocket(ServiceConfiguration config)
     {
         if (config.SocketType == TransportSocketTypes.TcpSocket)
@@ -69,15 +107,10 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
             throw new Exception("Socket Type is Not Supported");
     }
 
-    /// <summary>
-    /// Sets a Token to be used on each 
-    /// </summary>
-    /// <param name="securityToken"></param>
     public void SetToken(Token securityToken)
     {
         this.securityToken = securityToken;
     }
-
 
     public void AddBehavior(IClientEndPointBehavior<TTransportIds> behavior)
     {
@@ -85,12 +118,22 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         behaviors.Add(behavior);
     }
 
-    void IAhsokaClientEndpoint.NotificationDataReady()
+    void IAhsokaClientEndpoint.ClientDataReady()
     {
         // Recieve Out of Band Message and Process on Handler
-        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out _, true))
-            OnHandleReceive(responseHeader, returnObject);
-    }
+        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out ServiceMessageInfo info, true))
+        {
+            if (info == null)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"No transport Info was found for Message with TransportID = {responseHeader.TransportId}. Message was passed through as a Notification");
+                notificationMessages.TryAdd(new(responseHeader, returnObject));
+            }
+            else if (info.IsNotification && responseHeader.TransportId >= 0) //Error Notifications are < 0
+                notificationMessages.TryAdd(new(responseHeader, returnObject));
+            else
+                incomingMessages.TryAdd(new(responseHeader, returnObject));
+        }
+    } 
 
     public void SendNotificationWithResponse(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue)
     {
@@ -112,7 +155,6 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         lock (Socket)
         {
             SendMessageInternal(header, requestObject);
-
             return WaitForResponse<T>(header, timeoutInMs);
         }
     }
@@ -127,14 +169,13 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         // We found our Message or Timed out Waiting for Messages
         while (responseHeader?.TransportId != requestHeader.TransportId && cancelTime > DateTime.Now)
         {
-            if (ReceiveMessage(out responseHeader, out returnObject, out _, false, timeoutInMs))
+            if (incomingMessages.TryTake(out var message, timeoutInMs))
             {
+                responseHeader = message.Key;
+                returnObject = message.Value;
+
                 if (responseHeader.TransportId == InvalidTransportIds.InvalidToken.EnumToInt())
                     throw new SecurityException("The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked iwht a valid token");
-
-                // If Async Message...send to Out of Band Handler
-                if (responseHeader.TransportId != requestHeader.TransportId)
-                    OnHandleReceive(responseHeader, returnObject);
             }
         }
 
@@ -151,7 +192,6 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
         foreach (IClientEndPointBehavior<TTransportIds> behavior in behaviors)
             behavior.OnNotificationMessageRecieved(args.TransportId, args.NotificationObject);
-
 
         NotificationReceived?.Invoke(this, args);
     }

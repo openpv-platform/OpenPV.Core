@@ -81,7 +81,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         InitValues();
 
         // If Hardware Enabled Start Ignition Thread
-        if (!String.IsNullOrEmpty(config.NotificationURI) && !HardwareInteractionDisabled)
+        if (!HardwareInteractionDisabled)
         {
             cancelNotifications = new CancellationTokenSource();
 

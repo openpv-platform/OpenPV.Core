@@ -2,6 +2,7 @@
 using NetMQ.Monitoring;
 using NetMQ.Sockets;
 using System;
+using System.Collections.Generic;
 using System.Net.Sockets;
 
 namespace Ahsoka.ServiceFramework;
@@ -13,7 +14,6 @@ internal sealed class TCPClientSocket : IAhsokaSocket
 
     NetMQPoller SocketPoller { get; set; }
     DealerSocket Socket { get; set; }
-    SubscriberSocket NotificationSocket { get; set; }
 
     public bool IsConnected { get; private set; }
 
@@ -32,25 +32,16 @@ internal sealed class TCPClientSocket : IAhsokaSocket
             Socket.Options.Linger = TimeSpan.FromSeconds(1);
             Socket.Options.Identity = endPoint.GetClientId();
 
-            Socket.Connect(this.endPoint.ServiceConfig.DataURI);
-
-            if (!string.IsNullOrEmpty(this.endPoint.ServiceConfig.NotificationURI))
+            Socket.ReceiveReady += (o, e) =>
             {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Starting Notification {this.endPoint.ServiceConfig.ServiceName} @ {this.endPoint.ServiceConfig.NotificationURI}");
+                ((IAhsokaClientEndpoint)endPoint).ClientDataReady();
+            };
 
-                NotificationSocket = new SubscriberSocket();
-                NotificationSocket.Connect(this.endPoint.ServiceConfig.NotificationURI);
-                NotificationSocket.SubscribeToAnyTopic();
 
-                // Handle Poller for Notifications
-                SocketPoller.Add(NotificationSocket);
-                NotificationSocket.ReceiveReady += (o, e) =>
-                {
-                    ((IAhsokaClientEndpoint)this.endPoint).NotificationDataReady();
-                };
-                SocketPoller.RunAsync($"{this.endPoint.ServiceConfig.ServiceName}_NotificationListener");
-            }
-
+            Socket.Connect(this.endPoint.ServiceConfig.DataURI);
+            SocketPoller.Add(Socket);
+            SocketPoller.RunAsync($"{this.endPoint.ServiceConfig.ServiceName}_ClientListener");
+         
             IsConnected = true;
         }
         catch { IsConnected = false; }
@@ -67,15 +58,8 @@ internal sealed class TCPClientSocket : IAhsokaSocket
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Disconnecting {endPoint.ServiceConfig.ServiceName}");
 
                 Socket.Disconnect(endPoint.ServiceConfig.DataURI);
-
-                // If we have a Notificaiotn Socket, Destroy it Here.
-                if (NotificationSocket != null)
-                {
-                    try { Socket.Disconnect(endPoint.ServiceConfig.NotificationURI); } catch { }
-
-                    SocketPoller.StopAsync();
-                    SocketPoller.RemoveAndDispose(Socket);
-                }
+                SocketPoller.StopAsync();
+                SocketPoller.RemoveAndDispose(Socket);
 
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
             }
@@ -88,14 +72,12 @@ internal sealed class TCPClientSocket : IAhsokaSocket
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Sending Client {(sendAsNotification ? "Notification" : "Message")} from {endPoint.ServiceConfig.ServiceName} ");
 
-        NetMQSocket socket = sendAsNotification ? NotificationSocket : Socket;
-
         NetMQMessage message = new();
         message.Append(header);
         message.Append(data);
 
-        lock (socket)
-            socket.SendMultipartMessage(message);
+        lock (Socket)
+            Socket.SendMultipartMessage(message);
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client {(sendAsNotification ? "Notification" : "Message")} Completed from {endPoint.ServiceConfig.ServiceName} ");
     }
@@ -109,13 +91,10 @@ internal sealed class TCPClientSocket : IAhsokaSocket
 
         header = data = clientId = null;
 
-        // Select Socket to Recieve
-        NetMQSocket socket = receiveAsNotification ? NotificationSocket : Socket;
-
         NetMQMessage message = new();
         try
         {
-            if (socket != null && socket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(timeOutInMs), ref message, 2))
+            if (Socket != null && Socket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(timeOutInMs), ref message, 2))
             {
                 header = message.Pop().Buffer;
                 data = message.Pop().Buffer;
@@ -135,12 +114,11 @@ internal sealed class TCPClientSocket : IAhsokaSocket
 internal sealed class TCPServiceSocket : IAhsokaSocket
 {
     IAhsokaEndPoint endPoint;
-    byte[] socketId = Guid.NewGuid().ToByteArray();
 
+    List<Guid> validClientIds = new List<Guid>();
     NetMQPoller SocketPoller { get; set; }
     RouterSocket Socket { get; set; }
-    NetMQMonitor Monitor { get; set; }
-    PublisherSocket NotificationSocket { get; set; }
+    NetMQMonitor SocketMonitor { get; set; }
 
     public bool IsConnected { get; private set; }
 
@@ -159,15 +137,8 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
             Socket.Bind(endPoint.ServiceConfig.DataListenURI);
             SocketPoller.Add(Socket);
 
-            Monitor = new NetMQMonitor(Socket, $"inproc://{Guid.NewGuid().ToString()}.inproc", SocketEvents.All);
-            Monitor.AttachToPoller(SocketPoller);
-
-            if (!String.IsNullOrEmpty(endPoint.ServiceConfig.NotificationURI))
-            {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Starting Notification @ {endPoint.ServiceConfig.NotificationListenURI}");
-                NotificationSocket = new PublisherSocket();
-                NotificationSocket.Bind(endPoint.ServiceConfig.NotificationURI);
-            }
+            SocketMonitor = new NetMQMonitor(Socket, $"inproc://{Guid.NewGuid()}.inproc", SocketEvents.All);
+            SocketMonitor.AttachToPoller(SocketPoller);
 
             IsConnected = true;
 
@@ -176,7 +147,7 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
                 ((IAhsokaServiceEndpoint)endPoint).ServiceDataReady();
             };
 
-            Monitor.Accepted += (o, e) =>
+            SocketMonitor.Accepted += (o, e) =>
             {
                  ((IAhsokaServiceEndpoint)endPoint).ClientConnected();
             };
@@ -194,9 +165,9 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
 
         if (IsConnected)
         {
-            Monitor.DetachFromPoller();
+            SocketMonitor.DetachFromPoller();
             Socket.Unbind(endPoint.ServiceConfig.DataListenURI);
-            NotificationSocket?.Unbind(endPoint.ServiceConfig.NotificationURI);
+            validClientIds.Clear();
         }
 
         IsConnected = false;
@@ -215,19 +186,21 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
         if (clientId == null && !sendAsNotification)
             throw new ApplicationException("Services must include client id when sending messages");
 
-        NetMQSocket socket = sendAsNotification ? NotificationSocket : Socket;
+        NetMQSocket socket = Socket;
+
+        IEnumerable<Guid> clients = sendAsNotification ? validClientIds : new List<Guid>() { new Guid(clientId) };
 
         NetMQMessage message = new();
 
-        // Notifications are Broadcast, not sent to specific client
-        if (!sendAsNotification)
-            message.Append(clientId);
+        foreach (var client in clients)
+        {
+            message.Append(client.ToByteArray());
+            message.Append(header);
+            message.Append(data);
 
-        message.Append(header);
-        message.Append(data);
-
-        lock (socket) // Protect Socket
-            socket.SendMultipartMessage(message);
+            lock (socket) // Protect Socket
+                socket.TrySendMultipartMessage(message);
+        }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Sending Service {(sendAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");
     }
@@ -241,7 +214,7 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
 
         header = data = clientId = null;
 
-        NetMQSocket socket = receiveAsNotification ? NotificationSocket : Socket;
+        NetMQSocket socket = Socket;
 
         NetMQMessage message = new();
         if (socket.TryReceiveMultipartMessage(ref message, 3))
@@ -249,6 +222,10 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
             clientId = message.Pop().Buffer;
             header = message.Pop().Buffer;
             data = message.Pop().Buffer;
+
+            var clientGuid = new Guid(clientId);
+            if (!validClientIds.Contains(clientGuid))
+                validClientIds.Add(clientGuid);
         }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Recieved Service {(receiveAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");

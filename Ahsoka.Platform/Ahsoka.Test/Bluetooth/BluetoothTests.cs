@@ -69,7 +69,6 @@ public class BluetoothTests : LinearTestBase
         BluetoothServiceClient btClient = new(new ServiceConfiguration() 
         { 
             DataChannel = 5004, 
-            NotificationChannel = 6004, 
             ServiceName = "BluetoothService", 
             TcpListenAddress = "*",
             TcpConnectionAddress = "localhost" 

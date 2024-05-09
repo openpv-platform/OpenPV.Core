@@ -12,6 +12,7 @@ internal class BLEServiceMessages : AhsokaMessagesBase
         RegisterServiceRequest(BLEMessageTypes.Ids.IsAdapterEnabled, typeof(BLEAdapterRequest), typeof(BLEIsAdapterEnabledResponse));
         RegisterServiceNotification(BLEMessageTypes.Ids.AdapterEnabled, typeof(BLEConnectionNotification));
         RegisterServiceNotification(BLEMessageTypes.Ids.AdapterDisabled, typeof(BLEConnectionNotification));
+        RegisterServiceNotification(BLEMessageTypes.Ids.AdapterReady, typeof(BLEConnectionNotification));
 
         // Runtime Handling (Read, Notify, Write)
         RegisterServiceNotification(BLEMessageTypes.Ids.PairingRequested, typeof(BLEPairingRequest));

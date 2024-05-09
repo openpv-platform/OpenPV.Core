@@ -15,7 +15,7 @@ public abstract class AhsokaMessagesBase
     public AhsokaMessagesBase()
     {
         // Add Invalid Types to All Services
-        Info.Add(InvalidTransportIds.InvalidToken.EnumToInt(), new ServiceMessageInfo() { ReplyType = typeof(InvalidResponseNotification),  RequestType = typeof (InvalidResponseNotification), IsNotification = true, HideInGeneratedClients = true });
+        Info.Add(InvalidTransportIds.InvalidToken.EnumToInt(), new ServiceMessageInfo() {TransportId = InvalidTransportIds.InvalidToken,  ReplyType = typeof(InvalidResponseNotification),  RequestType = typeof (InvalidResponseNotification), IsNotification = true, HideInGeneratedClients = true });
     }
 
     protected void RegisterServiceRequest(Enum transportId, Type requestType, Type replyType, bool generateImplementation = true, bool hideInGeneratedClients = false, bool requireSecurity = true)

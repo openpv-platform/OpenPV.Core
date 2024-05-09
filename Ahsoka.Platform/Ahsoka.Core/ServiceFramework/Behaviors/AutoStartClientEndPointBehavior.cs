@@ -4,12 +4,19 @@ using System;
 
 namespace Ahsoka.ServiceFramework;
 
-internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointBehavior<TTransportIds>, ICanAutoStart where TTransportIds : Enum, new()
+internal interface IAutoStartServiceClient : ICanAutoStart
+{
+    IAhsokaClientEndpoint Client { get; }
+}
+
+internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointBehavior<TTransportIds>, IAutoStartServiceClient where TTransportIds : Enum, new()
 {
     #region AutoStart
     IAhsokaClientEndpoint endPoint;
     bool autoStartUsed = false;
     bool autoStartEnabled = false;
+
+    IAhsokaClientEndpoint IAutoStartServiceClient.Client => endPoint;
 
     public void Init(AhsokaClientBase<TTransportIds> client, ServiceConfiguration config)
     {

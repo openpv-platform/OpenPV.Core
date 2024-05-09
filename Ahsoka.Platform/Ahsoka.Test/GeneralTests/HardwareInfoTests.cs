@@ -38,7 +38,6 @@ public class HardwareInfoTests : LinearTestBase
         runtimeconfig.Services.Add(new ServiceConfiguration()
         {
             DataChannel = 5100,
-            NotificationChannel = 6100,
             TcpListenAddress = "127.0.0.1",
             TcpConnectionAddress = "127.0.0.1",
             ServiceName = "FakeConfig",

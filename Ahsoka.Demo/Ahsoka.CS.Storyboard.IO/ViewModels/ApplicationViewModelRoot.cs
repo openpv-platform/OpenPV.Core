@@ -21,7 +21,7 @@ internal class ApplicationViewModelRoot
 {
     #region fields
     SystemServiceClient systemClient;
-    IOServiceClient ioClient;
+    IOServiceClient ioClient = new();
 
     //View Models
     //Brightness
@@ -120,6 +120,8 @@ internal class ApplicationViewModelRoot
         Dispatcher.Default.RegisterCallback(HandleSystemMessage, SystemClient);
         Dispatcher.Default.RegisterCallback((o, e) => { }, bleClient);
         Dispatcher.Default.RegisterCallback((o, e) => { }, cygnusClient);
+        Dispatcher.Default.RegisterCallback((o, e) => { }, ioClient);
+
 
         // Register Model Dispatch for Storyboard, this will send events to us
         // when they are recieved from the Storyboard Client on our Main Thread
@@ -180,7 +182,7 @@ internal class ApplicationViewModelRoot
         };
 
         // Creates a Client Object to handle Messages Into and Out of Storyboard
-        ApplicationViewModelBase.StorybardClient = new StoryboardClient(sbConfig);
+        ApplicationViewModelBase.StorybardClient = new StoryboardClient(sbConfig, StoryboardMetadata.EventMetadata);
 
         // Start the UI and Channels
         ApplicationViewModelBase.StorybardClient.StartStoryboardUI();

@@ -74,7 +74,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
     public string Password
     {
-        get { return SecureLocalStrings.ToInsecureString(password); }
+        get { return password != null ? SecureLocalStrings.ToInsecureString(password) : null; }
         set { password = SecureLocalStrings.ToSecureString(value); ; OnPropertyChanged(); }
     }
 
@@ -138,9 +138,11 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
             RememberMe = true;
             LoginName = settings.LoginName;
 
+            string refreshToken = OperatingSystem.IsMacOS() ? settings.RefreshToken : SecureLocalStrings.ToInsecureString(StringEncryption.DecryptString(settings.RefreshToken));
+
             AuthorizationDTO authDTO = new()
             {
-                Refresh = SecureLocalStrings.ToInsecureString(StringEncryption.DecryptString(settings.RefreshToken))
+                Refresh = refreshToken
             };
 
             if (ParentViewModel.IsOffline)
@@ -157,7 +159,11 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
             try
             {
                 authDTO = SparkAccountClient.SharedSparkClient.LoginWithRefreshToken(settings.Url, authDTO, LogoutCompleted);
-                settings.RefreshToken = StringEncryption.EncryptString(SecureLocalStrings.ToSecureString(authDTO.Refresh));
+
+                if (OperatingSystem.IsMacOS())
+                    settings.RefreshToken = authDTO.Refresh;
+                else
+                    settings.RefreshToken = StringEncryption.EncryptString(SecureLocalStrings.ToSecureString(authDTO.Refresh));
 
                 SaveSettings(settings);
 
@@ -217,7 +223,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
     private string ConnectionFilePath()
     {
-        return CustomerToolPaths.GetSettingsPath("SparkInfo.json");
+        return CustomerToolPaths.GetSettingsPath("SecureSparkInfo.json");
     }
 
     internal void LoginToSpark()
@@ -252,7 +258,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
             if (rememberMe)
             {
                 settings.LoginName = loginName;
-                settings.RefreshToken = StringEncryption.EncryptString(SecureLocalStrings.ToSecureString(authToken.Refresh));
+                settings.RefreshToken = OperatingSystem.IsMacOS() ? authToken.Refresh : StringEncryption.EncryptString(SecureLocalStrings.ToSecureString(authToken.Refresh));
             }
             else
             {

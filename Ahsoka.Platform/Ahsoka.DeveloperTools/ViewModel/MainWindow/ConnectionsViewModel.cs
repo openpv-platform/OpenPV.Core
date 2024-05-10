@@ -203,7 +203,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             ConnectionList.Add(new ConnectionInfo(this)
             {
                 Description = "OpenView",
-                HostName = OperatingSystem.IsMacOS() ? "192.168.5.1" : "192.168.7.1",
+                HostName = OperatingSystem.IsMacOS() ? "192.168.9.1" : "192.168.7.1",
                 PlatformFamily = PlatformFamily.OpenViewLinux,
                 PlatformQualifier = "S50",
                 SystemServicePort = 5001,

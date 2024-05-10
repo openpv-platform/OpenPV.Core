@@ -20,7 +20,7 @@ public abstract class AhsokaSerialSocket : IAhsokaSocket
     // TODO: BMG (Nov. 28, 2023) Chunking needs to be added to this abstract class, or at least the facilities for
     // facilitating chunking need to be added here. At the moment we're just assuming we're going to receive the whole
     // packet at once.
-    public virtual void SendMessage(byte[] header, byte[] data, byte[] clientId, bool sendAsNotification)
+    public virtual void SendMessage(byte[] header, byte[] data, byte[] clientId, bool isBroadcast)
     {
         byte[] headerSize = BitConverter.GetBytes((UInt16)header.Length);
 
@@ -37,7 +37,7 @@ public abstract class AhsokaSerialSocket : IAhsokaSocket
         }
     }
 
-    public virtual bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool receiveAsNotification, int timeOutInMs = int.MaxValue)
+    public virtual bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, int timeOutInMs = int.MaxValue)
     {
         if (timeOutInMs > IAhsokaSocket.MaxTimeoutValue)
             timeOutInMs = IAhsokaSocket.MaxTimeoutValue;

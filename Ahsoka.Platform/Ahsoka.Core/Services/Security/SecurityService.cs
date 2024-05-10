@@ -1,6 +1,7 @@
 ﻿
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
+using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using System.IO;
 
@@ -66,6 +67,32 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
         }
     }
 
+    /// <summary>
+    /// Validate that the Secret is correct and return result.
+    /// </summary>
+    /// <param name="clientIdSigned"></param>
+    /// <param name="clientId"></param>
+    /// <returns></returns>
+    protected bool ValidateLocalSecret(byte[] clientIdSigned, byte[] clientId)
+    {
+        if (clientIdSigned == null || clientIdSigned.Length == 0)
+            return false;
+
+        // We sign with the device Signature here to prove we are local.
+        var path = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile);
+        if (File.Exists(path))
+        {
+            try
+            {
+                return RSAEncryption.VerifyDataSignature(clientIdSigned, clientId, File.ReadAllText(path));
+            }
+            catch { }
+        }
+
+        return false;
+
+    }
+
     private void HandleCreateToken(AhsokaMessageHeader messageHeader, TokenRequestInfo tokenRequestInfo)
     {
         var resultToken = TokenSource.Default.RequestTokens(tokenRequestInfo, configuration.ApplicationId, out byte[] request);
@@ -94,7 +121,14 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
     {
         Token token = new Token() { RequestId = challengeCompleteInfo.RequestId };
         if (challengeCompleteInfo.AcceptRequest)
-             token = TokenSource.Default.EnableToken(challengeCompleteInfo.RequestId, challengeCompleteInfo.ClientCode);
+        {
+            bool result = ValidateLocalSecret(challengeCompleteInfo.ClientIdSigned, messageHeader.ClientId);
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Validated Client Secret for Local Security Client with result {result}");
+            if (result)
+                token = TokenSource.Default.EnableToken(challengeCompleteInfo.RequestId, challengeCompleteInfo.ClientCode);
+            else
+                token = new Token() { RequestId=challengeCompleteInfo.RequestId, TokenIsValid = false };
+        }
 
         // Reply To Challenge Complete
         SendMessageInternal(messageHeader, token);

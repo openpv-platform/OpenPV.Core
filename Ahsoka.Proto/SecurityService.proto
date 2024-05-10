@@ -44,6 +44,7 @@ message ChallengeCompleteInfo
  	bytes request_id = 1;
     string client_code = 2;
 	bool accept_request = 3;
+	bytes client_id_signed = 4;
 }
 
 message Token

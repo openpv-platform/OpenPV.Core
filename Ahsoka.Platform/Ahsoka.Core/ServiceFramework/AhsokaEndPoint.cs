@@ -77,7 +77,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
             this.Socket.Connect(this);
     }
 
-    protected void SendMessageInternal(AhsokaMessageHeader messageHeader, object messageObject = null, bool sendAsNotification = false)
+    protected void SendMessageInternal(AhsokaMessageHeader messageHeader, object messageObject = null, bool isBroadcast = false)
     {
         if (IsRunning)
         {
@@ -90,7 +90,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
             using MemoryStream dataStream = new();
             ProtoBuf.Serializer.Serialize(dataStream, messageObject);
 
-            Socket.SendMessage(headerStream.ToArray(), dataStream.ToArray(), messageHeader.ClientId, sendAsNotification);
+            Socket.SendMessage(headerStream.ToArray(), dataStream.ToArray(), messageHeader.ClientId, isBroadcast);
 
             messageSendCount++;
         }
@@ -100,13 +100,13 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
         }
     }
 
-    protected bool ReceiveMessage(out AhsokaMessageHeader messageHeader, out object messageObject, out ServiceMessageInfo messageInfo,  bool isOutOfBand, int timoutInMs = int.MaxValue)
+    protected bool ReceiveMessage(out AhsokaMessageHeader messageHeader, out object messageObject, out ServiceMessageInfo messageInfo, int timoutInMs = int.MaxValue)
     {
         messageObject = null;
         messageHeader = null;
         messageInfo = null;
 
-        bool recievedMessage = Socket.ReceiveMessage(out byte[] headerData, out byte[] messageData, out byte[] clientId, isOutOfBand, timoutInMs);
+        bool recievedMessage = Socket.ReceiveMessage(out byte[] headerData, out byte[] messageData, out byte[] clientId, timoutInMs);
 
         if (recievedMessage)
         {

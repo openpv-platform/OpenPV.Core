@@ -2,9 +2,11 @@
 using Ahsoka.Services.Security;
 using Ahsoka.System;
 using Ahsoka.Utility;
+using EnovationCloud.Core.Framework;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security;
 using System.Threading;
@@ -29,7 +31,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 {
     Task notificationTask = null;
     CancellationTokenSource source;
-    BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> incomingMessages;
+    BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> incomingMessages = new();
     BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> notificationMessages = new();
     Token securityToken = null;
 
@@ -68,10 +70,12 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
             AddBehavior(new AutoStartClientEndPointBehavior<TTransportIds>());
     }
 
-
     protected override void OnEndPointConnected()
     {
         base.OnEndPointConnected();
+
+        // Register Client for Notifications
+        UpdateClientRegistration(CoreTransportIds.RegisterClient);
 
         // Start Notification Listener if this service has callbacks
         if (this.ServiceMessageInfo.Info.Any(x => x.Value.IsNotification))
@@ -80,21 +84,50 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
             source = new CancellationTokenSource();
             try
             {
-                notificationTask = Task.Run(() =>
+                notificationTask = Task.Factory.StartNew(() =>
                 {
+                    // Set Thread Name
+                    var originalName = Thread.CurrentThread.Name;
+                    Thread.CurrentThread.Name = $"{this.ServiceConfig.ServiceName}_NotificationHandler";
+
                     while (!source.IsCancellationRequested)
                         if (notificationMessages.TryTake(out var message, int.MaxValue, source.Token))
                             OnHandleReceive(message.Key, message.Value);
 
-                }, source.Token);
+                    // Restore Name since this comes from the Thread Pool
+                    Thread.CurrentThread.Name = originalName;
+
+                }, source.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
             }
             catch (OperationCanceledException) { }
         }
     }
 
+    private void UpdateClientRegistration(CoreTransportIds transportId)
+    {
+        lock (Socket)
+        {
+            AhsokaMessageHeader notificationRequest = new()
+            {
+                TransportId = transportId.EnumToInt(),
+                ClientMessageId = messageId++,
+                ServiceToken = securityToken?.ClientToken
+            };
+
+            SendMessageInternal(notificationRequest, new ClientRegistration()
+            {
+                ClientId = GetClientId(),
+            });
+        }
+    }
+
     protected override void OnEndPointDisconnected()
     {
+        // Deregister Client for Notifications
+        UpdateClientRegistration(CoreTransportIds.DeregisterClient);
+
         base.OnEndPointDisconnected();
+
         source.Cancel();
         notificationTask?.Wait();
     }
@@ -121,7 +154,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
     void IAhsokaClientEndpoint.ClientDataReady()
     {
         // Recieve Out of Band Message and Process on Handler
-        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out ServiceMessageInfo info, true))
+        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out ServiceMessageInfo info))
         {
             if (info == null)
             {
@@ -174,7 +207,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
                 responseHeader = message.Key;
                 returnObject = message.Value;
 
-                if (responseHeader.TransportId == InvalidTransportIds.InvalidToken.EnumToInt())
+                if (responseHeader.TransportId == CoreTransportIds.InvalidToken.EnumToInt())
                     throw new SecurityException("The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked iwht a valid token");
             }
         }

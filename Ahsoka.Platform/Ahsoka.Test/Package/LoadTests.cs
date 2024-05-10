@@ -11,7 +11,7 @@ using System.IO;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class LoadTests : LinearTestBase
+public class PackageLoadTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 

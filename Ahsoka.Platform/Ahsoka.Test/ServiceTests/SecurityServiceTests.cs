@@ -130,6 +130,7 @@ public class SecurityServiceTests : LinearTestBase
 
 
         // Handle the Challenge Callback
+        bool generateSecret = false;
         securityServiceClient.NotificationReceived += (sender, args) =>
         {
             if (args.NotificationObject is ChallengeRequestInfo info)
@@ -140,13 +141,12 @@ public class SecurityServiceTests : LinearTestBase
                     ClientCode = info.ClientCode,
                     RequestId = info.RequestId,
                     AcceptRequest = true,
+                    ClientIdSigned = generateSecret ? securityServiceClient.GetLocalSecret() : null // Returns Locally signed ClientID, Required for Accept.
                 });
             }
-            
         };
 
         // Begin By Requesting a Token for the SystemService from the Security Service
-        // We will recieve a 
         var request = securityServiceClient.RequestToken(new TokenRequestInfo()
         {
             ApiKey = apiKey,
@@ -155,8 +155,24 @@ public class SecurityServiceTests : LinearTestBase
             ClientDescription = "TestClient"
         });
 
-        // Wait for Token top be Recieved
+        // Wait for Token top be Recieved..this token will be invalid
         var systemServiceToken = securityServiceClient.WaitForToken(request.RequestId);
+        Assert.IsFalse(systemServiceToken.TokenIsValid);
+
+        // Enable Local secret
+        generateSecret = true;
+
+        // Begin By Requesting a Token for the SystemService from the Security Service.
+        request = securityServiceClient.RequestToken(new TokenRequestInfo()
+        {
+            ApiKey = apiKey,
+            ClientIds = { systemClient.GetClientId() },
+            ClientCode = challengeCode,
+            ClientDescription = "TestClient"
+        });
+
+        // Wait for Token top be Recieved...this one WILL work
+        systemServiceToken = securityServiceClient.WaitForToken(request.RequestId);
 
         // Validate Token
         Assert.IsNotNull(systemServiceToken);

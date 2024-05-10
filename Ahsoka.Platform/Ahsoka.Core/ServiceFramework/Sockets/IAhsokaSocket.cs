@@ -1,9 +1,28 @@
-﻿using System;
+﻿using EnovationCloud.Core.Framework;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace Ahsoka.ServiceFramework;
 
 #region Socket
+/// <summary>
+/// Interface for Ahsoka Sockets that adds Client Registration
+/// </summary>
+public interface IAhsokaServiceSocket : IAhsokaSocket
+{
+    /// <summary>
+    /// Enables a client to recieve notification messages
+    /// </summary>
+    /// <param name="clientRegistration"></param>
+    void RegisterClient(ClientRegistration clientRegistration);
+
+    /// <summary>
+    /// Disables a client to recieve notification messages
+    /// </summary>
+    /// <param name="clientRegistration"></param>
+    void DeregisterClient(ClientRegistration clientRegistration);
+}
+
 /// <summary>
 /// Interface for Ahsoka Sockets
 /// </summary>
@@ -35,8 +54,8 @@ public interface IAhsokaSocket
     /// <param name="header"></param>
     /// <param name="data"></param>
     /// <param name="clientId"></param>
-    /// <param name="sendAsNotification"></param>
-    void SendMessage(byte[] header, byte[] data, byte[] clientId, bool sendAsNotification);
+    /// <param name="isBroadcast"></param>
+    void SendMessage(byte[] header, byte[] data, byte[] clientId, bool isBroadcast);
 
     /// <summary>
     /// Recieve a message over the Socket Transport
@@ -44,12 +63,13 @@ public interface IAhsokaSocket
     /// <param name="header"></param>
     /// <param name="data"></param>
     /// <param name="clientId"></param>
-    /// <param name="receiveAsNotification"></param>
     /// <param name="timeOutInMs"></param>
     /// <returns></returns>
-    bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool receiveAsNotification, int timeOutInMs = int.MaxValue);
-
+    bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, int timeOutInMs = int.MaxValue);
 }
+
+
+
 #endregion
 
 

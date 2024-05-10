@@ -72,9 +72,20 @@ message InvalidResponseNotification
 
 }
 
-enum InvalidTransportIds
+//----------------------------
+// Empty Object / Message used when no information is needed 
+// other than the TransportID
+//----------------------------
+message ClientRegistration
+{
+    bytes client_id = 1;
+}
+
+enum CoreTransportIds
 {
     None = 0;
     InvalidToken = -1;
+    RegisterClient = -2;
+    DeregisterClient = -3;
 }
 

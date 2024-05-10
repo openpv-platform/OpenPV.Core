@@ -11,6 +11,5 @@ internal class SecurityServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(SecurityMessageTypes.Ids.ChallengeReceived, typeof(ChallengeRequestInfo));
         this.RegisterServiceRequest(SecurityMessageTypes.Ids.CompleteChallenge, typeof(ChallengeCompleteInfo), typeof(EmptyNotification));
         this.RegisterServiceNotification(SecurityMessageTypes.Ids.AuthorizationComplete, typeof(Token));
-  
     }
 }

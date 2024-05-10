@@ -1,4 +1,5 @@
-﻿using NetMQ;
+﻿using Ahsoka.Utility;
+using NetMQ;
 using NetMQ.Monitoring;
 using NetMQ.Sockets;
 using System;
@@ -37,11 +38,10 @@ internal sealed class TCPClientSocket : IAhsokaSocket
                 ((IAhsokaClientEndpoint)endPoint).ClientDataReady();
             };
 
-
             Socket.Connect(this.endPoint.ServiceConfig.DataURI);
             SocketPoller.Add(Socket);
             SocketPoller.RunAsync($"{this.endPoint.ServiceConfig.ServiceName}_ClientListener");
-         
+
             IsConnected = true;
         }
         catch { IsConnected = false; }
@@ -82,12 +82,12 @@ internal sealed class TCPClientSocket : IAhsokaSocket
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client {(sendAsNotification ? "Notification" : "Message")} Completed from {endPoint.ServiceConfig.ServiceName} ");
     }
 
-    bool IAhsokaSocket.ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool receiveAsNotification, int timeOutInMs)
+    bool IAhsokaSocket.ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, int timeOutInMs)
     {
         if (timeOutInMs > IAhsokaSocket.MaxTimeoutValue)
             timeOutInMs = IAhsokaSocket.MaxTimeoutValue;
 
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Client {(receiveAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} with Timeout {timeOutInMs}");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Client Message on {endPoint.ServiceConfig.ServiceName} with Timeout {timeOutInMs}");
 
         header = data = clientId = null;
 
@@ -102,7 +102,7 @@ internal sealed class TCPClientSocket : IAhsokaSocket
         }
         catch (SocketException) { } // Catching Errors During Shutdown / Disconnect
 
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Received Client {(receiveAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Received Client Message on {endPoint.ServiceConfig.ServiceName} ");
 
         return header != null;
     }
@@ -111,14 +111,13 @@ internal sealed class TCPClientSocket : IAhsokaSocket
 #endregion
 
 #region Service Socket 
-internal sealed class TCPServiceSocket : IAhsokaSocket
+internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 {
     IAhsokaEndPoint endPoint;
 
-    List<Guid> validClientIds = new List<Guid>();
+    List<Guid> validClientIds = new ();
     NetMQPoller SocketPoller { get; set; }
     RouterSocket Socket { get; set; }
-    NetMQMonitor SocketMonitor { get; set; }
 
     public bool IsConnected { get; private set; }
 
@@ -136,23 +135,15 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
             Socket.Options.Linger = TimeSpan.FromSeconds(1);
             Socket.Bind(endPoint.ServiceConfig.DataListenURI);
             SocketPoller.Add(Socket);
-
-            SocketMonitor = new NetMQMonitor(Socket, $"inproc://{Guid.NewGuid()}.inproc", SocketEvents.All);
-            SocketMonitor.AttachToPoller(SocketPoller);
-
-            IsConnected = true;
-
+           
             Socket.ReceiveReady += (o, e) =>
             {
                 ((IAhsokaServiceEndpoint)endPoint).ServiceDataReady();
             };
 
-            SocketMonitor.Accepted += (o, e) =>
-            {
-                 ((IAhsokaServiceEndpoint)endPoint).ClientConnected();
-            };
-
             SocketPoller.RunAsync($"{endPoint.ServiceConfig.ServiceName}_Handler");
+            
+            IsConnected = true;
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Starting Service {endPoint.ServiceConfig.ServiceName} @ {endPoint.ServiceConfig.DataListenURI} with Result {IsConnected}");
         }
@@ -165,7 +156,6 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
 
         if (IsConnected)
         {
-            SocketMonitor.DetachFromPoller();
             Socket.Unbind(endPoint.ServiceConfig.DataListenURI);
             validClientIds.Clear();
         }
@@ -177,6 +167,16 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
 
+    }
+
+    void IAhsokaServiceSocket.RegisterClient(ClientRegistration registration)
+    {
+        validClientIds.Add(new Guid(registration.ClientId));
+    }
+
+    void IAhsokaServiceSocket.DeregisterClient(ClientRegistration registration)
+    {
+        validClientIds.Remove(new Guid( registration.ClientId));
     }
 
     void IAhsokaSocket.SendMessage(byte[] header, byte[] data, byte[] clientId, bool sendAsNotification)
@@ -205,12 +205,12 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Sending Service {(sendAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");
     }
 
-    bool IAhsokaSocket.ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool receiveAsNotification, int timeOutInMs)
+    bool IAhsokaSocket.ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, int timeOutInMs)
     {
         if (timeOutInMs > IAhsokaSocket.MaxTimeoutValue)
             timeOutInMs = IAhsokaSocket.MaxTimeoutValue;
 
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Service {(receiveAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Service Message on {endPoint.ServiceConfig.ServiceName} ");
 
         header = data = clientId = null;
 
@@ -222,13 +222,9 @@ internal sealed class TCPServiceSocket : IAhsokaSocket
             clientId = message.Pop().Buffer;
             header = message.Pop().Buffer;
             data = message.Pop().Buffer;
-
-            var clientGuid = new Guid(clientId);
-            if (!validClientIds.Contains(clientGuid))
-                validClientIds.Add(clientGuid);
         }
 
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Recieved Service {(receiveAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Recieved Service Message on {endPoint.ServiceConfig.ServiceName} ");
 
         return header != null;
     }

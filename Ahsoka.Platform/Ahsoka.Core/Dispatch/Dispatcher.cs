@@ -313,7 +313,6 @@ public class Dispatcher
     #endregion
 
     #region  Internal Methods
-
     private void AutoStartSources()
     {
         // Pull Clients that Need a Runtime
@@ -330,6 +329,7 @@ public class Dispatcher
             item.AutoStart(this);
 
     }
+    
     private void StartBackgroundIfNotRunning()
     {
         // Wait for Start
@@ -341,11 +341,16 @@ public class Dispatcher
                 // Set Started
                 try
                 {
+                    var originalName = Thread.CurrentThread.Name;
+                    Thread.CurrentThread.Name = $"Dispatcher Background Loop";
+
                     // Run background Work
                     while (backgroundQueue.TryTake(out BackgroundWorkItem workItem, -1, tokenSource.Token))
                     {
                         workItem.Execute(this);
                     }
+
+                    Thread.CurrentThread.Name = originalName;
                 }
                 catch (OperationCanceledException) { }
             });
@@ -357,6 +362,9 @@ public class Dispatcher
         // Set Started
         try
         {
+            var originalName = Thread.CurrentThread.Name;
+            Thread.CurrentThread.Name = $"Dispatcher Invoker Core";
+
             while (eventQueue.TryTake(out EventItem messageData, -1, tokenSource.Token))
             {
                 if (alternativeInvoker != null)
@@ -364,6 +372,8 @@ public class Dispatcher
                 else
                     InvokeEventItem(messageData);
             }
+
+            Thread.CurrentThread.Name = originalName;
         }
         catch (OperationCanceledException) { }
 

@@ -38,7 +38,7 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
     protected override IAhsokaSocket CreateSocket(ServiceConfiguration config)
     {
         if (config.SocketType == TransportSocketTypes.TcpSocket)
-            return new TCPServiceSocket() ;
+            return new TCPServiceSocket();
         else
             throw new Exception("Socket Type is Not Supported");
     }
@@ -62,15 +62,28 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
     void IAhsokaServiceEndpoint.ServiceDataReady()
     {
         // Recieve In Band Data
-        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out ServiceMessageInfo info, false))
+        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out ServiceMessageInfo info))
         {
+            // Handle Global Notification Registration
+            if (responseHeader.TransportId == CoreTransportIds.RegisterClient.EnumToInt())
+            {
+                ((IAhsokaServiceSocket)Socket)?.RegisterClient(returnObject as ClientRegistration);
+                ((IAhsokaServiceEndpoint)this).ClientConnected();
+                return;
+            }
+            else if (responseHeader.TransportId == CoreTransportIds.DeregisterClient.EnumToInt())
+            {
+                ((IAhsokaServiceSocket)Socket)?.DeregisterClient(returnObject as ClientRegistration);
+                return;
+            }
+
             // Validate Security
             if (this.ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.SecurityEnabled) && info.RequiresSecurity)
             {
                 if (responseHeader.ServiceToken == null || !TokenSource.Default.IsTokenValid(responseHeader.ServiceToken, responseHeader.ClientId))
                 {
                     // Send Invalid Transport Value
-                    responseHeader.TransportId = InvalidTransportIds.InvalidToken.EnumToInt();
+                    responseHeader.TransportId = CoreTransportIds.InvalidToken.EnumToInt();
                     SendMessageInternal(responseHeader, new InvalidResponseNotification());
                     return;
                 }

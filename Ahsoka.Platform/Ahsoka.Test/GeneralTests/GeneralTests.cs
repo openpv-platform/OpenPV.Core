@@ -54,6 +54,8 @@ public class GeneralTests : LinearTestBase
         //File.WriteAllText(@"C:\Users\Jake\Desktop\HardwareConfiguration.test1", newText1);
         //File.WriteAllText(@"C:\Users\Jake\Desktop\HardwareConfiguration.test2", newText2);
 
+        AhsokaLogging.StopMemoryLog();
+
         Assert.AreEqual(newText1, newText2);
     }
 

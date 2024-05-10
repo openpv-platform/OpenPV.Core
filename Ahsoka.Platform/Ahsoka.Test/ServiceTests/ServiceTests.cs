@@ -202,14 +202,6 @@ public class ServiceTests : LinearTestBase
         CommandLine.Execute(new string[] { "--Verify" });
     }
 
-    //[TestMethod]
-    public void UploadPackageToSpark()
-    {
-        CommandLine.Execute(new string[] {"--UploadToSpark",
-            @"C:\Users\Jake\Desktop\ST Setup",
-            "sparkserviceprod.azurewebsites.net", "build@enovationcontrols.com", "c3156bfd-0e84-422b-b978-ad137168adf9", "22.08.10" });
-    }
-
     [TestMethod]
     public void TestAppContext()
     {

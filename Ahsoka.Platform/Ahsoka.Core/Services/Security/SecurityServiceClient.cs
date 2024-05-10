@@ -1,9 +1,11 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Iot;
 using Ahsoka.System;
+using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 
 namespace Ahsoka.Services.Security;
@@ -104,6 +106,26 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
             requests.Remove(requestGuid);
             return token;
         }
+    }
 
+    /// <summary>
+    /// Create a Signature to be validated on the service side.
+    /// </summary>
+    /// <returns></returns>
+    public byte[] GetLocalSecret()
+    {
+        // We sign with the device Signature here to prove we are local.
+        var path = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile);
+        if (File.Exists(path))
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Generating Client Secret for Local Security Client");
+            try
+            {
+                return RSAEncryption.GetSignatureWithKey(GetClientId(), File.ReadAllText(path));
+            }
+            catch {}
+        }
+
+        return null;
     }
 }

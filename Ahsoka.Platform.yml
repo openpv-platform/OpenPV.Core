@@ -203,6 +203,7 @@ stages:
         vsVersion: '17.0'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
+        maximumCpuCount: true
         msbuildArchitecture: 'x64'
 
     - task: VSBuild@1
@@ -307,7 +308,7 @@ stages:
       inputs:
         command: 'custom'
         custom: 'tool'
-        arguments: 'update --global  EnovationCloud.CommandLine --version 4.1.0'
+        arguments: 'update --global  EnovationCloud.CommandLine'
 
     - task: CmdLine@2
       displayName: 'Push Packages to Spark'

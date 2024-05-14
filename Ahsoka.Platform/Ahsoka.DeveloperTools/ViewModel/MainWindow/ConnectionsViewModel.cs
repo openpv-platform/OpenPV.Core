@@ -701,9 +701,9 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             // Check Pre-Requisites
             var family = ParentViewModel.Connections.EditConfigurationInfo.PlatformFamily;
             var tools = ParentViewModel.Plugins.PlatformInfo.FirstOrDefault(x => x.TargetPlatform == family); // TODO Handle Other Families
-            var firmwareTool = tools?.Downloads.FirstOrDefault(x => x is PlatformFirmwareTool);
+            PlatformSupportTool firmwareTool = (PlatformSupportTool)tools?.Downloads.FirstOrDefault(x => x is PlatformSupportTool tool && tool.PlatformFamily == family);
 
-            if (firmwareTool == null)
+            if (firmwareTool == null || firmwareTool.GetPlatformFirmwareTool() == null)
             {
                 ParentViewModel.Console.AddConsoleLine($"A Distribution Installer is not available for Target Platform {family}");
                 return;
@@ -718,7 +718,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                     downloadTask.Wait();
                 }
 
-                var installTask = firmwareTool.InstallTool(this);
+                var installTask = firmwareTool.GetPlatformFirmwareTool().InstallTool(this);
                 installTask.Wait();
             }
 

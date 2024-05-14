@@ -1,4 +1,5 @@
 ﻿using Ahsoka.DeveloperTools.ViewModel;
+using Ahsoka.System;
 using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
@@ -12,27 +13,33 @@ using System.Threading.Tasks;
 namespace Ahsoka.DeveloperTools;
 
 
-internal class PlatformFirmwareTool : SparkToolBase
+internal class PlatformFirmwareTool : OpenPVToolBase
 {
-    readonly ReleaseDTO viewModel;
-
-    public PlatformFirmwareTool(ReleaseDTO viewModel, ReleaseFileDTO item) : base(viewModel, false)
+    string pathToFirmware = string.Empty;
+    PlatformFamily family = PlatformFamily.Any;
+    public PlatformFirmwareTool(string pathToFirmware, PlatformFamily family) 
     {
+
+        pathToFirmware = Directory.EnumerateFiles(pathToFirmware,"image.*.zip", SearchOption.AllDirectories).FirstOrDefault();
+
+        this.family = family;
         this.PackageType = "Target Firmware";
-        this.Description = "Distribution for " + viewModel.ContainerName;
+        this.Description = "Distribution for " + family;
         this.CanInstall = true;
-        this.viewModel = viewModel;
-        this.Version = viewModel.ContainerVersion;
-        this.Name = viewModel.ReleaseName + " (Firmware)";
+        
+        if (!String.IsNullOrEmpty(pathToFirmware))
+            this.Version = Path.GetFileName(pathToFirmware).Replace("image.","").Replace(".zip","");
+
+        this.Name = Path.GetFileName(pathToFirmware) + " (Firmware)";
         this.CanLaunch = false;
         InstallText = "To install firmware, first put the target into DFU mode using a magnet, then hit continue to begin the update.  Note that this process requires that you have downloaded the appropriate flash tools.";
 
-        this.LocalPath = Path.Combine(CustomerToolPaths.GetToolPath("Firmware"), item.Path);
+        this.LocalPath = pathToFirmware;
     }
 
     protected override async Task ExecuteDownload(IToolViewModel toolModel, CancellationTokenSource cancellationToken)
     {
-        await ExecuteDownloadInternal(toolModel, LocalPath, cancellationToken);
+        await Task.FromResult(0);
     }
 
     public override async Task InstallTool(IToolViewModel toolModel)
@@ -55,7 +62,7 @@ internal class PlatformFirmwareTool : SparkToolBase
         {
             try
             {
-                toolModel.MainViewModel.Console.AddConsoleLine($"Beginning Installation of {viewModel.Contents.First().Path}");
+                toolModel.MainViewModel.Console.AddConsoleLine($"Beginning Installation of {pathToFirmware}");
 
                 toolModel.MainViewModel.Console.AddConsoleLine($"Extracting files from zipped folder");
 
@@ -67,8 +74,8 @@ internal class PlatformFirmwareTool : SparkToolBase
                 List<string> file = Directory.GetFiles(zipPath, "*.tsv", SearchOption.AllDirectories).ToList();
                 string installFile = file.First();
 
-                string result = "";
-                if (viewModel.ContainerName == "OpenViewLinux")
+                string result = ""; 
+                if (family ==  PlatformFamily.OpenViewLinux)
                     result = InstallOnTargetLinux(installFile, toolModel);
 
                 Directory.Delete(zipPath, true);
@@ -97,7 +104,7 @@ internal class PlatformFirmwareTool : SparkToolBase
     internal string ConnectToTarget(IToolViewModel toolVM)
     {
         string result = "";
-        if (viewModel.ContainerName == "OpenViewLinux")
+        if (family == PlatformFamily.OpenViewLinux)
             result = ConnectToTargetLinux(toolVM);
 
         return result;

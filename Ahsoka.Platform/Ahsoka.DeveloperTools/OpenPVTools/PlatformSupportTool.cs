@@ -11,6 +11,16 @@ namespace Ahsoka.DeveloperTools;
 
 internal class PlatformSupportTool : SparkToolBase
 {
+    PlatformFirmwareTool firmwareTool = null;
+    PlatformFamily family = PlatformFamily.Any;
+
+    public PlatformFamily PlatformFamily { get => family; }
+
+    public PlatformFirmwareTool GetPlatformFirmwareTool()
+    {
+        return firmwareTool;
+    }
+
     public PlatformSupportTool(ReleaseDTO viewModel, ReleaseFileDTO item) :
         base(viewModel, true)
     {
@@ -20,6 +30,10 @@ internal class PlatformSupportTool : SparkToolBase
         this.Name = item.Path.Replace(".zip", "").Replace(".", " ").Replace("_", " ");
         this.Version = viewModel.ContainerVersion;
         this.Description = $"Development Package for {Name.Substring(0, Name.IndexOf(" "))}";
+
+        // Update Platform 
+        string platformFamily = item.Path.Substring(0, item.Path.IndexOf("_"));
+        Enum.TryParse(platformFamily, out family);
 
         // Filter Non Development Platforms
         if (OperatingSystem.IsLinux())
@@ -50,9 +64,16 @@ internal class PlatformSupportTool : SparkToolBase
                 this.IncludedProfiles = "None";
         }
 
-
-
         this.LocalPath = Path.Combine(CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName), Path.GetFileNameWithoutExtension(item.Path), item.Path);
+
+        UpdateLocalTool();
+    }
+
+    private void UpdateLocalTool()
+    {
+        string firmwareFolder = Path.Combine(Path.GetDirectoryName(LocalPath),"Firmware");
+        if (Directory.Exists(firmwareFolder))
+            this.firmwareTool = new PlatformFirmwareTool(firmwareFolder, family);
     }
 
     protected override async Task ExecuteDownload(IToolViewModel toolVM, CancellationTokenSource cancellationToken)
@@ -62,7 +83,11 @@ internal class PlatformSupportTool : SparkToolBase
             Directory.Delete(value, true);
 
         await ExecuteDownloadInternal(toolVM, LocalPath, cancellationToken);
+
+        UpdateLocalTool();
     }
+
+
 
     protected override void OnRemove(string path)
     {
@@ -75,6 +100,6 @@ internal class PlatformSupportTool : SparkToolBase
     public override async Task InstallTool(IToolViewModel toolVM)
     {
         // Do Nothing
-        await Task.Run(() => { });
+        await Task.CompletedTask;
     }
 }

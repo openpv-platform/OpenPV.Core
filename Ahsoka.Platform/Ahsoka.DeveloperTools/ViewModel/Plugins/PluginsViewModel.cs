@@ -247,7 +247,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
                 PercentStatus = $"Downloading {item.Name}...";
                 await item.DownloadTool(this, token);
 
-                if (item.CanInstall && item is not PlatformFirmwareTool) // Firmware Install Tool is Located in Displays.
+                if (item.CanInstall) // Firmware Install Tool is Located in Displays.
                     installs.Add(item);
             }
         }
@@ -395,10 +395,6 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
                 LoadSparkItems(platformSupport, platformSupport.ExtensionSparkChannelName, Extensions.ExtensionsFolder, platformSupport.ExtensionSparkVersionFilter);
 
-                LoadSparkItems(platformSupport, platformSupport.FirmwareSparkChannelName, "Firmware", platformSupport.FirmwareSparkVersionFilter);
-
-                LoadSparkItems(platformSupport, platformSupport.DistributionUpgradeSparkChannelName, "DistributionUpgrade", platformSupport.FirmwareSparkVersionFilter);
-
                 LoadSparkItems(platformSupport, platformSupport.PlatformSupportSparkChannelName, "Dependencies", platformSupport.PlatformSupportSparkVersionFilter);
             }));
 
@@ -439,28 +435,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
             foreach (var result in results.OrderByDescending(x => x.UploadDate))
             {
-                if (property == "Firmware")
-                {
-                    ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
-                    foreach (var item in token.Contents)
-                    {
-                        if (item.Path.StartsWith("image"))
-                            releases.Add(new PlatformFirmwareTool(token, item));
-                        else if (item.Path.StartsWith("sdk") && OperatingSystem.IsLinux()) // Toolchains only work on Linux
-                            releases.Add(new PlatformSDKTool(token, item));
-                    }
-                }
-                else if (property == "DistributionUpgrade")
-                {
-                    ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
-                    foreach (var item in token.Contents)
-                    {
-                        if (item.Path.StartsWith("ota"))
-                            releases.Add(new PlatformDistributionUpgradeTool(token, item));
-                    }
-                    break; // PUll Latest OTA image and Return;
-                }
-                else if (property == "Demos")
+                if (property == "Demos")
                 {
                     ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
                     releases.Add(new PlatformDemoTool(token));

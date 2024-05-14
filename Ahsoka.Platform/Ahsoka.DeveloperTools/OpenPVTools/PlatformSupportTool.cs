@@ -76,7 +76,11 @@ internal class PlatformSupportTool : SparkToolBase
     public override string GetInfo()
     {
         // Look for "Default Plaform Support folder first (may be in the Repo instead of AppData).
-        string localPath = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily));
+        string localPath = string.Empty;
+
+        try { localPath = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily)); }
+        catch { }
+
         if (!Path.Exists(localPath))
             localPath = Path.Combine(Path.GetDirectoryName(LocalPath)); // Fall back to Path passed in
 
@@ -101,7 +105,10 @@ internal class PlatformSupportTool : SparkToolBase
     private void UpdateLocalTool()
     {
         // Look for "Default Plaform Support folder first (may be in the Repo instead of AppData).
-        string firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily),"Firmware");
+        string firmwareFolder = string.Empty;
+        try { firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily), "Firmware"); }
+        catch { }
+
         if (!Path.Exists(firmwareFolder))
             firmwareFolder = Path.Combine(Path.GetDirectoryName(LocalPath), "Firmware"); // Fall back to Path passed in
 

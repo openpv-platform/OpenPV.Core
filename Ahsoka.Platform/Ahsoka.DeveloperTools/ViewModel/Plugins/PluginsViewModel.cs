@@ -78,8 +78,8 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     }
 
     public bool ShowInfoVisible { get { return showInfoVisible; } set { showInfoVisible = value; OnPropertyChanged(); } }
+    
     public string ShowInfoText { get { return SelectedTool?.GetInfo(); } set {} }
-
 
     internal ObservableCollection<PlatformSupportPackage> PlatformInfo { get => platformInfo; set => platformInfo = value; }
 

@@ -21,6 +21,8 @@ internal class OpenPVToolBase : ViewModelBase
 {
     bool downloadInGroup = false;
 
+    public virtual PlatformFamily PlatformFamily { get; set; }
+
     public string IncludedProfiles { get; set; } = "All";
 
     public string LocalPath { get; set; }
@@ -37,6 +39,9 @@ internal class OpenPVToolBase : ViewModelBase
 
     public string BaseClass { get; set; }
 
+    public bool HasInfo { get; set; }
+
+ 
     public bool CanLaunch { get; set; }
 
     public bool CanInstall { get; set; }
@@ -74,6 +79,8 @@ internal class OpenPVToolBase : ViewModelBase
         OnPropertyChanged(nameof(IsDownloaded));
     }
 
+    public virtual string GetInfo() { return string.Empty; }
+    
     protected virtual bool GetIsDownloaded()
     {
         bool isDownloaded = Directory.Exists(LocalPath);

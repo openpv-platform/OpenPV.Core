@@ -24,6 +24,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
     #region Fields
     bool showNewInstallHelp = false;
+    bool showInfoVisible = false;
     bool newInstallVisible = false;
     bool installHelpVisible = false;
     bool downloadInProgress = false;
@@ -76,6 +77,10 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         }
     }
 
+    public bool ShowInfoVisible { get { return showInfoVisible; } set { showInfoVisible = value; OnPropertyChanged(); } }
+    public string ShowInfoText { get { return SelectedTool?.GetInfo(); } set {} }
+
+
     internal ObservableCollection<PlatformSupportPackage> PlatformInfo { get => platformInfo; set => platformInfo = value; }
 
     internal ObservableCollection<OpenPVToolBase> SelectedDownloads { get => tools; set => tools = value; }
@@ -89,6 +94,8 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
             OnPropertyChanged();
             OnPropertyChanged(nameof(CanLaunch));
             OnPropertyChanged(nameof(CanInstall));
+            OnPropertyChanged(nameof(HasInfo));
+            OnPropertyChanged(nameof(PlatformFamily));
         }
     }
 
@@ -142,6 +149,10 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
             OnPropertyChanged();
         }
     }
+
+    public bool HasInfo { get { return SelectedTool != null && SelectedTool.HasInfo; } }
+
+    public PlatformFamily PlatformFamily { get { return SelectedTool != null ? SelectedTool.PlatformFamily : PlatformFamily.Any; } }
 
     public bool CanInstall { get { return SelectedTool != null && SelectedTool.CanInstall; } }
 
@@ -211,6 +222,12 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
                 parentViewModel.Dialog.ShowDialog("Error", ex.Message, "Ok");
             }
         }
+    }
+
+    internal void ShowInfo()
+    {
+        ShowInfoVisible = !ShowInfoVisible;
+        OnPropertyChanged(nameof(ShowInfoText));
     }
 
     internal void ClosePopup()

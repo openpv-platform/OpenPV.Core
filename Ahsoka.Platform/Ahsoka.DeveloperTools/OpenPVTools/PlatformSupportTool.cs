@@ -6,15 +6,14 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text;
 
 namespace Ahsoka.DeveloperTools;
 
 internal class PlatformSupportTool : SparkToolBase
 {
     PlatformFirmwareTool firmwareTool = null;
-    PlatformFamily family = PlatformFamily.Any;
-
-    public PlatformFamily PlatformFamily { get => family; }
+    public const string VersionFileName = "VersionInfo.customertools.version";
 
     public PlatformFirmwareTool GetPlatformFirmwareTool()
     {
@@ -33,7 +32,9 @@ internal class PlatformSupportTool : SparkToolBase
 
         // Update Platform 
         string platformFamily = item.Path.Substring(0, item.Path.IndexOf("_"));
-        Enum.TryParse(platformFamily, out family);
+        var family = PlatformFamily.Any;
+        if (Enum.TryParse(platformFamily, out family))
+            this.PlatformFamily = family;
 
         // Filter Non Development Platforms
         if (OperatingSystem.IsLinux())
@@ -67,13 +68,46 @@ internal class PlatformSupportTool : SparkToolBase
         this.LocalPath = Path.Combine(CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName), Path.GetFileNameWithoutExtension(item.Path), item.Path);
 
         UpdateLocalTool();
+
+        this.HasInfo = true;
+        
     }
+
+    public override string GetInfo()
+    {
+        // Look for "Default Plaform Support folder first (may be in the Repo instead of AppData).
+        string localPath = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily));
+        if (!Path.Exists(localPath))
+            localPath = Path.Combine(Path.GetDirectoryName(LocalPath)); // Fall back to Path passed in
+
+
+        StringBuilder builder = new StringBuilder();
+        foreach (var folder in Directory.GetDirectories(localPath))
+        {
+            string folderName = Path.GetFileName(folder);
+            string versionFile = Path.Combine(folder, VersionFileName);
+            string version = this.Version;
+            
+            if (File.Exists(versionFile))
+                version = File.ReadAllText(versionFile);
+
+            builder.AppendLine($"- {folderName} ({version})");
+        }
+
+        return builder.ToString();
+    }
+
 
     private void UpdateLocalTool()
     {
-        string firmwareFolder = Path.Combine(Path.GetDirectoryName(LocalPath),"Firmware");
+        // Look for "Default Plaform Support folder first (may be in the Repo instead of AppData).
+        string firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily),"Firmware");
+        if (!Path.Exists(firmwareFolder))
+            firmwareFolder = Path.Combine(Path.GetDirectoryName(LocalPath), "Firmware"); // Fall back to Path passed in
+
         if (Directory.Exists(firmwareFolder))
-            this.firmwareTool = new PlatformFirmwareTool(firmwareFolder, family);
+            this.firmwareTool = new PlatformFirmwareTool(firmwareFolder, PlatformFamily);
+
     }
 
     protected override async Task ExecuteDownload(IToolViewModel toolVM, CancellationTokenSource cancellationToken)

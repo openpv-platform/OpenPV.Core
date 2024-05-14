@@ -18,7 +18,18 @@
 						HorizontalAlignment="Stretch"
 						Height="38"
 						VerticalContentAlignment="Center"
-						Command="{Binding DownloadTool}" >
+					    IsEnabled="{Binding HasInfo}"
+						Command="{Binding ShowInfo}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Info"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Show Plugin Info"/>
+				</StackPanel>
+			</Button>
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					Command="{Binding DownloadTool}" >
 				<StackPanel Orientation="Horizontal">
 					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Download"></material:MaterialIcon>
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Download Plugin"/>
@@ -110,5 +121,6 @@
 				</StackPanel>
 			</Border>
 		</Border>
+	
 	</Grid>
 </UserControl>

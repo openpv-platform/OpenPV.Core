@@ -27,12 +27,18 @@ internal class PlatformFirmwareTool : OpenPVToolBase
         this.Description = "Distribution for " + family;
         this.CanInstall = true;
         
-        if (!String.IsNullOrEmpty(pathToFirmware))
-            this.Version = Path.GetFileName(pathToFirmware).Replace("image.","").Replace(".zip","");
-
+        
         this.Name = Path.GetFileName(pathToFirmware) + " (Firmware)";
         this.CanLaunch = false;
         InstallText = "To install firmware, first put the target into DFU mode using a magnet, then hit continue to begin the update.  Note that this process requires that you have downloaded the appropriate flash tools.";
+
+        if (!String.IsNullOrEmpty(pathToFirmware))
+        {
+            this.Version = Path.GetFileName(pathToFirmware).Replace("image.", "").Replace(".zip", "");
+            string versionFile = Path.Combine(Path.GetDirectoryName(pathToFirmware), PlatformSupportTool.VersionFileName);
+            if (!File.Exists(versionFile))
+                File.WriteAllText(versionFile, this.Version);
+        }
 
         this.LocalPath = pathToFirmware;
     }

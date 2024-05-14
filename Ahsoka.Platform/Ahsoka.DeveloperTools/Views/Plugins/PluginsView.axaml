@@ -108,6 +108,30 @@
 				</Border.Transitions>
 				<CustomerTools:WelcomeView/>
 			</Border>
+			<Border IsVisible="{Binding ShowInfoVisible}" Grid.ColumnSpan="2"  BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+				<Border  BoxShadow="5 5 10 2 DarkGray" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="White" BorderThickness="1">
+					<StackPanel VerticalAlignment="Center">
+						<TextBlock Margin="0,25,0,0" Width="600" Foreground="SteelBlue" FontSize="16" TextWrapping="Wrap" TextAlignment="Center"
+								   VerticalAlignment="Center" HorizontalAlignment="Left"
+								   Padding="10" Text="{Binding PlatformFamily,StringFormat='Platform Support for {0} which includes the following...'  FallbackValue='Platform Support for None which includes the following...'}"/>
+						<TextBlock Margin="25,1,25,0" Width="450" Foreground="SteelBlue"
+								   FontSize="14" TextWrapping="Wrap" TextAlignment="Left" LineHeight="25"
+														   VerticalAlignment="Center" HorizontalAlignment="Center"
+														   Padding="10" 
+								   Text="{Binding ShowInfoText, FallbackValue=Item Info...}"/>
+
+						<StackPanel Margin="25" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+							<Button Grid.Column="2" Grid.Row="0"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Center"
+										Command="{Binding ShowInfo}" FontSize="14"
+										Background="Transparent" Content="Ok"/>
+						</StackPanel>
+
+
+					</StackPanel>
+				</Border>
+			</Border>
 		</Grid>
 	</Border>
 </UserControl>

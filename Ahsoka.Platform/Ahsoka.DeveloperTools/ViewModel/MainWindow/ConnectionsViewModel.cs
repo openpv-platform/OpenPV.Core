@@ -700,8 +700,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
 
             // Check Pre-Requisites
             var family = ParentViewModel.Connections.EditConfigurationInfo.PlatformFamily;
-            var tools = ParentViewModel.Plugins.PlatformInfo.FirstOrDefault(x => x.TargetPlatform == family); // TODO Handle Other Families
-            PlatformSupportTool firmwareTool = (PlatformSupportTool)tools?.Downloads.FirstOrDefault(x => x is PlatformSupportTool tool && tool.PlatformFamily == family);
+            PlatformSupportTool firmwareTool = (PlatformSupportTool)ParentViewModel.Plugins.SupportInfo?.Downloads.FirstOrDefault(x => x is PlatformSupportTool tool && tool.PlatformFamily == family);
 
             if (firmwareTool == null || firmwareTool.GetPlatformFirmwareTool() == null)
             {

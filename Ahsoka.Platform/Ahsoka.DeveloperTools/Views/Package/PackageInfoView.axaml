@@ -170,8 +170,13 @@
 						<TextBlock Text="Execute Command:" Grid.Row="3" Grid.Column="0"/>
 						<TextBox Text="{Binding ExecCommand}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Width="325" TextWrapping="1" />
 
-						<TextBlock IsVisible="{Binding IsOpenView}" Text="Upgrade Installer:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
-						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeInstallerUI}" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Width="325"/>
+						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Installer UI:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2">
+							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeInstallerUI}" />
+							<TextBlock IsVisible="{Binding IsOpenView}" Text="Include Firmware Update:"/>
+							<CheckBox IsVisible="{Binding IsOpenView}" Margin="5,10,0,10" IsChecked="{Binding IncludeFirmwareUpdate}"/>
+							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray" Text="(Typically 40-50mb)" />
+						</StackPanel>
 					</Grid>
 				</Border>
 

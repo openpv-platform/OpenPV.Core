@@ -34,9 +34,8 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     OpenPVToolBase selectedTool;
     CancellationTokenSource token;
     bool toolListDownloaded = false;
-    private PlatformSupportPackage selectedPlatformSupport;
+    private PlatformSupportPackage supportInfo;
     ProfileDefinition selectedProfile;
-    private ObservableCollection<PlatformSupportPackage> platformInfo = new();
     private ObservableCollection<ProfileDefinition> worflows = new();
     private ObservableCollection<OpenPVToolBase> tools = new();
     #endregion
@@ -67,12 +66,12 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         }
     }
 
-    internal PlatformSupportPackage SelectedPlatformSupport
+    internal PlatformSupportPackage SupportInfo
     {
-        get { return selectedPlatformSupport; }
+        get { return supportInfo; }
         set
         {
-            selectedPlatformSupport = value;
+            supportInfo = value;
             OnPropertyChanged();
         }
     }
@@ -80,8 +79,6 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     public bool ShowInfoVisible { get { return showInfoVisible; } set { showInfoVisible = value; OnPropertyChanged(); } }
     
     public string ShowInfoText { get { return SelectedTool?.GetInfo(); } set {} }
-
-    internal ObservableCollection<PlatformSupportPackage> PlatformInfo { get => platformInfo; set => platformInfo = value; }
 
     internal ObservableCollection<OpenPVToolBase> SelectedDownloads { get => tools; set => tools = value; }
 
@@ -169,7 +166,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     {
         this.parentViewModel = customerToolsViewModel;
 
-        platformInfo.Add(JsonUtility.Deserialize<PlatformSupportPackage>(Properties.Resources.OpenViewPlatformSupport));
+        SupportInfo = (JsonUtility.Deserialize<PlatformSupportPackage>(Properties.Resources.OpenViewPlatformSupport));
 
         ProfileDefinitions.Add(new ProfileDefinition()
         {
@@ -191,8 +188,6 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
                 ProfileTag = profileWSL,
                 ProfileDescription = "Develop using QT Creator or WSL C++ Tools. Includes Container Support (if Docker is installed) for QT Creator as well as OpenView Distribution, Target and Development Support Plugins for Ubuntu and Windows"
             });
-
-        selectedPlatformSupport = platformInfo.FirstOrDefault();
     }
 
     internal void OpenPopup() { OpenPopup(false); }
@@ -276,8 +271,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
             await item.InstallTool(this);
         }
 
-        foreach (var item in PlatformInfo)
-            item.CheckDownload();
+        SupportInfo.CheckDownload();
 
         DownloadInProgress = false;
     }
@@ -293,8 +287,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         token = new CancellationTokenSource();
         await SelectedTool.DownloadTool(this, token);
 
-        foreach (var item in PlatformInfo)
-            item.CheckDownload();
+        SupportInfo.CheckDownload();
 
         DownloadInProgress = false;
     }
@@ -372,50 +365,47 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         ParentViewModel.IsWorking = true;
 
         var tasks = new List<Task>();
-        foreach (var platformSupport in platformInfo)
+        supportInfo.Downloads.Clear();
+
+        // Unpack Tools
+        foreach (var item in supportInfo.Tools)
         {
-            platformSupport.Downloads.Clear();
-
-            // Unpack Tools
-            foreach (var item in platformSupport.Tools)
+            try
             {
-                try
-                {
-                    var type = Type.GetType(item.BaseClass);
-                    var selectedTool = (OpenPVToolBase)Activator.CreateInstance(type);
+                var type = Type.GetType(item.BaseClass);
+                var selectedTool = (OpenPVToolBase)Activator.CreateInstance(type);
 
-                    var version = VersionUtility.GetAppVersion();
+                var version = VersionUtility.GetAppVersion();
 
-                    selectedTool.LocalPath = Path.Combine(CustomerToolPaths.GetToolPath("DeveloperTools"), item.Name.Replace(" ", "_")); // Tool Download Path
-                    selectedTool.Name = item.Name;
-                    selectedTool.Description = item.Description;
-                    selectedTool.Version = item.Version;
-                    if (item.Resources != null)
-                        selectedTool.Resources = new List<Resource>(item.Resources);
+                selectedTool.LocalPath = Path.Combine(CustomerToolPaths.GetToolPath("DeveloperTools"), item.Name.Replace(" ", "_")); // Tool Download Path
+                selectedTool.Name = item.Name;
+                selectedTool.Description = item.Description;
+                selectedTool.Version = item.Version;
+                if (item.Resources != null)
+                    selectedTool.Resources = new List<Resource>(item.Resources);
 
-                    if (item.DevelopmentPlatform == PlatformFamily.Any)
-                        AddTool(platformSupport, selectedTool);
-                    else if (item.DevelopmentPlatform == PlatformFamily.MacosArm64 && OperatingSystem.IsMacOS())
-                        AddTool(platformSupport, selectedTool);
-                    else if (item.DevelopmentPlatform == PlatformFamily.Ubuntu64 && OperatingSystem.IsLinux())
-                        AddTool(platformSupport, selectedTool);
-                    else if (item.DevelopmentPlatform == PlatformFamily.Windows64 && OperatingSystem.IsWindows())
-                        AddTool(platformSupport, selectedTool);
-                }
-                catch { } // Catch Tool Load Errors.
+                if (item.DevelopmentPlatform == PlatformFamily.Any)
+                    AddTool(supportInfo, selectedTool);
+                else if (item.DevelopmentPlatform == PlatformFamily.MacosArm64 && OperatingSystem.IsMacOS())
+                    AddTool(supportInfo, selectedTool);
+                else if (item.DevelopmentPlatform == PlatformFamily.Ubuntu64 && OperatingSystem.IsLinux())
+                    AddTool(supportInfo, selectedTool);
+                else if (item.DevelopmentPlatform == PlatformFamily.Windows64 && OperatingSystem.IsWindows())
+                    AddTool(supportInfo, selectedTool);
             }
-
-            // Download Firmware Items
-            tasks.Add(Task.Run(() =>
-            {
-                LoadSparkItems(platformSupport, platformSupport.DemoSparkChannelName, "Demos", platformSupport.DemoSparkVersionFilter);
-
-                LoadSparkItems(platformSupport, platformSupport.ExtensionSparkChannelName, Extensions.ExtensionsFolder, platformSupport.ExtensionSparkVersionFilter);
-
-                LoadSparkItems(platformSupport, platformSupport.PlatformSupportSparkChannelName, "Dependencies", platformSupport.PlatformSupportSparkVersionFilter);
-            }));
+            catch { }// Catch Tool Load Errors.
 
         }
+        // Download Firmware Items
+        tasks.Add(Task.Run(() =>
+        {
+            LoadSparkItems(supportInfo, supportInfo.DemoSparkChannelName, "Demos", supportInfo.DemoSparkVersionFilter);
+
+            LoadSparkItems(supportInfo, supportInfo.ExtensionSparkChannelName, Extensions.ExtensionsFolder, supportInfo.ExtensionSparkVersionFilter);
+
+            LoadSparkItems(supportInfo, supportInfo.PlatformSupportSparkChannelName, "Dependencies", supportInfo.PlatformSupportSparkVersionFilter);
+        }));
+
 
         var task = Task.Run(() =>
         {
@@ -448,7 +438,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         try
         {
             var search = new ClientContainerSearchDTO() { ChannelName = channelName, ContainerVersionFilter = filter };
-            var results = SparkAccountClient.SharedSparkClient.SearchContainers(search, 100);
+            var results = SparkAccountClient.SharedSparkClient.SearchContainers(search, 10);
 
             foreach (var result in results.OrderByDescending(x => x.UploadDate))
             {
@@ -508,7 +498,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     internal void LoadProfileTools()
     {
         SelectedDownloads.Clear();
-        foreach (var item in SelectedPlatformSupport.Downloads)
+        foreach (var item in SupportInfo.Downloads)
             AddTool(null, item);
 
         SelectedProfile.CanLaunch = SelectedDownloads.Any(x => x.CanLaunch);

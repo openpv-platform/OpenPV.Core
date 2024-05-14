@@ -101,7 +101,6 @@ internal class PlatformSupportTool : SparkToolBase
         return builder.ToString();
     }
 
-
     private void UpdateLocalTool()
     {
         // Look for "Default Plaform Support folder first (may be in the Repo instead of AppData).
@@ -127,8 +126,6 @@ internal class PlatformSupportTool : SparkToolBase
 
         UpdateLocalTool();
     }
-
-
 
     protected override void OnRemove(string path)
     {

@@ -426,6 +426,7 @@ public class InstallEngineBase
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Loading {item.ComponentName} Installer Extension");
         }
 
+        components.Add(new FirmwareUpdateComponent());
         components.Add(new EndInstallEngineComponent());
     }
     #endregion

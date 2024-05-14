@@ -77,6 +77,24 @@ namespace Ahsoka.Test.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {
+        ///  &quot;UpgradeName&quot; : &quot;OpenView 3.0 BSP Upgrade&quot;,
+        ///  &quot;PlatformFamily&quot;: &quot;OpenViewLinux&quot;,
+        ///  &quot;UpgradesTo&quot;: &quot;2.2024-02-27T105810.otatest.023e22e&quot;,
+        ///  &quot;UpgradeFile&quot;: &quot;b8e76e0-023e22e.zip&quot;,
+        ///  &quot;UpgradesFrom&quot;: [
+        ///    &quot;2023-07-12T144614.kirkstone.b8e76e0&quot;,
+        ///    &quot;2023-09-07T080255.kirkstone.387e4f0&quot;
+        ///  ]
+        ///}.
+        /// </summary>
+        internal static string OpenView_upgradeinfo {
+            get {
+                return ResourceManager.GetString("OpenView_upgradeinfo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to VERSION &quot;&quot;
         ///
         ///NS_ :
@@ -111,12 +129,11 @@ namespace Ahsoka.Test.Properties {
         ///
         ///BS_:
         ///
-        ///BU_: DBG DRIVER IO MOTOR SENSOR
+        ///BU_: DBG CONTROLLER IO MOTOR SENSOR
         ///
         ///
-        ///BO_ 100 DRIVER_HEARTBEAT: 1 DRIVER
-        /// SG_ DRIVER_HEARTBEAT_cmd : 0|8@1+ (1,0) [0|0] &quot;&quot; SENSOR,MOTOR
-        /// [rest of string was truncated]&quot;;.
+        ///BO_ 100 DRIVER_HEARTBEAT: 1 CONTROLLER
+        /// SG_ DRIVER_HEARTBEAT_cmd : 0|8@1+ (1,0) [0|0] &quot;&quot; SENSOR [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string TestFile {
             get {

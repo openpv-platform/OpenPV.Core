@@ -12,17 +12,9 @@ internal class PlatformSupportPackage : ViewModelBase
     #endregion
 
     #region Properties
-    public PlatformFamily TargetPlatform { get; set; }
-
-    public string Platform { get; set; }
-
-    public string PlatformDescription { get; set; }
-
     public string ExtensionSparkChannelName { get; set; }
 
     public string ExtensionSparkVersionFilter { get { return GetCurrentMajorMinor(); } }
-
-    public string FirmwareSparkVersionFilter { get { return FirmwarePreRequisites.GetBSPInfo(TargetPlatform).FirmwareFilter; } }
 
     public string DemoSparkChannelName { get; set; }
 
@@ -50,8 +42,6 @@ internal class PlatformSupportPackage : ViewModelBase
     #endregion
 
     #region Methods
-    public override string ToString() { return Platform; }
-
     internal void CheckDownload()
     {
         foreach (var item in Downloads)

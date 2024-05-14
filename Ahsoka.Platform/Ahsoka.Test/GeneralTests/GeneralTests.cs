@@ -1,3 +1,4 @@
+using Ahsoka.DeveloperTools.OpenPVTools;
 using Ahsoka.DeveloperTools.Spark;
 using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
@@ -238,6 +239,16 @@ public class GeneralTests : LinearTestBase
         var result = StringEncryption.ReadSecureFile(path);
         string readableResult = StringEncryption.ToInsecureString(result);
         Assert.AreEqual(testData, readableResult);
+    }
+
+    [TestMethod]
+    public void TestUpgradeInfo()
+    {
+        FirmwareUpdateInfo info = JsonUtility.Deserialize<FirmwareUpdateInfo>(Properties.Resources.OpenView_upgradeinfo);
+        Assert.IsNotNull(info);
+        Assert.IsTrue(info.UpgradesTo != null);
+        Assert.IsTrue(info.PlatformFamily == PlatformFamily.OpenViewLinux);
+        Assert.IsTrue(info.UpgradesFrom.Count > 0);
     }
 
     [TestMethod]

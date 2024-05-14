@@ -207,6 +207,20 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
     }
 
+    public bool IncludeFirmwareUpdate
+    {
+        get
+        {
+            return PackageInfo.IncludeFirmwareUpdate;
+        }
+
+        set
+        {
+            PackageInfo.IncludeFirmwareUpdate = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool ProjectGenerated
     {
         get
@@ -731,7 +745,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         // Check Pre-Requisites
         var family = this.PlatformFamily;
-        var tools = ParentViewModel.Plugins.PlatformInfo.FirstOrDefault(x => x.TargetPlatform == family); // TODO Handle Other Families
+        var tools = ParentViewModel.Plugins.SupportInfo; // TODO Handle Other Families
         var launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewQT5ContainerTool);
 
         if (launchTool == null || !launchTool.IsDownloaded)

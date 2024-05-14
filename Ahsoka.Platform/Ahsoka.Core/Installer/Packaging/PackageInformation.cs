@@ -29,6 +29,7 @@ public class PackageInformation : PackageHeader
     public string PackageSigningCertFile { get; set; }
 
     public bool IncludeInstallerUI { get; set; } = false;
+    public bool IncludeFirmwareUpdate { get; set; } = false;
 
     public List<ModuleLicense> Licenses { get; set; } = new();
 

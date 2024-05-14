@@ -22,11 +22,13 @@
 
 	<Target Name="CreateExtensions" AfterTargets="PostBuildEvent">
 		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can.Ux\Ahsoka.Core.Can.Ux.csproj" />
-		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.csproj" />
+		 <!--.UX Builds This-->	<Exec Condition="false" Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.csproj" />
+		
 		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
 		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
-		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
 		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Storyboard.Ux\Ahsoka.Core.Storyboard.Ux.csproj" />
+		
+		<!--.UX Builds This-->	<Exec Condition="false" Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
 		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
 
 		<!-- Create Extension Package Info.  System will use these nuget packages to download the libraries-->
@@ -67,13 +69,13 @@
 
 		<!-- Publish .deb for Ubuntu -->
 		<Exec Command="dotnet msbuild ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj -target:CreateDeb -property:TargetFramework=net8.0 -property:RuntimeIdentifier=linux-x64 -property:SelfContained=true -property:Configuration=Debug -property:PublishWithAspNetCoreTargetManifest=false" />
-
 		<Copy SourceFiles="OpenPV for Ubuntu.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV for Ubuntu.release.json" />
 
-		<!-- Create Ubuntu Development Support Package (For Running Tools and Compiling C++)-->
-		<Exec Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=UbuntuOutputs" />
-		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\InstallerUI\InstallerVersion.txt" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
-		
+		<!--DISABLED - Create Installer UI  -->
+		<Exec Condition="false" Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=UbuntuOutputs" />
+		<WriteLinesToFile Condition="false" File="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\InstallerUI\InstallerVersion.txt" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
+
+		<!-- Create Ubuntu Development Support Package (For Running Tools and Compiling C++)  DISABLED-->
 		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=UbuntuOutputs" />
 		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\Ubuntu64_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ubuntu64_TargetSupport.zip" />
@@ -82,12 +84,12 @@
 
 	<Target Name="CreateOpenViewPublishOutputs" AfterTargets="CreateUbuntuPublishOutputs" Condition="!Exists('$(PlatformSupportRoot)\SparkUpload\OpenViewLinux_TargetSupport.zip')">
 
-		<!-- Copy BSP from Download Area) -->
+		<!-- Copy BSP from Download Area -->
 		<ItemGroup>
 			<DISTRO_FIRMWARE Include="$(SolutionDir)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\**" />
 		</ItemGroup>
 		
-		<!--CAN Processor Support & ESP32 Firmware-->
+		<!--Copy Distro and Upgrade Files-->
 		<Copy SourceFiles="@(DISTRO_FIRMWARE)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Firmware\%(RecursiveDir)" />
 		
 		<!-- Create OpenView "Select" Target Support Package (For Prep, Runtimes, Etc.) -->
@@ -104,7 +106,7 @@
 		</ItemGroup>
 		<Copy SourceFiles="@(OV_Dependencies)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Dependency\%(RecursiveDir)" />
 		<Copy SourceFiles="@(OV_Firmware)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Resources\%(RecursiveDir)" />
-
+		
 		<!-- Create OpenView "Select" Package -->
 		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\OpenViewLinux_TargetSupport.zip" />
 

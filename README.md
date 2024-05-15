@@ -3,9 +3,29 @@ This guide will assist in understanding and setting up tools for developing inte
 
 # Getting Started
 
-1.	Prerequisites
+1.	Setup Secrets for Testing and PreRequisites
+2.  Prerequisites
 2.	Contribute
 3.  Pipelines & Public Builds
+
+
+# Secrets for Test and Pre-Reqs Projects.
+
+In order to execute tests, you will need to setup a secrets file for the Test Project (the same ID is used for PreRequisites).  This allows the tests to access resources such as 
+a login and password for Spark.  More information about managing secrets is available here. 
+[microsoft documentation](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-8.0&tabs=windows#enable-secret-storage).
+
+If the build of the DownloadBSP Project is failing due to it not being able to find the `secrets.json` file, a missing secrets file is likely the reason.
+
+The resulting JSON should look at follows:
+
+```json
+{
+    "SparkLogin": "<USER_EMAIL>",
+    "SparkPassword": "<USER_PASSWORD>"
+    "SparkUrl": "sparkserviceprod-staging.azurewebsites.net"
+}
+```
 
 
 # Prerequisites
@@ -24,6 +44,7 @@ This guide will assist in understanding and setting up tools for developing inte
       - Note that while you can build debug, you will get errors when opening the solution without this add in.   [Its located here....](https://wixtoolset.org)
       - Starting in 1.252, you can install WIX with the command "dotnet tool install --global wix"   You will also want to install the HeatWave Visual Studio Extension
 	- Install the dotnet-project-licenses tool: "dotnet tool install --global dotnet-project-licenses"
+
 
 # Contribute
  
@@ -63,6 +84,7 @@ This guide will assist in understanding and setting up tools for developing inte
   - Ahsoka.BuildCoProcessor - This build uses ST CubeIDE to build the CoProcessor Firmware for use with Real Time CAN.
   - Ahsoka.BuildESP32 - This build creates firmware or the ESP32 Module used for WiFi and Bluetooth.
   - Ahsoka.BuildInterop - This project builds the C++ Interop DLL's (so's) for use with Ahsoka.Core.
+  - Ahsoka.DownloadBSP - This project downloads the BSP for OpenView for packaging into the PlatformSupport zip file.
 
 7. Select Debug or Release from the Configuration Manager with "Any CPU" selected and Build your solution.  Multiple targets are used when testing Ahsoka.Platform
 
@@ -71,8 +93,8 @@ This guide will assist in understanding and setting up tools for developing inte
    - Ahsoka.InstallerUI - Builds the Installer Application.
    - Ahsoka.PublishOutputs - Builds the Platform Support Packages (OpenView, Ubuntu, Windows)
 
-Note that the PreReqs project does NOT build automatically.  Since this project takes 5-10 minutes, its recommended you build it one time and as needed after that (Clean and Build Ahsoka.PreReqs).   The project Ahsoka.PublishOutputs will build automatically the first time you build the solution.  If you need to build these dependency packages again, you must clean Ahsoka.PreRequisites or Ahsoka.PublishOutputs.    
-
+Note that the PreReqs project does NOT build automatically.  Since this project takes 5-10 minutes, its recommended you build it one time and as needed after that (Clean and Build Ahsoka.PreReqs).   
+The project Ahsoka.PublishOutputs will build automatically the first time you build the solution.  If you need to build these dependency packages again, you must clean Ahsoka.PreRequisites or Ahsoka.PublishOutputs.    
 
 
 # Pipelines & Component Delivery

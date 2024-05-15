@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<RuntimeIdentifiers>win-x64;linux-arm;linux-x64;osx-arm64</RuntimeIdentifiers>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<SignAssembly>False</SignAssembly>
 		<TrimMode>copyused</TrimMode>
 		<UseRidGraph>true</UseRidGraph>

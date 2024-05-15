@@ -7,6 +7,7 @@
 		<TrimMode>copyused</TrimMode>
 		<DebugType>portable</DebugType>
 		<UseRidGraph>true</UseRidGraph>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

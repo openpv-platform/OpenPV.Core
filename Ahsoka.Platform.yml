@@ -205,15 +205,24 @@ stages:
         configuration: '$(buildConfiguration)'
         maximumCpuCount: true
         msbuildArchitecture: 'x64'
-
+    
     - task: VSBuild@1
-      displayName: 'Build Ahsoka.Platform On PC'
+      displayName: 'Build PublishOutputs'
       inputs:
-        solution: '$(solution)'
+        solution: 'Ahsoka.Platform/Ahsoka.PublishOutputs/Ahsoka.PublishOutputs.csproj'
         vsVersion: '17.0'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
+        maximumCpuCount: true
         msbuildArchitecture: 'x64'
+
+    - task: VSBuild@1
+      displayName: 'Build Windows Installer'
+      inputs:
+        solution: 'Ahsoka.Platform/Ahsoka.DeveloperTools.Installer/Ahsoka.DeveloperTools.Installer.wixproj'
+        vsVersion: '17.0'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
     - task: DotNetCoreCLI@2
       displayName: Run Ahsoka Tests

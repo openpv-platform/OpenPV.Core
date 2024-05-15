@@ -7,6 +7,8 @@
     <SuppressIces>ICE60;ICE61</SuppressIces>
     <OutputPath>..\..\SparkUpload\</OutputPath>
     <DebugType>Full</DebugType>
+	<DefaultCompressionLevel>mszip</DefaultCompressionLevel>
+    <SuppressValidation>True</SuppressValidation>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.Util.wixext" Version="5.0.0" />

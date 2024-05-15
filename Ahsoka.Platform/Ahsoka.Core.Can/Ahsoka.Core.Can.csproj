@@ -2,6 +2,7 @@
 	<PropertyGroup>
 		<RootNamespace>Ahsoka</RootNamespace>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<DebugType>portable</DebugType>
@@ -20,6 +21,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="SocketCANSharp" Version="0.11.0" />
+		<PackageReference Include="DbcParserLib" Version="1.6.0" />
+		<PackageReference Include="ELFSharp" Version="2.17.3" />
 		<PackageReference Include="protobuf-net" Version="3.2.30" />
 		<PackageReference Include="protobuf-net.BuildTools" Version="3.2.33">
 			<PrivateAssets>all</PrivateAssets>
@@ -33,7 +37,7 @@
 	</ItemGroup>
 
 	<!--To help Debugging since this is loaded dynamically-->
-	<Target Name="AfterCanBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'" >
+	<Target Name="AfterCanBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'">
 		<Message Text="Copy CAN Extension...$(SolutionName)" Importance="high" />
 		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Can.dll" DestinationFiles="$(SolutionDir)..\\Extensions\Can Service Extension\lib\Ahsoka.Core.Can.dll" />
 		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.extensioninfo.json" DestinationFiles="$(SolutionDir)..\\Extensions\Can Service Extension\Ahsoka.Core.Can.extensioninfo.json" />

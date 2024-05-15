@@ -1,10 +1,8 @@
-﻿using Ahsoka.ServiceFramework;
-using SocketCANSharp;
+﻿using SocketCANSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Cryptography.X509Certificates;
 using static Ahsoka.Services.Can.CanServiceImplementation;
 
 namespace Ahsoka.Services.Can.Messages;

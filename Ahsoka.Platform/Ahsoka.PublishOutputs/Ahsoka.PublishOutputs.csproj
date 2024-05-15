@@ -4,12 +4,17 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<UserSecretsId>5861d827-1f17-41c9-9344-c2616ea52eb6</UserSecretsId>
 	</PropertyGroup>
-
+	
+	<!--Disable Build Outputs-->
+	<Target Name="Build" />
+	<Target Name="Rebuild" />
+	
 	<PropertyGroup>
 		<PlatformSupportRoot>$(SolutionDir)..\</PlatformSupportRoot>
 	</PropertyGroup>
 
 	<Target Name="Clean Platform Support Folders" BeforeTargets="BeforeClean">
+		
 		<Message Text="Clean Platform Support Folders at $(PlatformSupportRoot)" Importance="high" />
 		<RemoveDir Directories="$(PlatformSupportRoot)PlatformSupport\" />
 		<RemoveDir Directories="$(PlatformSupportRoot)Extensions\" />
@@ -17,242 +22,27 @@
 		<MakeDir Directories="$(PlatformSupportRoot)PlatformSupport\" />
 		<MakeDir Directories="$(PlatformSupportRoot)Extensions\" />
 		<MakeDir Directories="$(PlatformSupportRoot)SparkUpload\" />
+		
 	</Target>
 
-
-	<Target Name="CreateExtensions" AfterTargets="PostBuildEvent">
-		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can.Ux\Ahsoka.Core.Can.Ux.csproj" />
-		 <!--.UX Builds This-->	<Exec Condition="false" Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Can\Ahsoka.Core.Can.csproj" />
+	<Target Name="BuildSupportPackages" Condition="true" AfterTargets="PostBuildEvent">
 		
-		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
-		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
-		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Storyboard.Ux\Ahsoka.Core.Storyboard.Ux.csproj" />
+		<MSBuild Projects="../Ahsoka.PublishWindows/Ahsoka.PublishWindows.csproj;
+							../Ahsoka.PublishOpenView/Ahsoka.PublishOpenView.csproj;
+							../Ahsoka.PublishOpenViewPro/Ahsoka.PublishOpenViewPro.csproj;
+							../Ahsoka.PublishUbuntu/Ahsoka.PublishUbuntu.csproj;"
+				 BuildInParallel="false" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
 		
-		<!--.UX Builds This-->	<Exec Condition="false" Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
-		<Exec Command="dotnet build  -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(SolutionDir)Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
-
-		<!-- Create Extension Package Info.  System will use these nuget packages to download the libraries-->
-		<ItemGroup>
-			<EXTENSION_INFO Include="$(PlatformSupportRoot)\Extensions\**\*.extensioninfo.json" />
-		</ItemGroup>
-
-		<Copy SourceFiles="@(EXTENSION_INFO)" DestinationFolder="$(PlatformSupportRoot)\SparkUpload\ExtensionInfo" />
-
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\SparkUpload\ExtensionInfo\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\OpenPV Extensions.zip" />
-
-		<!--Copy Spark Package Manifst to Output -->
-		<Copy SourceFiles="OpenPV Extensions.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV Extensions.release.json" />
-	</Target>
-
-	<Target Name="CreateWindowsPublishOutputs" AfterTargets="CreateExtensions" Condition="!Exists('$(PlatformSupportRoot)\SparkUpload\Windows64_TargetSupport.zip')">
-		
-		<!-- Copy Installer Json Files...assumes they were built to this folder -->
-		<Copy SourceFiles="OpenPV for Windows.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV for Windows.release.json" />
-	
-		<!-- Prep SDK Folder -->
-		<Delete Files="$(PlatformSupportRoot)\BuildOutputs\SDK\Windows64\bin\Ahsoka.Client.Test.pdb" />
-		<Delete Files="$(PlatformSupportRoot)\BuildOutputs\SDK\Windows64\bin\Ahsoka.Client.Test.ilk" />
-		<ItemGroup>
-			<OV_SDK Include="$(PlatformSupportRoot)\BuildOutputs\SDK\**" />
-		</ItemGroup>
-
-		<Copy SourceFiles="@(OV_SDK)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\%(RecursiveDir)" OverwriteReadOnlyFiles="true" SkipUnchangedFiles="false" />
-
-		<!-- Create Windows Development Support Package (For Running Tools and Compiling C++)-->
-		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=WindowsOutput" />
-		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\Windows64_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Windows64_TargetSupport.zip" />
-
-	</Target>
-
-	<Target Name="CreateUbuntuPublishOutputs" AfterTargets="CreateWindowsPublishOutputs" Condition="!Exists('$(PlatformSupportRoot)\SparkUpload\Ubuntu64_TargetSupport.zip')">
-
-		<!-- Publish .deb for Ubuntu -->
-		<Exec Command="dotnet msbuild ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj -target:CreateDeb -property:TargetFramework=net8.0 -property:RuntimeIdentifier=linux-x64 -property:SelfContained=true -property:Configuration=Debug -property:PublishWithAspNetCoreTargetManifest=false" />
-		<Copy SourceFiles="OpenPV for Ubuntu.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV for Ubuntu.release.json" />
-
-		<!--DISABLED - Create Installer UI  -->
-		<Exec Condition="false" Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=UbuntuOutputs" />
-		<WriteLinesToFile Condition="false" File="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\InstallerUI\InstallerVersion.txt" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
-
-		<!-- Create Ubuntu Development Support Package (For Running Tools and Compiling C++)  DISABLED-->
-		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=UbuntuOutputs" />
-		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\Ubuntu64_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ubuntu64_TargetSupport.zip" />
-
-	</Target>
-
-	<Target Name="CreateOpenViewPublishOutputs" AfterTargets="CreateUbuntuPublishOutputs" Condition="!Exists('$(PlatformSupportRoot)\SparkUpload\OpenViewLinux_TargetSupport.zip')">
-
-		<!-- Copy BSP from Download Area -->
-		<ItemGroup>
-			<DISTRO_FIRMWARE Include="$(SolutionDir)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\**" />
-		</ItemGroup>
-		
-		<!--Copy Distro and Upgrade Files-->
-		<Copy SourceFiles="@(DISTRO_FIRMWARE)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Firmware\%(RecursiveDir)" />
-		
-		<!-- Create OpenView "Select" Target Support Package (For Prep, Runtimes, Etc.) -->
-		<Exec Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=LinuxOutputs" />
-		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\InstallerUI\InstallerVersion.txt" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
-		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\OpenViewLinux_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
-
-		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=LinuxOutputs" />
-
-		<!-- Dependencies for OpenView "Select" -->
-		<ItemGroup>
-			<OV_Dependencies Include="..\..\Ahsoka.Thirdparty\PreBuilt\**" />
-			<OV_Firmware Include="$(PlatformSupportRoot)\BuildOutputs\Firmware\OpenViewLinux_TargetSupport\**" /> <!--CAN Processor Support & ESP32 Firmware-->
-		</ItemGroup>
-		<Copy SourceFiles="@(OV_Dependencies)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Dependency\%(RecursiveDir)" />
-		<Copy SourceFiles="@(OV_Firmware)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Resources\%(RecursiveDir)" />
-		
-		<!-- Create OpenView "Select" Package -->
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\OpenViewLinux_TargetSupport.zip" />
-
 		<!--Copy Spark Package Manifst to Output -->
 		<Copy SourceFiles="OpenPV Dependencies.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV Dependencies.release.json" />
 	</Target>
 
-	<Target Name="CreateOpenViewProPublishOutputs" AfterTargets="CreateOpenViewPublishOutputs" Condition="!Exists('$(PlatformSupportRoot)\SparkUpload\OpenViewLinuxPro_TargetSupport.zip')">
+	<Target Name="BuildDemosAndExtensions" AfterTargets="BuildSupportPackages">
 
-		<!-- Create OpenView "Select" Target Support Package (For Prep, Runtimes, Etc.) -->
-		<Exec Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=LinuxProOutputs" />
-		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\InstallerUI\InstallerVersion.txt" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
-		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\OpenViewLinuxPro_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
-
-		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=LinuxOutputs" />
-
-		<!-- Dependencies for OpenView "Select" -->
-		<ItemGroup>
-			<OV_Dependencies Include="..\..\Ahsoka.Thirdparty\PreBuiltArm64\**" />
-			<!--<OV_Firmware Include="$(PlatformSupportRoot)\BuildOutputs\Firmware\OpenViewLinuxPro_TargetSupport\**" />
-			CAN Processor Support & ESP32 Firmware-->
-		</ItemGroup>
-		<Copy SourceFiles="@(OV_Dependencies)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\Dependency\%(RecursiveDir)" />
-		<!--<Copy SourceFiles="@(OV_Firmware)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\Resources\%(RecursiveDir)" />-->
-
-		<!-- Create OpenView "Select" Package -->
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\OpenViewLinuxPro_TargetSupport.zip" />
-
-		<!--Copy Spark Package Manifst to Output -->
-		<Copy SourceFiles="OpenPV Dependencies.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV Dependencies.release.json" />
-	</Target>
-
-
-
-	<!--We no longer nse the Nuget CLI for Generation but Generate a Package if Needed -->
-	<Target Name="FinishWithNuget" AfterTargets="CreateOpenViewProPublishOutputs">
-
-		<!--Create Ahsoka Windows Command Line Nuget Package....must happen AFTER the publish of the Command line for Windows and Mac -->
-		<Exec Command="dotnet pack ../Ahsoka.Core/Ahsoka.Core.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.Core.Drawing/Ahsoka.Core.Drawing.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.DeveloperTools.Core/Ahsoka.DeveloperTools.Core.csproj" />
-
-		<!--Create Nuget Packages for extensions-->
-		<Exec Command="dotnet pack ../Ahsoka.Core.Bluetooth/Ahsoka.Core.Bluetooth.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.Core.Bluetooth.LE/Ahsoka.Core.Bluetooth.LE.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.Core.Can/Ahsoka.Core.Can.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.Core.Can.Ux/Ahsoka.Core.Can.Ux.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.Core.Cygnus/Ahsoka.Core.Cygnus.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.Core.Storyboard/Ahsoka.Core.Storyboard.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.Core.Storyboard.Ux/Ahsoka.Core.Storyboard.Ux.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.Core.DataService/Ahsoka.Core.DataService.csproj" />
-
-	</Target>
-
-	<Target Name="CreateDemos" AfterTargets="FinishWithNuget" Condition="$(Configuration)=='Release'">
-
-		<!-- Create Demo Packages -->
-		<ItemGroup>
-			<DEMO_Blank_Basic Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Blank.Basic\**" />
-			<DEMO_Blank_Advanced Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Blank.Advanced\**" />
-			<DEMO_Blank_Storyboard Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Blank.Storyboard\**" />
-
-			<DEMO_CAN Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.CAN\**" />
-			<DEMO_SERVICES Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Services\**" />
-			<DEMO_GTK Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.GTK\**" />
-			<DEMO_CAIRO Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Cairo\**" />
-			<DEMO_BLE Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.BLE\**" />
-
-			<DEMO_SBIO Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Storyboard\**" />
-			<DEMO_SBIO_IO Include="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.CS.Storyboard.IO\**" />
-		</ItemGroup>
-
-		<Copy SourceFiles="@(DEMO_Blank_Basic)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\%(RecursiveDir)" />
-		<Copy SourceFiles="@(DEMO_Blank_Advanced)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\%(RecursiveDir)" />
-		<Copy SourceFiles="@(DEMO_Blank_Storyboard)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\%(RecursiveDir)" />
-
-		<Copy SourceFiles="@(DEMO_GTK)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.GTK\%(RecursiveDir)" />
-		<Copy SourceFiles="@(DEMO_CAN)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.CAN\%(RecursiveDir)" />
-		<Copy SourceFiles="@(DEMO_SERVICES)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Services\%(RecursiveDir)" />
-		<Copy SourceFiles="@(DEMO_CAIRO)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Cairo\%(RecursiveDir)" />
-		<Copy SourceFiles="@(DEMO_BLE)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.BLE\%(RecursiveDir)" />
-
-		<Copy SourceFiles="@(DEMO_SBIO)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard\%(RecursiveDir)" />
-		<Copy SourceFiles="@(DEMO_SBIO_IO)" DestinationFolder="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\%(RecursiveDir)" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.Blank.Basic\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.Blank.Basic.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.Blank.Advanced\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.Blank.Advanced.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.Blank.Storyboard\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.Blank.Storyboard.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.BLE\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.BLE\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.BLE\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.BLE\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.BLE.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Cairo\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Cairo\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Cairo\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.Cairo\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.Cairo.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Services\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Services\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Services\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.Services\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.Services.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.GTK\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.GTK\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.GTK\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.GTK\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.GTK.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.CAN\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.CAN\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.CAN\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.CAN\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.CAN.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard\StoryboardExport\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.Storyboard\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.Storyboard.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\StoryboardExport\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(PlatformSupportRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)BuildOutputs\Ahsoka.CS.Storyboard.IO\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.CS.Storyboard.IO.zip" />
-
-		<ZipDirectory Overwrite="true" SourceDirectory="$(SolutionDir)..\Ahsoka.Demo\Ahsoka_QT_Demo" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka_QT_Demo.zip" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(SolutionDir)..\Ahsoka.Demo\Ahsoka_QT_Blank" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka_QT_Blank.zip" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(SolutionDir)..\Ahsoka.Demo\Ahsoka_QT_CAN" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka_QT_CAN.zip" />
-
-		<ZipDirectory Overwrite="true" SourceDirectory="$(SolutionDir)..\Ahsoka.Demo\Ahsoka.Codesys.IO" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ahsoka.Codesys.IO.zip" />
-
-		<!--Copy Spark Package Manifst to Output -->
-		<Copy SourceFiles="OpenPV Demos.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV Demos.release.json" />
+		<MSBuild Projects="../Ahsoka.PublishNuget/Ahsoka.PublishNuget.csproj;
+						   ../Ahsoka.PublishExtensions/Ahsoka.PublishExtensions.csproj;
+						   ../Ahsoka.PublishDemos/Ahsoka.PublishDemos.csproj" 
+				 BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="true" />
 	</Target>
 
 	<ItemGroup>

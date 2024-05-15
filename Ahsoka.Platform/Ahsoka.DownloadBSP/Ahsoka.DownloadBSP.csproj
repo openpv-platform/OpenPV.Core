@@ -11,15 +11,14 @@
 	<Target Name="Rebuild" />
 
 	<PropertyGroup>
-		<PlatformSupportRoot>$(SolutionDir)</PlatformSupportRoot>
 		<SecretPath>$(appdata)\Microsoft\UserSecrets\$(UserSecretsId)\secrets.json</SecretPath>
 		<OpenViewBSP>2.2024-02-27T105810.otatest.023e22e</OpenViewBSP>
 	</PropertyGroup>
 
 
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
-		<Message Text="Cleaning BuildOutputs" Importance="high" />
-		<RemoveDir Directories="$(InteropSource_Root)\BuildOutputs\StoryboardLib" />
+		<Message Text="Cleaning Downloads" Importance="high" />
+		<RemoveDir Directories="$(SolutionDir)FirmwareDownload" />
 	</Target>
 	
 	<Target Name="DownloadBSPs" AfterTargets="PostBuildEvent">
@@ -38,10 +37,10 @@
 		</PropertyGroup>
 		<Message Importance="low" Text=" Value is $(SparkLogin) $(SparkPassword)" />
 		<Exec Command="dotnet tool update --global  EnovationCloud.CommandLine" />
-		<Copy SourceFiles="OpenView.upgradeinfo.json" DestinationFiles="$(PlatformSupportRoot)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\OpenView.upgradeinfo.json" />
-		<DownloadFile  DestinationFolder="$(PlatformSupportRoot)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\"   SourceUrl="https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/OpenView/BSPUpdate/V3.0/upgrade.$(OpenViewBSP).zip" />
-		<Exec WorkingDirectory="$(SolutionDir)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(PlatformSupportRoot)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewBSP) image.$(OpenViewBSP).zip" />
-		<Exec WorkingDirectory="$(SolutionDir)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(PlatformSupportRoot)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution Upgrade&quot; $(OpenViewBSP) ota.$(OpenViewBSP).zip" />
+		<Copy SourceFiles="OpenView.upgradeinfo.json" DestinationFiles="$(SolutionDir)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\OpenView.upgradeinfo.json" />
+		<DownloadFile  DestinationFolder="$(SolutionDir)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\"   SourceUrl="https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/OpenView/BSPUpdate/V3.0/upgrade.$(OpenViewBSP).zip" />
+		<Exec WorkingDirectory="$(SolutionDir)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(SolutionDir)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewBSP) image.$(OpenViewBSP).zip" />
+		<Exec WorkingDirectory="$(SolutionDir)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(SolutionDir)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution Upgrade&quot; $(OpenViewBSP) ota.$(OpenViewBSP).zip" />
 	</Target>
 
 	<ItemGroup>

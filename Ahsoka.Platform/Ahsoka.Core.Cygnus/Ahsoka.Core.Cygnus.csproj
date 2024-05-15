@@ -3,6 +3,7 @@
 	<PropertyGroup>
 		<RootNamespace>Ahsoka</RootNamespace>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<!-- <PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile> -->
 		<DebugType>portable</DebugType>

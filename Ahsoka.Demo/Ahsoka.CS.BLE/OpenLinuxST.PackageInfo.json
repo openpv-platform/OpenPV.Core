@@ -1,7 +1,6 @@
 {
-  "version": "3.0.1.10015",
+  "version": "3.0.1.10055",
   "applicationType": "Dotnet",
-  "userInterfaceType": "None",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.BLE",
   "packageName": "Ahsoka.CS.BLE",
@@ -10,6 +9,7 @@
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
   "includeInstallerUI": false,
+  "includeFirmwareUpdate": false,
   "licenses": [],
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.BLE.csproj",
@@ -17,8 +17,16 @@
   },
   "serviceInfo": {
     "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensions": [
+        "Bluetooth LE Extension"
+      ],
+      "startupDelay": 3,
+      "requireChallenge": "NotRequired",
       "services": [
         {
+          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -26,10 +34,11 @@
           "dataChannel": 5001,
           "notificationChannel": 6001,
           "isExtension": false,
-          "dataKeyValues": [],
+          "behaviors": "AutoStart",
           "configurationFile": ""
         },
         {
+          "socketType": "TcpSocket",
           "serviceName": "BLEService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -37,17 +46,10 @@
           "dataChannel": 5008,
           "notificationChannel": 6008,
           "isExtension": true,
-          "dataKeyValues": [],
+          "behaviors": "AutoStart",
           "configurationFile": ""
         }
-      ],
-      "customServiceEnabled": "Enabled",
-      "serviceStartup": "NoAutoStart",
-      "releaseOption": "NoAutoStart",
-      "extensions": [
-        "Bluetooth LE Extension"
-      ],
-      "startupDelay": 3
+      ]
     },
     "environmentValues": []
   },

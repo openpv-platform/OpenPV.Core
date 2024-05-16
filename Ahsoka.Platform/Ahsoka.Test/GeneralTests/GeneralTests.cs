@@ -40,7 +40,7 @@ public class GeneralTests : LinearTestBase
         while (!solution_dir.EndsWith("Ahsoka.Platform"))
             solution_dir = Path.GetDirectoryName(solution_dir);
 
-        var fileName = Path.Combine(solution_dir, @"Ahsoka.Core\Resources\OpenViewS50HardwareConfiguration.json");
+        var fileName = Path.Combine(solution_dir, @"Ahsoka.PublishOpenView\OpenViewS50HardwareConfiguration.json");
 
         string jsonText = File.ReadAllText(fileName);
 

@@ -33,6 +33,8 @@
 		<MakeDir ContinueOnError="true" Directories="$(BuildDir)SparkUpload/" />
 		<Copy SourceFiles="@(MacTools)" DestinationFolder="$(BuildDir)PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app/%(RecursiveDir)" />
 		<Copy SourceFiles="../Ahsoka.DeveloperTools/Assets/OpenPV.icns" DestinationFiles="$(BuildDir)PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app/Contents/Resources/OpenPV.icns" />
+		<Copy SourceFiles="MacOSHardwareConfiguration.json" DestinationFiles="$(BuildDir)/PlatformSupport/MacOSARM64_TargetSupport/Hardware/MacOSHardwareConfiguration.json" />
+
 
 		<Exec IgnoreExitCode="true" Command="chmod +x $(BuildDir)/Ahsoka.Platform/SignApp.sh" />
 		<Exec IgnoreExitCode="true" Command="$(BuildDir)/Ahsoka.Platform/SignApp.sh" />

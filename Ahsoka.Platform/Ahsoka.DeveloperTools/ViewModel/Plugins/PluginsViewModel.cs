@@ -12,6 +12,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,6 +22,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     public const string profileCPP = "C++";
     public const string profileCSharp = "C#";
     public const string profileWSL = "WSL";
+    public const string profilePV = "PowerVision";
 
     #region Fields
     bool showNewInstallHelp = false;
@@ -46,6 +48,20 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     MainViewModel IToolViewModel.MainViewModel { get { return parentViewModel; } }
 
     internal ObservableCollection<ProfileDefinition> ProfileDefinitions { get => worflows; set => worflows = value; }
+
+    public bool  HideOpenViewPro
+    {
+        get { return parentViewModel.Settings.HideOpenViewPro; }
+        set { parentViewModel.Settings.HideOpenViewPro = value; LoadProfileTools();
+        }
+    }
+
+    public bool HideOpenView
+    {
+        get { return parentViewModel.Settings.HideOpenView; }
+        set { parentViewModel.Settings.HideOpenView = value; LoadProfileTools();
+        }
+    }
 
     internal ProfileDefinition SelectedProfile
     {
@@ -187,6 +203,14 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
                 ProfileName = "WSL and Ubuntu Profile",
                 ProfileTag = profileWSL,
                 ProfileDescription = "Develop using QT Creator or WSL C++ Tools. Includes Container Support (if Docker is installed) for QT Creator as well as OpenView Distribution, Target and Development Support Plugins for Ubuntu and Windows"
+            });
+
+        if (OperatingSystem.IsWindows()) 
+            ProfileDefinitions.Add(new ProfileDefinition()
+            {
+                ProfileName = "PowerVision Profile",
+                ProfileTag = profilePV,
+                ProfileDescription = "Support OTA and Loading for PowerVision based Displays enabling you to purchase Module Package, Maintain Device Lists as well as Upload Applications (*.opvPackage) to Spark."
             });
     }
 
@@ -499,7 +523,14 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     {
         SelectedDownloads.Clear();
         foreach (var item in SupportInfo.Downloads)
+        {
+            if (item.PlatformFamily == PlatformFamily.OpenViewLinux && HideOpenView)
+                continue;
+            else if (item.PlatformFamily == PlatformFamily.OpenViewLinuxPro && HideOpenViewPro)
+                continue;
+            
             AddTool(null, item);
+        }
 
         SelectedProfile.CanLaunch = SelectedDownloads.Any(x => x.CanLaunch);
 

@@ -91,7 +91,7 @@ stages:
       displayName: Build Mac TargetSupport Packages
       inputs:
         command: 'build'
-        arguments: 'Ahsoka.Platform/Ahsoka.PublishOutputs.Mac/Ahsoka.PublishOutputs.Mac.csproj --configuration $(buildConfiguration)'
+        arguments: 'Ahsoka.Platform/Ahsoka.PublishMac/Ahsoka.PublishMac.csproj --configuration $(buildConfiguration)'
 
     - task: CmdLine@2
       displayName: 'Notorize OpenPV Application'

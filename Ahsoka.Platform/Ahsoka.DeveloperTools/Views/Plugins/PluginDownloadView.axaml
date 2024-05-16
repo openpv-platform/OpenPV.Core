@@ -81,12 +81,11 @@
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Refresh List"/>
 				</StackPanel>
 			</Button>
-			
 		</StackPanel>
 
 		<Border  Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,-10,0,0">
 			<DataGrid Grid.ColumnSpan="1" Name="Releases" SelectionMode="Single"
-					 ItemsSource="{Binding SelectedPlatformSupport.Downloads}" SelectedItem="{Binding SelectedTool}" Margin="0,10,20,0"   AutoGenerateColumns="False">
+					 ItemsSource="{Binding SupportInfo.Downloads}" SelectedItem="{Binding SelectedTool}" Margin="0,10,20,0"   AutoGenerateColumns="False">
 				<DataGrid.Columns>
 					<DataGridTextColumn FontSize="12" Header="Package Type" Width="140" Binding="{Binding PackageType}" IsReadOnly="True"/>
 					<DataGridTextColumn FontSize="12" Header="Name" Width="*" Binding="{Binding Name}" IsReadOnly="True"/>

@@ -37,7 +37,11 @@ internal class PlatformSupportTool : SparkToolBase
             this.PlatformFamily = family;
 
         // Filter Non Development Platforms
-        if (OperatingSystem.IsLinux())
+        if (family == PlatformFamily.PowerVision)
+        {
+            this.IncludedProfiles = PluginsViewModel.profilePV;
+        }
+        else if (OperatingSystem.IsLinux())
         {
             if (Name.StartsWith(PlatformFamily.OpenViewLinux.ToString()) || Name.StartsWith(PlatformFamily.Ubuntu64.ToString()))
                 this.IncludedProfiles = PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP;
@@ -58,7 +62,7 @@ internal class PlatformSupportTool : SparkToolBase
         else
         {
             if (Name.StartsWith(PlatformFamily.OpenViewLinux.ToString()) || Name.StartsWith(PlatformFamily.Windows64.ToString()))
-                this.IncludedProfiles = PluginsViewModel.profileCSharp;
+                this.IncludedProfiles = PluginsViewModel.profileCSharp + "," + PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP;
             else if (Name.ToLower().StartsWith(PlatformFamily.Ubuntu64.ToString().ToLower()))
                 this.IncludedProfiles = PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP;
             else
@@ -114,6 +118,8 @@ internal class PlatformSupportTool : SparkToolBase
         if (Directory.Exists(firmwareFolder))
             this.firmwareTool = new PlatformFirmwareTool(firmwareFolder, PlatformFamily);
 
+        // Reload Hardware next time its requested.
+        HardwareInfo.LoadHardwareInfo(CustomerToolPaths.GetToolPath("PlatformSupport"));
     }
 
     protected override async Task ExecuteDownload(IToolViewModel toolVM, CancellationTokenSource cancellationToken)

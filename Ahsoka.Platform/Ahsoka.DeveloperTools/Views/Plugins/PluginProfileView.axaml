@@ -8,7 +8,7 @@
 			 x:Class="Ahsoka.DeveloperTools.Views.PluginProfileView">
 	<Grid RowDefinitions="55,auto,35,*" ColumnDefinitions="*,*,220">
 		<StackPanel Grid.Column="3"
-					HorizontalAlignment="Center" >
+					HorizontalAlignment="Center">
 
 			<Button Margin="3,15,5,3"
 						HorizontalAlignment="Stretch"
@@ -55,8 +55,12 @@
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch..."/>
 				</StackPanel>
 			</Button>
+			
+		</StackPanel >
+		<StackPanel Margin="20" Grid.Column="3" Grid.RowSpan="99" HorizontalAlignment="Center" VerticalAlignment="Bottom">
+			<CheckBox Foreground="DimGray" FontSize="12" IsChecked="{Binding HideOpenViewPro}" Content="Hide OpenViewPro"/>
+			<CheckBox Foreground="DimGray" FontSize="12" IsChecked="{Binding HideOpenView}" Content="Hide Openview"/>
 		</StackPanel>
-
 
 		<TextBlock Grid.ColumnSpan="2" MaxWidth="650" Foreground="SteelBlue" FontStyle="Italic" FontSize="12" Margin="0,0,10,0"
 										HorizontalAlignment="Left" VerticalAlignment="Top"

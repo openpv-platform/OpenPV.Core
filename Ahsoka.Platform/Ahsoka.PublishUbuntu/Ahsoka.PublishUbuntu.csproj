@@ -25,6 +25,7 @@
 		<!-- Publish .deb for Ubuntu -->
 		<Exec Command="dotnet msbuild ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj -target:CreateDeb -property:TargetFramework=net8.0 -property:RuntimeIdentifier=linux-x64 -property:SelfContained=true -property:Configuration=Release -property:PublishWithAspNetCoreTargetManifest=false" />
 		<Copy SourceFiles="OpenPV for Ubuntu.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV for Ubuntu.release.json" />
+		<Copy SourceFiles="UbuntuHardwareConfiguration.json" DestinationFiles="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\Hardware\UbuntuHardwareConfiguration.json" />
 
 		<!--DISABLED - Create Installer UI  -->
 		<Exec Condition="false" Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=UbuntuOutputs" />

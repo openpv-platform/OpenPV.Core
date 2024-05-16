@@ -13,6 +13,8 @@ public static class PlatformSupportPathInfo
     static readonly string platformSupportFolder;
     static readonly string extensionSupportFolder;
 
+    public static string PlatformSupportRootFolder => platformSupportFolder;
+
     static PlatformSupportPathInfo()
     {
         // Search for Root Folder Relative to Assembly first

@@ -2,11 +2,9 @@
 using Ahsoka.Services.Security;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using EnovationCloud.Core.Framework;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Security;
 using System.Threading;
@@ -105,20 +103,17 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
     private void UpdateClientRegistration(CoreTransportIds transportId)
     {
-        lock (Socket)
+        AhsokaMessageHeader notificationRequest = new()
         {
-            AhsokaMessageHeader notificationRequest = new()
-            {
-                TransportId = transportId.EnumToInt(),
-                ClientMessageId = messageId++,
-                ServiceToken = securityToken?.ClientToken
-            };
+            TransportId = transportId.EnumToInt(),
+            ClientMessageId = messageId++,
+            ServiceToken = securityToken?.ClientToken
+        };
 
-            SendMessageInternal(notificationRequest, new ClientRegistration()
-            {
-                ClientId = GetClientId(),
-            });
-        }
+        SendMessageInternal(notificationRequest, new ClientRegistration()
+        {
+            ClientId = GetClientId(),
+        });
     }
 
     protected override void OnEndPointDisconnected()

@@ -145,15 +145,6 @@
   <data name="LinuxAppProfile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\linuxappprofile.sh;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="OpenViewS50HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\openviews50hardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="OpenViewST4HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\openviewst4hardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="OpenViewST4PlusHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\openviewst4plushardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="SSHConfigFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\sshconfigfile;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -162,15 +153,6 @@
   </data>
   <data name="OPVServicesConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\OPVServicesConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="UbuntuHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\ubuntuhardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="WindowsHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\windowshardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="MacOSHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\macoshardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="WirelessClientDHCP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\linuxnetworkunits\wirelessclientdhcp.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -203,9 +185,6 @@
   <data name="WirelessAPNoDHCP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LinuxNetworkUnits\WirelessAPNoDHCP.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="PowerVisionDisplayHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\PowerVisionDisplayHardwareConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="CPPMetadataDictionary" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\clienttemplates\cppmetadatadictionary.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -214,9 +193,6 @@
   </data>
   <data name="CSharpMetadataDictionary" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\clienttemplates\csharpmetadatadictionary.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="OpenViewS70HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\openviews70hardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="SystemServiceClientExtensionsCXX" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SystemServiceClientExtensions.cxx;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
@@ -229,11 +205,5 @@
   </data>
   <data name="CPPClientCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="Arm64HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Arm64HardwareConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="OpenViewLinuxProHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\OpenViewLinuxProHardwareConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

@@ -1,0 +1,14 @@
+{
+  "factoryInfo": {
+    "rootPath": "/usr/local/Ahsoka",
+    "platformFamily": "OpenViewLinuxPro",
+    "platformQualifier": "GenericArm64",
+    "partNumber": "11111111",
+    "serialNumber": "22222222",
+    "hardwareId": "0",
+    "securityModelNumber": "",
+    "hostName": "OpenView",
+    "userName": "root",
+    "password": ""
+  }
+}

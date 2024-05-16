@@ -462,6 +462,9 @@ internal class MainViewModel : ViewModelBase
     {
         this.RootVisual = topLevel;
 
+        // Reload Hardware next time its requested.
+        HardwareInfo.LoadHardwareInfo(CustomerToolPaths.GetToolPath("PlatformSupport"));
+
         IsOffline = !IsSparkAvailable();
 
         LoadSettings();
@@ -854,6 +857,9 @@ public class Settings
     public List<String> FavoriteTeams { get; set; } = new List<String>();
     public bool UseInternalCLI { get; set; }
     public List<OffLineData> OfflineData { get; set; } = new List<OffLineData>();
+    public bool HideOpenViewPro { get; set; }
+    public bool HideOpenView { get; set; }
+
 }
 
 public class RecentItem

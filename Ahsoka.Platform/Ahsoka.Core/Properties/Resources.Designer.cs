@@ -178,37 +178,6 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;rootPath&quot;: &quot;/usr/local/Ahsoka&quot;,
-        ///    &quot;platformFamily&quot;: &quot;Arm64&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;Any&quot;,
-        ///    &quot;partNumber&quot;: &quot;11111111&quot;,
-        ///    &quot;serialNumber&quot;: &quot;22222222&quot;,
-        ///    &quot;hardwareId&quot;: &quot;0&quot;,
-        ///    &quot;securityModelNumber&quot;: &quot;&quot;,
-        ///    &quot;hostName&quot;: &quot;OpenView&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  },
-        ///  &quot;screenInfo&quot;: {
-        ///    &quot;screenWidth&quot;: &quot;800&quot;,
-        ///    &quot;screenHeight&quot;: &quot;480&quot;,
-        ///    &quot;screenDpi&quot;: &quot;96&quot;
-        ///  },
-        ///  &quot;bluetoothInfo&quot;: {
-        ///    &quot;bluetoothAdapters&quot;: [
-        ///      {
-        ///        &quot;index&quot;: &quot;0&quot;,
-        ///  [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string Arm64HardwareConfiguration {
-            get {
-                return ResourceManager.GetString("Arm64HardwareConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to #!/bin/sh
         ///  /usr/bin/codesys/prestart.sh.
         /// </summary>
@@ -399,7 +368,7 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;DbcParserLib&quot;,&quot;PackageVersion&quot;:&quot;1.5.0&quot;,&quot;PackageUrl&quot;:&quot;https://github.com/EFeru/DbcParser&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;Emanuel Feru&quot;],&quot;Description&quot;:&quot;DbcParserLib is a .NET dbc file parser library for CAN bus network signals. This library can also be used to pack and unpack CAN signals.&quot;,&quot;LicenseUrl&quot;:&quot;https://licenses.nuget.org/MIT&quot;,&quot;LicenseType&quot;:&quot;MIT&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;https://github.com/EFeru/DbcParser&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot; [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;DbcParserLib&quot;,&quot;PackageVersion&quot;:&quot;1.6.0&quot;,&quot;PackageUrl&quot;:&quot;https://github.com/EFeru/DbcParser&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;Emanuel Feru&quot;],&quot;Description&quot;:&quot;DbcParserLib is a .NET dbc file parser library for CAN bus network signals. This library can also be used to pack and unpack CAN signals.&quot;,&quot;LicenseUrl&quot;:&quot;https://licenses.nuget.org/MIT&quot;,&quot;LicenseType&quot;:&quot;MIT&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;https://github.com/EFeru/DbcParser&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Licenses {
             get {
@@ -414,36 +383,6 @@ namespace Ahsoka.Properties {
             get {
                 object obj = ResourceManager.GetObject("LinuxAppProfile", resourceCulture);
                 return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;rootPath&quot;: &quot;/Users/%USER%/Ahsoka&quot;,
-        ///    &quot;platformFamily&quot;: &quot;MacosArm64&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;Desktop&quot;,
-        ///    &quot;partNumber&quot;: &quot;11111111&quot;,
-        ///    &quot;serialNumber&quot;: &quot;22222222&quot;,
-        ///    &quot;hardwareId&quot;: &quot;0&quot;,
-        ///    &quot;securityModelNumber&quot;: &quot;&quot;,
-        ///    &quot;hostName&quot;: &quot;OpenView&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  },
-        ///  &quot;screenInfo&quot;: {
-        ///    &quot;screenWidth&quot;: &quot;1024&quot;,
-        ///    &quot;screenHeight&quot;: &quot;600&quot;,
-        ///    &quot;screenDpi&quot;: &quot;96&quot;
-        ///  },
-        ///  &quot;bluetoothInfo&quot;: {
-        ///    &quot;bluetoothAdapters&quot;: [
-        ///      {
-        ///        &quot;in [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string MacOSHardwareConfiguration {
-            get {
-                return ResourceManager.GetString("MacOSHardwareConfiguration", resourceCulture);
             }
         }
         
@@ -465,156 +404,6 @@ namespace Ahsoka.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;rootPath&quot;: &quot;/usr/local/Ahsoka&quot;,
-        ///    &quot;platformFamily&quot;: &quot;OpenViewLinuxPro&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;PXX&quot;,
-        ///    &quot;partNumber&quot;: &quot;11111111&quot;,
-        ///    &quot;serialNumber&quot;: &quot;22222222&quot;,
-        ///    &quot;hardwareId&quot;: &quot;0&quot;,
-        ///    &quot;securityModelNumber&quot;: &quot;&quot;,
-        ///    &quot;hostName&quot;: &quot;OpenView&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  },
-        ///  &quot;screenInfo&quot;: {
-        ///    &quot;screenWidth&quot;: &quot;800&quot;,
-        ///    &quot;screenHeight&quot;: &quot;480&quot;,
-        ///    &quot;screenDpi&quot;: &quot;96&quot;
-        ///  },
-        ///  &quot;bluetoothInfo&quot;: {
-        ///    &quot;bluetoothAdapters&quot;: [
-        ///      {
-        ///        &quot;inde [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string OpenViewLinuxProHardwareConfiguration {
-            get {
-                return ResourceManager.GetString("OpenViewLinuxProHardwareConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;rootPath&quot;: &quot;/usr/local/Ahsoka&quot;,
-        ///    &quot;platformFamily&quot;: &quot;OpenViewLinux&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;S50&quot;,
-        ///    &quot;partNumber&quot;: &quot;11111111&quot;,
-        ///    &quot;serialNumber&quot;: &quot;22222222&quot;,
-        ///    &quot;hardwareId&quot;: &quot;0&quot;,
-        ///    &quot;securityModelNumber&quot;: &quot;&quot;,
-        ///    &quot;hostName&quot;: &quot;OpenView&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  },
-        ///  &quot;screenInfo&quot;: {
-        ///    &quot;screenWidth&quot;: &quot;800&quot;,
-        ///    &quot;screenHeight&quot;: &quot;480&quot;,
-        ///    &quot;screenDpi&quot;: &quot;96&quot;
-        ///  },
-        ///  &quot;bluetoothInfo&quot;: {
-        ///    &quot;bluetoothAdapters&quot;: [
-        ///      {
-        ///        &quot;index&quot;: [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string OpenViewS50HardwareConfiguration {
-            get {
-                return ResourceManager.GetString("OpenViewS50HardwareConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;rootPath&quot;: &quot;/usr/local/Ahsoka&quot;,
-        ///    &quot;platformFamily&quot;: &quot;OpenViewLinux&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;S70&quot;,
-        ///    &quot;partNumber&quot;: &quot;11111111&quot;,
-        ///    &quot;serialNumber&quot;: &quot;22222222&quot;,
-        ///    &quot;hardwareId&quot;: &quot;0&quot;,
-        ///    &quot;securityModelNumber&quot;: &quot;&quot;,
-        ///    &quot;hostName&quot;: &quot;OpenView&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  },
-        ///  &quot;screenInfo&quot;: {
-        ///    &quot;screenWidth&quot;: &quot;1024&quot;,
-        ///    &quot;screenHeight&quot;: &quot;600&quot;,
-        ///    &quot;screenDpi&quot;: &quot;96&quot;
-        ///  },
-        ///  &quot;bluetoothInfo&quot;: {
-        ///    &quot;bluetoothAdapters&quot;: [
-        ///      {
-        ///        &quot;index&quot; [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string OpenViewS70HardwareConfiguration {
-            get {
-                return ResourceManager.GetString("OpenViewS70HardwareConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;rootPath&quot;: &quot;/usr/local/Ahsoka&quot;,
-        ///    &quot;platformFamily&quot;: &quot;OpenViewLinux&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;ST4&quot;,
-        ///    &quot;partNumber&quot;: &quot;11111111&quot;,
-        ///    &quot;serialNumber&quot;: &quot;22222222&quot;,
-        ///    &quot;hardwareId&quot;: &quot;0&quot;,
-        ///    &quot;securityModelNumber&quot;: &quot;&quot;,
-        ///    &quot;hostName&quot;: &quot;OpenView&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  },
-        ///  &quot;screenInfo&quot;: {
-        ///    &quot;screenWidth&quot;: &quot;800&quot;,
-        ///    &quot;screenHeight&quot;: &quot;480&quot;,
-        ///    &quot;screenDpi&quot;: &quot;96&quot;
-        ///  },
-        ///  &quot;bluetoothInfo&quot;: {
-        ///    &quot;bluetoothAdapters&quot;: [
-        ///      {
-        ///        &quot;index&quot;: [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string OpenViewST4HardwareConfiguration {
-            get {
-                return ResourceManager.GetString("OpenViewST4HardwareConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;rootPath&quot;: &quot;/usr/local/Ahsoka&quot;,
-        ///    &quot;platformFamily&quot;: &quot;OpenViewLinux&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;ST4Plus&quot;,
-        ///    &quot;partNumber&quot;: &quot;11111111&quot;,
-        ///    &quot;serialNumber&quot;: &quot;22222222&quot;,
-        ///    &quot;hardwareId&quot;: &quot;0&quot;,
-        ///    &quot;securityModelNumber&quot;: &quot;&quot;,
-        ///    &quot;hostName&quot;: &quot;OpenView&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  },
-        ///  &quot;screenInfo&quot;: {
-        ///    &quot;screenWidth&quot;: &quot;1024&quot;,
-        ///    &quot;screenHeight&quot;: &quot;600&quot;,
-        ///    &quot;screenDpi&quot;: &quot;96&quot;
-        ///  },
-        ///  &quot;bluetoothInfo&quot;: {
-        ///    &quot;bluetoothAdapters&quot;: [
-        ///      {
-        ///        &quot;in [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string OpenViewST4PlusHardwareConfiguration {
-            get {
-                return ResourceManager.GetString("OpenViewST4PlusHardwareConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
         ///  &quot;services&quot;: [
         ///    {
         ///      &quot;socketType&quot;: &quot;TcpSocket&quot;,
@@ -623,7 +412,6 @@ namespace Ahsoka.Properties {
         ///      &quot;tcpConnectionAddress&quot;: &quot;localhost&quot;,
         ///      &quot;bleServiceUuidBase&quot;: &quot;96730000-8f5d-4cef-8289-744c8faa1a66&quot;,
         ///      &quot;dataChannel&quot;: 5000,
-        ///      &quot;notificationChannel&quot;: 6000,
         ///      &quot;behaviors&quot;: &quot;AutoStart&quot;
         ///    },
         ///    {
@@ -631,28 +419,11 @@ namespace Ahsoka.Properties {
         ///      &quot;serviceName&quot;: &quot;SystemService&quot;,
         ///      &quot;tcpListenAddress&quot;: &quot;*&quot;,
         ///      &quot;tcpConnectionAddress&quot;: &quot;localhost&quot;,
-        ///       [rest of string was truncated]&quot;;.
+        ///      &quot;bleServiceUuidBase&quot;: &quot;96730000-8f5d [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OPVServicesConfiguration {
             get {
                 return ResourceManager.GetString("OPVServicesConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;platformFamily&quot;: &quot;PowerVision&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;Any&quot;,
-        ///    &quot;hostName&quot;: &quot;192.168.0.2&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  }
-        ///}.
-        /// </summary>
-        internal static string PowerVisionDisplayHardwareConfiguration {
-            get {
-                return ResourceManager.GetString("PowerVisionDisplayHardwareConfiguration", resourceCulture);
             }
         }
         
@@ -725,36 +496,6 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;rootPath&quot;: &quot;/home/%USER%/Ahsoka&quot;,
-        ///    &quot;platformFamily&quot;: &quot;Ubuntu64&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;Desktop&quot;,
-        ///    &quot;partNumber&quot;: &quot;11111111&quot;,
-        ///    &quot;serialNumber&quot;: &quot;22222222&quot;,
-        ///    &quot;hardwareId&quot;: &quot;0&quot;,
-        ///    &quot;securityModelNumber&quot;: &quot;&quot;,
-        ///    &quot;hostName&quot;: &quot;OpenView&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  },
-        ///  &quot;screenInfo&quot;: {
-        ///    &quot;screenWidth&quot;: &quot;1024&quot;,
-        ///    &quot;screenHeight&quot;: &quot;600&quot;,
-        ///    &quot;screenDpi&quot;: &quot;96&quot;
-        ///  },
-        ///  &quot;bluetoothInfo&quot;: {
-        ///    &quot;bluetoothAdapters&quot;: [
-        ///      {
-        ///        &quot;index [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string UbuntuHardwareConfiguration {
-            get {
-                return ResourceManager.GetString("UbuntuHardwareConfiguration", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to -----BEGIN RSA PRIVATE KEY-----
         ///MIIEpQIBAAKCAQEA6soZ3pYRzYVn0I+rNAqCpdTPfutFusMi2PTmGs67hA9RUBg5
         ///xRJoEAhNGhafrIxBunmmyKd5iX63sFLjSnDgbeJb6vTPMEYw3rt5OWXsBqAr3rgL
@@ -796,36 +537,6 @@ namespace Ahsoka.Properties {
         internal static string UntrustedPublicKeyPEM {
             get {
                 return ResourceManager.GetString("UntrustedPublicKeyPEM", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to {
-        ///  &quot;factoryInfo&quot;: {
-        ///    &quot;rootPath&quot;: &quot;%USERPROFILE%\\Ahsoka&quot;,
-        ///    &quot;platformFamily&quot;: &quot;Windows64&quot;,
-        ///    &quot;platformQualifier&quot;: &quot;Desktop&quot;,
-        ///    &quot;partNumber&quot;: &quot;88888888&quot;,
-        ///    &quot;serialNumber&quot;: &quot;7777777777&quot;,
-        ///    &quot;securityModelNumber&quot;: &quot;&quot;,
-        ///    &quot;hostName&quot;: &quot;OpenView&quot;,
-        ///    &quot;userName&quot;: &quot;root&quot;,
-        ///    &quot;password&quot;: &quot;&quot;
-        ///  },
-        ///  &quot;screenInfo&quot;: {
-        ///    &quot;screenWidth&quot;: &quot;1024&quot;,
-        ///    &quot;screenHeight&quot;: &quot;768&quot;,
-        ///    &quot;screenDpi&quot;: &quot;96&quot;
-        ///  },
-        ///  &quot;bluetoothInfo&quot;: {
-        ///    &quot;bluetoothAdapters&quot;: [
-        ///      {
-        ///        &quot;index&quot;: &quot;0&quot;,
-        ///        &quot;d [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string WindowsHardwareConfiguration {
-            get {
-                return ResourceManager.GetString("WindowsHardwareConfiguration", resourceCulture);
             }
         }
         

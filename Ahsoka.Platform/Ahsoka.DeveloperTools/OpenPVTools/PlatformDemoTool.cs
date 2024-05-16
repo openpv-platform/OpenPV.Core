@@ -26,7 +26,8 @@ internal class PlatformDemoTool : SparkToolBase
         this.Name = viewModel.ChannelName;
         this.Version = viewModel.ContainerVersion;
 
-        this.IncludedProfiles = "All";
+        this.IncludedProfiles = PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
+
 
         this.LocalPath = GetDemoPath();
 

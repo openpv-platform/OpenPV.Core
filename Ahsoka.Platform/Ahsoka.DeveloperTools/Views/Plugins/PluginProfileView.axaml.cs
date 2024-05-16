@@ -13,4 +13,8 @@ public partial class PluginProfileView : UserControl
     {
         AvaloniaXamlLoader.Load(this);
     }
+
+    private void Binding(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+    {
+    }
 }

@@ -40,10 +40,12 @@
 		<ItemGroup>
 			<OV_Dependencies Include="..\..\Ahsoka.Thirdparty\PreBuilt\**" />
 			<OV_Firmware Include="$(PlatformSupportRoot)\BuildOutputs\Firmware\OpenViewLinux_TargetSupport\**" />
+			<OV_HardwareDefs Include="*HardwareConfiguration.json" />
 			<!--CAN Processor Support & ESP32 Firmware-->
 		</ItemGroup>
 		<Copy SourceFiles="@(OV_Dependencies)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Dependency\%(RecursiveDir)" />
 		<Copy SourceFiles="@(OV_Firmware)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Resources\%(RecursiveDir)" />
+		<Copy SourceFiles="@(OV_HardwareDefs)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Hardware\%(RecursiveDir)" />
 
 		<!-- Create OpenView "Select" Package -->
 		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\OpenViewLinux_TargetSupport.zip" />

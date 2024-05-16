@@ -15,6 +15,7 @@ internal class STMFlashTool : OpenPVToolBase
         this.PackageType = "Software Install";
         this.CanInstall = true;
         this.InstallText = "This process will install the STM DFU Firmware Flash Tools on your local OS to support installing Firmware Packages.";
+        this.IncludedProfiles = PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
     }
 
     public override async Task InstallTool(IToolViewModel toolVM)

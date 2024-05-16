@@ -1,8 +1,8 @@
 {
   "factoryInfo": {
     "rootPath": "/usr/local/Ahsoka",
-    "platformFamily": "OpenViewLinuxPro",
-    "platformQualifier": "Generic Arm64",
+    "platformFamily": "OpenViewLinux",
+    "platformQualifier": "S100",
     "partNumber": "11111111",
     "serialNumber": "22222222",
     "hardwareId": "0",
@@ -12,8 +12,8 @@
     "password": ""
   },
   "screenInfo": {
-    "screenWidth": "800",
-    "screenHeight": "480",
+    "screenWidth": "1280",
+    "screenHeight": "800",
     "screenDpi": "96"
   },
   "bluetoothInfo": {
@@ -22,6 +22,22 @@
         "index": "0",
         "deviceInterfacePath": "/org/bluez/hci0",
         "stack": "BlueZ"
+      }
+    ]
+  },
+  "canInfo": {
+    "canPorts": [
+      {
+        "port": "0",
+        "coprocessorSerialPath": "/dev/ttyRPMSG0",
+        "socketCanInterfacePath": "can0",
+        "coprocessorFirmwarePath": "/lib/firmware/rproc-m4-fw"
+      },
+      {
+        "port": "1",
+        "coprocessorSerialPath": "/dev/ttyRPMSG0",
+        "socketCanInterfacePath": "can1",
+        "coprocessorFirmwarePath": "/lib/firmware/rproc-m4-fw"
       }
     ]
   },

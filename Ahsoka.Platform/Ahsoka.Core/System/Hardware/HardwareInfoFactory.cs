@@ -1,6 +1,7 @@
 ﻿using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Ahsoka.System.Hardware;
@@ -15,44 +16,37 @@ public partial class HardwareInfo
     {
         LoadHardwareInfo();
     }
-
-    private static void LoadHardwareInfo()
+   
+    internal static void LoadHardwareInfo(string fallbackPath = null)
     {
         hardwareDefinitions = new Dictionary<string, HardwareInfo>();
 
-        if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || (OperatingSystem.IsLinux() && Environment.Is64BitProcess))
+        if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || (OperatingSystem.IsLinux() && Environment.OSVersion.VersionString.Contains("Ubuntu")))
         {
-            var windows = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.WindowsHardwareConfiguration);
-            hardwareDefinitions.Add(windows.FactoryInfo.PlatformDescription, windows);
-
-            var ubuntu = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.UbuntuHardwareConfiguration);
-            hardwareDefinitions.Add(ubuntu.FactoryInfo.PlatformDescription, ubuntu);
-
-            var macos = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.MacOSHardwareConfiguration);
-            hardwareDefinitions.Add(macos.FactoryInfo.PlatformDescription, macos);
+            // Load Files in Hardware Folders
+            string path = Path.Exists(PlatformSupportPathInfo.PlatformSupportRootFolder) ? PlatformSupportPathInfo.PlatformSupportRootFolder : fallbackPath;
+            if (Directory.Exists(path))
+            {
+                foreach (var pathToAppSupport in Directory.GetDirectories(path))
+                {
+                    string hwPath = Path.Combine(pathToAppSupport, "Hardware");
+                    if (Directory.Exists(hwPath))
+                    {
+                        foreach (var hardwareDef in Directory.EnumerateFiles(hwPath, "*HardwareConfiguration.json"))
+                        {
+                            try
+                            {
+                                string fileText = File.ReadAllText(hardwareDef);
+                                var hd = JsonUtility.Deserialize<HardwareInfo>(fileText);
+                                hardwareDefinitions.Add(hd.FactoryInfo.PlatformDescription, hd);
+                            }
+                            catch { Console.WriteLine($"Failed to load HardwareConfiguration at {hardwareDef}"); }
+                        }
+                    }
+                }
+            }
+            else { return; } // Running on a target...Don't Load Anything.
         }
-        else { return; } // Running on a target...Don't Load Anything.
-
-        var openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.OpenViewS50HardwareConfiguration);
-        hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
-
-        openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.OpenViewS70HardwareConfiguration);
-        hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
-
-        openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.OpenViewST4HardwareConfiguration);
-        hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
-
-        openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.OpenViewST4PlusHardwareConfiguration);
-        hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
-
-        openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.PowerVisionDisplayHardwareConfiguration);
-        hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
-
-        openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.OpenViewLinuxProHardwareConfiguration);
-        hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
-     
-        openView = JsonUtility.Deserialize<HardwareInfo>(Properties.Resources.Arm64HardwareConfiguration);
-        hardwareDefinitions.Add(openView.FactoryInfo.PlatformDescription, openView);
 
     }
 

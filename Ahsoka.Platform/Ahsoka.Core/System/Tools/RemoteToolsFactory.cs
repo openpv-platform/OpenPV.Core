@@ -17,8 +17,10 @@ internal class RemoteTargetToolFactory
     {
         if (platformFamily == PlatformFamily.Windows64)
             return new WindowsTargetTools();
+        else if (platformFamily == PlatformFamily.OpenViewLinuxPro)
+            return new OpenViewProRemoteTargetTool();
 
-        return new RemoteTargetTool();
+        return new OpenViewRemoteTargetTool();
     }
 
 }

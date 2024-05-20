@@ -1,6 +1,5 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.Installer;
-using Ahsoka.Installer.Components;
 using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Spark;
 using Ahsoka.Services.System;
@@ -20,7 +19,21 @@ using System.Threading;
 
 namespace Ahsoka.System;
 
-internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
+
+public class KeyFileInfo
+{
+    public string ConfigPath { get; init; }
+    public string Name { get; init; }
+    public string PrivateKeyPath { get; init; }
+    public string PublicKeyPath { get => $"{PrivateKeyPath}.pub"; }
+
+    public bool IsLocal
+    {
+        get { return File.Exists(PrivateKeyPath) && File.Exists(PublicKeyPath); }
+    }
+}
+
+internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
 {
     const string ReleaseName = "System Updates";
     protected IProgress<string> progress;
@@ -72,6 +85,7 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
             if (IsCompatibleFirmware(hardwareInfo, sshClient, out isExactMatch, progress))
                 return PrepDisplayInternal(hardwareInfo, sshClient, scpClient, sparkInfo, manufacturingInfo);
         }
+        catch { }
         finally
         {
             sshClient.Disconnect();
@@ -113,8 +127,7 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
         // Clear Folder if Already Prepped
         ClearAndStopInstaller(info, sshClient);
 
-        if (!tokenSource.IsCancellationRequested)
-            RestartResizehelper(sshClient);
+        BeforePrep(sshClient);
 
         // Push Command Line 
         if (!tokenSource.IsCancellationRequested)
@@ -130,8 +143,8 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
                  manufacturingInfo))
                 return false; // Hardware Mismatch or Other Issue
 
-        if (!tokenSource.IsCancellationRequested && info.PlatformFamily == PlatformFamily.OpenViewLinux)
-            TempExecuteBSPMods(info, sshClient, scpClient);
+        if (!tokenSource.IsCancellationRequested && info.PlatformFamily == PlatformFamily.OpenViewLinux || info.PlatformFamily == PlatformFamily.OpenViewLinuxPro)
+            InstallDependencies(info, sshClient, scpClient);
 
         // Prep the Factory / InstallerUI Folder
         if (!tokenSource.IsCancellationRequested)
@@ -148,8 +161,7 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
         if (!tokenSource.IsCancellationRequested)
             TempInstallScript(info, sshClient, scpClient);
 
-        if (!tokenSource.IsCancellationRequested)
-            NetworkFirmwareComponent.GetPlatformFirmware(info)?.InstallRemote(info, sshClient, scpClient, progress);
+        InstallNetwork(info, sshClient, scpClient);
 
         // Reboot
         if (!tokenSource.IsCancellationRequested)
@@ -158,15 +170,12 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
         return !tokenSource.IsCancellationRequested;
     }
 
-    private void RestartResizehelper(SshClient sshClient)
+    protected virtual void InstallNetwork(HardwareInfo info, SshClient sshClient, ScpClient scpClient)
     {
-        progress.Report("Restarting Resize Helper");
+    }
 
-        string command = $"systemctl restart resize-helper";
-        var result = sshClient.RunCommand($"{command}");
-
-        if (result.Error != string.Empty)
-            throw new Exception(result.Result);
+    protected virtual void BeforePrep(SshClient sshClient)
+    {
     }
 
     private void ClearAndStopInstaller(HardwareInfo info, SshClient sshClient)
@@ -599,7 +608,7 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
 
     // Platform Specific logic.
     [ExcludeFromCodeCoverage]
-    private SshCommand TempExecuteBSPMods(HardwareInfo info,
+    protected virtual SshCommand InstallDependencies(HardwareInfo info,
                           SshClient sshClient, ScpClient scpClient)
     {
         string ahsokaDepFolder = info.TargetPathInfo.GetRootPaths(RootPaths.DependencyRoot);
@@ -664,7 +673,7 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
         return commandResult.Error == string.Empty;
     }
 
-    protected bool IsCompatibleFirmware(HardwareInfo info, SshClient client, out bool isExactMatch, IProgress<string> progress)
+    protected virtual bool IsCompatibleFirmware(HardwareInfo info, SshClient client, out bool isExactMatch, IProgress<string> progress)
     {
         var prereqs = FirmwarePreRequisites.GetBSPInfo(info.PlatformFamily);
 
@@ -792,17 +801,4 @@ internal class RemoteTargetTool : ICanCancel, IRemoteTargetTool
     }
 
    
-}
-
-public class KeyFileInfo
-{
-    public string ConfigPath { get; init; }
-    public string Name { get; init; }
-    public string PrivateKeyPath { get; init; }
-    public string PublicKeyPath { get => $"{PrivateKeyPath}.pub"; }
-
-    public bool IsLocal
-    {
-        get { return File.Exists(PrivateKeyPath) && File.Exists(PublicKeyPath); }
-    }
 }

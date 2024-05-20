@@ -188,8 +188,14 @@ public static class SystemInfo
             return PlatformFamily.Windows64;
         else if (OperatingSystem.IsLinux())
         {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium,"Determine Platform: " + Environment.OSVersion.VersionString);
             if (Environment.Is64BitProcess)
-                return PlatformFamily.Ubuntu64;
+            { 
+                if (Environment.OSVersion.VersionString.Contains("Ubuntu"))
+                    return PlatformFamily.Ubuntu64;
+                else
+                    return PlatformFamily.OpenViewLinuxPro;
+            }
             else
                 return PlatformFamily.OpenViewLinux;
         }

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Ahsoka.System;
 
-internal class WindowsTargetTools : RemoteTargetTool
+internal class WindowsTargetTools : OpenViewRemoteTargetTool
 {
     protected override bool OnPrepTarget(HardwareInfo hardwareInfo,
         ITargetConnectionInfo connectionInfo,

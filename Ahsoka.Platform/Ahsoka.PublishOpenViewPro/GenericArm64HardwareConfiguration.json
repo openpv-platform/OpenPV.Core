@@ -7,8 +7,11 @@
     "serialNumber": "22222222",
     "hardwareId": "0",
     "securityModelNumber": "",
-    "hostName": "OpenView",
+    "hostName": "OpenViewPro",
     "userName": "root",
     "password": ""
+  },
+  "networkInfo": {
+    "adapterInfoList": []
   }
 }

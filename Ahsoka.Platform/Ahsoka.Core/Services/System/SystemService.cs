@@ -50,6 +50,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             PlatformFamily.Ubuntu64 => new UbuntuServiceImplementation(),
             PlatformFamily.OpenViewLinux => new STServiceImplementation(),
             PlatformFamily.MacosArm64 => new MacOSServiceImplementation(),
+            PlatformFamily.OpenViewLinuxPro => new TIServiceImplementation(),
             _ => throw new PlatformNotSupportedException(),
         };
     }

@@ -55,3 +55,4 @@ SparkUpload/*
 PlatformSupport/*
 
 Ahsoka.Platform/FirmwareDownload/**/*
+Ahsoka.Containers/OpenViewPro_SDK/*.bin

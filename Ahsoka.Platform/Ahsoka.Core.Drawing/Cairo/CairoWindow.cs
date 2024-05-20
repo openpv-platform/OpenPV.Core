@@ -54,9 +54,14 @@ public class CairoDrawingWindow
             nativeWindow = new DesktopCairoWindow();
             nativeWindow.CreateWindow(this, ref bounds, fullScreen);
         }
-        else
+        else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux) 
         {
             nativeWindow = new STCairoWindow();
+            nativeWindow.CreateWindow(this, ref bounds, fullScreen);
+        }
+        else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
+        {
+            nativeWindow = new TICairoWindow();
             nativeWindow.CreateWindow(this, ref bounds, fullScreen);
         }
     }

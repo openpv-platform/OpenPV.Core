@@ -23,6 +23,7 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
         {
             PlatformFamily.Windows64 => new WindowsNetworkImplementation(),
             PlatformFamily.OpenViewLinux => new STNetworkImplementation(),
+            PlatformFamily.OpenViewLinuxPro => new UbuntuNetworkImplementation(), // Temp
             PlatformFamily.Ubuntu64 => new UbuntuNetworkImplementation(),
             PlatformFamily.MacosArm64 => new MacOSNetworkImplementation(),
             _ => throw new NotImplementedException(),

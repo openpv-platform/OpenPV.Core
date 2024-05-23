@@ -219,6 +219,8 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 
             lock (socket) // Protect Socket
                 socket.TrySendMultipartMessage(message);
+
+            message.Clear();
         }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Sending Service {(sendAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");

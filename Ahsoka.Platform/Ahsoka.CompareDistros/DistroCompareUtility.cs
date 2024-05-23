@@ -2,8 +2,8 @@
 using Ahsoka.BSPUpgrade;
 using Ahsoka.Utility;
 using DiscUtils;
+using System.IO.Compression;
 using System.Text;
-using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.CompareDistros;
 
@@ -16,12 +16,19 @@ internal class DistroCompareUtility
     public void CompareDistroFolders(string origin, string destination, string outputFolder)
     {
         if (Directory.Exists(outputFolder))
-            Directory.Delete(outputFolder,true);
+            Directory.Delete(outputFolder, true);
         
         Directory.CreateDirectory(outputFolder);
 
+        using var fileStream = new FileStream(Path.Combine(outputFolder, "upgrade.zip"), FileMode.CreateNew);
+        using ZipArchive outputArchive = new ZipArchive(fileStream, ZipArchiveMode.Create);
+
         foreach (var destinationFileToCompare in Directory.GetFiles(destination, "*.ext4").OrderBy(x=>x)) // Relies on this to ensure our versions are found in first file.
         {
+            // Skip "empty" partition created for persistfs in upgrade packages
+            if (destinationFileToCompare.Contains("empty"))
+                continue;
+
             string ext4File = Path.GetFileName(destinationFileToCompare);
             string originFileToCompare = Path.Combine(origin, ext4File);
             
@@ -31,12 +38,12 @@ internal class DistroCompareUtility
                 return;
             }
             
-            CompareFiles(originFileToCompare, destinationFileToCompare, Path.Combine(outputFolder, ext4File));
+            CompareFiles(originFileToCompare, destinationFileToCompare, outputArchive);
             Console.WriteLine();
         }
     }
 
-    private void CompareFiles(string originFileToCompare, string destinationFileToCompare, string outputFolder)
+    private void CompareFiles(string originFileToCompare, string destinationFileToCompare, ZipArchive outputArchive)
     {
         // Analyse Input File
         FileStream fileStreamOrigin = new(originFileToCompare, FileMode.Open);
@@ -49,6 +56,10 @@ internal class DistroCompareUtility
         DiscUtils.Ext.ExtFileSystem destinationFs = new(fileStreamDestination);
         Dictionary<string, UpgradeFileInfo> destinationFileList = new();
         SearchDirectory(destinationFs, destinationFs.Root, destinationFileList);
+
+        // Check for files to skip completely in upgrade
+        ProcessSkippedFiles(originFileList);
+        ProcessSkippedFiles(destinationFileList);
 
         if (originFileList.ContainsKey(versionKey))
         {
@@ -157,16 +168,10 @@ internal class DistroCompareUtility
             // Symlinks only end up in the metadata files.
             if (!item.IsSymlink)
             {
-                string outputFile = Path.Combine(outputFolder, item.FilePath.ToString());
-
                 // Write File
                 using Stream destFile = destinationFs.GetFileInfo(item.FilePath).OpenRead();
                 byte[] bytes = new byte[item.FileSize];
                 destFile.ReadExactly(bytes, 0, bytes.Length);
-
-                string directory = Path.GetDirectoryName(outputFile);
-                if (!Directory.Exists(directory))
-                    Directory.CreateDirectory(directory);
 
                 bytesComplete += item.FileSize;
                 percentComplete = (int)(((float)bytesComplete / (float)bytesTotal) * 100);
@@ -177,27 +182,30 @@ internal class DistroCompareUtility
                     lastPercent = percentComplete;
                 }
 
-                File.WriteAllBytes(outputFile, bytes);
+                var entry = outputArchive.CreateEntry(volumeInfo.VolumeLabel + "/" + item.FilePath.Replace("\\", "/"));
+                using var stream = entry.Open();
+                stream.Write(bytes, 0, bytes.Length);
             }
         }
 
-        string fileName = Path.Combine(Path.GetDirectoryName(outputFolder), Path.GetFileNameWithoutExtension(destinationFileToCompare) + ".pbuff");
-        using FileStream fs = new(fileName, FileMode.Create);
-        ProtoBuf.Serializer.Serialize(fs, volumeInfo);
-
-        fileName = Path.Combine(Path.GetDirectoryName(outputFolder), Path.GetFileNameWithoutExtension(destinationFileToCompare) + ".json");
-        File.WriteAllText(fileName, JsonUtility.Serialize(volumeInfo));
+        var jsonBytes = Encoding.UTF8.GetBytes(JsonUtility.Serialize(volumeInfo));
+        var jsonEntry = outputArchive.CreateEntry(volumeInfo.VolumeLabel + ".json");
+        using (var jsonStream = jsonEntry.Open())
+            jsonStream.Write(jsonBytes, 0, jsonBytes.Length);
 
         Console.SetCursorPosition(0, Console.CursorTop);
         Console.WriteLine($"Results {volumeInfo.AddedFiles.Count} New Files, {volumeInfo.DeletedFiles.Count} Deleted Files and {filesToLeave.Count} To Leave (Same)");
         Console.WriteLine();
 
-        string scriptName = Path.Combine(Path.GetDirectoryName(outputFolder), Path.GetFileNameWithoutExtension(destinationFileToCompare) + ".sh");
-
-        GenerateVolumeUpgrade(volumeInfo, scriptName, fromVer, "/rootfs/upgrade_temp/", $"/{volumeInfo.VolumeLabel}/");
+        string scriptName = volumeInfo.VolumeLabel + ".sh";
+        string scriptOutput = GenerateVolumeUpgrade(volumeInfo, fromVer, $"/mnt/rootfs/usr/local/Ahsoka/upgrade/{volumeInfo.VolumeLabel}/", $"/mnt/{volumeInfo.VolumeLabel}/");
+        var scriptBytes = Encoding.UTF8.GetBytes(scriptOutput);
+        var scriptEntry = outputArchive.CreateEntry(scriptName);
+        using (var scriptStream = scriptEntry.Open())
+            scriptStream.Write(scriptBytes, 0, scriptBytes.Length);
     }
 
-    private void GenerateVolumeUpgrade(UpgradeVolumeInfo volumeInfo, string scriptName, string fromVersion, string originMount, string destinationMount)
+    private string GenerateVolumeUpgrade(UpgradeVolumeInfo volumeInfo, string fromVersion, string originMount, string destinationMount)
     {
         StringBuilder builder = new StringBuilder();
         builder.AppendLine($"#!/bin/sh");
@@ -205,8 +213,8 @@ internal class DistroCompareUtility
    
         // Check Version and Return if Not Matching
       
-        builder.AppendLine($"fromVerCheck=$(cat /usr/share/bsp-info/bsp-version | grep -c {fromVer})");
-        builder.AppendLine("if [ fromVerCheck -eq 0 ]; then");
+        builder.AppendLine($"fromVerCheck=$(cat /mnt/rootfs/usr/share/bsp-info/bsp-version | grep -c {fromVer})");
+        builder.AppendLine("if [ $fromVerCheck -eq 1 ]; then");
 
         // Execute Deletes
         builder.AppendLine();
@@ -224,11 +232,12 @@ internal class DistroCompareUtility
         {
             // Execute MV from Temp to New
             // Execute Delete 
+            string destinationPath = $"{destinationMount}{addedItem.FilePath.Replace("\\", "/")}";
+            builder.AppendLine($"    mkdir -p '{Path.GetDirectoryName(destinationPath).Replace("\\","/")}'");
             builder.AppendLine($"    cp -f '{originMount}{addedItem.FilePath.Replace("\\", "/")}' '{destinationMount}{addedItem.FilePath.Replace("\\", "/")}'");
-            builder.AppendLine($"    chmod {(int)addedItem.Permissions} '{destinationMount}{addedItem.FilePath.Replace("\\", "/")}'");
+            builder.AppendLine($"    chmod {Convert.ToString((int)addedItem.Permissions, 8)} '{destinationMount}{addedItem.FilePath.Replace("\\", "/")}'");
             builder.AppendLine();
         }
-
 
         // Execute Symlinks
         builder.AppendLine();
@@ -249,8 +258,7 @@ internal class DistroCompareUtility
         builder.AppendLine($"   echo 'Incorrect Upgrade Version.  This package can only be applied to BSP Version {fromVer}'");
         builder.AppendLine("fi ");
 
-        File.WriteAllText(scriptName, builder.ToString().ReplaceLineEndings("\n"));
-
+        return builder.ToString().ReplaceLineEndings("\n");
     }
 
     private static void SearchDirectory(DiscUtils.Ext.ExtFileSystem fs, DiscFileSystemInfo dir, Dictionary<string, UpgradeFileInfo> fileList)
@@ -309,5 +317,10 @@ internal class DistroCompareUtility
         other.ReadExactly(destBuffer, 0, (int)other.Length);
 
         return destBuffer.SequenceEqual(originBuffer);
+    }
+
+    private void ProcessSkippedFiles(Dictionary<string, UpgradeFileInfo> fileList)
+    {
+        fileList.Remove(@"st-image-resize-initrd");
     }
 }

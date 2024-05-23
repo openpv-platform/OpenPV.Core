@@ -1,0 +1,50 @@
+{
+  "version": "3.0.1.20058",
+  "applicationType": "Dotnet",
+  "systemOrientation": "DefaultOrientation",
+  "execCommand": "Ahsoka.CS.Cairo",
+  "packageName": "Ahsoka.CS.Cairo.Pro",
+  "packageDescription": "Drawing and Touch With Cairo using Ahsoka DrawingAPI",
+  "applicationVersion": "1.0",
+  "packageApplicationFolder": "publish",
+  "packageOutputDirectory": "../PackageOutput",
+  "startupLogoPath": "EnovLogo.png",
+  "includeInstallerUI": false,
+  "includeFirmwareUpdate": false,
+  "licenses": [],
+  "dotNetInfo": {
+    "projectPath": "Ahsoka.CS.Cairo.csproj",
+    "publishProfile": "Properties/PublishProfiles/LinuxProfilePro.pubxml"
+  },
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "serviceStartup": "BeforeApplicationStart",
+      "releaseOption": "NoAutoStart",
+      "extensions": [],
+      "startupDelay": 0,
+      "requireChallenge": "NotRequired",
+      "services": [
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5001,
+          "notificationChannel": 6001,
+          "isExtension": false,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        }
+      ]
+    },
+    "environmentValues": []
+  },
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinuxPro",
+  "platformQualifier": "GenericArm64",
+  "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "components": []
+}

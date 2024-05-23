@@ -1,9 +1,9 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.245.0/containers/cpp
 {
-	"name": "OpenPV Base",
+	"name": "OpenPV Select Base",
 
-	"image": "openpv/openviewpro_sdk_3_0",
+	"image": "openpv/openview_sdk_2_0",
 	// Build from Docker File
 	//"build": {
 	//	"dockerfile": "Dockerfile"

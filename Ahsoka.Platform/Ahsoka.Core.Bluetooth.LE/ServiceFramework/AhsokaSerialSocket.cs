@@ -37,11 +37,8 @@ public abstract class AhsokaSerialSocket : IAhsokaSocket
         }
     }
 
-    public virtual bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, int timeOutInMs = int.MaxValue)
+    public virtual bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId)
     {
-        if (timeOutInMs > IAhsokaSocket.MaxTimeoutValue)
-            timeOutInMs = IAhsokaSocket.MaxTimeoutValue;
-
         byte[] packetData;
         if (!ReceiveOverInterface(out packetData, out clientId)) {
             // There was no message available for us to retrieve from the underlying interface.
@@ -65,7 +62,7 @@ public abstract class AhsokaSerialSocket : IAhsokaSocket
 
     protected abstract bool TransmitOverInterface(byte[] packetData, byte[] clientId);
 
-    protected abstract bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId, int timeOutInMs = int.MaxValue);
+    protected abstract bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId);
 
     void IAhsokaSocket.Connect(IAhsokaEndPoint endPoint) { OnConnect(endPoint); }
 

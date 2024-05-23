@@ -139,7 +139,7 @@ public sealed class CygnusBLEServiceSocket : CygnusSerialSocket
             if (writeValue.Uuid == cyngusMainCommsCharacteristic.Uuid)
             {
                 lastReceiveValue = writeValue.Value;
-                ((IAhsokaServiceEndpoint)EndPoint).ServiceDataReady();
+                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage();
             }
         }
     }
@@ -149,9 +149,8 @@ public sealed class CygnusBLEServiceSocket : CygnusSerialSocket
     /// </summary>
     /// <param name="packetData"></param>
     /// <param name="clientId"></param>
-    /// <param name="timeOutInMs"></param>
     /// <returns></returns>
-    protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId, int timeOutInMs = int.MaxValue)
+    protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId)
     {
         bool receiveValueReady = false;
         if (lastReceiveValue != null)

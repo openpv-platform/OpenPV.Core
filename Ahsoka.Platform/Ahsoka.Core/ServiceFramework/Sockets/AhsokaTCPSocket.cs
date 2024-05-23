@@ -5,6 +5,8 @@ using NetMQ.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -13,8 +15,9 @@ internal sealed class TCPClientSocket : IAhsokaSocket
 {
     IAhsokaEndPoint endPoint;
 
-    NetMQPoller SocketPoller { get; set; }
-    DealerSocket Socket { get; set; }
+    CancellationTokenSource socketTokenSource = new();
+    Task socketTask = null;
+    DealerSocket socket;
 
     public bool IsConnected { get; private set; }
 
@@ -27,26 +30,34 @@ internal sealed class TCPClientSocket : IAhsokaSocket
             this.endPoint = endPoint;
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Starting Client {this.endPoint.ServiceConfig.ServiceName} @ {this.endPoint.ServiceConfig.DataURI}");
-
-            SocketPoller = new NetMQPoller();
-            Socket = new DealerSocket();
-            Socket.Options.Linger = TimeSpan.FromSeconds(1);
-            Socket.Options.Identity = endPoint.GetClientId();
-
-            Socket.ReceiveReady += (o, e) =>
-            {
-                ((IAhsokaClientEndpoint)endPoint).ClientDataReady();
-            };
-
-            Socket.Connect(this.endPoint.ServiceConfig.DataURI);
-            SocketPoller.Add(Socket);
-            SocketPoller.RunAsync($"{this.endPoint.ServiceConfig.ServiceName}_ClientListener");
-
+            
+            socketTokenSource = new();
+            socket = new DealerSocket();
+            socket.Options.Linger = TimeSpan.FromSeconds(1);
+            socket.Options.Identity = endPoint.GetClientId();
+            socket.Connect(this.endPoint.ServiceConfig.DataURI);
             IsConnected = true;
+
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Starting Client {this.endPoint.ServiceConfig.ServiceName} @ {this.endPoint.ServiceConfig.DataURI} with Result {IsConnected}");
+
+            socketTask = Task.Factory.StartNew(() =>
+            {
+                Thread.CurrentThread.Name = $"{endPoint.ServiceConfig.ServiceName}_ClientListener";
+             
+                while (!socketTokenSource.IsCancellationRequested)
+                {
+                    var eventResult = socket.Poll(PollEvents.PollIn | PollEvents.PollError, TimeSpan.FromSeconds(1));
+
+                    if (eventResult == PollEvents.PollIn)
+                        ((IAhsokaClientEndpoint)endPoint).ReceiveMessage();
+                    else if (eventResult == PollEvents.PollError)
+                        socketTokenSource.Cancel();
+                }
+
+            }, socketTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
         catch { IsConnected = false; }
 
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Starting Client {this.endPoint.ServiceConfig.ServiceName} @ {this.endPoint.ServiceConfig.DataURI} with Result {IsConnected}");
     }
 
     void IAhsokaSocket.Disconnect()
@@ -57,9 +68,12 @@ internal sealed class TCPClientSocket : IAhsokaSocket
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Disconnecting {endPoint.ServiceConfig.ServiceName}");
 
-                Socket.Disconnect(endPoint.ServiceConfig.DataURI);
-                SocketPoller.StopAsync();
-                SocketPoller.RemoveAndDispose(Socket);
+                socket.Disconnect(endPoint.ServiceConfig.DataURI);
+
+                socketTokenSource.Cancel();
+                socketTask.Wait();
+                socket.Dispose();
+
 
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
             }
@@ -76,25 +90,22 @@ internal sealed class TCPClientSocket : IAhsokaSocket
         message.Append(header);
         message.Append(data);
 
-        lock (Socket)
-            Socket.SendMultipartMessage(message);
+        lock (socket)
+            socket.SendMultipartMessage(message);
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client {(sendAsNotification ? "Notification" : "Message")} Completed from {endPoint.ServiceConfig.ServiceName} ");
     }
 
-    bool IAhsokaSocket.ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, int timeOutInMs)
+    bool IAhsokaSocket.ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId)
     {
-        if (timeOutInMs > IAhsokaSocket.MaxTimeoutValue)
-            timeOutInMs = IAhsokaSocket.MaxTimeoutValue;
-
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Client Message on {endPoint.ServiceConfig.ServiceName} with Timeout {timeOutInMs}");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Client Message on {endPoint.ServiceConfig.ServiceName} ");
 
         header = data = clientId = null;
 
         NetMQMessage message = new();
         try
         {
-            if (Socket != null && Socket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(timeOutInMs), ref message, 2))
+            if (socket != null && socket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(1000), ref message, 2))
             {
                 header = message.Pop().Buffer;
                 data = message.Pop().Buffer;
@@ -116,8 +127,9 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
     IAhsokaEndPoint endPoint;
 
     List<Guid> validClientIds = new ();
-    NetMQPoller SocketPoller { get; set; }
-    RouterSocket Socket { get; set; }
+    Task socketTask;
+    CancellationTokenSource socketTokenSource = new();
+    RouterSocket socket;
 
     public bool IsConnected { get; private set; }
 
@@ -130,22 +142,30 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
             this.endPoint = endPoint;
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Starting Service {endPoint.ServiceConfig.ServiceName} @ {endPoint.ServiceConfig.DataListenURI}");
-            SocketPoller = new NetMQPoller();
-            Socket = new RouterSocket();
-            Socket.Options.Linger = TimeSpan.FromSeconds(1);
-            Socket.Bind(endPoint.ServiceConfig.DataListenURI);
-            SocketPoller.Add(Socket);
-           
-            Socket.ReceiveReady += (o, e) =>
-            {
-                ((IAhsokaServiceEndpoint)endPoint).ServiceDataReady();
-            };
 
-            SocketPoller.RunAsync($"{endPoint.ServiceConfig.ServiceName}_Handler");
-            
+            socket = new RouterSocket();
+            socket.Options.Linger = TimeSpan.FromSeconds(1);
+            socket.Bind(endPoint.ServiceConfig.DataListenURI);
             IsConnected = true;
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Starting Service {endPoint.ServiceConfig.ServiceName} @ {endPoint.ServiceConfig.DataListenURI} with Result {IsConnected}");
+
+            socketTokenSource = new();
+            socketTask = Task.Factory.StartNew(() =>
+            {
+                Thread.CurrentThread.Name = $"{endPoint.ServiceConfig.ServiceName}_Handler";
+               
+                while (!socketTokenSource.IsCancellationRequested)
+                {
+                    var eventResult = socket.Poll(PollEvents.PollIn | PollEvents.PollError, TimeSpan.FromSeconds(1));
+                    
+                    if (eventResult == PollEvents.PollIn)
+                        ((IAhsokaServiceEndpoint)endPoint).ReceiveMessage();
+                    else if (eventResult == PollEvents.PollError)
+                        socketTokenSource.Cancel();
+                }
+
+            }, socketTokenSource.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
         catch { IsConnected = false; }
     }
@@ -156,14 +176,15 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 
         if (IsConnected)
         {
-            Socket.Unbind(endPoint.ServiceConfig.DataListenURI);
+            socket.Unbind(endPoint.ServiceConfig.DataListenURI);
             validClientIds.Clear();
         }
 
         IsConnected = false;
 
-        SocketPoller.StopAsync();
-        SocketPoller.RemoveAndDispose(Socket);
+        socketTokenSource.Cancel();
+        socketTask.Wait();
+        socket.Dispose();
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
 
@@ -186,8 +207,6 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
         if (clientId == null && !sendAsNotification)
             throw new ApplicationException("Services must include client id when sending messages");
 
-        NetMQSocket socket = Socket;
-
         IEnumerable<Guid> clients = sendAsNotification ? validClientIds : new List<Guid>() { new Guid(clientId) };
 
         NetMQMessage message = new();
@@ -205,16 +224,11 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Sending Service {(sendAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");
     }
 
-    bool IAhsokaSocket.ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, int timeOutInMs)
+    bool IAhsokaSocket.ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId)
     {
-        if (timeOutInMs > IAhsokaSocket.MaxTimeoutValue)
-            timeOutInMs = IAhsokaSocket.MaxTimeoutValue;
-
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Service Message on {endPoint.ServiceConfig.ServiceName} ");
 
         header = data = clientId = null;
-
-        NetMQSocket socket = Socket;
 
         NetMQMessage message = new();
         if (socket.TryReceiveMultipartMessage(ref message, 3))

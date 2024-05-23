@@ -18,6 +18,8 @@ public interface IAhsokaEndPoint
     void Connect();
 
     void Disconnect();
+
+    void ReceiveMessage();
 }
 
 public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
@@ -64,7 +66,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
         Socket.Disconnect();
         OnEndPointDisconnected();
     }
-
+    
     public void UpdateConfiguration(ServiceConfiguration config)
     {
         bool wasConnected = IsRunning;
@@ -100,13 +102,12 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
         }
     }
 
-    protected bool ReceiveMessage(out AhsokaMessageHeader messageHeader, out object messageObject, out ServiceMessageInfo messageInfo, int timoutInMs = int.MaxValue)
+    void IAhsokaEndPoint.ReceiveMessage()
     {
-        messageObject = null;
-        messageHeader = null;
-        messageInfo = null;
+        AhsokaMessageHeader messageHeader = null;
+        object messageObject = null;
 
-        bool recievedMessage = Socket.ReceiveMessage(out byte[] headerData, out byte[] messageData, out byte[] clientId, timoutInMs);
+        bool recievedMessage = Socket.ReceiveMessage(out byte[] headerData, out byte[] messageData, out byte[] clientId);
 
         if (recievedMessage)
         {
@@ -122,19 +123,21 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
             // Lookup and Decode Message
             TTransportIds transportType = messageHeader.TransportId.IntToEnum<TTransportIds>();
-            messageInfo = serviceMessageInfo.GetMessageInfo(transportType);
+            var messageInfo = serviceMessageInfo.GetMessageInfo(transportType);
 
             if (messageInfo != null) // Not much we can do with a mesage we can't decode
                 using (MemoryStream objectData = new(messageData))
                     messageObject = ProtoBuf.Serializer.Deserialize(GetReceiptType(messageInfo), objectData);
-        }
 
-        return recievedMessage;
+            OnReceiveMessage(messageHeader, messageObject, messageInfo);
+        }
     }
 
     abstract protected IAhsokaSocket CreateSocket(ServiceConfiguration config);
 
     abstract protected Type GetReceiptType(ServiceMessageInfo value);
+
+    abstract protected void OnReceiveMessage(AhsokaMessageHeader messageHeader, object message, ServiceMessageInfo info);
 
     abstract protected void OnHandleReceive(AhsokaMessageHeader messageHeader, object message);
 

@@ -236,11 +236,8 @@ public abstract class CygnusSerialSocket : AhsokaSerialSocket
 
     }
 
-    public override bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, int timeOutInMs = int.MaxValue)
+    public override bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId)
     {
-        if (timeOutInMs > IAhsokaSocket.MaxTimeoutValue)
-            timeOutInMs = IAhsokaSocket.MaxTimeoutValue;
-
         if (!ReceiveOverInterface(out byte[] packetData, out clientId)) {
             // There was no message available for us to retrieve from the underlying interface.
             header = null;

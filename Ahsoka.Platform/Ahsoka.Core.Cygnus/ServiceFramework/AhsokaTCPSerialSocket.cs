@@ -79,7 +79,7 @@ public sealed class TCPClientSerialSocket : AhsokaSerialSocket
         return true;
     }
 
-    protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId, int timeOutInMs = int.MaxValue)
+    protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Client Message on {EndPoint.ServiceConfig.ServiceName}");
 
@@ -130,7 +130,7 @@ public sealed class TCPServiceSerialSocket : AhsokaSerialSocket
 
             Socket.ReceiveReady += (o, e) =>
             {
-                ((IAhsokaServiceEndpoint)EndPoint).ServiceDataReady();
+                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage();
             };
 
             Monitor.Accepted += (o, e) =>
@@ -183,7 +183,7 @@ public sealed class TCPServiceSerialSocket : AhsokaSerialSocket
         return true;
     }
 
-    protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId, int timeOutInMs = int.MaxValue)
+    protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId)
     {
         NetMQMessage message = new();
         if (Socket.TryReceiveMultipartMessage(ref message, 2))

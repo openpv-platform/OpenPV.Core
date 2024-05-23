@@ -19,8 +19,6 @@ public interface IAhsokaClientEndpoint : IAhsokaEndPoint, IDispatchSource
     IAhsokaServiceEndpoint CreateDefaultService();
 
     void SetToken(Token securityToken);
-
-    void ClientDataReady();
 }
 
 public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTransportIds>,
@@ -146,22 +144,18 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         behaviors.Add(behavior);
     }
 
-    void IAhsokaClientEndpoint.ClientDataReady()
+    protected override void OnReceiveMessage(AhsokaMessageHeader messageHeader, object message, ServiceMessageInfo info)
     {
-        // Recieve Out of Band Message and Process on Handler
-        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out ServiceMessageInfo info))
+        if (info == null)
         {
-            if (info == null)
-            {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"No transport Info was found for Message with TransportID = {responseHeader.TransportId}. Message was passed through as a Notification");
-                notificationMessages.TryAdd(new(responseHeader, returnObject));
-            }
-            else if (info.IsNotification && responseHeader.TransportId >= 0) //Error Notifications are < 0
-                notificationMessages.TryAdd(new(responseHeader, returnObject));
-            else
-                incomingMessages.TryAdd(new(responseHeader, returnObject));
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"No transport Info was found for Message with TransportID = {messageHeader.TransportId}. Message was passed through as a Notification");
+            notificationMessages.TryAdd(new(messageHeader, message));
         }
-    } 
+        else if (info.IsNotification && messageHeader.TransportId >= 0) //Error Notifications are < 0
+            notificationMessages.TryAdd(new(messageHeader, message));
+        else
+            incomingMessages.TryAdd(new(messageHeader, message));
+    }
 
     public void SendNotificationWithResponse(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue)
     {

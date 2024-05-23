@@ -15,8 +15,6 @@ public interface IAhsokaServiceEndpoint : IAhsokaEndPoint
     int MessageSendCount { get; set; }
 
     void ClientConnected();
-
-    void ServiceDataReady();
 }
 
 
@@ -59,37 +57,34 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
         return value.RequestType;
     }
 
-    void IAhsokaServiceEndpoint.ServiceDataReady()
+    protected override void OnReceiveMessage(AhsokaMessageHeader messageHeader, object message, ServiceMessageInfo info)
     {
-        // Recieve In Band Data
-        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, out ServiceMessageInfo info))
+        // Handle Global Notification Registration
+        if (messageHeader.TransportId == CoreTransportIds.RegisterClient.EnumToInt())
         {
-            // Handle Global Notification Registration
-            if (responseHeader.TransportId == CoreTransportIds.RegisterClient.EnumToInt())
-            {
-                ((IAhsokaServiceSocket)Socket)?.RegisterClient(returnObject as ClientRegistration);
-                ((IAhsokaServiceEndpoint)this).ClientConnected();
-                return;
-            }
-            else if (responseHeader.TransportId == CoreTransportIds.DeregisterClient.EnumToInt())
-            {
-                ((IAhsokaServiceSocket)Socket)?.DeregisterClient(returnObject as ClientRegistration);
-                return;
-            }
-
-            // Validate Security
-            if (this.ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.SecurityEnabled) && info.RequiresSecurity)
-            {
-                if (responseHeader.ServiceToken == null || !TokenSource.Default.IsTokenValid(responseHeader.ServiceToken, responseHeader.ClientId))
-                {
-                    // Send Invalid Transport Value
-                    responseHeader.TransportId = CoreTransportIds.InvalidToken.EnumToInt();
-                    SendMessageInternal(responseHeader, new InvalidResponseNotification());
-                    return;
-                }
-            }
-            OnHandleReceive(responseHeader, returnObject);
+            ((IAhsokaServiceSocket)Socket)?.RegisterClient(message as ClientRegistration);
+            ((IAhsokaServiceEndpoint)this).ClientConnected();
+            return;
         }
+        else if (messageHeader.TransportId == CoreTransportIds.DeregisterClient.EnumToInt())
+        {
+            ((IAhsokaServiceSocket)Socket)?.DeregisterClient(message as ClientRegistration);
+            return;
+        }
+
+        // Validate Security
+        if (this.ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.SecurityEnabled) && info.RequiresSecurity)
+        {
+            if (messageHeader.ServiceToken == null || !TokenSource.Default.IsTokenValid(messageHeader.ServiceToken, messageHeader.ClientId))
+            {
+                // Send Invalid Transport Value
+                messageHeader.TransportId = CoreTransportIds.InvalidToken.EnumToInt();
+                SendMessageInternal(messageHeader, new InvalidResponseNotification());
+                return;
+            }
+        }
+        OnHandleReceive(messageHeader, message);
+
     }
 
     protected override void OnEndPointConnected()

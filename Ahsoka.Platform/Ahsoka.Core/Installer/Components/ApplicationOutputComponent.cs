@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Mime;
 using System.Text;
 
 namespace Ahsoka.Installer.Components;
@@ -135,6 +136,11 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
             // Install Ahsoka.Application.service
             string unitFileContents = Properties.Resources.Ahsoka_Application;
+
+            // TODO: Use forking until BSP can support Notify correctly.
+            if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
+                unitFileContents = unitFileContents.Replace("notify", "forking");
+
             string pathToSystemUnitFile = LinuxPathInfo.CreateSystemManagerPath("system/Ahsoka.Application.service");
 
             File.WriteAllText(pathToSystemUnitFile, unitFileContents);

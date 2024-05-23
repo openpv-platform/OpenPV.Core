@@ -49,7 +49,7 @@ internal sealed class TCPClientSocket : IAhsokaSocket
                     var eventResult = socket.Poll(PollEvents.PollIn | PollEvents.PollError, TimeSpan.FromSeconds(1));
 
                     if (eventResult == PollEvents.PollIn)
-                        ((IAhsokaClientEndpoint)endPoint).ReceiveMessage();
+                        endPoint.ReceiveMessage();
                     else if (eventResult == PollEvents.PollError)
                         socketTokenSource.Cancel();
                 }
@@ -160,7 +160,7 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
                     var eventResult = socket.Poll(PollEvents.PollIn | PollEvents.PollError, TimeSpan.FromSeconds(1));
                     
                     if (eventResult == PollEvents.PollIn)
-                        ((IAhsokaServiceEndpoint)endPoint).ReceiveMessage();
+                        endPoint.ReceiveMessage();
                     else if (eventResult == PollEvents.PollError)
                         socketTokenSource.Cancel();
                 }

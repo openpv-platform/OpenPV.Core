@@ -20,7 +20,8 @@
 		<!--Create Ahsoka Windows Command Line Nuget Package....must happen AFTER the publish of the Command line for Windows and Mac -->
 		<Exec Command="dotnet pack ../Ahsoka.Core/Ahsoka.Core.csproj" />
 		<Exec Command="dotnet pack ../Ahsoka.Core.Drawing/Ahsoka.Core.Drawing.csproj" />
-		<Exec Command="dotnet pack ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj" />
+		<Exec Command="dotnet pack ../Ahsoka.Core.Drawing/Ahsoka.Core.Drawing.csproj" />
+		<Exec Command="dotnet pack ../Ahsoka.CompareDistros/Ahsoka.CompareDistros.csproj" />
 		<Exec Command="dotnet pack ../Ahsoka.DeveloperTools.Core/Ahsoka.DeveloperTools.Core.csproj" />
 		
 	</Target>

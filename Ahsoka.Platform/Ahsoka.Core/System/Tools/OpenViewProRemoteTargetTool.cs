@@ -45,9 +45,18 @@ internal class OpenViewProRemoteTargetTool : LinuxRemoteTargetTool
         string appProfile = Encoding.UTF8.GetString(Properties.Resources.LinuxAppProfile).Replace("wayland-1", "/run/wayland-0");
         scpClient.Upload(new MemoryStream(Encoding.UTF8.GetBytes(appProfile)), "/etc/profile.d/app_profile.sh");
 
-        // Add Fake MAC Address to prevent random generation.
 
-        // Set Hostname
+        progress.Report($"Remove Unused Services");
+        sshClient.RunCommand($"systemctl disable containerd");
+        sshClient.RunCommand($"systemctl disable docker.socket");
+        sshClient.RunCommand($"systemctl disable demo");
+        sshClient.RunCommand($"systemctl disable snmpd");
+        sshClient.RunCommand($"systemctl disable gplv3-notice");
+        sshClient.RunCommand($"systemctl disable strongswan-starter");
+        sshClient.RunCommand($"systemctl disable systemd-bootchart.service");
+        sshClient.RunCommand($"systemctl disable tee-supplicant");
+
+
 
 
 

@@ -65,6 +65,7 @@ internal class FirmwareUpdateComponent : FileSystemComponentBase
         base.OnCleanup(buildLocation, componentData, info, progress);
     }
 
+
     protected override string GetTargetPath()
     {
         return string.Empty; // SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.InstallerUIRoot, false);

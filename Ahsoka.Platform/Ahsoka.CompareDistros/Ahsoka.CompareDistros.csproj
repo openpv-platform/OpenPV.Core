@@ -4,7 +4,7 @@
 		<OutputType>Exe</OutputType>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<PackAsTool>true</PackAsTool>
-		<ToolCommandName>EnovationCloud.CommandLine</ToolCommandName>
+		<ToolCommandName>Ahsoka.CompareDistros</ToolCommandName>
 	</PropertyGroup>
 
 

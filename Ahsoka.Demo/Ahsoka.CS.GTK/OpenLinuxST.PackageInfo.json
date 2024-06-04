@@ -1,7 +1,6 @@
 {
-  "version": "3.0.1.10015",
+  "version": "3.0.1.20065",
   "applicationType": "Dotnet",
-  "userInterfaceType": "None",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.GTK",
   "packageName": "Ahsoka.CS.GTK",
@@ -11,6 +10,7 @@
   "packageOutputDirectory": "../PackageOutput",
   "startupLogoPath": "EnovLogo.png",
   "includeInstallerUI": false,
+  "includeFirmwareUpdate": false,
   "licenses": [],
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.GTK.csproj",
@@ -18,8 +18,16 @@
   },
   "serviceInfo": {
     "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensions": [
+        "Data Service Extension"
+      ],
+      "startupDelay": 0,
+      "requireChallenge": "NotRequired",
       "services": [
         {
+          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -27,10 +35,11 @@
           "dataChannel": 5001,
           "notificationChannel": 6001,
           "isExtension": false,
-          "dataKeyValues": [],
+          "behaviors": "AutoStart",
           "configurationFile": ""
         },
         {
+          "socketType": "TcpSocket",
           "serviceName": "IOService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -38,15 +47,22 @@
           "dataChannel": 5006,
           "notificationChannel": 6006,
           "isExtension": false,
-          "dataKeyValues": [],
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "DataService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5109,
+          "notificationChannel": 0,
+          "isExtension": true,
+          "behaviors": "AutoStart",
           "configurationFile": ""
         }
-      ],
-      "customServiceEnabled": "Disabled",
-      "serviceStartup": "NoAutoStart",
-      "releaseOption": "NoAutoStart",
-      "extensions": [],
-      "startupDelay": 0
+      ]
     },
     "environmentValues": []
   },

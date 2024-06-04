@@ -188,9 +188,9 @@ public static class SystemInfo
             return PlatformFamily.Windows64;
         else if (OperatingSystem.IsLinux())
         {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium,"Determine Platform: " + RuntimeInformation.OSDescription);
             if (Environment.Is64BitProcess)
-            { 
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Determine Platform: " + RuntimeInformation.OSDescription);
                 if (RuntimeInformation.OSDescription.Contains("Ubuntu"))
                     return PlatformFamily.Ubuntu64;
                 else

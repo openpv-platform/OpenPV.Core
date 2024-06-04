@@ -1,5 +1,5 @@
 {
-  "version": "3.0.1.10065",
+  "version": "3.0.1.20065",
   "applicationType": "Dotnet",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.CAN",
@@ -48,7 +48,7 @@
           "dataChannel": 5001,
           "notificationChannel": 6001,
           "isExtension": false,
-          "behaviors": "NoBehavior",
+          "behaviors": "AutoStart",
           "configurationFile": ""
         }
       ]

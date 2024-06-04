@@ -3,8 +3,8 @@
 mkdir -p /workspaces/Ahsoka.Platform/Ahsoka.Interop
 rsync -a /source/Ahsoka.Interop/ /workspaces/Ahsoka.Platform/Ahsoka.Interop/
 
-mkdir -p /workspaces/Ahsoka.Platform/Ahsoka.Proto
-rsync -a /source/Ahsoka.Proto/ /workspaces/Ahsoka.Platform/Ahsoka.Proto/
+mkdir -p /workspaces/Ahsoka.Platform/Ahsoka.Platform/Ahsoka.Core/Proto
+rsync -a /source/Ahsoka.Platform/Ahsoka.Core/Proto/ /workspaces/Ahsoka.Platform/Ahsoka.Platform/Ahsoka.Core/Proto/
 
 mkdir -p /workspaces/Ahsoka.Platform/Ahsoka.Platform/Ahsoka.Core/Resources
 rsync -a /source/Ahsoka.Platform/Ahsoka.Core/Resources/ /workspaces/Ahsoka.Platform/Ahsoka.Platform/Ahsoka.Core/Resources/

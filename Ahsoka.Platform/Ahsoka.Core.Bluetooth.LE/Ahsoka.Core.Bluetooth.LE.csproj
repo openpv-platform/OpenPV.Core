@@ -15,9 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AdditionalFiles Include="..\..\Ahsoka.Proto\BLE*.proto">
-			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
-		</AdditionalFiles>
+		<AdditionalFiles Include="Proto\BLE*.proto" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -45,5 +43,20 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\BLEResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>BLEResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\BLEResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>BLEResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 </Project>

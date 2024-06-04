@@ -13,9 +13,12 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AdditionalFiles Include="..\..\Ahsoka.Proto\*.proto" Exclude="..\..\Ahsoka.Proto\Can*.proto;..\..\Ahsoka.Proto\BLE*.proto;..\..\Ahsoka.Proto\Cygnus*.proto;..\..\Ahsoka.Proto\reach.proto; ..\..\Ahsoka.Proto\DataService*.proto">
-			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
-		</AdditionalFiles>
+		<None Include="..\..\Ahsoka.Interop\Ahsoka.Proto\Functions.cmake" Link="Proto\Functions.cmake" />
+		<None Include="..\..\Ahsoka.Interop\Ahsoka.Proto\CMakeLists.txt" Link="Proto\CMakeLists.txt" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<AdditionalFiles Include="Proto\*.proto" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -33,6 +36,8 @@
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
 	</ItemGroup>
+
+
 
 	<ItemGroup>
 		<EmbeddedResource Include="Properties\Resources.resx">
@@ -82,5 +87,9 @@
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <AdditionalFiles Update="..\..\Ahsoka.Interop\Ahsoka.Proto\Configuration.proto" Link="Configuration.proto" />
 	</ItemGroup>
 </Project>

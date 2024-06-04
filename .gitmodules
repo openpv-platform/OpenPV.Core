@@ -15,6 +15,3 @@
 	path = Ahsoka.Coprocessor/openview_s/firmware/CM4/Middlewares/Third_Party/lwip
 	url = https://enovation.visualstudio.com/Engineering/_git/Forks.stm32_mw_lwip
 	branch = main
-[submodule "Ahsoka.Platform/ThirdParty/DiscUtils"]
-	path = Ahsoka.Platform/ThirdParty/DiscUtils
-	url = https://enovation.visualstudio.com/Engineering/_git/Forks.DiscUtils

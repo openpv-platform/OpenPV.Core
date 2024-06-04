@@ -14,8 +14,8 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<AdditionalFiles Include="..\..\Ahsoka.Proto\Bluetooth\*.proto">
-			<Link>ProtoB\Bluetooth\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		<AdditionalFiles Include="Proto\*.proto">
+			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
 		</AdditionalFiles>
 	</ItemGroup>
 
@@ -43,5 +43,22 @@
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
+	</ItemGroup>
+
+	
+	<ItemGroup>
+	  <Compile Update="Properties\BluetoothResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>BluetoothResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\BluetoothResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>BluetoothResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 </Project>

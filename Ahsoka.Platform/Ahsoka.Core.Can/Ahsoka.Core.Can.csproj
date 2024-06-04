@@ -15,9 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AdditionalFiles Include="..\..\Ahsoka.Proto\Can*.proto">
-			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
-		</AdditionalFiles>
+		<AdditionalFiles Include="Proto\Can*.proto"/>
 	</ItemGroup>
 
 	<ItemGroup>

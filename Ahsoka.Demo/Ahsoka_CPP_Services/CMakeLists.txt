@@ -24,7 +24,7 @@ message(CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 message(AhsokaSources="${AhsokaSources}")
 File(GLOB Generated Generated/*.cpp)
 
-add_executable(Ahsoka.Client.Test main.cpp ${Generated} ${AhsokaSources} Generated/CanViewModelBase.h)
+add_executable(Ahsoka.Client.Test main.cpp ${Generated} ${AhsokaSources})
 
 target_include_directories(Ahsoka.Client.Test PRIVATE ${AhsokaHeaders})
 target_link_libraries(Ahsoka.Client.Test PRIVATE ${AhsokaLibs})

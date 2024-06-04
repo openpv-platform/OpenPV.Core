@@ -34,7 +34,7 @@ public class ClientCodeGenerator
             }    
         }
 
-        File.WriteAllText(Path.Combine(pathToOutputFolder, "AhsokaServices.h"), includes + usings);
+        File.WriteAllText(Path.Combine(pathToOutputFolder, "inc", "services", "AhsokaServices.h"), includes + usings);
     }
 
     private static void GenerateClientsForCPP(string name, string nameSpace, string pathToOutput, Type messageType)
@@ -53,7 +53,11 @@ public class ClientCodeGenerator
 
         foreach (var file in messages.GetAdditionalClientResources(ApplicationType.Cpp)) 
         {
-            File.WriteAllBytes(Path.Combine(pathToOutput, file.Key), file.Value);
+            string path = Path.Combine(pathToOutput, file.Key);
+            string directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
+            File.WriteAllBytes(path, file.Value);
         }
 
         includes += messages.GetInteropIncludes(name, ApplicationType.Cpp);
@@ -101,7 +105,7 @@ public class ClientCodeGenerator
             .Replace("%SERVICE_METHODS%", headerBuilder.ToString())
             .Replace("%SERVICE_NOTIFICATIONS%", notificationBuilder.ToString());
 
-        string pathToFile = Path.Combine(pathToOutput, $"{name}Client.h");
+        string pathToFile = Path.Combine(pathToOutput, "inc", "services", $"{name}Client.h");
         File.WriteAllText(pathToFile, fileToWrite.ReplaceLineEndings("\n"));
     }
 
@@ -170,7 +174,7 @@ public class ClientCodeGenerator
             .Replace("%SERVICE_METHODS%", methodBuilder.ToString())
             .Replace("%SERVICE_NOTIFICATIONS%", notificationBuilder.ToString());
 
-        string pathToFileCPP = Path.Combine(pathToOutput, $"{name}Client.cpp");
+        string pathToFileCPP = Path.Combine(pathToOutput, "inc", "services", $"{name}Client.cpp");
         File.WriteAllText(pathToFileCPP, fileToWrite.ToString());
     }
 
@@ -203,7 +207,7 @@ public class ClientCodeGenerator
             .Replace("DefaultServiceMessages", name + "Messages")
             .Replace("%REGISTER_SERVICE_MESSAGES%", messageItems.ToString());
 
-        string pathToFile = Path.Combine(pathToOutput, $"{name}Messages.hpp");
+        string pathToFile = Path.Combine(pathToOutput, "inc","services", $"{name}Messages.hpp");
         File.WriteAllText(pathToFile, fileToWrite.ReplaceLineEndings("\n"));
     }
 

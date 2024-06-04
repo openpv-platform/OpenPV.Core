@@ -1,4 +1,6 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
+using System.Collections.Generic;
 
 namespace Ahsoka.Services.Iot;
 
@@ -14,6 +16,13 @@ internal class IotServiceMessages : AhsokaMessagesBase
         this.RegisterServiceRequest(IotMessageTypes.Ids.PublishTopic, typeof(TopicMessage), typeof(TopicResult));
 
         this.RegisterServiceNotification(IotMessageTypes.Ids.TopicReceivedNotification, typeof(TopicMessage));
+    }
+
+    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    {
+        var result = base.GetAdditionalClientResources(type);
+        result.Add("Ahsoka.Proto\\IotService.proto", Properties.Resources.IotService);
+        return result;
     }
 }
 

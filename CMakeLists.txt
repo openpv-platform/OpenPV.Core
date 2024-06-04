@@ -27,8 +27,6 @@ ELSE()
 
     SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread -Wno-psabi")
 
-    add_subdirectory ("Ahsoka.Proto")
-
 ENDIF()
 
 

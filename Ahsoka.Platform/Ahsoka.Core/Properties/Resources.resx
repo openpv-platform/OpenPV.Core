@@ -160,6 +160,9 @@
   <data name="WirelessClientStatic" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\linuxnetworkunits\wirelessclientstatic.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="CPPClientHeader" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ClientTemplates\CPPClientHeader.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="UntrustedPrivateKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\UntrustedPrivateKeyPEM.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -188,13 +191,43 @@
   <data name="SystemServiceClientExtensionsH" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SystemServiceClientExtensions.h;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="CPPClientMessages" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ClientTemplates\CPPClientMessages.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="CPPClientCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="CPPClientHeader" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ClientTemplates\CPPClientHeader.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="Configuration" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\Configuration.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="CPPClientMessages" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ClientTemplates\CPPClientMessages.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="Functions" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\Ahsoka.Interop\Ahsoka.Proto\Functions.cmake;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="InstallService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\InstallService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="IOService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\IOService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="IotService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\IotService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="NetworkService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\NetworkService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SecurityService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\SecurityService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Services" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\Services.proto;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="SparkService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\SparkService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SystemService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\SystemService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="CMakeLists" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\CMakeLists.txt;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

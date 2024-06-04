@@ -84,6 +84,16 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] CanConfiguration {
+            get {
+                object obj = ResourceManager.GetObject("CanConfiguration", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #pragma once
         ///#include &lt;string&gt;
         ///#include &lt;functional&gt;
@@ -116,58 +126,42 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to void CanServiceClient::OpenCommunicationChannel()
-        ///{
-        ///    auto endPoint = GetEndPoint&lt;CanService_t&gt;();
-        ///    auto callback = [this](CanMessageTypes::Ids transportId, AhsokaServiceFramework::AhsokaMessageType_t&amp; message)
-        ///    {
-        ///        if (transportId == CanMessageTypes_Ids_CAN_MESSAGES_RECEIVED &amp;&amp; messageReceived != 0)
-        ///            messageReceived((CanMessageDataCollection&amp;)message);
-        ///
-        ///        if (transportId == CanMessageTypes_Ids_NETWORK_STATE_CHANGED &amp;&amp; stateReceived != 0)
-        ///            stateReceived((CanState&amp;)m [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string CanServiceClientExtensionsCXX {
+        internal static byte[] CanService {
             get {
-                return ResourceManager.GetString("CanServiceClientExtensionsCXX", resourceCulture);
+                object obj = ResourceManager.GetObject("CanService", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to     
-        ///    // Custom Versions of Client Methods
-        ///    void SendCanMessages(uint canPort, IHasCanData&amp; message);
-        ///    void OpenCommunicationChannel();
-        ///    void CloseCommunicationChannel();
-        ///    
-        ///    // Custom Extension methods
-        ///    CanPortConfiguration&amp; GetPortConfiguration();
-        ///
-        ///    void RegisterCanListener(CanMessageReceived_t callback);
-        ///	void RegisterStateListener(CanStateReceived_t callback);
-        ///
-        ///private:
-        ///	
-        ///    unique_ptr&lt;CanApplicationCalibration&gt; calibration;
-        ///    CanMessageReceived_t messageReceived;
-        ///    CanStateR [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string CanServiceClientExtensionsH {
+        internal static byte[] CanServiceClientExtensionsCXX {
             get {
-                return ResourceManager.GetString("CanServiceClientExtensionsH", resourceCulture);
+                object obj = ResourceManager.GetObject("CanServiceClientExtensionsCXX", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #include &quot;IHasCanData.h&quot;
-        ///
-        ///typedef std::function&lt;void(CanMessageDataCollection&amp;)&gt; CanMessageReceived_t;
-        ///typedef std::function&lt;void(CanState&amp;)&gt; CanStateReceived_t;
-        ///.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string CanServiceClientIncludes {
+        internal static byte[] CanServiceClientExtensionsH {
             get {
-                return ResourceManager.GetString("CanServiceClientIncludes", resourceCulture);
+                object obj = ResourceManager.GetObject("CanServiceClientExtensionsH", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] CanServiceClientIncludes {
+            get {
+                object obj = ResourceManager.GetObject("CanServiceClientIncludes", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -280,24 +274,12 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #pragma once
-        ///
-        ///#include &lt;string&gt;
-        ///#include &lt;functional&gt;
-        ///#include &quot;AhsokaServices.h&quot;
-        ///
-        ///namespace AhsokaCAN
-        ///{
-        ///    class IHasCanData
-        ///    {
-        ///        public: 
-        ///            virtual CanMessageData CreateCanMessageData() = 0;
-        ///    };
-        ///}.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string IHasCanData {
+        internal static byte[] IHasCanData {
             get {
-                return ResourceManager.GetString("IHasCanData", resourceCulture);
+                object obj = ResourceManager.GetObject("IHasCanData", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

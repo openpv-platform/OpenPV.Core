@@ -15,9 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<AdditionalFiles Include="..\..\Ahsoka.Proto\DataService.proto">
-			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
-		</AdditionalFiles>
+		<AdditionalFiles Include="Proto\DataService.proto"/>
 	</ItemGroup>
 
 	<ItemGroup>

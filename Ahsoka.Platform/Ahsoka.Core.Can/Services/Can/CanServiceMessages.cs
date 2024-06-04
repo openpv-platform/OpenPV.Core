@@ -30,12 +30,15 @@ internal class CanServiceMessages : AhsokaMessagesBase
     public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
         var result = base.GetAdditionalClientResources(type);
-        result.Add("CanServiceClientExtensions.h", UTF8Encoding.UTF8.GetBytes(Properties.CANResources.CanServiceClientExtensionsH));
-        result.Add("IHasCanData.h", UTF8Encoding.UTF8.GetBytes(Properties.CANResources.IHasCanData));
-        result.Add("CanServiceClientIncludes.h", UTF8Encoding.UTF8.GetBytes(Properties.CANResources.CanServiceClientIncludes));
+        result.Add("inc\\services\\CanServiceClientExtensions.h", Properties.CANResources.CanServiceClientExtensionsH);
+        result.Add("inc\\services\\IHasCanData.h", Properties.CANResources.IHasCanData);
+        result.Add("inc\\services\\CanServiceClientIncludes.h", Properties.CANResources.CanServiceClientIncludes);
+
+        result.Add("Ahsoka.Proto\\CanConfiguration.proto", Properties.CANResources.CanConfiguration);
+        result.Add("Ahsoka.Proto\\CanService.proto", Properties.CANResources.CanService);
 
         if (includeImplementation) 
-            result.Add("CanServiceClientExtensions.cxx", UTF8Encoding.UTF8.GetBytes(Properties.CANResources.CanServiceClientExtensionsCXX));
+            result.Add("inc\\services\\CanServiceClientExtensions.cxx", Properties.CANResources.CanServiceClientExtensionsCXX);
 
         return result;
     }

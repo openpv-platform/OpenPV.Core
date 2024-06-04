@@ -188,7 +188,7 @@ internal class CppViewModel : ViewModelBase
                     parentViewModel.Console.AddConsoleLine($"Installing Ahsoka Services Application to {pathToSDKOutput}");
                     FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, progressString);          
 
-                    ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput, "inc", "services"));
+                    ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput));
 
                     AddRuntimeConfig(Path.Combine(directoryForFramework, ApplicationOutputComponent.AppInfoFolder));
 

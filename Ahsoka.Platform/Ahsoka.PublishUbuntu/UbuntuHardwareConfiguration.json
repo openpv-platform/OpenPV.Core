@@ -1,6 +1,6 @@
 {
   "factoryInfo": {
-    "rootPath": "/home/%USER%/Ahsoka",
+    "rootPath": "/usr/local/Ahsoka",
     "platformFamily": "Ubuntu64",
     "platformQualifier": "Desktop",
     "partNumber": "11111111",

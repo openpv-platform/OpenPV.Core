@@ -38,7 +38,13 @@ public abstract class AhsokaMessagesBase
 
     public virtual Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
     {
-        return new();
+        Dictionary<string, byte[]> newList = new()
+        {
+            { "Ahsoka.Proto\\Configuration.proto", Properties.Resources.Configuration },
+            { "Ahsoka.Proto\\Functions.cmake", Properties.Resources.Functions },
+            { "Ahsoka.Proto\\CMakeLists.txt", Properties.Resources.CMakeLists }
+        };
+        return newList;
     }
 
     public virtual string GetInteropIncludes(string name, ApplicationType type)

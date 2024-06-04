@@ -3,6 +3,13 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+# Add Proto If needed 
+if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Ahsoka.Proto/CMakeLists.txt")
+    message("Adding Proto Build: " ${CMAKE_CURRENT_SOURCE_DIR}/Ahsoka.Proto)
+    add_subdirectory ("Ahsoka.Proto")
+endif()
+
+
 #Determine Platfrom
 set(AhsokaPlatform $ENV{AhsokaPlatform})
 message("Building for Platform: " ${AhsokaPlatform})
@@ -20,8 +27,8 @@ set(Headers ${Messages} ${Services})
 get_filename_component(Library lib/libAhsoka.Client.Shared.so ABSOLUTE)
 
 # Set Globals
-set(AhsokaHeaders ${Headers} PARENT_SCOPE)
-set(AhsokaLibs ${Library} zmq protobuf PARENT_SCOPE)
+set(AhsokaHeaders ${Headers} ${PROTO_HEADER_DIR} PARENT_SCOPE)
+set(AhsokaLibs ${Library} zmq protobuf Ahsoka.Proto PARENT_SCOPE)
 
 #Get Client Implementations
 FILE(GLOB Clients inc/services/*.cpp)

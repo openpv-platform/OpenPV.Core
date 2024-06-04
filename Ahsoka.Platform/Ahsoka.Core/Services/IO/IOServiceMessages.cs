@@ -1,5 +1,7 @@
+using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System;
+using System.Collections.Generic;
 
 namespace Ahsoka.Services.IO;
 
@@ -27,6 +29,13 @@ internal class IOServiceMessages : AhsokaMessagesBase
 
         this.RegisterServiceRequest(IOMessageTypes.Ids.GetPollInterval, typeof(EmptyNotification), typeof(PollingInterval));
 
+    }
+
+    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    {
+        var result = base.GetAdditionalClientResources(type);
+        result.Add("Ahsoka.Proto\\IOService.proto", Properties.Resources.IOService);
+        return result;
     }
 
     public override KnownDataKeys GetKnownValues()

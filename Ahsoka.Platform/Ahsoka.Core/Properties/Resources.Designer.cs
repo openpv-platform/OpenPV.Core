@@ -178,12 +178,32 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] CMakeLists {
+            get {
+                object obj = ResourceManager.GetObject("CMakeLists", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #!/bin/sh
         ///  /usr/bin/codesys/prestart.sh.
         /// </summary>
         internal static string CODESYS_PreStart {
             get {
                 return ResourceManager.GetString("CODESYS_PreStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Configuration {
+            get {
+                object obj = ResourceManager.GetObject("Configuration", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -266,6 +286,16 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Functions {
+            get {
+                object obj = ResourceManager.GetObject("Functions", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;services&quot;: [
         ///    {
@@ -290,6 +320,36 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] InstallService {
+            get {
+                object obj = ResourceManager.GetObject("InstallService", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] IOService {
+            get {
+                object obj = ResourceManager.GetObject("IOService", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] IotService {
+            get {
+                object obj = ResourceManager.GetObject("IotService", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] JournalOverride {
             get {
                 object obj = ResourceManager.GetObject("JournalOverride", resourceCulture);
@@ -298,7 +358,7 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;DbcParserLib&quot;,&quot;PackageVersion&quot;:&quot;1.6.0&quot;,&quot;PackageUrl&quot;:&quot;https://github.com/EFeru/DbcParser&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;Emanuel Feru&quot;],&quot;Description&quot;:&quot;DbcParserLib is a .NET dbc file parser library for CAN bus network signals. This library can also be used to pack and unpack CAN signals.&quot;,&quot;LicenseUrl&quot;:&quot;https://licenses.nuget.org/MIT&quot;,&quot;LicenseType&quot;:&quot;MIT&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;https://github.com/EFeru/DbcParser&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot; [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;flamencist@mail.ru&quot;],&quot;Description&quot;:&quot;Doxygen.exe for build documentation.&quot;,&quot;LicenseUrl&quot;:&quot;&quot;,&quot;LicenseType&quot;:&quot;&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;EnovationCloud.Core&quot;,&quot;PackageVersion&quot;:&quot;4.5.0&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;EnovationCloud.Core&quot;],&quot;Description&quot;:&quot;Package Description&quot;,&quot;LicenseUrl&quot;:&quot;https://www.nuget.org/packages/EnovationCloud.Core/4.5.0/License&quot;,&quot;LicenseType&quot;:&quot;LICEN [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Licenses {
             get {
@@ -333,6 +393,16 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] NetworkService {
+            get {
+                object obj = ResourceManager.GetObject("NetworkService", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;services&quot;: [
         ///    {
@@ -354,6 +424,50 @@ namespace Ahsoka.Properties {
         internal static string OPVServicesConfiguration {
             get {
                 return ResourceManager.GetString("OPVServicesConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SecurityService {
+            get {
+                object obj = ResourceManager.GetObject("SecurityService", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to syntax = &quot;proto3&quot;;
+        ///
+        ///package AhsokaServiceFramework;
+        ///option csharp_namespace = &quot;Ahsoka.ServiceFramework&quot;;
+        ///
+        /////----------------------------
+        ///// Service Routing Message Header
+        ///// This object represents the Layer 2 Message Format for OpenPV Service Messages.
+        /////----------------------------
+        ///message AhsokaMessageHeader
+        ///{
+        ///    // This ID defines the Type of Message being carried in the Envelop / Header
+        ///    // Note: Existing OpenPV / Ahsoka Message Architecture 
+        ///    int32 transport_id = 1;
+        ///
+        ///    // (Optional) This ID de [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Services {
+            get {
+                return ResourceManager.GetString("Services", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SparkService {
+            get {
+                object obj = ResourceManager.GetObject("SparkService", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
@@ -390,6 +504,16 @@ namespace Ahsoka.Properties {
         internal static string StaticLicenses {
             get {
                 return ResourceManager.GetString("StaticLicenses", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SystemService {
+            get {
+                object obj = ResourceManager.GetObject("SystemService", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

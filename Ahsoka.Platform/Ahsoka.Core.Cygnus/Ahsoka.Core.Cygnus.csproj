@@ -11,7 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<AdditionalFiles Include="..\..\Ahsoka.Proto\Cygnus*.proto;..\..\Ahsoka.Proto\reach.proto">
+		<AdditionalFiles Include="Proto\Cygnus*.proto;Proto\reach.proto">
 			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
 		</AdditionalFiles>
 	</ItemGroup>
@@ -31,6 +31,21 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\CygnusResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>CygnusResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\CygnusResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>CygnusResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 
 

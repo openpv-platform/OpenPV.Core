@@ -14,7 +14,6 @@ namespace AhsokaSystem
 
             TestServiceMessages()
             {
-				RegisterServiceRequest(1, CreateCTOR<AhsokaSystem::EchoValue>(), CreateCTOR<AhsokaSystem::EchoValue>());
-            }
+			}
     };
 }

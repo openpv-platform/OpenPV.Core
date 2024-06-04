@@ -6,7 +6,6 @@
 #include "AhsokaConfiguration.h"
 #include "AhsokaClientEndPoint.h"
 #include "Services.pb.h"
-#include "SystemService.pb.h"
 #include "TestServiceMessages.hpp"
 
 using namespace std;
@@ -38,9 +37,6 @@ namespace AhsokaSystem
 			void RegisterListener(MessageReceived_t callback) {}
 
 
-			unique_ptr<EchoValue> Echo(EchoValue& echoValue, int timeoutInMs)
-            {
-                return GetEndPoint<TestService_t>()->SendNotificationWithResponse<EchoValue>(Test, &echoValue, timeoutInMs);			
-            }
+			
 	};
 }

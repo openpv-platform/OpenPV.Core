@@ -1,4 +1,6 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
+using System.Collections.Generic;
 
 namespace Ahsoka.Services.Security;
 
@@ -11,5 +13,12 @@ internal class SecurityServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(SecurityMessageTypes.Ids.ChallengeReceived, typeof(ChallengeRequestInfo));
         this.RegisterServiceRequest(SecurityMessageTypes.Ids.CompleteChallenge, typeof(ChallengeCompleteInfo), typeof(EmptyNotification));
         this.RegisterServiceNotification(SecurityMessageTypes.Ids.AuthorizationComplete, typeof(Token));
+    }
+
+    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    {
+        var result = base.GetAdditionalClientResources(type);
+        result.Add("Ahsoka.Proto\\SecurityService.proto", Properties.Resources.SecurityService);
+        return result;
     }
 }

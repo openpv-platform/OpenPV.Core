@@ -1,4 +1,7 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Ahsoka.Services.Bluetooth.LE;
 
@@ -33,5 +36,12 @@ internal class BLEServiceMessages : AhsokaMessagesBase
         RegisterServiceNotification(BLEMessageTypes.Ids.CharacteristicValueWrite, typeof(BLECharacteristicValue));
         RegisterServiceNotification(BLEMessageTypes.Ids.CharacteristicValueRead, typeof(BLECharacteristicValue));
         RegisterServiceRequest(BLEMessageTypes.Ids.CharacteristicValueReadResult, typeof(BLECharacteristicValue), typeof(EmptyNotification));
+    }
+
+    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
+    {
+        var result = base.GetAdditionalClientResources(type);
+        result.Add("Ahsoka.Proto\\BLEService.proto", Properties.BLEResources.BLEService);
+        return result;
     }
 }

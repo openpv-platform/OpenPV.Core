@@ -12,6 +12,7 @@ find_package(Protobuf REQUIRED)
 message(STATUS "Using Protocol Buffers ${Protobuf_VERSION}")
 
 file(GLOB PROTOBUF_DEFINITION_FILES "*.proto" ) # Note that protobuf_generate_cpp does not support subdirectories
+message(PROTOBUF_DEFINITION_FILES  ${PROTOBUF_DEFINITION_FILES})
 
 foreach(PROTO_FILE ${PROTOBUF_DEFINITION_FILES})
     file(RELATIVE_PATH PROTO_RELATIVE_FILE ${CMAKE_CURRENT_SOURCE_DIR} ${PROTO_FILE})

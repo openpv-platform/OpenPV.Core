@@ -9,7 +9,6 @@
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5110,
-      "notificationChannel": 6110,
       "behaviors": "AutoStart"
     },
     {
@@ -19,7 +18,6 @@
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5111,
-      "notificationChannel": 6111,
       "behaviors": "AutoStart"
     },
     {
@@ -29,7 +27,6 @@
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5112,
-      "notificationChannel": 6112,
       "behaviors": "AutoStart"
     }
   ],

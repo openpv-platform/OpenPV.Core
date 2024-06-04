@@ -48,7 +48,6 @@ internal class UpgradeItemsPackage_3_0 : UpgradeMethod
                 ["tcpConnectionAddress"] = "localhost",
                 ["bleServiceUuidBase"] = "96730000-8f5d-4cef-8289-744c8faa1a66",
                 ["dataChannel"] = "5007",
-                ["notificationChannel"] = "6007"
             });
 
 

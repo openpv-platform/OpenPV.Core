@@ -339,8 +339,9 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         string deviceKey = deviceSigningKey;
 
         //  Since the Display uses PEM Keys, we must convert to XML
-        if (deviceKey.Contains("BEGIN RSA PUBLIC KEY"))
+        if (deviceKey != null  && deviceKey.Contains("BEGIN RSA PUBLIC KEY"))
             deviceKey = RSAEncryption.ConvertPEMToPublicXML(deviceKey);
+       
         return deviceKey;
     }
 

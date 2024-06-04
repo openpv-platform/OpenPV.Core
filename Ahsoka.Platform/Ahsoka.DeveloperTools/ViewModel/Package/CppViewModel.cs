@@ -9,6 +9,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Text;
+using Ahsoka.Installer.Components;
+using Ahsoka.Installer.InstallEngine;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -187,6 +190,7 @@ internal class CppViewModel : ViewModelBase
 
                     ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput, "inc", "services"));
 
+                    AddRuntimeConfig(Path.Combine(directoryForFramework, ApplicationOutputComponent.AppInfoFolder));
 
                     return DotNetViewModel.InstallCommandLine(directoryForFramework, platform, parentViewModel, progressString);
                 });
@@ -217,6 +221,18 @@ internal class CppViewModel : ViewModelBase
             if (!isGenerating)
                 parentViewModel.FinishProcess("SDK Updated", true);
         }
+    }
+
+    private void AddRuntimeConfig(string pathToOutputFolder)
+    {
+        if (!Directory.Exists(pathToOutputFolder)) { Directory.CreateDirectory(pathToOutputFolder); }
+
+        var stream = new MemoryStream();
+        ProtoBuf.Serializer.Serialize(stream, parentViewModel.SelectedPackage.PackageInfo.ServiceInfo.RuntimeConfiguration);
+        var jsonData = Encoding.UTF8.GetBytes(JsonUtility.Serialize(parentViewModel.SelectedPackage.PackageInfo.ServiceInfo.RuntimeConfiguration));
+
+        File.WriteAllBytes(Path.Combine(pathToOutputFolder, StartupInstallerPlugin.AutoStartFileName), stream.ToArray());
+        File.WriteAllBytes(Path.Combine(pathToOutputFolder, StartupInstallerPlugin.AutoStartFileName + ".json"), jsonData);
     }
 
     internal void DeleteSDK()

@@ -17,12 +17,16 @@ namespace AhsokaServiceFramework
 			void Connect()
 			{
 				if (currentRuntime)
+				{
 					socket.Connect(currentRuntime->GetZMQContext());
+					OnEndPointConnected();
+				}					
 			}
 
 			void Disconnect()
 			{
 				socket.Disconnect();
+				OnEndPointDisconnected();
 			}
 
 		    AhsokaSystem::ServiceConfiguration& GetRuntimeConfiguration() 
@@ -31,7 +35,9 @@ namespace AhsokaServiceFramework
 			}
 
 		protected:
-		 	
+		 	AhsokaSocket socket;
+			AhsokaMessagesBase messageFactory;
+
 			void SetRuntime(AhsokaRuntime* runtime) {currentRuntime = runtime;}
 
 			AhsokaBaseEndPoint(AhsokaSystem::ServiceConfiguration& config, AhsokaMessagesBase& messages)
@@ -83,14 +89,17 @@ namespace AhsokaServiceFramework
 			
 			virtual void OnHandleReceive(AhsokaMessageHeader& messageHeader, AhsokaMessageType_t& message) = 0;
 
+			virtual void OnEndPointConnected() {}
+
+			virtual void OnEndPointDisconnected() {}
+
 	private:
 			
 			int messageSendCount = 0;
 			int messageReceivedCount = 0;
-
-			AhsokaSocket socket;
+			
 			AhsokaRuntime* currentRuntime;
 			AhsokaSystem::ServiceConfiguration serviceConfig;
-			AhsokaMessagesBase messageFactory;
+			
 	};
 }

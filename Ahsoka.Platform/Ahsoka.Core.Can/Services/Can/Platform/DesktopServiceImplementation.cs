@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Can.Platform;
 
-internal class WindowsServiceImplementation : CanServiceImplementation
+internal class DesktopServiceImplementation : CanServiceImplementation
 {
     BlockingCollection<CanMessageData> messageQueue;
     CancellationTokenSource source = null;

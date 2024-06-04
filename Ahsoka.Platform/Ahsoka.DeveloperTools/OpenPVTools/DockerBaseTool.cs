@@ -148,7 +148,7 @@ internal abstract class DockerBaseTool : OpenPVToolBase
             });
     }
 
-    private bool CheckDependencies(IToolViewModel toolVM)
+    protected virtual bool CheckDependencies(IToolViewModel toolVM)
     {
         string result, error;
         if (OperatingSystem.IsWindows())

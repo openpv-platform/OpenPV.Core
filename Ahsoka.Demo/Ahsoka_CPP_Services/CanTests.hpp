@@ -3,9 +3,10 @@
 #include <iostream>
 #include <string>
 #include "AhsokaServices.h"
-#include "CanViewModelBase.h"
+#include "Generated/CANModels.generated.h"
 #include <unistd.h>
-#include "CanModels.h"
+
+using namespace AhsokaCan;
 
 class CanTests
 {
@@ -13,8 +14,6 @@ class CanTests
        
         void RunTests(std::string pathToServiceExe)
         {
-            // Create a Temp Config 
-            std::string tempConfig = CreateCanAppConfiguration();
 
             CanServiceClient client;
 
@@ -29,9 +28,6 @@ class CanTests
            
             runtime.RequestShutdown();
             runtime.WaitForShutdown();
-
-            // Delete the Configuration
-            std::remove(tempConfig.c_str());
 
             std::cout << "Shutdown Completed" << std::endl;
         }
@@ -84,12 +80,10 @@ class CanTests
             canMessage.SetTestSigned(1);
             client.SendCanMessages(1, canMessage);
 
-            canMessage = CreateTestViewModel();
             canMessage.SetTestSigned(2);
             client.SendCanMessages(1, canMessage);
           
             // Build Message from Model for Recurring Message
-            canMessage = CreateTestViewModel();
             canMessage.SetTestSigned(3);
             auto canData = canMessage.CreateCanMessageData();
 
@@ -109,15 +103,15 @@ class CanTests
             }
 
             // First Message
-            auto returnMessage = new TestCanModel(messages[0]);
+            auto returnMessage = new TestMessage(messages[0]);
             if (returnMessage->GetTestSigned() != 1)
                 std::cout << "Round Trip Message 1 Did Not Match" << std::endl;
             
-            returnMessage = new TestCanModel(messages[1]);
+            returnMessage = new TestMessage(messages[1]);
             if (returnMessage->GetTestSigned() != 2)
                 std::cout << "Round Trip Message 2 Did Not Match" << std::endl;
             
-            returnMessage = new TestCanModel(messages[2]);
+            returnMessage = new TestMessage(messages[2]);
             if (returnMessage->GetTestSigned() != 3)
                 std::cout << "Round Trip Message 3 Did Not Match" << std::endl;
 
@@ -125,12 +119,12 @@ class CanTests
             client.CloseCommunicationChannel();
         }
 
-        TestCanModel CreateTestViewModel()
+        AhsokaCan::TestMessage CreateTestViewModel()
         {
-            TestCanModel model;
+            AhsokaCan::TestMessage model;
             model.SetTestSigned(64);
             model.SetTestUnsigned(256);
-            model.SetTestEnum(TestEnumValues::Test2EnumTwo);
+            model.SetTestEnum(AhsokaCan::Test2EnumTwo);
             model.SetTestFloat(12345.0f);
             model.SetTestDouble(54321.0f);
             return model;
@@ -138,7 +132,7 @@ class CanTests
 
         void TestCanViewModel()
         {
-            TestCanModel model = CreateTestViewModel();
+            TestMessage model = CreateTestViewModel();
 
             if (model.GetTestSigned() != 64)
                 std::cout << "Test Signed Did Not Match" << std::endl;
@@ -156,7 +150,7 @@ class CanTests
                 std::cout << "Test Double Did Not Match" << std::endl;
                
             // Get UnScaled Value..should be half of Normal Value
-            uint32_t value = model.GetRawValue<uint32_t>(TestCanModel::Properties::TestUnsigned);
+            uint32_t value = model.GetRawValue<uint32_t>(TestMessage::Properties::TestUnsigned);
             if (value!= 128)
                 std::cout << "Test UnScaled Failed" << std::endl;
 
@@ -172,8 +166,8 @@ class CanTests
                std::cout << "Dlc did not  Match" << std::endl;
 
             // Fetch the Property Object from the Metadata Factory usind the ID and Property Enum
-            auto values = CanModelMetadata::GetMetadata(data.id());
-            auto prop = values[TestCanModel::Properties::TestSigned];
+            auto values = CanModelMetadata::CanMetadata()->GetMetadata(data.id());
+            auto prop = values[TestMessage::Properties::TestSigned];
             
             // Set the Property and Verify it Returns.
             prop.SetValue<int>(data.mutable_data(), 3);
@@ -188,47 +182,7 @@ class CanTests
 
 
             // Fetch the Property Object from the Metadata Factory usind the ID and Property Enum
-            auto propInfo = CanModelMetadata::GetPropertyInfo(data.id(),TestCanModel::Properties::TestSigned, true);
-        }
-
-
-        std::string CreateCanAppConfiguration()
-        {
-             // Write a Configuration File
-            std::string pathToAppConfig = "/home/%USER%/Ahsoka/current/.coprocessor/applicationConfiguration.pbuff";
-            system("mkdir -p /home/%USER%/Ahsoka/current/.coprocessor/");
-            
-            // Build Config
-            CanApplicationCalibration canConfig;
-            CanPortConfiguration* portConfig = canConfig.mutable_canportconfiguration();
-          
-            // Create Comm Config
-            CommunicationConfiguration* commConfig = portConfig->mutable_communicationconfiguration();          
-            MessageConfiguration* messageConfig = portConfig->mutable_messageconfiguration();
-
-            PortDefinition* portDef = messageConfig->add_ports();
-            portDef->set_port(1);
-            portDef->set_can_interface(CanInterface::Coprocessor);
-
-            // Create Comm Config
-            NodeDefinition* node = messageConfig->add_nodes();
-            node->set_node_type(Self);
-            node->add_ports(1);
-
-            MessageDefinition* messageDef = messageConfig->add_messages();
-            messageDef->set_id(500);
-            messageDef->set_filter_receipts(true);
-            messageDef->set_timeout_ms(1000);
-            messageDef->set_dlc(64);
-            messageDef->add_transmit_nodes(-1);
-            messageDef->add_transmit_nodes(1);
-
-            fstream output(pathToAppConfig, ios::out | ios::trunc | ios::binary);
-            canConfig.SerializeToOstream(&output);
-            output.flush();
-            output.close();
-
-            return pathToAppConfig;
+            auto propInfo = CanModelMetadata::CanMetadata()->GetPropertyInfo(data.id(), 2);
         }
 
     private: 

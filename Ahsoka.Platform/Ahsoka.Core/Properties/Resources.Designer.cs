@@ -266,76 +266,6 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///
-        ///    class CanModelMetadata : public CanViewModelBase
-        ///    {
-        ///        public:
-        ///
-        ///            static std::map&lt;uint,std::map&lt;int, CanPropertyInfo&gt;&gt;&amp; GetAllMetadata();
-        ///            static std::map&lt;int, CanPropertyInfo&gt;&amp; GetMetadata(uint canID);
-        ///            static CanPropertyInfo&amp; GetPropertyInfo(uint canID, uint signal, bool isSignalEnum) ;
-        ///
-        ///        protected:
-        ///
-        ///            static std::map&lt;uint,std::map&lt;int, CanPropertyInfo&gt;&gt; metadata;
-        ///            static void LoadMetadata();
-        ///    };.
-        /// </summary>
-        internal static string CPPMetadataDictionary {
-            get {
-                return ResourceManager.GetString("CPPMetadataDictionary", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 
-        ///    std::map&lt;uint,std::map&lt;int, CanPropertyInfo&gt;&gt;&amp; CanModelMetadata::GetAllMetadata()
-        ///    {
-        ///        if (metadata.size() == 0)
-        ///            LoadMetadata();
-        ///
-        ///        return metadata;
-        ///    }
-        ///
-        ///    std::map&lt;int, CanPropertyInfo&gt;&amp; CanModelMetadata::GetMetadata(uint canID) 
-        ///    { 
-        ///        if (metadata.size() == 0)
-        ///            LoadMetadata(); 
-        ///
-        ///        return metadata[canID]; 
-        ///    }
-        ///
-        ///    CanPropertyInfo&amp; CanModelMetadata::GetPropertyInfo(uint canID, uint signal, bool isSignalEnum) 
-        ///    { 
-        ///         [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string CPPMetadataDictionaryIMPL {
-            get {
-                return ResourceManager.GetString("CPPMetadataDictionaryIMPL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 
-        ///    public static class CanModelMetadata
-        ///    {
-        ///        internal static Dictionary&lt;uint,Dictionary&lt;string, CanPropertyInfo&gt;&gt; metadata = new();
-        ///        internal static Dictionary&lt;string, CanPropertyInfo&gt; GetMetadata(uint canID) { return metadata[canID]; }
-        ///        internal static void AddMetadata(uint canID, Dictionary&lt;string, CanPropertyInfo&gt; properties) 
-        ///        {
-        ///            metadata.Add(canID, properties);
-        ///        }
-        ///
-        ///        internal static CanPropertyInfo GetPropertyInfo(uint canID, uint signal [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string CSharpMetadataDictionary {
-            get {
-                return ResourceManager.GetString("CSharpMetadataDictionary", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;services&quot;: [
         ///    {
@@ -464,34 +394,22 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 
-        ///std::string SystemServiceClient::Echo(std::string value)
-        ///{
-        ///	AhsokaSystem::EchoValue request;
-        ///    request.set_data_value(value);
-        ///    auto resultObject = GetEndPoint&lt;SystemService_t&gt;()-&gt;SendNotificationWithResponse&lt;AhsokaSystem::EchoValue&gt;(SystemMessageTypes_Ids_ECHO, &amp;request);
-        ///    return resultObject-&gt;data_value();
-        ///}
-        ///
-        ///void SystemServiceClient::RequestServiceShutdown(ShutdownTypes type, int exitCode)
-        ///{
-        ///    AhsokaSystem::ShutdownInformation request;
-        ///    request.set_shutdown_type(type);
-        ///    request.set_shutdo [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string SystemServiceClientExtensionsCXX {
+        internal static byte[] SystemServiceClientExtensionsCXX {
             get {
-                return ResourceManager.GetString("SystemServiceClientExtensionsCXX", resourceCulture);
+                object obj = ResourceManager.GetObject("SystemServiceClientExtensionsCXX", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to void RequestServiceShutdown(ShutdownTypes type = SHUTDOWN_SERVICES, int exitCode = 0);
-        ///std::string Echo(std::string value);.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string SystemServiceClientExtensionsH {
+        internal static byte[] SystemServiceClientExtensionsH {
             get {
-                return ResourceManager.GetString("SystemServiceClientExtensionsH", resourceCulture);
+                object obj = ResourceManager.GetObject("SystemServiceClientExtensionsH", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

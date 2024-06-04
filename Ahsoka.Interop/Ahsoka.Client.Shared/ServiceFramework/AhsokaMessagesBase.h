@@ -13,6 +13,7 @@ namespace AhsokaServiceFramework
     {
         public:
             int TransportId;
+            bool IsNotification;
             MessageConstructor_t SendCTOR;
             MessageConstructor_t ReceiveCTOR;
     };
@@ -20,6 +21,11 @@ namespace AhsokaServiceFramework
     class AhsokaMessagesBase
 	{
         public:
+
+            std::map<int,ServiceMessageInfo> GetMessageInfo()
+            {
+                return serviceInfo;
+            }
  
             ServiceMessageInfo GetMessageInfo(int transportType)
             {
@@ -52,6 +58,7 @@ namespace AhsokaServiceFramework
                                                     std::function<AhsokaMessage_t()> recieveMessage )
             {
                 ServiceMessageInfo info;
+                info.IsNotification = false;
                 info.SendCTOR = sendMessage;
                 info.ReceiveCTOR = recieveMessage;
                 info.TransportId = transportId;
@@ -62,6 +69,7 @@ namespace AhsokaServiceFramework
             void RegisterServiceNotification(int transportId, std::function<AhsokaMessage_t()> notificationMessage)
             {
                 ServiceMessageInfo info;
+                info.IsNotification = true;
                 info.SendCTOR = notificationMessage;
                 info.ReceiveCTOR = notificationMessage;
                 info.TransportId = transportId;

@@ -1,0 +1,42 @@
+﻿# CMakeList.txt : CMake project for Ahsoka.System.Client, include source and define
+# project specific logic here.
+#
+cmake_minimum_required (VERSION 3.8)
+
+project (Ahsoka.Client.Test LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -pthread")
+
+#Sets build output to source directory
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS})
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS})
+
+#Output executable links to local library
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath='$ORIGIN'")
+
+#Add Ahsoka Library Subdirectory
+add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
+
+message(CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
+message(AhsokaSources="${AhsokaSources}")
+File(GLOB Generated Generated/*.cpp)
+
+add_executable(Ahsoka.Client.Test main.cpp ${Generated} ${AhsokaSources} Generated/CanViewModelBase.h)
+
+target_include_directories(Ahsoka.Client.Test PRIVATE ${AhsokaHeaders})
+target_link_libraries(Ahsoka.Client.Test PRIVATE ${AhsokaLibs})
+
+add_ahsoka(Ahsoka.Client.Test)
+
+FILE(COPY Ahsoka.Client.Shared/.appInfo DESTINATION ${AHSOKA_BUILD_OUTPUTS})
+File(GLOB Calibration *.cancalibration.json)
+FILE(COPY ${Calibration} DESTINATION ${AHSOKA_BUILD_OUTPUTS})
+
+# Required to Deploy to the Target
+install(DIRECTORY ${AHSOKA_BUILD_OUTPUTS} DESTINATION Ahsoka.Client.Test
+    PATTERN "**/*"
+              PERMISSIONS OWNER_READ OWNER_EXECUTE OWNER_WRITE
+    )

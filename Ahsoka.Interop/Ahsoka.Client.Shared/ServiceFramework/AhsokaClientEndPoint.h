@@ -1,12 +1,24 @@
 #pragma once
 #include "AhsokaBaseEndPoint.h"
 #include <memory>
+#include <mutex>
+#include <list>
 #include "Services.pb.h"
 #include "Configuration.pb.h"
 #include "AhsokaMessagesBase.h"
+#include "BlockingQueue.h"
 
 namespace AhsokaServiceFramework
 {
+
+	class MessagePair
+	{
+		public:
+
+			AhsokaMessageType_t * message = 0;
+			AhsokaMessageHeader * header = 0;
+	};
+
 	template <typename TTransportID>
 	class AhsokaClientEndPoint : public AhsokaBaseEndPoint<TTransportID>
 	{
@@ -54,17 +66,46 @@ namespace AhsokaServiceFramework
 					notificationCallback((TTransportID)messageHeader.transport_id(), message);
 			}
 
-			void NotificationDataReady()
+			void ClientDataReady()
 			{
-				AhsokaMessageType_t * message = 0;
-				AhsokaMessageHeader * header = 0;
+				MessagePair pair;
 					
 				// Recieve Out of Band Message and Process on Handler
-				if (this->ReceiveMessage(header, message, true))
+				if (this->ReceiveMessage(pair.header, pair.message, true))
 				{
-					OnHandleReceive(*header, *message);
-					delete message;
-					delete header;
+					ServiceMessageInfo info = this->messageFactory.GetMessageInfo(pair.header->transport_id());
+					
+					if (info.IsNotification && pair.header->transport_id() >= 0)
+					{
+						notificationMessages.Push(pair);
+					}				
+					else 
+					{
+						incomingMessages.Push(pair);
+					}
+				}
+			}
+
+			void OnEndPointConnected()
+			{
+				UpdateClientRegistration(RegisterClient);
+
+				if (UsingNotification())
+				{
+					isListening = true;
+					notificationThread = new std::thread(&AhsokaClientEndPoint::Listen, this);
+				}					
+			}
+
+			void OnEndPointDisconnected()
+			{
+				if (notificationThread != 0)
+				{
+					UpdateClientRegistration(DeregisterClient);
+
+					isListening = false;
+					notificationThread->join();
+					notificationThread = 0;
 				}
 			}
 
@@ -73,6 +114,11 @@ namespace AhsokaServiceFramework
 
 			int messageId = 0;
 			MessageReceived_t notificationCallback;
+			bool isListening = false;
+			std::thread* notificationThread = 0;
+			AhsokaServiceFramework::BlockingQueue<MessagePair> incomingMessages;
+			AhsokaServiceFramework::BlockingQueue<MessagePair> notificationMessages;
+
 			
 			template <class T>
 			T * WaitForResponse(AhsokaMessageHeader& requestHeader, int timeoutInMs = INT_MAX)
@@ -86,31 +132,61 @@ namespace AhsokaServiceFramework
 				while (responseTransportId != requestHeader.transport_id()
 					&& expireTime > std::chrono::system_clock::now().time_since_epoch())
 				{
-					AhsokaMessageType_t * message = 0;
-					AhsokaMessageHeader * header = 0;
-					
-					if (this->ReceiveMessage(header, message, false, timeoutInMs))
+					MessagePair pair;
+					if (incomingMessages.PopWithTimeOut(1000, pair))
 					{
-						// Get new Message ID
-						responseTransportId = header->transport_id();
+						responseTransportId = pair.header->transport_id();
 
 						// Not our Wait Message...send to Async Handler
 						if (responseTransportId != requestHeader.transport_id())
 						{
-							OnHandleReceive(*header, *message);
-							delete message;
-							delete header;
+							notificationMessages.Push(pair);
 						}
-						else
-						{  
-							// Delete Header but not Message since we will be returning that
-							delete header;
-							returnObject = (T*) message;
+						else 
+						{
+							delete pair.header;
+							returnObject = (T*) pair.message;
 						}
-					}
+					}					
 				}
 					
 				return returnObject;
+			}
+
+			void UpdateClientRegistration(CoreTransportIds transportId)
+			{
+				AhsokaMessageHeader header;
+				header.set_transport_id(transportId);
+				header.set_client_message_id(messageId++);
+
+				ClientRegistration registration;
+				registration.set_client_id(AhsokaBaseEndPoint<TTransportID>::socket.GetClientId());
+
+				AhsokaBaseEndPoint<TTransportID>::SendNotificationInternal(header, &registration);
+			}
+
+			void Listen()
+			{				
+				while (isListening) 
+				{
+					MessagePair pair;
+					if (notificationMessages.PopWithTimeOut(1000, pair))
+					{
+						OnHandleReceive(*pair.header, *pair.message);
+						delete(pair.header);
+						delete(pair.message);
+					}				
+				}			
+			}
+
+			bool UsingNotification()
+			{
+				for (auto const& x: this->messageFactory.GetMessageInfo())
+				{
+					if (x.second.IsNotification)
+						return true;
+				}
+				return false;
 			}
 
 	};

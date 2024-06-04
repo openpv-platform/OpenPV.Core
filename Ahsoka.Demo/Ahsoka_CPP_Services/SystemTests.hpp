@@ -43,6 +43,7 @@ class SystemTests
                 << usbInfo.get()->mode() << " " << usbInfo.get()->mount_point()
                 << std::endl;   
 
+
             client.RequestServiceShutdown();
             runtime.RequestShutdown();
             runtime.WaitForShutdown();

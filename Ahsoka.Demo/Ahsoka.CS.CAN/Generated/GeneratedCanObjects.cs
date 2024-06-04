@@ -10,20 +10,26 @@ namespace Ahsoka.CS.CAN;
 
 public partial class DriverHeartbeat : CanViewModelBase
 {
+	public const uint CanId = 100; // CANID: 0x64
+	public const int Dlc = 1;
 	#region Auto Generated Properties
 
 	public CmdValues Cmd 
 	{
-		get { return OnGetValue<CmdValues>(); }
+		get { return OnGetValue<CmdValues>();  }
 		set { OnSetValue(value); } 
 	}
 
 	#endregion
 
 	#region Auto Generated Methods
-	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.GetMetadata(100); }
-	public DriverHeartbeat() : base(100,1) { } // CANID: 0x64
-	public DriverHeartbeat(CanMessageData message) : base(message) { }
+	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.EventMetadata.GetMetadata(CanId); }
+	public DriverHeartbeat() : base(CanId, Dlc)
+	{
+	} 
+	public DriverHeartbeat(CanMessageData message) : base(message) 
+	{
+	}
 
 	#endregion
 }
@@ -38,39 +44,44 @@ public enum CmdValues
 
 public partial class IoDebug : CanViewModelBase
 {
+	public const uint CanId = 500; // CANID: 0x1f4
+	public const int Dlc = 4;
 	#region Auto Generated Properties
 
 	public uint TestUnsigned 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public TestEnumValues TestEnum 
 	{
-		get { return OnGetValue<TestEnumValues>(); }
+		get { return OnGetValue<TestEnumValues>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public int TestSigned 
 	{
-		get { return OnGetValue<int>(); }
+		get { return OnGetValue<int>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint TestFloat 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	#endregion
 
 	#region Auto Generated Methods
-	static Dictionary<string, CanPropertyInfo> metadata = new();
-	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.GetMetadata(500); }
-	public IoDebug() : base(500,4) { } // CANID: 0x1f4
-	public IoDebug(CanMessageData message) : base(message) { }
+	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.EventMetadata.GetMetadata(CanId); }
+	public IoDebug() : base(CanId, Dlc)
+	{
+	} 
+	public IoDebug(CanMessageData message) : base(message) 
+	{
+	}
 
 	#endregion
 }
@@ -84,204 +95,224 @@ public enum TestEnumValues
 
 public partial class MotorCmd : CanViewModelBase
 {
+	public const uint CanId = 101; // CANID: 0x65
+	public const int Dlc = 1;
 	#region Auto Generated Properties
 
 	public int Steer 
 	{
-		get { return OnGetValue<int>(); }
+		get { return OnGetValue<int>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint Drive 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	#endregion
 
 	#region Auto Generated Methods
-	static Dictionary<string, CanPropertyInfo> metadata = new();
-	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.GetMetadata(101); }
-	public MotorCmd() : base(101,1) { } // CANID: 0x65
-	public MotorCmd(CanMessageData message) : base(message) { }
+	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.EventMetadata.GetMetadata(CanId); }
+	public MotorCmd() : base(CanId, Dlc)
+	{
+	} 
+	public MotorCmd(CanMessageData message) : base(message) 
+	{
+	}
 
 	#endregion
 }
 
 public partial class MotorStatus : CanViewModelBase
 {
+	public const uint CanId = 400; // CANID: 0x190
+	public const int Dlc = 3;
 	#region Auto Generated Properties
 
 	public uint WheelError 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint SpeedKph 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	#endregion
 
 	#region Auto Generated Methods
-	static Dictionary<string, CanPropertyInfo> metadata = new();
-	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.GetMetadata(400); }
-	public MotorStatus() : base(400,3) { } // CANID: 0x190
-	public MotorStatus(CanMessageData message) : base(message) { }
+	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.EventMetadata.GetMetadata(CanId); }
+	public MotorStatus() : base(CanId, Dlc)
+	{
+	} 
+	public MotorStatus(CanMessageData message) : base(message) 
+	{
+	}
 
 	#endregion
 }
 
 public partial class SensorSonars : CanViewModelBase
 {
+	public const uint CanId = 200; // CANID: 0xc8
+	public const int Dlc = 8;
 	#region Auto Generated Properties
 
 	public uint Mux 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint ErrCount 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint Left 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint NoFiltLeft 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint Middle 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint NoFiltMiddle 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint Right 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint NoFiltRight 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint Rear 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint NoFiltRear 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	#endregion
 
 	#region Auto Generated Methods
-	static Dictionary<string, CanPropertyInfo> metadata = new();
-	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.GetMetadata(200); }
-	public SensorSonars() : base(200,8) { } // CANID: 0xc8
-	public SensorSonars(CanMessageData message) : base(message) { }
+	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.EventMetadata.GetMetadata(CanId); }
+	public SensorSonars() : base(CanId, Dlc)
+	{
+	} 
+	public SensorSonars(CanMessageData message) : base(message) 
+	{
+	}
 
 	#endregion
 }
 
 public partial class TSC1 : CanViewModelBase
 {
+	public const uint CanId = 0; // CANID: 0x0
+	public const int Dlc = 8;
 	#region Auto Generated Properties
 
 	public EngineOverrideControlModeValues EngineOverrideControlMode 
 	{
-		get { return OnGetValue<EngineOverrideControlModeValues>(); }
+		get { return OnGetValue<EngineOverrideControlModeValues>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public EngineRequestedSpeedControlConditionsValues EngineRequestedSpeedControlConditions 
 	{
-		get { return OnGetValue<EngineRequestedSpeedControlConditionsValues>(); }
+		get { return OnGetValue<EngineRequestedSpeedControlConditionsValues>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public OverrideControlModePriorityValues OverrideControlModePriority 
 	{
-		get { return OnGetValue<OverrideControlModePriorityValues>(); }
+		get { return OnGetValue<OverrideControlModePriorityValues>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint EngineRequestedSpeedSpeedLimit 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint EngineRequestedTorqueTorqueLimit 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public Tsc1TransmissionRateValues Tsc1TransmissionRate 
 	{
-		get { return OnGetValue<Tsc1TransmissionRateValues>(); }
+		get { return OnGetValue<Tsc1TransmissionRateValues>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public Tsc1ControlPurposeValues Tsc1ControlPurpose 
 	{
-		get { return OnGetValue<Tsc1ControlPurposeValues>(); }
+		get { return OnGetValue<Tsc1ControlPurposeValues>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public EngineRequestedTorqueHighResolutionValues EngineRequestedTorqueHighResolution 
 	{
-		get { return OnGetValue<EngineRequestedTorqueHighResolutionValues>(); }
+		get { return OnGetValue<EngineRequestedTorqueHighResolutionValues>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint MessageCounter 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	public uint MessageChecksum 
 	{
-		get { return OnGetValue<uint>(); }
+		get { return OnGetValue<uint>();  }
 		set { OnSetValue(value); } 
 	}
 
 	#endregion
 
 	#region Auto Generated Methods
-	static Dictionary<string, CanPropertyInfo> metadata = new();
-	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.GetMetadata(0); }
-	public TSC1() : base(0,8) { } // CANID: 0x0
-	public TSC1(CanMessageData message) : base(message) { }
+	protected override Dictionary<string, CanPropertyInfo> GetMetadata() { return CanModelMetadata.EventMetadata.GetMetadata(CanId); }
+	public TSC1() : base(CanId, Dlc)
+	{
+	} 
+	public TSC1(CanMessageData message) : base(message) 
+	{
+	}
 
 	#endregion
 }
@@ -340,27 +371,65 @@ public enum EngineRequestedTorqueHighResolutionValues
 }
 
 
-public static class CanModelMetadata
+public class CanModelMetadata : ICanMetadata
 {
-	internal static Dictionary<uint, Dictionary<string, CanPropertyInfo>> metadata = new();
-	internal static Dictionary<string, CanPropertyInfo> GetMetadata(uint canID) { return metadata[canID]; }
-	internal static void AddMetadata(uint canID, Dictionary<string, CanPropertyInfo> properties)
+	Dictionary<uint, Dictionary<string, CanPropertyInfo>> metadata = new();
+
+    static CanModelMetadata eventMetadata = null;
+
+    public Dictionary<uint, Dictionary<string, CanPropertyInfo>> GetMetadata() { return metadata; }
+
+    public Dictionary<string, CanPropertyInfo> GetMetadata(uint canID) { return metadata[canID]; }
+
+	public void AddMetadata(uint canID, Dictionary<string, CanPropertyInfo> properties)
 	{
 		metadata.Add(canID, properties);
 	}
 
-	internal static CanPropertyInfo GetPropertyInfo(uint canID, uint signalID)
+	public CanPropertyInfo GetPropertyInfo(uint canID, uint signalID)
 	{
 		return metadata[canID].Values.FirstOrDefault(x => x.SignalId == signalID);
 	}
 
-	internal static CanPropertyInfo GetPropertyInfo(uint canID, string signalName)
+	public CanPropertyInfo GetPropertyInfo(uint canID, string signalName)
 	{
 		return metadata[canID][signalName];
 	}
 
-	static CanModelMetadata()
-	{
+    public CanViewModelBase CreateObject(CanMessageData data)
+    {
+        switch (data.Id)
+        {
+			case DriverHeartbeat.CanId:
+				return new DriverHeartbeat(data);
+			case IoDebug.CanId:
+				return new IoDebug(data);
+			case MotorCmd.CanId:
+				return new MotorCmd(data);
+			case MotorStatus.CanId:
+				return new MotorStatus(data);
+			case SensorSonars.CanId:
+				return new SensorSonars(data);
+			case TSC1.CanId:
+				return new TSC1(data);
+
+            default:
+                return null;
+        }
+    }
+
+    public static CanModelMetadata EventMetadata
+    {
+        get
+        {
+            if (eventMetadata == null)
+                eventMetadata = new();
+            return eventMetadata;
+        }
+    }
+
+    CanModelMetadata()
+    {
 
 		// Decode Info for DriverHeartbeat 100
 		metadata.Add(100, new Dictionary<string, CanPropertyInfo>()
@@ -421,5 +490,5 @@ public static class CanModelMetadata
 			{nameof(TSC1.MessageChecksum), new( 60, 4, ByteOrder.LittleEndian, ValueType.Unsigned, 1, 0, 4207, 0, 0, 15)},
 		});
 
-	}
+    }
 }

@@ -43,10 +43,10 @@ internal class SystemServiceMessages : AhsokaMessagesBase
     public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
         var result = base.GetAdditionalClientResources(type);
-        result.Add("SystemServiceClientExtension.h", UTF8Encoding.UTF8.GetBytes(Properties.Resources.SystemServiceClientExtensionsH));
+        result.Add("SystemServiceClientExtensions.h", Properties.Resources.SystemServiceClientExtensionsH);
 
         if (includeImplementation)
-            result.Add("SystemServiceClientExtension.cxx", UTF8Encoding.UTF8.GetBytes(Properties.Resources.SystemServiceClientExtensionsCXX));
+            result.Add("SystemServiceClientExtensions.cxx", Properties.Resources.SystemServiceClientExtensionsCXX);
 
         return result;
     }

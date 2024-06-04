@@ -139,6 +139,27 @@ public abstract class CanViewModelBase : INotifyPropertyChanged, IHasCanData
 }
 
 /// <summary>
+/// Extension for Builder from Generic Base
+/// </summary>
+public static class CanExtension
+{
+    /// <summary>
+    /// Reference to Generated Metadata
+    /// </summary>
+    public static ICanMetadata Metadata { get; set; }
+
+    /// <summary>
+    /// Creates a Specific Object from a Message
+    /// </summary>
+    /// <typeparam name="T">Base Class of Generated Object</typeparam>
+    /// <param name="message">Can Message with data for construction</param>
+    public static T GetObject<T>(this CanMessageData message) where T : CanViewModelBase
+    {
+        return (T)Metadata?.CreateObject(message);
+    }
+}
+
+/// <summary>
 /// Interface for Objects that can Product Can Data Objects
 /// </summary>
 public interface IHasCanData

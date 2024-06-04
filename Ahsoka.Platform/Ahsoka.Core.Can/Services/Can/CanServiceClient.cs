@@ -17,8 +17,8 @@ public class CanServiceClient : AhsokaClientBase<CanMessageTypes.Ids>
     /// <summary>
     /// Default Constructor that uses the System Default Configuration
     /// </summary>
-    public CanServiceClient() :
-        this(ConfigurationLoader.GetServiceConfig(CanService.Name))
+    public CanServiceClient(ICanMetadata metadata = null) :
+        this(ConfigurationLoader.GetServiceConfig(CanService.Name), metadata)
     {
 
     }
@@ -28,10 +28,11 @@ public class CanServiceClient : AhsokaClientBase<CanMessageTypes.Ids>
     /// Constructor for use with Custom Service Configurations
     /// </summary>
     /// <param name="config"></param>
-    public CanServiceClient(ServiceConfiguration config) :
+    /// <param name="metadata"></param>
+    public CanServiceClient(ServiceConfiguration config, ICanMetadata metadata) :
         base(config, new CanServiceMessages())
     {
-
+        CanExtension.Metadata = metadata;
     }
 
     /// <summary>

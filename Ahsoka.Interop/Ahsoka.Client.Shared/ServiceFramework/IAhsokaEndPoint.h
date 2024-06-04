@@ -21,7 +21,7 @@ namespace AhsokaServiceFramework
 
             virtual void Disconnect() = 0;
 
-            virtual void NotificationDataReady() = 0;
+            virtual void ClientDataReady() = 0;
 
         protected:
 

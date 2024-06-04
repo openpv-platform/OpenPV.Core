@@ -22,8 +22,6 @@ namespace AhsokaServiceFramework
         private:
             std::string dataChannel();
             std::string dataListenChannel();
-            std::string notificationChannel();
-            std::string notificationListenChannel();
 
         public:
 
@@ -44,7 +42,6 @@ namespace AhsokaServiceFramework
             bool IsListening;
 
             zmq::socket_t* socket;
-            zmq::socket_t* notificationSocket;
             IAhsokaEndPoint* endPoint;
             std::thread* listenerThread;
 

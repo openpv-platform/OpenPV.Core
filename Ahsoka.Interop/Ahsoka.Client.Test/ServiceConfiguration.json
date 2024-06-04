@@ -1,33 +1,12 @@
 {
   "Services": [
     {
-      "serviceName": "SystemService",
+      "serviceName": "TestService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "host.docker.internal",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel" : 5001,
       "notificationChannel": 6001
-    },    
-    {
-      "serviceName": "SparkService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "host.docker.internal",
-      "dataChannel" : 5002,
-      "notificationChannel": 6002
-    },
-    {
-      "serviceName": "NetworkService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "host.docker.internal",
-      "dataChannel" : 5003,
-      "notificationChannel": 6003
-    },
-    {
-      "serviceName": "IotService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "host.docker.internal",
-      "dataChannel" : 5004,
-      "notificationChannel": 6004
     }
   ]
 }

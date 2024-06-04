@@ -29,9 +29,6 @@ set(AhsokaSources ${Clients} PARENT_SCOPE)
 
 function(add_ahsoka target_name)
 
-    target_include_directories(${target_name} PRIVATE ${AhsokaHeaders})  # Include Headers or Ahsoka
-    target_link_libraries(${target_name} PRIVATE Qt5::Widgets ${AhsokaLibs}) #Include Library List for Ahsoka.
-
     ADD_CUSTOM_COMMAND(TARGET ${target_name}
             POST_BUILD
             COMMAND echo Create Command Line Folder

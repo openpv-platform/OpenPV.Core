@@ -355,6 +355,7 @@ internal static class CanMetadataTools
 
         StringBuilder metadataBuilder = new();
         StringBuilder metadataAccessors = new();
+        StringBuilder metadataCreator = new();
 
         
         var clientCalibration = ConfigurationFileLoader.LoadFile<CanClientCalibration>(pathToCalibration);
@@ -363,7 +364,7 @@ internal static class CanMetadataTools
             // Create Message Class
             try
             {
-                GenerateClassCpp(item, outputFileData, metadataBuilder, metadataAccessors, outputFileDataCPP, baseClass, generatorExtensions);
+                GenerateClassCpp(item, outputFileData, metadataBuilder, metadataCreator, metadataAccessors, outputFileDataCPP, baseClass, generatorExtensions);
                 outputFileData.AppendLine();
             }
             catch (Exception ex)
@@ -376,12 +377,13 @@ internal static class CanMetadataTools
 
         outputFileDataCPP.AppendLine();
         outputFileDataCPP.AppendLine($"\t// Start of Class Implmentation for CanModelMetadata");
-        outputFileData.AppendLine(Properties.Resources.CPPMetadataDictionary);
+        outputFileData.AppendLine(Properties.CANResources.CPPMetadataDictionary);
 
         // Add Metadata Implementations
         if (metadataBuilder.Length > 0)
         {
-            outputFileDataCPP.AppendLine(Properties.Resources.CPPMetadataDictionaryIMPL.Replace("%METADATA_BODY%", metadataBuilder.ToString()));
+            outputFileDataCPP.AppendLine(Properties.CANResources.CPPMetadataDictionaryIMPL
+                .Replace("%METADATA_BODY%", metadataBuilder.ToString()).Replace("%METADATA_BUILDER%", metadataCreator.ToString()));
 
             outputFileDataCPP.AppendLine($"\t// Metadata Accessors");
             outputFileDataCPP.AppendLine(metadataAccessors.ToString());
@@ -391,7 +393,7 @@ internal static class CanMetadataTools
         outputFileData.AppendLine("}"); // Close Namespace.
     }
 
-    private static void GenerateClassCpp(MessageDefinition definition, StringBuilder fileOutputBuilder, StringBuilder metadataBuilder, StringBuilder metadataAccessors, StringBuilder outputFileDataCPP, string baseClass = null, GeneratorUtility generatorExtensions = null)
+    private static void GenerateClassCpp(MessageDefinition definition, StringBuilder fileOutputBuilder, StringBuilder metadataBuilder, StringBuilder metadataCreator, StringBuilder metadataAccessors, StringBuilder outputFileDataCPP, string baseClass = null, GeneratorUtility generatorExtensions = null)
     {
         StringBuilder enumBuilder = new();
         StringBuilder propBuilder = new();
@@ -408,6 +410,9 @@ internal static class CanMetadataTools
 
         metadataBuilder.AppendLine($"\t\t//Add Props for {className} - CANID: {definition.Id}");
         metadataBuilder.AppendLine($"\t\tstd::map<int, CanPropertyInfo> {className}Props;");
+
+        metadataCreator.AppendLine($"\t\t\tcase {definition.Id}:");
+        metadataCreator.AppendLine($"\t\t\t\treturn unique_ptr<{className}>(new {className}(data));");
 
         // Add Props First
         foreach (MessageSignalDefinition signalDefinition in definition.Signals)
@@ -469,7 +474,7 @@ internal static class CanMetadataTools
        
         // Generate Property Enumeration
         metadataBuilder.AppendLine("");
-        metadataAccessors.AppendLine($"\tstd::map<int, CanPropertyInfo>& {className}::GetMetadata() {{ return CanModelMetadata::GetMetadata({definition.Id}); }}");
+        metadataAccessors.AppendLine($"\tstd::map<int, CanPropertyInfo>& {className}::GetMetadata() {{ return CanModelMetadata::CanMetadata()->GetMetadata({definition.Id}); }}");
 
         fileOutputBuilder.AppendLine("\t\tprotected:");
         fileOutputBuilder.AppendLine("\r\n\t\t\tstd::map<int, CanPropertyInfo>& GetMetadata();");
@@ -546,7 +551,7 @@ internal static class CanMetadataTools
         outputFileDataCPP.AppendLine($"\t{type} {className.AsIdentifier()}::Get{propName}() {{ return OnGetValue<{type}>({propName}); }}");
         outputFileDataCPP.Append($"\tvoid {className.AsIdentifier()}::Set{propName}({type} value) {{ OnSetValue<{type}>(value, {propName});");
         generatorUtility.ExtendSetter(outputFileDataCPP, propName, type);
-        outputFileDataCPP.AppendLine("}}");
+        outputFileDataCPP.AppendLine("}");
 
         // Add Metadata to Static Dictionary.
         string endianness = definition.ByteOrder == ByteOrder.LittleEndian ? "ByteOrder::LittleEndian" : "ByteOrder::BigEndian";
@@ -572,7 +577,7 @@ internal static class CanMetadataTools
         outputFileData.AppendLine($"namespace {nameSpace};"); //need generic solution here
         outputFileData.AppendLine();
 
-
+        StringBuilder metadataBuilder = new();
         StringBuilder metadataItems = new();
         
         var clientCalibration = ConfigurationFileLoader.LoadFile<CanClientCalibration>(pathToCalibration);
@@ -582,7 +587,7 @@ internal static class CanMetadataTools
             // Create Message Class
             try
             {
-                GenerateClassDotNet(item, outputFileData, metadataItems, baseClass, generatorExtensions);
+                GenerateClassDotNet(item, outputFileData, metadataBuilder, metadataItems, baseClass, generatorExtensions);
             }
             catch (Exception ex)
             {
@@ -592,10 +597,10 @@ internal static class CanMetadataTools
         }     
 
         // Generate Metadata Class
-        outputFileData.AppendLine(Properties.Resources.CSharpMetadataDictionary.Replace("%METADATA_BODY%", metadataItems.ToString()));
+        outputFileData.AppendLine(Properties.CANResources.CSharpMetadataDictionary.Replace("%METADATA_BODY%", metadataItems.ToString()).Replace("%METADATA_BUILDER%", metadataBuilder.ToString()));
     }
 
-    private static void GenerateClassDotNet(MessageDefinition definition, StringBuilder fileOutputBuilder, StringBuilder metadataBuilder, string baseClass = null, GeneratorUtility generatorExtensions = null)
+    private static void GenerateClassDotNet(MessageDefinition definition, StringBuilder fileOutputBuilder, StringBuilder metadataBuilder, StringBuilder metadataItems, string baseClass = null, GeneratorUtility generatorExtensions = null)
     {
         baseClass ??= "CanViewModelBase";
         definition.Id &= 0x1FFFFFFF;
@@ -607,8 +612,6 @@ internal static class CanMetadataTools
         fileOutputBuilder.AppendLine($"public partial class {className} : {baseClass}");
         fileOutputBuilder.AppendLine("{");
 
-        fileOutputBuilder.AppendLine("\t#region Auto Generated Properties");
-
         // Calculate Length From Signals
         uint byteLength = 0;
         if (definition.Signals.Count > 0)
@@ -617,12 +620,17 @@ internal static class CanMetadataTools
             byteLength = (uint)Math.Ceiling((lastSignal.StartBit + lastSignal.BitLength) / 8.0f);
         }
 
+        fileOutputBuilder.AppendLine($"\tpublic const uint CanId = {definition.Id}; // CANID: 0x{definition.Id.ToString("x")}");
+        fileOutputBuilder.AppendLine($"\tpublic const int Dlc = {byteLength};");
+
+        fileOutputBuilder.AppendLine("\t#region Auto Generated Properties");
+
         // Method Header
         StringBuilder methodBuilder = new();
         methodBuilder.AppendLine();
         methodBuilder.AppendLine("\t#region Auto Generated Methods");
-        methodBuilder.AppendLine($"\tprotected override Dictionary<string, CanPropertyInfo> GetMetadata() {{ return CanModelMetadata.GetMetadata({definition.Id}); }}");
-        methodBuilder.AppendLine($"\tpublic {className}() : base({definition.Id},{byteLength}) // CANID: 0x{definition.Id.ToString("x")}");
+        methodBuilder.AppendLine($"\tprotected override Dictionary<string, CanPropertyInfo> GetMetadata() {{ return CanModelMetadata.EventMetadata.GetMetadata(CanId); }}");
+        methodBuilder.AppendLine($"\tpublic {className}() : base(CanId, Dlc)");
         methodBuilder.AppendLine($"\t{{");
 
         generatorExtensions.ExtendConstructor( methodBuilder, className); 
@@ -635,18 +643,20 @@ internal static class CanMetadataTools
         
         methodBuilder.AppendLine($"\t}}\r\n");
 
-        metadataBuilder.AppendLine($"\r\n\t\t// Decode Info for {className} {definition.Id}");
-        metadataBuilder.AppendLine($"\t\tmetadata.Add({definition.Id}, new Dictionary<string, CanPropertyInfo>()");
-        metadataBuilder.AppendLine("\t\t{");
+        metadataBuilder.AppendLine($"\t\t\tcase {className}.CanId:");
+        metadataBuilder.AppendLine($"\t\t\t\treturn new {className}(data);");
+        metadataItems.AppendLine($"\r\n\t\t// Decode Info for {className} {definition.Id}");
+        metadataItems.AppendLine($"\t\tmetadata.Add({definition.Id}, new Dictionary<string, CanPropertyInfo>()");
+        metadataItems.AppendLine("\t\t{");
 
         // Enum Builder
         StringBuilder enumBuilder = new();
 
         // Add Props First
         foreach (MessageSignalDefinition signalDefinition in definition.Signals)
-            WriteMessagePropertyDotNet(fileOutputBuilder, methodBuilder, enumBuilder, signalDefinition, metadataBuilder, className, generatorExtensions);
+            WriteMessagePropertyDotNet(fileOutputBuilder, methodBuilder, enumBuilder, signalDefinition, metadataItems, className, generatorExtensions);
 
-        metadataBuilder.AppendLine("\t\t});");
+        metadataItems.AppendLine("\t\t});");
 
         // Finish Props
         fileOutputBuilder.AppendLine();

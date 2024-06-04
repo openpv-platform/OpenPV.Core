@@ -10,7 +10,7 @@
 	//},
 	
 	// Name Container the Same as Workspace	
-	"runArgs": ["--name", "${localWorkspaceFolderBasename}"],
+	"runArgs": ["--name", "OpenViewBase${localWorkspaceFolderBasename}","--rm"],
 	
 	// Configure tool-specific properties.
 	"customizations": {

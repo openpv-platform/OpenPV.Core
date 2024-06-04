@@ -78,6 +78,54 @@ namespace Ahsoka.DeveloperTools.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {
+        ///    &quot;version&quot;: 3,
+        ///    &quot;configurePresets&quot;: [
+        ///        {
+        ///            &quot;name&quot;: &quot;linux-debug&quot;,
+        ///            &quot;displayName&quot;: &quot;Linux Debug&quot;,
+        ///            &quot;generator&quot;: &quot;Ninja&quot;,
+        ///            &quot;binaryDir&quot;: &quot;${sourceDir}/Build&quot;,
+        ///            &quot;cacheVariables&quot;: {
+        ///                &quot;CMAKE_BUILD_TYPE&quot;: &quot;Debug&quot;,
+        ///                &quot;AHSOKA_BUILD_OUTPUTS&quot; : &quot;${sourceDir}/Outputs&quot;
+        ///            },
+        ///            &quot;condition&quot;: {
+        ///                &quot;type&quot;: &quot;equals&quot;,
+        ///                &quot;lhs&quot;: &quot;${hostSystemName}&quot;,
+        ///                &quot;rhs&quot;: [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CMakePresets {
+            get {
+                return ResourceManager.GetString("CMakePresets", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+        ///// https://github.com/microsoft/vscode-dev-containers/tree/v0.245.0/containers/cpp
+        ///{
+        ///	&quot;name&quot;: &quot;OpenPV Base&quot;,
+        ///
+        ///	&quot;image&quot;: &quot;openpv/openview_sdk_2_0&quot;,
+        ///	// Build from Docker File
+        ///	//&quot;build&quot;: {
+        ///	//	&quot;dockerfile&quot;: &quot;Dockerfile&quot;
+        ///	//},
+        ///	
+        ///	// Name Container the Same as Workspace	
+        ///	&quot;runArgs&quot;: [&quot;--name&quot;, &quot;${localWorkspaceFolderBasename}&quot;, &quot;-rm&quot;],
+        ///	
+        ///	// Configure tool-specific properties.
+        ///	&quot;customizations&quot;: { [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string devcontainer {
+            get {
+                return ResourceManager.GetString("devcontainer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #! /bin/sh
         ///docker run -it --privileged -v $LOCAL_PATH:/projects -e DISPLAY=unix$DISPLAY $PULSE_SERVER_TCP_ENV  --name $CONTAINER_NAME $IMAGE_NAME $ENTRY_POINT
         ///.
@@ -115,16 +163,16 @@ namespace Ahsoka.DeveloperTools.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to {
-        ///  &quot;Platform&quot;: &quot;OpenViewLinux Select Series&quot;,
-        ///  &quot;PlatformDescription&quot;: &quot;Support for the OpenView Select Line of Products including S50 and S70&quot;,
-        ///  &quot;TargetPlatform&quot;: &quot;OpenViewLinux&quot;,
-        ///  &quot;FirmwareSparkChannelName&quot;: &quot;OpenPV Distribution&quot;,
-        ///  &quot;DistributionUpgradeSparkChannelName&quot;: &quot;OpenPV Distribution Upgrade&quot;,
         ///  &quot;DemoSparkChannelName&quot;: &quot;OpenPV Demos&quot;,
         ///  &quot;ExtensionSparkChannelName&quot;: &quot;OpenPV Extensions&quot;,
         ///  &quot;PlatformSupportSparkChannelName&quot;: &quot;OpenPV Dependencies&quot;,
         ///  &quot;FirmwareResources&quot;: {
-        ///    &quot;Name&quot;: &quot;Op [rest of string was truncated]&quot;;.
+        ///    &quot;Name&quot;: &quot;OpenView Firmware Resources&quot;,
+        ///    &quot;Description&quot;: &quot;Hardware Definitions as well as support files for Touch, WiFi and Bluetooth Firmware&quot;,
+        ///    &quot;DevelopmentPlatform&quot;: &quot;Any&quot;,
+        ///    &quot;Resources&quot;: [
+        ///      {
+        ///        &quot;DownloadPath&quot;: &quot;https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/OpenViewRe [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OpenViewPlatformSupport {
             get {

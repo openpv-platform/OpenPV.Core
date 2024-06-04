@@ -64,6 +64,9 @@ add_executable(Ahsoka.QT.CAN
     ${Generated}
 )
 
+target_include_directories(Ahsoka.QT.CAN PRIVATE ${AhsokaHeaders})
+target_link_libraries(Ahsoka.QT.CAN PRIVATE Qt5::Widgets ${AhsokaLibs})
+
 add_ahsoka(Ahsoka.QT.CAN)
 
 # Required to Deploy to the Target

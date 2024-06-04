@@ -203,6 +203,83 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 
+        ///
+        ///    class CanModelMetadata
+        ///    {
+        ///        public:
+        ///
+        ///            std::map&lt;uint, std::map&lt;int, CanPropertyInfo&gt;&gt;&amp; GetMetadata();
+        ///
+        ///            std::map&lt;int, CanPropertyInfo&gt;&amp; GetMetadata(uint canID);
+        ///
+        ///            void AddMetadata(uint canID, std::map&lt;int, CanPropertyInfo&gt; properties);
+        ///
+        ///            CanPropertyInfo&amp; GetPropertyInfo(uint canID, int signalID);
+        ///
+        ///            unique_ptr&lt;CanViewModelBase&gt; CreateObject(CanMessageData data);
+        ///
+        ///            static CanModelMetadata* CanMetadata();
+        ///
+        ///        [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CPPMetadataDictionary {
+            get {
+                return ResourceManager.GetString("CPPMetadataDictionary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///    std::map&lt;uint, std::map&lt;int, CanPropertyInfo&gt;&gt;&amp; CanModelMetadata::GetMetadata() 
+        ///    { 
+        ///        return metadata; 
+        ///    }
+        ///
+        ///    std::map&lt;int, CanPropertyInfo&gt;&amp; CanModelMetadata::GetMetadata(uint canID) 
+        ///    { 
+        ///        return metadata[canID]; 
+        ///    }
+        ///
+        ///    void CanModelMetadata::AddMetadata(uint canID, std::map&lt;int, CanPropertyInfo&gt; properties)
+        ///    {
+        ///        metadata[canID] = properties;
+        ///    }
+        ///
+        ///    CanPropertyInfo&amp; CanModelMetadata::GetPropertyInfo(uint canID, int signalID)
+        ///    {
+        ///        re [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CPPMetadataDictionaryIMPL {
+            get {
+                return ResourceManager.GetString("CPPMetadataDictionaryIMPL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 
+        ///public class CanModelMetadata : ICanMetadata
+        ///{
+        ///	Dictionary&lt;uint, Dictionary&lt;string, CanPropertyInfo&gt;&gt; metadata = new();
+        ///
+        ///    static CanModelMetadata eventMetadata = null;
+        ///
+        ///    public Dictionary&lt;uint, Dictionary&lt;string, CanPropertyInfo&gt;&gt; GetMetadata() { return metadata; }
+        ///
+        ///    public Dictionary&lt;string, CanPropertyInfo&gt; GetMetadata(uint canID) { return metadata[canID]; }
+        ///
+        ///	public void AddMetadata(uint canID, Dictionary&lt;string, CanPropertyInfo&gt; properties)
+        ///	{
+        ///		metadata.Add(canID, properties);
+        ///	 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string CSharpMetadataDictionary {
+            get {
+                return ResourceManager.GetString("CSharpMetadataDictionary", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #pragma once
         ///
         ///#include &lt;string&gt;

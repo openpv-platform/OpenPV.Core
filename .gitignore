@@ -56,3 +56,4 @@ PlatformSupport/*
 
 Ahsoka.Platform/FirmwareDownload/**/*
 Ahsoka.Containers/OpenViewPro_SDK/*.bin
+Ahsoka.Demo/Ahsoka_CPP_Services/Outputs/*

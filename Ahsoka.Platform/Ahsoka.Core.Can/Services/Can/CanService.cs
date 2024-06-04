@@ -36,13 +36,13 @@ public class CanService : AhsokaServiceBase<CanMessageTypes.Ids>
                 if (interfaceType == CanInterface.ECOMWindows)
                     return new ECOMServiceImplementation();
                 else
-                    return new WindowsServiceImplementation();
+                    return new DesktopServiceImplementation();
 
             case PlatformFamily.MacosArm64:
-                return new MacOSServiceImplementation();
+                return new DesktopServiceImplementation();
 
             case PlatformFamily.Ubuntu64:
-                return new UbuntuServiceImplementation();
+                return new DesktopServiceImplementation();
 
             case PlatformFamily.OpenViewLinux:
                 if (interfaceType == CanInterface.Coprocessor)

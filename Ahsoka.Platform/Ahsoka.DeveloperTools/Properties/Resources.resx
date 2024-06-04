@@ -121,6 +121,12 @@
   <data name="BuildProps" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\BuildProps.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="CMakePresets" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\OpenPVTools\CMakePresets.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="devcontainer" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\OpenPVTools\devcontainer.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="docker_run_shell" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\openpvtools\docker-run-shell.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

@@ -23,7 +23,7 @@ class SparkTests
             SparkSubscription newSub;
             newSub.set_release_name("Test Release");
             newSub.set_channel_name("Test Release00000000-0000-0000-0000-000000000000");
-            newSub.set_subscription_url("ahsoka.powervisionspark.com");
+            newSub.set_subscription_url("enovation.powervisionspark.com");
 
             sparkClient.SetSparkSubscription(newSub);
 

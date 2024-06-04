@@ -105,7 +105,9 @@
       "egl.h": "c",
       "eglext.h": "c",
       "wayland-client-protocol.h": "c",
-      "codecvt": "cpp"
+      "codecvt": "cpp",
+      "numbers": "cpp",
+      "semaphore": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
   }

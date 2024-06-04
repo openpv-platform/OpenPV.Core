@@ -119,6 +119,6 @@ public static class StoryboardExtension
     /// <param name="message">Storyboard Message with data for construction</param>
     public static T GetObject<T>(this StoryboardMessage message) where T : StoryboardViewModelBase
     {
-        return (T)Metadata.CreateObject(message);
+        return (T)Metadata?.CreateObject(message);
     }
 }

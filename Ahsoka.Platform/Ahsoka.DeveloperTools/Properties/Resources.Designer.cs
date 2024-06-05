@@ -85,7 +85,7 @@ namespace Ahsoka.DeveloperTools.Properties {
         ///            &quot;name&quot;: &quot;linux-debug&quot;,
         ///            &quot;displayName&quot;: &quot;Linux Debug&quot;,
         ///            &quot;generator&quot;: &quot;Ninja&quot;,
-        ///            &quot;binaryDir&quot;: &quot;${sourceDir}/Build&quot;,
+        ///            &quot;binaryDir&quot;: &quot;${sourceDir}/Build/LinuxDebug&quot;,
         ///            &quot;cacheVariables&quot;: {
         ///                &quot;CMAKE_BUILD_TYPE&quot;: &quot;Debug&quot;,
         ///                &quot;AHSOKA_BUILD_OUTPUTS&quot; : &quot;${sourceDir}/Outputs&quot;
@@ -93,7 +93,7 @@ namespace Ahsoka.DeveloperTools.Properties {
         ///            &quot;condition&quot;: {
         ///                &quot;type&quot;: &quot;equals&quot;,
         ///                &quot;lhs&quot;: &quot;${hostSystemName}&quot;,
-        ///                &quot;rhs&quot;: [rest of string was truncated]&quot;;.
+        ///            [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CMakePresets {
             get {
@@ -107,7 +107,7 @@ namespace Ahsoka.DeveloperTools.Properties {
         ///{
         ///	&quot;name&quot;: &quot;OpenPV Base&quot;,
         ///
-        ///	&quot;image&quot;: &quot;openpv/openview_sdk_2_0&quot;,
+        ///	&quot;image&quot;: &quot;openpv/openview_sdk_3_0&quot;,
         ///	// Build from Docker File
         ///	//&quot;build&quot;: {
         ///	//	&quot;dockerfile&quot;: &quot;Dockerfile&quot;

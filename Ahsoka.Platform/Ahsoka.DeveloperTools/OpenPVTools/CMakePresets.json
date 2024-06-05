@@ -5,7 +5,7 @@
             "name": "linux-debug",
             "displayName": "Linux Debug",
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/Build",
+            "binaryDir": "${sourceDir}/Build/LinuxDebug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "AHSOKA_BUILD_OUTPUTS" : "${sourceDir}/Outputs"
@@ -49,7 +49,7 @@
             "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system.",
             "generator": "Ninja",
             "toolchainFile": "/root/sdk/sysroots/x86_64-ostl_sdk-linux/usr/share/cmake/OEToolchainConfig.cmake",
-            "binaryDir": "${sourceDir}/Build",
+            "binaryDir": "${sourceDir}/Build/OpenViewDebug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "AHSOKA_BUILD_OUTPUTS" : "${sourceDir}/Outputs"
@@ -133,7 +133,7 @@
             "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system.",
             "generator": "Ninja",
             "toolchainFile": "/root/sdk/sysroots/x86_64-ostl_sdk-linux/usr/share/cmake/OEToolchainConfig.cmake",
-            "binaryDir": "${sourceDir}/Build",
+            "binaryDir": "${sourceDir}/Build/OpenViewRelease",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "AHSOKA_BUILD_OUTPUTS" : "${sourceDir}/Outputs"

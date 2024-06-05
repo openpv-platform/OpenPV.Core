@@ -5,7 +5,7 @@
             "name": "linux-debug",
             "displayName": "Linux Debug",
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/Build",
+            "binaryDir": "${sourceDir}/Build/LinuxDebug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "AHSOKA_BUILD_OUTPUTS" : "${sourceDir}/Outputs"
@@ -49,7 +49,7 @@
             "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system.",
             "generator": "Ninja",
             "toolchainFile": "/root/sdk/sysroots/x86_64-ostl_sdk-linux/usr/share/cmake/OEToolchainConfig.cmake",
-            "binaryDir": "${sourceDir}/Build",
+            "binaryDir": "${sourceDir}/Build/OpenViewDebug",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
                 "AHSOKA_BUILD_OUTPUTS" : "${sourceDir}/Outputs"
@@ -74,7 +74,7 @@
                 "OE_QMAKE_LINK": "arm-ostl-linux-gnueabi-g++  -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard -mcpu=cortex-a7 --sysroot=/root/sdk/sysroots/cortexa7t2hf-neon-vfpv4-ostl-linux-gnueabi",
                 "OECORE_TARGET_OS": "linux-gnueabi",
                 "CXX": "arm-ostl-linux-gnueabi-g++  -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard -mcpu=cortex-a7 --sysroot=/root/sdk/sysroots/cortexa7t2hf-neon-vfpv4-ostl-linux-gnueabi",
-                "CXXFLAGS": " -O2 -pipe -g -feliminate-unused-debug-types ",
+                "CXXFLAGS": " -O2 -pipe -g -feliminate-unused-debug-types -Wno-psabi",
                 "OE_QMAKE_PATH_HOST_BINS": "/root/sdk/sysroots/x86_64-ostl_sdk-linux/usr/bin",
                 "OECORE_NATIVE_SYSROOT": "/root/sdk/sysroots/x86_64-ostl_sdk-linux",
                 "OE_QMAKE_MOC": "/root/sdk/sysroots/x86_64-ostl_sdk-linux/usr/bin/moc",
@@ -133,7 +133,7 @@
             "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system.",
             "generator": "Ninja",
             "toolchainFile": "/root/sdk/sysroots/x86_64-ostl_sdk-linux/usr/share/cmake/OEToolchainConfig.cmake",
-            "binaryDir": "${sourceDir}/Build",
+            "binaryDir": "${sourceDir}/Build/OpenViewRelease",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
                 "AHSOKA_BUILD_OUTPUTS" : "${sourceDir}/Outputs"
@@ -158,7 +158,7 @@
                 "OE_QMAKE_LINK": "arm-ostl-linux-gnueabi-g++  -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard -mcpu=cortex-a7 --sysroot=/root/sdk/sysroots/cortexa7t2hf-neon-vfpv4-ostl-linux-gnueabi",
                 "OECORE_TARGET_OS": "linux-gnueabi",
                 "CXX": "arm-ostl-linux-gnueabi-g++  -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard -mcpu=cortex-a7 --sysroot=/root/sdk/sysroots/cortexa7t2hf-neon-vfpv4-ostl-linux-gnueabi",
-                "CXXFLAGS": " -O2 -pipe -feliminate-unused-debug-types ",
+                "CXXFLAGS": " -O2 -pipe -g -feliminate-unused-debug-types -Wno-psabi",
                 "OE_QMAKE_PATH_HOST_BINS": "/root/sdk/sysroots/x86_64-ostl_sdk-linux/usr/bin",
                 "OECORE_NATIVE_SYSROOT": "/root/sdk/sysroots/x86_64-ostl_sdk-linux",
                 "OE_QMAKE_MOC": "/root/sdk/sysroots/x86_64-ostl_sdk-linux/usr/bin/moc",

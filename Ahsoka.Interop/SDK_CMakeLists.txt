@@ -9,6 +9,7 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Ahsoka.Proto/CMakeLists.txt")
     add_subdirectory ("Ahsoka.Proto")
 endif()
 
+FILE(COPY ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/.appInfo DESTINATION ${CMAKE_SOURCE_DIR}/Outputs)
 
 #Determine Platfrom
 set(AhsokaPlatform $ENV{AhsokaPlatform})

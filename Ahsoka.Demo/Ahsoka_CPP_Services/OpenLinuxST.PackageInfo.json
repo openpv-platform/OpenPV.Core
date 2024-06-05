@@ -1,10 +1,11 @@
 {
-  "version": "3.0.1.10084",
+  "version": "3.0.1.10068",
   "applicationType": "Cpp",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CPP.Services",
   "packageName": "Ahsoka.CPP.Services",
   "packageDescription": "Project demonstating Service usage in C++",
+  "applicationVersion": "1.0",
   "packageApplicationFolder": "Outputs",
   "packageOutputDirectory": "..\\PackageOutput",
   "startupLogoPath": "Assets\\Background.png",
@@ -31,7 +32,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
-          "notificationChannel": 6001,
           "isExtension": false,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -43,7 +43,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5002,
-          "notificationChannel": 0,
           "isExtension": false,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -55,7 +54,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5003,
-          "notificationChannel": 0,
           "isExtension": false,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -67,7 +65,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5005,
-          "notificationChannel": 0,
           "isExtension": false,
           "behaviors": "AutoStart",
           "configurationFile": ""
@@ -79,7 +76,6 @@
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5107,
-          "notificationChannel": 0,
           "isExtension": true,
           "behaviors": "AutoStart",
           "configurationFile": "CanService.cancalibration.json"

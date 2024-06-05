@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM openpv/openview_sdk_2_0
+FROM openpv/openview_sdk_3_0
 
 ENV DEBIAN_FRONTEND=noninteractive
 

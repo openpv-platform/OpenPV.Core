@@ -3,7 +3,7 @@
 internal class OpenViewQT5ContainerTool : DockerBaseTool
 {
     public OpenViewQT5ContainerTool() :
-        base("openpv/openview_qt_creator_2_0", "Ahsoka.QTCreator.20", false)
+        base("openpv/openview_qt_creator_3_0", "Ahsoka.QTCreator.30", false)
     {
         this.IncludedProfiles = PluginsViewModel.profileWSL;
 

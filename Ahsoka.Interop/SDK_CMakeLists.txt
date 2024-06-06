@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-# Add Proto If needed 
+# Add Proto If needed
 if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Ahsoka.Proto/CMakeLists.txt")
     message("Adding Proto Build: " ${CMAKE_CURRENT_SOURCE_DIR}/Ahsoka.Proto)
     add_subdirectory ("Ahsoka.Proto")
@@ -36,9 +36,17 @@ set(AhsokaSources ${Clients} PARENT_SCOPE)
 function(add_ahsoka target_name)
 
     ADD_CUSTOM_COMMAND(TARGET ${target_name}
+            PRE_BUILD
+            COMMAND echo Remove Outputs
+            COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
+            COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/Outputs/.appinfo
+            COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_SOURCE_DIR}/Outputs/libAhsoka.Client.Shared.so
+    )
+
+    ADD_CUSTOM_COMMAND(TARGET ${target_name}
             POST_BUILD
             COMMAND echo Create Command Line Folder
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/Outputs/CommandLine
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/CommandLine ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/.appinfo ${CMAKE_SOURCE_DIR}/Outputs/.appinfo
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK/lib/libAhsoka.Client.Shared.so ${CMAKE_SOURCE_DIR}/Outputs/libAhsoka.Client.Shared.so

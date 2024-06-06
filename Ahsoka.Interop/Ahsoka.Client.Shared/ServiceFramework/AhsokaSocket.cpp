@@ -112,8 +112,6 @@ namespace AhsokaServiceFramework
         // Create "array" of items to Poll...Note that ZMQ requires you to cast to Void*
         zmq::pollitem_t items[] = { { static_cast<void*>(*socket), 0, ZMQ_POLLIN, 0 } };
 
-        std::cout << "Array Created" << std::endl;
-
         IsListening = true;
         while (IsListening)
         {

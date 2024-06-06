@@ -177,7 +177,7 @@ class CanTests
                std::cout << "Metadata Generated Value did not match" << std::endl;
 
             resultValue = prop.GetSignalId();
-            if (resultValue != 12)
+            if (resultValue != 2)
                std::cout << "Metadata Signal is Incorrect" << std::endl;
 
 

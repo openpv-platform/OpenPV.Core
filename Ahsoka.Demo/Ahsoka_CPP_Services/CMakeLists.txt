@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project (Ahsoka.Client.Test LANGUAGES CXX)
+project (Ahsoka.CPP.Services LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -24,19 +24,18 @@ message(CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 message(AhsokaSources="${AhsokaSources}")
 File(GLOB Generated Generated/*.cpp)
 
-add_executable(Ahsoka.Client.Test main.cpp ${Generated} ${AhsokaSources})
+add_executable(Ahsoka.CPP.Services main.cpp ${Generated} ${AhsokaSources})
 
-target_include_directories(Ahsoka.Client.Test PRIVATE ${AhsokaHeaders})
-target_link_libraries(Ahsoka.Client.Test PRIVATE ${AhsokaLibs})
+target_include_directories(Ahsoka.CPP.Services PRIVATE ${AhsokaHeaders})
+target_link_libraries(Ahsoka.CPP.Services PRIVATE ${AhsokaLibs})
 
-add_ahsoka(Ahsoka.Client.Test)
+add_ahsoka(Ahsoka.CPP.Services)
 
-FILE(COPY Ahsoka.Client.Shared/.appInfo DESTINATION ${AHSOKA_BUILD_OUTPUTS})
 File(GLOB Calibration *.cancalibration.json)
 FILE(COPY ${Calibration} DESTINATION ${AHSOKA_BUILD_OUTPUTS})
 
 # Required to Deploy to the Target
-install(DIRECTORY ${AHSOKA_BUILD_OUTPUTS} DESTINATION Ahsoka.Client.Test
+install(DIRECTORY ${AHSOKA_BUILD_OUTPUTS} DESTINATION Ahsoka.CPP.Services
     PATTERN "**/*"
               PERMISSIONS OWNER_READ OWNER_EXECUTE OWNER_WRITE
     )

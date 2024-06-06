@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProfiles>
-<!-- Written by QtCreator 4.11.0, 2022-09-19T20:05:20. -->
+<!-- Written by QtCreator 6.0.2, 2024-06-06T16:02:53. -->
 <qtcreator>
  <data>
   <variable>Kit.IrrelevantAspects</variable>
@@ -56,6 +56,7 @@
      <value type="QString">CMAKE_CXX_COMPILER:STRING=%{Compiler:Executable:Cxx}</value>
      <value type="QString">CMAKE_C_COMPILER:STRING=%{Compiler:Executable:C}</value>
      <value type="QString">CMAKE_PREFIX_PATH:STRING=%{Qt:QT_INSTALL_PREFIX}</value>
+     <value type="QString">Protobuf_PROTOC_EXECUTABLE:FILEPATH=/usr/local/bin/protoc</value>
      <value type="QString">QT_QMAKE_EXECUTABLE:STRING=%{Qt:qmakeExecutable}</value>
     </valuelist>
     <valuemap type="QVariantMap" key="CMake.GeneratorKitInformation">
@@ -69,9 +70,10 @@
     <value type="QString" key="PE.Profile.Device">{fdb65155-9ef5-450e-9d17-1cf3ff6b4a08}</value>
     <value type="QString" key="PE.Profile.DeviceType">GenericLinuxOsType</value>
     <valuelist type="QVariantList" key="PE.Profile.Environment">
-     <value type="QString">CXXFLAGS=-mfpu=neon -mfloat-abi=hard -O2 -pipe -g -feliminate-unused-debug-types</value>
-     <value type="QString">OE_QMAKE_CXXFLAGS=-mfpu=neon -mfloat-abi=hard -O2 -pipe -g -feliminate-unused-debug-types</value>
      <value type="QString">AhsokaPlatform=OpenViewLinux</value>
+     <value type="QString">CFLAGS=-mfpu=neon -mfloat-abi=hard -O2 -pipe -g -feliminate-unused-debug-types -Wno-dev</value>
+     <value type="QString">CXXFLAGS=-mfpu=neon -mfloat-abi=hard -O2 -pipe -g -feliminate-unused-debug-types -Wno-dev</value>
+     <value type="QString">OE_QMAKE_CXXFLAGS=-mfpu=neon -mfloat-abi=hard -O2 -pipe -g -feliminate-unused-debug-types -Wno-dev</value>
     </valuelist>
     <value type="QString" key="PE.Profile.SysRoot">/root/sdk/sysroots</value>
     <valuemap type="QVariantMap" key="PE.Profile.ToolChainsV3">

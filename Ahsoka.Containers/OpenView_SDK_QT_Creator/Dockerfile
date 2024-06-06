@@ -23,7 +23,7 @@ RUN \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*;
 
-ADD qt_kits.config /root/.config
+ADD qt_kits_3.0.config /root/.config
 
 ADD entrypoint.sh /home/user/entrypoint.sh
 

@@ -3,7 +3,11 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("Ahsoka.Proto")
+set(CMAKE_AUTOUIC OFF)
+set(CMAKE_AUTOMOC OFF)
+set(CMAKE_AUTORCC OFF)
+
+project ("Ahsoka.Proto" LANGUAGES CXX)
 
 include(Functions.cmake)
 

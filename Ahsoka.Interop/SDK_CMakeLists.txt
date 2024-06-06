@@ -9,8 +9,6 @@ if (EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Ahsoka.Proto/CMakeLists.txt")
     add_subdirectory ("Ahsoka.Proto")
 endif()
 
-FILE(COPY ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/.appInfo DESTINATION ${CMAKE_SOURCE_DIR}/Outputs)
-
 #Determine Platfrom
 set(AhsokaPlatform $ENV{AhsokaPlatform})
 message("Building for Platform: " ${AhsokaPlatform})
@@ -42,6 +40,7 @@ function(add_ahsoka target_name)
             COMMAND echo Create Command Line Folder
             COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/Outputs/CommandLine
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/CommandLine ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/.appinfo ${CMAKE_SOURCE_DIR}/Outputs/.appinfo
             COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK/lib/libAhsoka.Client.Shared.so ${CMAKE_SOURCE_DIR}/Outputs/libAhsoka.Client.Shared.so
     )
 

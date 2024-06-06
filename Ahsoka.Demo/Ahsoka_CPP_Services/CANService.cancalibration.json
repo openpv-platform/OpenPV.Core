@@ -108,7 +108,7 @@
           "byteOrder": "LittleEndian",
           "valueType": "Unsigned",
           "defaultValue": 0.0,
-          "scale": 1.0,
+          "scale": 2.0,
           "offset": 0.0,
           "minimum": 0.0,
           "maximum": 0.0,
@@ -192,5 +192,5 @@
   "generatorNamespace": "AhsokaCan",
   "generatorOutputFile": "Generated/CanModels.Generated.h",
   "generatorBaseClass": "CanViewModelBase",
-  "version": "3.0.1.10082"
+  "version": "3.0.1.20064"
 }

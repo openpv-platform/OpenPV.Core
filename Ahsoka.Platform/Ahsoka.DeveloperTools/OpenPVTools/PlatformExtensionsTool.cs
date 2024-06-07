@@ -22,7 +22,7 @@ internal class PlatformExtensionsTool : SparkToolBase
 {
     const string Folder = System.Extensions.ExtensionsFolder;
     readonly ReleaseDTO viewModel;
-    static List<string> frameworks = new List<string>() { "net8.0", "net6.0", "net5.0", "NETStandard2.1" };
+    static List<string> frameworks = new List<string>() { "net8.0", "net6.0", "net5.0", "NETStandard2.1", "NETStandard2.0" };
 
     public static string GetExtensionsPath()
     {

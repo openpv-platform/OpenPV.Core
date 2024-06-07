@@ -83,7 +83,14 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
                 return;
             }
         }
-        OnHandleReceive(messageHeader, message);
+        try
+        {
+            OnHandleReceive(messageHeader, message);
+        }
+        catch (Exception ex)
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High,$"An error occured while handling a service message in {this.ServiceConfig.ServiceName} \r\n {ex.ToString()}");
+        }
 
     }
 

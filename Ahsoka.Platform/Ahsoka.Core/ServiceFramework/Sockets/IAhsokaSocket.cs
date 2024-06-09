@@ -63,8 +63,9 @@ public interface IAhsokaSocket
     /// <param name="header"></param>
     /// <param name="data"></param>
     /// <param name="clientId"></param>
+    /// <param name="isNotification"></param>
     /// <returns></returns>
-    bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId);
+    bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool isNotification);
 }
 
 #endregion

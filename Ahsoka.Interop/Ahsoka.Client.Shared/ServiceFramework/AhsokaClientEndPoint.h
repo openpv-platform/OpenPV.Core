@@ -126,11 +126,11 @@ namespace AhsokaServiceFramework
 				int responseTransportId = -1;
 				T * returnObject = 0;
 
-				auto expireTime = std::chrono::system_clock::now().time_since_epoch() + std::chrono::milliseconds(timeoutInMs);
+				auto expireTime = std::chrono::steady_clock::now().time_since_epoch() + std::chrono::milliseconds(timeoutInMs);
 				
 				// We found our Message or Timed out Waiting for Messages
 				while (responseTransportId != requestHeader.transport_id()
-					&& expireTime > std::chrono::system_clock::now().time_since_epoch())
+					&& expireTime > std::chrono::steady_clock::now().time_since_epoch())
 				{
 					MessagePair pair;
 					if (incomingMessages.PopWithTimeOut(1000, pair))

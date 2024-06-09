@@ -13,20 +13,17 @@ public interface IAhsokaEndPoint
 
     AhsokaRuntime CurrentRuntime { get; set; }
 
-    byte[] GetClientId();
-
     void Connect();
 
     void Disconnect();
 
-    void ReceiveMessage();
+    void ReceiveMessage(bool isNotification);
 }
 
 public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
     where TTransportIds : Enum
 {
     #region Fields
-    byte[] clientId = Guid.NewGuid().ToByteArray();
     readonly AhsokaMessagesBase serviceMessageInfo;
     int messageReceiveCount = 0;
     int messageSendCount = 0;
@@ -34,7 +31,6 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     #region Properties
 
-    public byte[] GetClientId() { return clientId; }
     public bool IsRunning { get { return Socket == null ? false : Socket.IsConnected; } }
     protected IAhsokaSocket Socket { get; private set; }
     public AhsokaRuntime CurrentRuntime { get; set; }
@@ -91,7 +87,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
             using MemoryStream dataStream = new();
             ProtoBuf.Serializer.Serialize(dataStream, messageObject);
-
+            
             Socket.SendMessage(headerStream.ToArray(), dataStream.ToArray(), messageHeader.ClientId, isBroadcast);
 
             messageSendCount++;
@@ -102,14 +98,14 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
         }
     }
 
-    void IAhsokaEndPoint.ReceiveMessage()
+    void IAhsokaEndPoint.ReceiveMessage(bool isNotification)
     {
         AhsokaMessageHeader messageHeader = null;
         object messageObject = null;
 
-        bool recievedMessage = Socket.ReceiveMessage(out byte[] headerData, out byte[] messageData, out byte[] clientId);
+        bool receivedMessage = Socket.ReceiveMessage(out byte[] headerData, out byte[] messageData, out byte[] clientId, isNotification);
 
-        if (recievedMessage)
+        if (receivedMessage)
         {
             messageReceiveCount++;
 

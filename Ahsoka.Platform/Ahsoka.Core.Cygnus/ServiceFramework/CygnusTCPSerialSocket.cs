@@ -130,7 +130,7 @@ public sealed class CygnusTCPServiceSerialSocket : CygnusSerialSocket
 
             Socket.ReceiveReady += (o, e) =>
             {
-                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage();
+                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage(false);
             };
 
             Monitor.Accepted += (o, e) =>

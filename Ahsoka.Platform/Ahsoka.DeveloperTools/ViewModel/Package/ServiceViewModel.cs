@@ -284,7 +284,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     }
 
 
-    public bool ClientAutoStart
+    public bool ServiceAutoStart
     {
         get
         {

@@ -37,7 +37,7 @@ public abstract class AhsokaSerialSocket : IAhsokaSocket
         }
     }
 
-    public virtual bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId)
+    public virtual bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool isNotification)
     {
         byte[] packetData;
         if (!ReceiveOverInterface(out packetData, out clientId)) {

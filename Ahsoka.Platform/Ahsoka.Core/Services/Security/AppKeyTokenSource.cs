@@ -28,7 +28,7 @@ internal class AppKeyTokenSource : ITokenSource
         return Convert.ToBase64String(tokenData);
     }
 
-    public Token RequestTokens(TokenRequestInfo tokenRequest, byte[] appId, out byte[] requestId )
+    public Token RequestTokens(TokenRequestInfo tokenRequest, byte[] appId, out byte[] requestId)
     {
         // Generate Request Id
         requestId = new Guid().ToByteArray();

@@ -236,7 +236,7 @@ public abstract class CygnusSerialSocket : AhsokaSerialSocket
 
     }
 
-    public override bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId)
+    public override bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool isNotification)
     {
         if (!ReceiveOverInterface(out byte[] packetData, out clientId)) {
             // There was no message available for us to retrieve from the underlying interface.

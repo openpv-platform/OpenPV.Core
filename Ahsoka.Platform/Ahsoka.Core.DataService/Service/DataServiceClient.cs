@@ -1,5 +1,4 @@
 ﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Network;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
@@ -33,7 +32,8 @@ public class DataServiceClient : AhsokaClientBase<DataMessageTypes.Ids>
     public DataServiceClient(ServiceConfiguration config) :
         base(config, new DataServiceMessages())
     {
-        SubscriberIds.Add(this.GetClientId().ToGuidString());
+        string subscriberId = ((IAhsokaClientEndpoint)this).GetClientId().ToGuidString();
+        SubscriberIds.Add(subscriberId);
     }
 
     /// <summary>

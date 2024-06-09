@@ -123,21 +123,13 @@ public sealed class TCPServiceSerialSocket : AhsokaSerialSocket
             Socket.Bind(EndPoint.ServiceConfig.DataListenURI);
             SocketPoller.Add(Socket);
 
-            Monitor = new NetMQMonitor(Socket, $"inproc://{Guid.NewGuid().ToString()}.inproc", SocketEvents.All);
-            Monitor.AttachToPoller(SocketPoller);
-
             IsConnected = true;
 
             Socket.ReceiveReady += (o, e) =>
             {
-                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage();
+                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage(false);
             };
 
-            Monitor.Accepted += (o, e) =>
-            {
-                ((IAhsokaServiceEndpoint)EndPoint).ClientConnected();
-            };
-          
             SocketPoller.RunAsync($"{EndPoint.ServiceConfig.ServiceName}_Handler");
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Starting Service {EndPoint.ServiceConfig.ServiceName} @ {EndPoint.ServiceConfig.DataListenURI} with Result {IsConnected}");
@@ -174,9 +166,7 @@ public sealed class TCPServiceSerialSocket : AhsokaSerialSocket
         message.Append(packetData);
 
         lock (Socket) // Protect Socket
-        {
             Socket.SendMultipartMessage(message);
-        }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Sending Service Message on {EndPoint.ServiceConfig.ServiceName} ");
 

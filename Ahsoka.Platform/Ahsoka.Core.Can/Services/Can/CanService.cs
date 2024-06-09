@@ -97,6 +97,8 @@ public class CanService : AhsokaServiceBase<CanMessageTypes.Ids>
             using var fs = new FileStream(configPath, FileMode.Open);
             fs.Seek(0, SeekOrigin.Begin);
             calibration = ProtoBuf.Serializer.Deserialize<CanApplicationCalibration>(fs);
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"CAN Configuration Loaded From {configPath}");
+
         }
     }
 
@@ -110,7 +112,7 @@ public class CanService : AhsokaServiceBase<CanMessageTypes.Ids>
         switch (messageHeader.TransportId.IntToEnum<CanMessageTypes.Ids>())
         {
             case CanMessageTypes.Ids.OpenCommunicationChannel:
-
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"OpenCommunicationChannel");
                 HandleOpenChannel(messageHeader);
                 break;
 
@@ -149,13 +151,23 @@ public class CanService : AhsokaServiceBase<CanMessageTypes.Ids>
 
     private void HandleOpenChannel(AhsokaMessageHeader messageHeader)
     {
+        AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"SocketCAN Starting");
+
         // Load Handlers
         foreach (var item in calibration.CanPortConfiguration.MessageConfiguration.Ports)
         {
-            var serviceHandler = GetInterop(item.CanInterface);
-            serviceHandler.Open(this, calibration.CanPortConfiguration, item.Port);
+            try
+            {
+                var serviceHandler = GetInterop(item.CanInterface);
+                serviceHandler.Open(this, calibration.CanPortConfiguration, item.Port);
+                portHandlers[item.Port] = serviceHandler;
+            }
+            catch (Exception ex)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Failed to Open {item.Port} - {ex.Message}");
+            }
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Opened {item.Port}");
-            portHandlers[item.Port] = serviceHandler;
+           
         }
         SendMessageInternal(messageHeader, calibration);
     }

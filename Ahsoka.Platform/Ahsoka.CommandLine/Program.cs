@@ -11,6 +11,7 @@ class Program
     {
         //Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff"));
         using var stopwatch = new AhsokaStopwatch("Ahsoka.Commandline.Main()");
+        //AhsokaLogging.LoggingVerbosity = AhsokaVerbosity.Low;
 
         List<string> mutableArgs = new(args);
 

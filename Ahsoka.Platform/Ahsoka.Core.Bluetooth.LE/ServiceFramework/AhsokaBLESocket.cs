@@ -139,7 +139,7 @@ public sealed class BLEServiceSocket : AhsokaSerialSocket
             if (writeValue.Uuid == ahsokaDataCommsCharacteristic.Uuid)
             {
                 lastReceiveValue = writeValue.Value;
-                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage();
+                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage(true);
             }
         }
     }

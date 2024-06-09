@@ -139,7 +139,7 @@ public sealed class CygnusBLEServiceSocket : CygnusSerialSocket
             if (writeValue.Uuid == cyngusMainCommsCharacteristic.Uuid)
             {
                 lastReceiveValue = writeValue.Value;
-                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage();
+                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage(true);
             }
         }
     }

@@ -64,7 +64,7 @@ namespace AhsokaServiceFramework
                 if (didInitialize)
                 {
                     struct timespec tm;
-                    clock_gettime(CLOCK_REALTIME, &tm);
+                    clock_gettime(CLOCK_MONOTONIC, &tm);
 
                     long nsecTobeadded = (timeoutInMs % 1000) * 1000000L + tm.tv_nsec;
                     tm.tv_nsec = nsecTobeadded % 1000000000L;

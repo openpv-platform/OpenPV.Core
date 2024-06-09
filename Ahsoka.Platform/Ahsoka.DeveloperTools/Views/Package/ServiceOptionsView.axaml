@@ -90,11 +90,11 @@
 												   Margin="0,3,0,0"  HorizontalAlignment="Stretch" 
 												   FontSize="14" Grid.Column="1" TextWrapping="NoWrap" />
 
-										<TextBlock IsVisible="{Binding IsIncluded}" Text="AutoStart:" 
+										<TextBlock IsVisible="{Binding IsIncluded}" Text="Auto Start Service:" 
 												   Margin="0,3,20,0"  HorizontalAlignment="Stretch" 
 												   FontSize="14" Grid.Column="2" TextWrapping="1" />
-										<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding ClientAutoStart}"
-												 Margin="-20,-1,10,-4"  HorizontalAlignment="Left"
+										<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding ServiceAutoStart}"
+												 Margin="-20,-1,10,-4"  HorizontalAlignment="Left" ToolTip.Tip="Auto Start a Service Instance on First Access.  Note that Dispatcher will always start your client runtime regardless of this setting."
 												 Grid.Column="3" VerticalAlignment="Center">
 											<CheckBox.RenderTransform>
 												<ScaleTransform ScaleX="0.85" ScaleY="0.85" />

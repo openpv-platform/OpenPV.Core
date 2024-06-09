@@ -13,6 +13,7 @@ internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointB
 {
     #region AutoStart
     IAhsokaClientEndpoint endPoint;
+    object syncRoot = new();
     bool autoStartUsed = false;
     bool autoStartEnabled = false;
 
@@ -23,16 +24,13 @@ internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointB
         this.endPoint = client;
 
         if (config.Behaviors.HasFlag(EndPointBehaviors.AutoStart))
-        {
-            Dispatcher.Default.AddAutoStartInternal(this);
             autoStartEnabled = true;
-        }
     }
 
     public void OnSendMessage(TTransportIds transportId, object requestObject)
     {
         // Try AutoStart
-        lock (endPoint)
+        lock (syncRoot)
         {
             if (endPoint.CurrentRuntime == null && autoStartEnabled)
                 ((ICanAutoStart)this).AutoStart(this);
@@ -53,7 +51,7 @@ internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointB
     void ICanAutoStart.AutoStart(object requester)
     {
         // Capture if Auto Start is used for Auto Shutdown
-        lock (endPoint)
+        lock (syncRoot)
             if (endPoint.CurrentRuntime == null)
             {
                 autoStartUsed = true;
@@ -63,7 +61,7 @@ internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointB
 
     private void StartInternalService()
     {
-        lock (endPoint)
+        lock (syncRoot)
         {
             if (endPoint.CurrentRuntime != null)
                 return;

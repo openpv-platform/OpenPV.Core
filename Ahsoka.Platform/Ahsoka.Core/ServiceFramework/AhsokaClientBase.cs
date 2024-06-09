@@ -18,13 +18,19 @@ public interface IAhsokaClientEndpoint : IAhsokaEndPoint, IDispatchSource
 {
     IAhsokaServiceEndpoint CreateDefaultService();
 
+    byte[] GetClientId();
+    byte[] GetNotificationId();
     void SetToken(Token securityToken);
+
 }
 
 public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTransportIds>,
     IAhsokaClientEndpoint
     where TTransportIds : Enum, new()
 {
+    byte[] clientId = Guid.NewGuid().ToByteArray();
+    byte[] notificationClientId = Guid.NewGuid().ToByteArray();
+
     Task notificationTask = null;
     CancellationTokenSource source;
     BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> incomingMessages = new();
@@ -65,6 +71,9 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         if (config.Behaviors.HasFlag(EndPointBehaviors.AutoStart))
             AddBehavior(new AutoStartClientEndPointBehavior<TTransportIds>());
     }
+
+    byte[] IAhsokaClientEndpoint.GetClientId() { return clientId; }
+    byte[] IAhsokaClientEndpoint.GetNotificationId() { return notificationClientId; }
 
     protected override void OnEndPointConnected()
     {
@@ -110,7 +119,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
         SendMessageInternal(notificationRequest, new ClientRegistration()
         {
-            ClientId = GetClientId(),
+            ClientId = ((IAhsokaClientEndpoint)this).GetNotificationId(),
         });
     }
 
@@ -171,14 +180,11 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         {
             TransportId = transportId.EnumToInt(),
             ClientMessageId = messageId++,
-            ServiceToken = securityToken?.ClientToken 
+            ServiceToken = securityToken?.ClientToken
         };
 
-        lock (Socket)
-        {
-            SendMessageInternal(header, requestObject);
-            return WaitForResponse<T>(header, timeoutInMs);
-        }
+        SendMessageInternal(header, requestObject);
+        return WaitForResponse<T>(header, timeoutInMs);
     }
 
     protected T WaitForResponse<T>(AhsokaMessageHeader requestHeader, int timeoutInMs = int.MaxValue) where T : class

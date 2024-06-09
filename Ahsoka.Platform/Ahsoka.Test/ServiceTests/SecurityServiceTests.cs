@@ -55,7 +55,7 @@ public class SecurityServiceTests : LinearTestBase
         var request = securityServiceClient.RequestToken(new TokenRequestInfo()
         {
             ApiKey = apiKey,
-            ClientIds = { systemClient.GetClientId() }
+            ClientIds = { ((IAhsokaClientEndpoint)systemClient).GetClientId() }
         });
 
         // Wait for Token top be Recieved
@@ -78,7 +78,10 @@ public class SecurityServiceTests : LinearTestBase
             systemClient.SetToken(token);
             var info = systemClient.GetHardwareInformation();
         }
-        catch { Assert.Fail("Should Succeed With Token"); }
+        catch 
+        { 
+            Assert.Fail("Should Succeed With Token"); 
+        }
 
 
         // Turn off Security for later tests.
@@ -150,7 +153,7 @@ public class SecurityServiceTests : LinearTestBase
         var request = securityServiceClient.RequestToken(new TokenRequestInfo()
         {
             ApiKey = apiKey,
-            ClientIds = { systemClient.GetClientId() },
+            ClientIds = { ((IAhsokaClientEndpoint)systemClient).GetClientId() },
             ClientCode = challengeCode,
             ClientDescription = "TestClient"
         });
@@ -166,7 +169,7 @@ public class SecurityServiceTests : LinearTestBase
         request = securityServiceClient.RequestToken(new TokenRequestInfo()
         {
             ApiKey = apiKey,
-            ClientIds = { systemClient.GetClientId() },
+            ClientIds = { ((IAhsokaClientEndpoint)systemClient).GetClientId() },
             ClientCode = challengeCode,
             ClientDescription = "TestClient"
         });

@@ -32,16 +32,20 @@ namespace AhsokaServiceFramework
             void SendMessage(const std::string& header, const std::string& data, bool isOutOfBand);
             bool ReceiveMessage(std::string& header, std::string& data, bool isOutOfBand, int timeoutInMs = INT_MAX);
             std::string GetClientId();
+            std::string GetNotificationClientId();
 
         private:
 
             std::string clientId;
+            std::string notificationClientId;
             zmq::context_t *context;
             
             bool IsConnected;
             bool IsListening;
 
             zmq::socket_t* socket;
+            zmq::socket_t* notificationSocket;
+            
             IAhsokaEndPoint* endPoint;
             std::thread* listenerThread;
 

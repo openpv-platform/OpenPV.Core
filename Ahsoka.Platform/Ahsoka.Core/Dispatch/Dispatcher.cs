@@ -48,7 +48,7 @@ public class Dispatcher
     CancellationTokenSource tokenSource;
     readonly Dictionary<double, TimerTracker> timers = new();
     readonly List<ICanAutoStart> startupObjects = new();
-    readonly List<IAhsokaClientEndpoint> endpoints = new();
+    readonly List<IAhsokaClientEndPoint> endpoints = new();
 
     // Foreground Worker and Alternative Invoker if needed
     Action<EventHandler> alternativeInvoker;
@@ -405,7 +405,7 @@ public class Dispatcher
             if (!startupObjects.Contains(autoSource))
                 startupObjects.Add(autoSource);
         }
-        else if (autoStartClient is IAhsokaClientEndpoint client)
+        else if (autoStartClient is IAhsokaClientEndPoint client)
         {
             if (!endpoints.Contains(autoStartClient))
                 endpoints.Add(client);

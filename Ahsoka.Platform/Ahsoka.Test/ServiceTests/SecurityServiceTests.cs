@@ -55,7 +55,7 @@ public class SecurityServiceTests : LinearTestBase
         var request = securityServiceClient.RequestToken(new TokenRequestInfo()
         {
             ApiKey = apiKey,
-            ClientIds = { ((IAhsokaClientEndpoint)systemClient).GetClientId() }
+            ClientIds = { ((IAhsokaClientEndPoint)systemClient).GetClientId() }
         });
 
         // Wait for Token top be Recieved
@@ -153,7 +153,7 @@ public class SecurityServiceTests : LinearTestBase
         var request = securityServiceClient.RequestToken(new TokenRequestInfo()
         {
             ApiKey = apiKey,
-            ClientIds = { ((IAhsokaClientEndpoint)systemClient).GetClientId() },
+            ClientIds = { ((IAhsokaClientEndPoint)systemClient).GetClientId() },
             ClientCode = challengeCode,
             ClientDescription = "TestClient"
         });
@@ -169,7 +169,7 @@ public class SecurityServiceTests : LinearTestBase
         request = securityServiceClient.RequestToken(new TokenRequestInfo()
         {
             ApiKey = apiKey,
-            ClientIds = { ((IAhsokaClientEndpoint)systemClient).GetClientId() },
+            ClientIds = { ((IAhsokaClientEndPoint)systemClient).GetClientId() },
             ClientCode = challengeCode,
             ClientDescription = "TestClient"
         });

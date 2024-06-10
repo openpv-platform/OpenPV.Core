@@ -121,7 +121,7 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Generating Client Secret for Local Security Client");
             try
             {
-                return RSAEncryption.GetSignatureWithKey(((IAhsokaClientEndpoint)this).GetClientId(), File.ReadAllText(path));
+                return RSAEncryption.GetSignatureWithKey(((IAhsokaClientEndPoint)this).GetClientId(), File.ReadAllText(path));
             }
             catch {}
         }

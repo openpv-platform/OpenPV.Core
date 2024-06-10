@@ -7,7 +7,7 @@ namespace Ahsoka.ServiceFramework;
 
 internal sealed class TCPClientSocket : IAhsokaSocket
 {
-    IAhsokaClientEndpoint endPoint;
+    IAhsokaClientEndPoint endPoint;
 
     NetMQPoller socketPoller = new();
     DealerSocket socket;
@@ -22,28 +22,31 @@ internal sealed class TCPClientSocket : IAhsokaSocket
         try
         {
 
-            this.endPoint = endPoint as IAhsokaClientEndpoint;
+            this.endPoint = endPoint as IAhsokaClientEndPoint;
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Starting Client {this.endPoint.ServiceConfig.ServiceName} @ {this.endPoint.ServiceConfig.DataURI}");
 
+            // Message Socket
             socket = new DealerSocket();
             socket.Options.Identity = this.endPoint.GetClientId();
             socket.Options.Linger = TimeSpan.FromSeconds(1);
             socket.Connect(this.endPoint.ServiceConfig.DataURI);
             socketPoller.Add(socket);
 
+            // Listen to Messages
             socket.ReceiveReady += (o, e) =>
             {
                 this.endPoint.ReceiveMessage(false);
             };
 
+            // Notification Socket
             notificationSocket = new DealerSocket();
             notificationSocket.Options.Identity = this.endPoint.GetNotificationId();
             notificationSocket.Options.Linger = TimeSpan.FromSeconds(1);
             notificationSocket.Connect(this.endPoint.ServiceConfig.DataURI);
-
-            // Handle Poller for Notifications
             socketPoller.Add(notificationSocket);
+            
+            // Listen to Notifications
             notificationSocket.ReceiveReady += (o, e) =>
             {
                 this.endPoint.ReceiveMessage(true);

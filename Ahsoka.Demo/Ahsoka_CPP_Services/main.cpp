@@ -8,7 +8,6 @@
 #include "CanTests.hpp"
 #include <filesystem>
 
-
 using namespace std;
 
 const std::string pathToExecutable = "./CommandLine/Ahsoka.CommandLine";

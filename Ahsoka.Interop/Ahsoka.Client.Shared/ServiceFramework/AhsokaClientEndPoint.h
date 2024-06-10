@@ -66,12 +66,12 @@ namespace AhsokaServiceFramework
 					notificationCallback((TTransportID)messageHeader.transport_id(), message);
 			}
 
-			void ClientDataReady()
+			void ClientDataReady(bool isNotification)
 			{
 				MessagePair pair;
 					
 				// Recieve Out of Band Message and Process on Handler
-				if (this->ReceiveMessage(pair.header, pair.message, true))
+				if (this->ReceiveMessage(pair.header, pair.message, isNotification))
 				{
 					ServiceMessageInfo info = this->messageFactory.GetMessageInfo(pair.header->transport_id());
 					
@@ -160,7 +160,7 @@ namespace AhsokaServiceFramework
 				header.set_client_message_id(messageId++);
 
 				ClientRegistration registration;
-				registration.set_client_id(AhsokaBaseEndPoint<TTransportID>::socket.GetClientId());
+				registration.set_client_id(AhsokaBaseEndPoint<TTransportID>::socket.GetNotificationClientId()); // Note use of Notification ClientID
 
 				AhsokaBaseEndPoint<TTransportID>::SendNotificationInternal(header, &registration);
 			}

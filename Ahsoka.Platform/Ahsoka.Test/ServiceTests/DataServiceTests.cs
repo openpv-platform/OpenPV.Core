@@ -84,7 +84,7 @@ public class DataServiceTests : LinearTestBase
         Assert.IsTrue(keyValues.Values.First(x => x.KeyInfo.Key == dataKI.Key).DataValue[3] == 4);
 
         // Subscriptions
-        var subscriptionList = new KeySubscriptionRequest() { SubscriberId = ((IAhsokaClientEndpoint)dataClient).GetClientId().ToGuidString() };
+        var subscriptionList = new KeySubscriptionRequest() { SubscriberId = ((IAhsokaClientEndPoint)dataClient).GetClientId().ToGuidString() };
         subscriptionList.SubscribeToKeys.AddRange(new KeyInfo[] { floatKI, intKI, stringKI, uintKI, dataKI });
         var subscriberInfo = dataClient.SubscribeToKeys(subscriptionList);
 

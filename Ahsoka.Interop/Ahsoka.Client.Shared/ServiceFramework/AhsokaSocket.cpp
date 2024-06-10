@@ -31,12 +31,19 @@ namespace AhsokaServiceFramework
         try
         {
             clientId = CreateGUID();
+            notificationClientId = CreateGUID();
+
             this->context = &context;
 
+            // Start Message Socket
             socket = new zmq::socket_t(GetContext(), zmq::socket_type::dealer);
             socket->set(zmq::sockopt::routing_id, clientId.c_str());
-
             socket->connect(dataChannel());
+
+            // Start Notification Socket
+            notificationSocket = new zmq::socket_t(GetContext(), zmq::socket_type::dealer);
+            notificationSocket->set(zmq::sockopt::routing_id, notificationClientId.c_str());
+            notificationSocket->connect(dataChannel());
 
             listenerThread = new std::thread(&AhsokaSocket::ManageSocket, this);
             
@@ -73,16 +80,17 @@ namespace AhsokaServiceFramework
 
     bool AhsokaSocket::ReceiveMessage(std::string& header, std::string& data, bool isOutOfBand, int timeoutInMs)
     {
-
         // Receive message
         try
         {
+             zmq::socket_t* socketToHandle = isOutOfBand ? notificationSocket : socket;
+
             // Set Timeout
-            socket->set(zmq::sockopt::rcvtimeo, timeoutInMs);
+            socketToHandle->set(zmq::sockopt::rcvtimeo, timeoutInMs);
             
             // Receive Data
             zmq::multipart_t received;
-            if (received.recv(*socket, 0))
+            if (received.recv(*socketToHandle, 0))
             {
                 header = received.popstr();
                 data = received.popstr();
@@ -98,6 +106,7 @@ namespace AhsokaServiceFramework
     }
 
     std::string AhsokaSocket::GetClientId() { return clientId; }
+    std::string AhsokaSocket::GetNotificationClientId() { return notificationClientId; }
 
     zmq::context_t& AhsokaSocket::GetContext()
     {
@@ -110,14 +119,27 @@ namespace AhsokaServiceFramework
         std::cout << "Client Listener Started" << std::endl;
         
         // Create "array" of items to Poll...Note that ZMQ requires you to cast to Void*
-        zmq::pollitem_t items[] = { { static_cast<void*>(*socket), 0, ZMQ_POLLIN, 0 } };
+        // Listen to Message and Notification Sockets
+        zmq::pollitem_t items[] = 
+        { 
+            { static_cast<void*>(*socket), 0, ZMQ_POLLIN, 0 },
+            { static_cast<void*>(*notificationSocket), 0, ZMQ_POLLIN, 0 } 
+        };
 
         IsListening = true;
         while (IsListening)
         {
-            int value = zmq::poll(items, 1, 100);
+            int value = zmq::poll(items, 2, 100);
             if (value != 0)
-                endPoint->ClientDataReady();
+            {
+                // Message Received
+                if (items [0].revents & ZMQ_POLLIN) 
+                    endPoint->ClientDataReady(false);
+
+                // Notificaiton Received
+                if (items [1].revents & ZMQ_POLLIN) 
+                    endPoint->ClientDataReady(true);
+            }
         }
         
         std::cout << "Client Listener Shutdown Successfully" << std::endl;

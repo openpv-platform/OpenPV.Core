@@ -7,11 +7,15 @@ namespace Ahsoka.ServiceFramework;
 
 internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 {
+    // While clients use two dealer sockets, we use a single
+    // router socket that can reply / send to either one.
+    RouterSocket socket; 
+
     IAhsokaEndPoint endPoint;
+    object socketSyncRoot = new(); // Protects Socket Send/Receive
     NetMQPoller socketPoller = new();
     List<Guid> validClientIds = new ();
-    RouterSocket socket; // We use a single Router on the Server and Protect it.
-
+    
     public bool IsConnected { get; private set; }
 
     public TCPServiceSocket() { }
@@ -91,7 +95,7 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
             message.Append(header);
             message.Append(data);
 
-            lock (socket) // Protect Socket
+            lock (socketSyncRoot) // Protect Socket Recieves and Sends (mostly for Notifications)
                 socket.TrySendMultipartMessage(message);
 
             message.Clear();
@@ -108,7 +112,9 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 
         NetMQMessage message = new();
 
-        lock (socket)
+        // Note that Services use a Single Socket But we lock here to prevent sending notifications
+        // at the same time as we are receiving a message.
+        lock (socketSyncRoot)
             if (socket.TryReceiveMultipartMessage(ref message, 3))
             {
                 clientId = message.Pop().Buffer;

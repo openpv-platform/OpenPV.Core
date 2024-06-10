@@ -14,7 +14,7 @@ namespace Ahsoka.ServiceFramework;
 
 #pragma warning disable CS1591
 
-public interface IAhsokaClientEndpoint : IAhsokaEndPoint, IDispatchSource
+public interface IAhsokaClientEndPoint : IAhsokaEndPoint, IDispatchSource
 {
     IAhsokaServiceEndpoint CreateDefaultService();
 
@@ -25,7 +25,7 @@ public interface IAhsokaClientEndpoint : IAhsokaEndPoint, IDispatchSource
 }
 
 public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTransportIds>,
-    IAhsokaClientEndpoint
+    IAhsokaClientEndPoint
     where TTransportIds : Enum, new()
 {
     byte[] clientId = Guid.NewGuid().ToByteArray();
@@ -72,8 +72,8 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
             AddBehavior(new AutoStartClientEndPointBehavior<TTransportIds>());
     }
 
-    byte[] IAhsokaClientEndpoint.GetClientId() { return clientId; }
-    byte[] IAhsokaClientEndpoint.GetNotificationId() { return notificationClientId; }
+    byte[] IAhsokaClientEndPoint.GetClientId() { return clientId; }
+    byte[] IAhsokaClientEndPoint.GetNotificationId() { return notificationClientId; }
 
     protected override void OnEndPointConnected()
     {
@@ -119,7 +119,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
         SendMessageInternal(notificationRequest, new ClientRegistration()
         {
-            ClientId = ((IAhsokaClientEndpoint)this).GetNotificationId(),
+            ClientId = ((IAhsokaClientEndPoint)this).GetNotificationId(),
         });
     }
 
@@ -230,7 +230,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         return value.ReplyType;
     }
 
-    IAhsokaServiceEndpoint IAhsokaClientEndpoint.CreateDefaultService()
+    IAhsokaServiceEndpoint IAhsokaClientEndPoint.CreateDefaultService()
     {
         return OnCreateDefaultService();
     }

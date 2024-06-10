@@ -6,18 +6,18 @@ namespace Ahsoka.ServiceFramework;
 
 internal interface IAutoStartServiceClient : ICanAutoStart
 {
-    IAhsokaClientEndpoint Client { get; }
+    IAhsokaClientEndPoint Client { get; }
 }
 
 internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointBehavior<TTransportIds>, IAutoStartServiceClient where TTransportIds : Enum, new()
 {
     #region AutoStart
-    IAhsokaClientEndpoint endPoint;
+    IAhsokaClientEndPoint endPoint;
     object syncRoot = new();
     bool autoStartUsed = false;
     bool autoStartEnabled = false;
 
-    IAhsokaClientEndpoint IAutoStartServiceClient.Client => endPoint;
+    IAhsokaClientEndPoint IAutoStartServiceClient.Client => endPoint;
 
     public void Init(AhsokaClientBase<TTransportIds> client, ServiceConfiguration config)
     {

@@ -49,7 +49,7 @@ public partial class AhsokaRuntime
         /// <param name="endPoints">Array of client runtimes</param>
         /// <returns>AhsokaRuntimeBuilder to continue building until a Start Method is used.</returns>
         /// <exception cref="ArgumentException"></exception>
-        public AhsokaRuntimeBuilder AddClients(params IAhsokaClientEndpoint[] endPoints)
+        public AhsokaRuntimeBuilder AddClients(params IAhsokaClientEndPoint[] endPoints)
         {
             if (this.endPoints.Count > 0 && !isClient)
                 throw new ArgumentException("Client and Service Endpoints can not be added to the same runtime.");
@@ -135,7 +135,7 @@ public partial class AhsokaRuntime
                 throw new ArgumentException("Must specify Client Endpoints for using StartWithInternalServices");
 
             List<IAhsokaServiceEndpoint> services = new();
-            foreach (IAhsokaClientEndpoint item in endPoints.Cast<IAhsokaClientEndpoint>())
+            foreach (IAhsokaClientEndPoint item in endPoints.Cast<IAhsokaClientEndPoint>())
                 services.Add(item.CreateDefaultService());
 
             stopwatch.ResetTiming("Services Created");

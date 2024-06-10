@@ -1,0 +1,8 @@
+[Unit]
+Description=Resize Helper
+
+[Service]
+ExecStart=/bin/bash
+
+[Install]
+WantedBy=multi-user.target

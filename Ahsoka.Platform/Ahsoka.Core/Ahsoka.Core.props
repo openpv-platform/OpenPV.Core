@@ -1,0 +1,5 @@
+﻿<Project>
+	<PropertyGroup Label="Suppress Errors for GPIO Project">
+		<SuppressWindowsPlatformTargetingRequiredError>true</SuppressWindowsPlatformTargetingRequiredError>
+	</PropertyGroup>
+</Project>

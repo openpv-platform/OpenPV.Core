@@ -1,0 +1,5 @@
+[Unit]
+Description=Early Ahsoka startup target
+
+# no particular reason for running after system-getty.slice but it has worked well so far
+After=system-getty.slice

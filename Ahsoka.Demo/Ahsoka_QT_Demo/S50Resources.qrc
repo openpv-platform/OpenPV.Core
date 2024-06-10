@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/Resources/S50 Demo">
+        <file>Resources/S50 Demo/RPM-5.png</file>
+        <file>Resources/S50 Demo/oiltemp.png</file>
+        <file>Resources/S50 Demo/ArcSpaceFrame.png</file>
+        <file>Resources/S50 Demo/Gauge Fill example.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 8.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 16.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 19.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 21.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 22.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 25.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 26.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 27.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 28.png</file>
+        <file>Resources/S50 Demo/MiniGauge/Ellipse 29.png</file>
+    </qresource>
+</RCC>

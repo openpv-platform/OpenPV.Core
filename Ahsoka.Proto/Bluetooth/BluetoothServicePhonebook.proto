@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package Ahsoka.Services.Bluetooth;
+
+/*
+
+    // Audio
+    // Audio
+            this.Actions.Add(new HardwareAction("Disable Bluetooth Audio", BluetoothDeviceIndex) { ActionDataHelpText = "Disable and Turn off Audio Profiles" });
+            this.Actions.Add(new HardwareAction("Enable Bluetooth Audio", BluetoothDeviceIndex) { ActionDataHelpText = "Enable and Turn On Audio Profiles...if connected" });
+            this.Actions.Add(new HardwareActi
+
+    
+   
+    // PBAP
+            this.Actions.Add(new HardwareAction("PBAP Sync Phone List", PBAPData) { ActionDataHelpText = "Get phone book or call history.", OnlyInAllRelease = true });
+            this.Actions.Add(new HardwareAction("PBAP Erase Phone List", PBAPData) { ActionDataHelpText = "Clear phone book or call history locally not on the remote device", OnlyInAllRelease = true });
+            
+            this.Variables.Add("PhonebookEntrySourceTypes", new HardwareVariable("Bluetooth.PhonebookEntrySourceTypes", 0) { OnlyInAllRelease = true });
+            enumerationValues = this.Variables["PhonebookEntrySourceTypes"].EnumerationValues;
+                enumerationValues.Add(0, "Unknown");
+                enumerationValues.Add(1, "Received Call");
+                enumerationValues.Add(2, "Dialed Call");
+                enumerationValues.Add(3, "Missed Call");
+                enumerationValues.Add(4, "Home");
+                enumerationValues.Add(5, "Work");
+                enumerationValues.Add(6, "Cell");
+                enumerationValues.Add(7, "Other");
+
+
+            // PBAP
+            this.Lists.Add("PlacedCalls", new HardwareList("IncomingCall") { ListRowCount = 20, ListType = ListManagerType.IncomingCall, OnlyInAllRelease = true });
+            this.Lists.Add("MissedCall", new HardwareList("MissedCall") { ListRowCount = 20, ListType = ListManagerType.MissedCall, OnlyInAllRelease = true });
+            this.Lists.Add("PhoneBook", new HardwareList("PhoneBook") { ListRowCount = 20, ListType = ListManagerType.PhoneBook, OnlyInAllRelease = true });
+            this.Lists.Add("TextMessages", new HardwareList("TextMessages") { ListRowCount = 100, ListType = ListManagerType.TextMessage, OnlyInAllRelease = true });
+            this.Lists.Add("OutgoingCall", new HardwareList("OutgoingCall") { ListRowCount = 20, ListType = ListManagerType.OutgoingCall });
+
+                
+        new EventMappingProperty(227, "SyncPhoneBookStartedEvent");
+         new EventMappingProperty(228, "SyncPhoneBookCompleteEvent");
+            //MEDIA
+            */
+
+
+

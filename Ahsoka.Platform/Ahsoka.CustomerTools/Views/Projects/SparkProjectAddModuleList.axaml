@@ -1,0 +1,80 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.CustomerTools.Views"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="450"  Background="#33555555"
+             x:Class="Ahsoka.CustomerTools.Views.SparkProjectAddModuleList">
+
+	<Border Margin="20" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" 
+			BorderThickness="1" Background="White">
+		<Grid Margin="10,10,0,10"  ColumnDefinitions="*,250" >
+			<Grid Margin="5" RowDefinitions="Auto,Auto,*" >
+			
+				<Border Grid.Row="1" BorderBrush="Gainsboro"  BorderThickness="0,1,0,0" 
+						Margin="20,32,-10,20" Height="2"/>
+				<TextBlock Grid.Row="1" FontSize="24"  Margin="10,17,0,0"  
+						   Text="{Binding ParentViewModel.TeamName, StringFormat='Add Modules for Project {0} ', FallbackValue='Add Modules for Project None '}"
+						   Foreground="SteelBlue" HorizontalAlignment="Left" Background="White"  />
+
+				<Grid Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Margin="15,5,0,5" >
+					<ScrollViewer VerticalScrollBarVisibility="Auto" >
+						<ItemsRepeater VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+									   ItemsSource="{Binding AvailableModules}">
+							<ItemsRepeater.Layout>
+								<StackLayout Spacing="1" Orientation="Vertical"/>
+							</ItemsRepeater.Layout>
+							<ItemsRepeater.ItemTemplate>
+								<DataTemplate>
+									<CustomerTools:SparkModulePackSelectionView/>
+								</DataTemplate>
+							</ItemsRepeater.ItemTemplate>
+						</ItemsRepeater>
+					</ScrollViewer>
+				</Grid>
+			</Grid>
+
+			<DockPanel Margin="0,13,0,0" Grid.Column="2"
+					   HorizontalAlignment="Stretch"
+					   VerticalAlignment="Stretch" >
+
+				<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+							HorizontalAlignment="Stretch"
+							Height="38" Width="175"
+							VerticalContentAlignment="Center"
+							Command="{Binding PurchaseNewModules}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Cart"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Purchase Modules"/>
+					</StackPanel>
+				</Button>
+
+				<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+						HorizontalAlignment="Stretch"
+						Height="38" Width="175"
+						VerticalContentAlignment="Center"
+						Command="{Binding CancelPurchase}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Backspace"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Cancel Purchase"/>
+					</StackPanel>
+				</Button>
+
+				<Border Width="230" BorderBrush="Gainsboro" Background="WhiteSmoke"
+						HorizontalAlignment="Center" VerticalAlignment="Bottom"
+						BorderThickness="1" Padding="10" Margin="0,10,10,0">
+					
+					<StackPanel >
+						<TextBlock Text="Items" FontSize="14" FontStyle="Italic" FontWeight="Bold" Margin="0,5"/>
+						<TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap"
+								   Text="{Binding CartInfo, FallbackValue='Storyboard Royalties 100'}"
+								   FontSize="12"/>
+
+					</StackPanel>
+				</Border>
+			</DockPanel>
+		</Grid>
+	</Border>
+</UserControl>

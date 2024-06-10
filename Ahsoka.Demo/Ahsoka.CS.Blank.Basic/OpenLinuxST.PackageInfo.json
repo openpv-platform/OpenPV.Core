@@ -1,0 +1,24 @@
+{
+  "version": "1.247.1.20053",
+  "applicationType": "Dotnet",
+  "userInterfaceType": "None",
+  "execCommand": "Ahsoka.CS.Blank.Basic",
+  "packageName": "Ahsoka.CS.Blank.Basic",
+  "packageDescription": "Basic Ahsoka Starter Project",
+  "applicationVersion": "1.0",
+  "packageApplicationFolder": "publish",
+  "packageOutputDirectory": "../PackageOutput",
+  "includeInstallerUI": false,
+  "dotNetInfo": {
+    "projectPath": "Ahsoka.CS.Blank.Basic.csproj",
+    "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
+  },
+  "canCalibrationFiles": {},
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
+  "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "components": []
+}

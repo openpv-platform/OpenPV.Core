@@ -1,0 +1,332 @@
+# ASP.NET Core (.NET Framework)
+# Build and test ASP.NET Core projects targeting the full .NET Framework.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+  branches:
+    include:
+    - develop
+  paths:
+    include:
+    - Ahsoka.Platform/*
+
+variables:
+    solutionname: 'Ahsoka.Platform'
+    solution: 'Ahsoka.Platform/*.sln'
+    buildPlatform: 'Any CPU'
+    buildConfiguration: 'Release'
+    system_accesstoken: $(System.AccessToken)
+    isMain: $[eq(variables['Build.SourceBranch'], 'refs/heads/main')]
+    isRelease: $[startsWith(variables['Build.SourceBranch'], 'refs/heads/release/')]
+    isDevelop: $[eq(variables['Build.SourceBranch'], 'refs/heads/develop')]
+  
+# This build has 2 Stages
+# Stage 1: Builds App on Mac VM. (macos-latest)
+# Stage 2: Builds the PC App 
+# Stage 3: Uploads to Spark:
+stages:
+
+- stage: MACBuild
+  condition: true
+  jobs:
+  - job: BuildOnMac
+
+    pool: # JakesDesktopMac
+       vmImage: 'macOS-latest'
+    
+    steps:
+    - checkout: self
+      submodules: recursive
+      persistCredentials: true
+
+    - task: UseDotNet@2
+      displayName: Load DotNet 7
+      inputs:
+        version: '7.x'
+        
+    - task: gitversion/setup@0
+      displayName: Install GitVersion
+      inputs:
+        versionSpec: '5.8.1'
+        preferLatestVersion: true
+
+    - task: gitversion/execute@0
+      displayName: Determine Version
+      inputs:
+        useConfigFile: true
+        configFilePath: 'GitVersion.yml'
+
+    - task: DotNetCoreCLI@2
+      displayName: Restore Projects
+      inputs:
+        command: 'restore'
+        projects: |
+          **/Ahsoka.PublishOutputs.Mac.csproj
+          **/Ahsoka.Installer.UI.csproj
+          **/Ahsoka.CustomerTools.csproj
+        feedsToUse: 'select'
+
+    - task: InstallAppleCertificate@2
+      inputs:
+        certSecureFile: 'AppleDistro.p12'
+        certPwd: '$(AppleCertPassword)'
+        keychain: 'temp'
+        setUpPartitionIdACLForPrivateKey: true
+
+    - task: InstallAppleCertificate@2
+      inputs:
+        certSecureFile: 'AppleCert.p12'
+        certPwd: '$(AppleCertPassword)'
+        keychain: 'temp'
+        setUpPartitionIdACLForPrivateKey: true
+
+    - task: DotNetCoreCLI@2
+      displayName: Build Mac TargetSupport Packages
+      inputs:
+        command: 'build'
+        arguments: 'Ahsoka.Platform/Ahsoka.PublishOutputs.Mac/Ahsoka.PublishOutputs.Mac.csproj --configuration $(buildConfiguration)'
+
+    - task: CmdLine@2
+      displayName: 'Notorize OpenPV Application'
+      inputs:
+        script: |
+            echo $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/
+            xcrun notarytool submit  $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/MacOS.DeveloperToolkit.zip   --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
+            xcrun stapler staple $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app
+            ditto -c -k --sequesterRsrc --keepParent $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app $(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/MacOS.DeveloperToolkit.zip
+
+    - task: CmdLine@2
+      displayName: 'Notorize Command Line Items'
+      inputs:
+        script: |
+            echo $(Build.SourcesDirectory)$(Build.SourcesDirectory)/PlatformSupport/MacOSARM64_TargetSupport/
+            xcrun notarytool submit  $(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/MacOSARM64_TargetSupport.zip  --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
+
+    - task: CopyFiles@2
+      displayName: 'Moving Files to Upload Area'
+      inputs:
+        Contents: '$(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/SparkUpload'
+        CleanTargetFolder: true
+        OverWrite: true
+        flattenFolders: true
+    
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publishing Mac Artifacts'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+   
+- stage: PCBuild
+
+  dependsOn:
+
+  jobs:
+  - job: BuildOnLocalPC
+    condition: true
+    pool: 'OpenPV Pool'
+   
+    steps:
+
+    - task: gitversion/setup@0
+      displayName: Install GitVersion
+      inputs:
+        versionSpec: '5.x'
+        preferLatestVersion: true
+
+    - task: gitversion/execute@0
+      displayName: Determine Version
+      inputs:
+        useConfigFile: true
+        configFilePath: 'GitVersion.yml'
+
+    - task: UseDotNet@2
+      displayName: Load DotNet 7
+      inputs:
+        version: '7.x'
+
+    - task: NuGetAuthenticate@0
+      displayName: 'NuGet Authenticate'
+  
+    - task: NuGetToolInstaller@1
+
+    - task: NuGetCommand@2
+      displayName: Restore Platform
+      inputs:
+        command: 'restore'
+        restoreSolution: 'Ahsoka.Platform/Ahsoka.Platform.sln'
+        feedsToUse: 'config'
+        nugetConfigPath: 'Ahsoka.Platform/nuget.config'
+        externalFeedCredentials: 'Ahsoka.Nuget'
+        noCache: true
+
+    - task: NuGetCommand@2
+      displayName: Restore Installer
+      inputs:
+        command: 'restore'
+        restoreSolution: 'Ahsoka.Platform/**/*.wixproj'
+        feedsToUse: 'config'
+        nugetConfigPath: 'Ahsoka.Platform/nuget.config'
+        externalFeedCredentials: 'Ahsoka.Nuget'
+        noCache: true
+
+    - task: NuGetCommand@2
+      displayName: Restore Demos
+      inputs:
+        command: 'restore'
+        restoreSolution: 'Ahsoka.Demo/**/*.csproj'
+        feedsToUse: 'config'
+        nugetConfigPath: 'Ahsoka.Demo/nuget.config'
+        externalFeedCredentials: 'Ahsoka.Nuget'
+        noCache: true
+  
+    - task: CmdLine@2
+      displayName: 'Add User Secrets'
+      inputs:
+        script: |
+          dotnet user-secrets set "SparkUrl" $(SparkTestUrl) --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets set "SparkLogin" $(SparkTestLogin) --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets set "SparkPassword" $(SparkTestPassword) --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
+
+    - task: VSBuild@1
+      displayName: 'Build Pre-Requisites'
+      inputs:
+        solution: 'Ahsoka.Platform/Ahsoka.BuildPreReqs/Ahsoka.BuildPreReqs.csproj'
+        vsVersion: '17.0'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+        msbuildArchitecture: 'x64'
+
+    - task: VSBuild@1
+      displayName: 'Build Ahsoka.Platform On PC'
+      inputs:
+        solution: '$(solution)'
+        vsVersion: '17.0'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+        msbuildArchitecture: 'x64'
+
+    - task: DotNetCoreCLI@2
+      displayName: Run Ahsoka Tests
+      enabled: true
+      inputs:
+        command: test
+        projects: '**/*Ahsoka.Test/*.csproj'
+        arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --blame-hang --blame-hang-timeout 120s --logger:"console;verbosity=detailed" --settings: Ahsoka.Platform/codecoverage.runsettings'
+
+    - task: CmdLine@2
+      displayName: 'Remove User Secrets'
+      inputs:
+        script: |
+          dotnet user-secrets remove "SparkUrl"  --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets remove "SparkLogin"  --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets remove "SparkPassword" --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
+
+    - task: CopyFiles@2
+      displayName: 'Moving Spark Artifacts to Upload Area'
+      inputs:
+        Contents: '$(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/**'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/SparkUpload'
+        OverWrite: true
+        flattenFolders: true
+    
+    - task: CopyFiles@2
+      displayName: 'Moving Nugets to Upload Area'
+      inputs:
+        Contents: '$(Build.SourcesDirectory)/**/*.nupkg'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
+        OverWrite: true
+        flattenFolders: true
+
+    - task: CopyFiles@2
+      displayName: 'Moving CLI to Upload Area'
+      inputs:
+        Contents: '$(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Windows64_TargetSupport/CommandLine/**/*'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)/cli'
+        OverWrite: true
+        flattenFolders: true
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Publishing PC Artifacts'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+        publishLocation: 'Container'
+
+- stage: SparkUpload
+  dependsOn:
+    - PCBuild
+   
+  jobs:
+  - job: FinalizeBuild
+    condition: true
+    pool: 'OpenPV Pool'  
+    
+    steps:
+
+    - checkout: self
+      submodules: recursive
+      persistCredentials: true
+    
+    - task: DownloadBuildArtifacts@1
+      displayName: 'Fetching Spark Artifacts to Publish'
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'drop'
+        downloadPath: '$(Build.SourcesDirectory)\PublishArea'
+     
+    - task: DownloadSecureFile@1
+      displayName: 'Download PowerVision Cert'
+      inputs:
+        secureFile: PowerVisionSigningCert.p12
+
+    - task: CmdLine@2
+      displayName: 'Sign the Installer'
+      inputs:
+        script: |
+            smctl certificate download --keypair-alias=$(DigiCert_KEY_PAIR_ALIAS) --name=KeyCert.pem --out=$(Agent.TempDirectory)
+            signtool sign /tr http://timestamp.digicert.com  /d "OpenPV.Installer"  /td SHA256 /fd SHA256 /csp "DigiCert Signing Manager KSP" /kc "$(DigiCert_KEY_PAIR_ALIAS)" /f $(Agent.TempDirectory)\KeyCert.pem $(Build.SourcesDirectory)/PublishArea/drop/SparkUpload/OpenPV.Installer.msi
+      env:
+        SM_HOST: https://clientauth.one.digicert.com
+        SM_API_KEY: $(DigiCert_API_KEY)
+        SM_CLIENT_CERT_PASSWORD: $(DigiCert_SECRET)
+        SM_CLIENT_CERT_FILE: $(Agent.TempDirectory)/PowerVisionSigningCert.p12
+        SM_LOG_OUTPUT: console
+   
+    - task: DotNetCoreCLI@2
+      displayName: Install EnovationCloud Command Line Tools
+      inputs:
+        command: 'custom'
+        custom: 'tool'
+        arguments: 'update --global  EnovationCloud.CommandLine --version 4.1.0'
+
+    - task: CmdLine@2
+      displayName: 'Push Packages to Spark'
+      inputs:
+        script: |
+          EnovationCloud.CommandLine --UploadToSpark $(Build.SourcesDirectory)/PublishArea/drop/SparkUpload sparkserviceprod.azurewebsites.net  $(SparkLogin) $(SparkPassword) $(Build.BuildNumber)
+
+    - task: NuGetCommand@2
+      displayName: 'Push to Nuget.org if dev or main'
+      condition: and(succeeded(), or(eq(variables.isMain, 'true'), eq(variables.isRelease, 'true'), eq(variables.isDevelop, 'true')))
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.SourcesDirectory)/PublishArea/drop/nuget/Ahsoka.*.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'Ahsoka.Nuget'      
+
+    - task: PowerShell@2
+      condition: and(succeeded(), or(eq(variables.isMain, 'true'), eq(variables.isRelease, 'true')))
+      displayName: 'Tag Sources'
+      env:       
+        BuildNumber: $(Build.BuildNumber)
+      inputs:
+        targetType: 'inline'
+        script: |
+           Write-Host "Tagging Build: $env:BuildNumber"
+
+           git tag $env:BuildNumber
+           git push origin $env:BuildNumber

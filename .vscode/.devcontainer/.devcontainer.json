@@ -1,0 +1,6 @@
+{
+    "image": "enovationcontrols/stm_base",
+    "mounts": [
+      "source=c:\\Projects,target=/projects,type=bind,consistency=cached"
+    ]
+  }

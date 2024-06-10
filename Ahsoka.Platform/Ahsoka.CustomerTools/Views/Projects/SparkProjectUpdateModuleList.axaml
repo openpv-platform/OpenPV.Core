@@ -1,0 +1,100 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.CustomerTools.Views"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="450"  Background="#33555555"
+             x:Class="Ahsoka.CustomerTools.Views.SparkProjectUpdateModuleList">
+	<UserControl.Styles>
+		<!--Use Classes="RadioButtonListBox" in any ListBox to represent its items as RadioButtons-->
+		<Style Selector="ListBox.RadioButtonListBox">
+			<Setter Property="BorderBrush" Value="Transparent"/>
+		</Style>
+		<Style Selector="ListBox.RadioButtonListBox ListBoxItem">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Border Background="Transparent">
+							<RadioButton Content="{TemplateBinding ContentPresenter.Content}"
+										 VerticalAlignment="Center"
+										 IsChecked="{Binding Path=IsSelected,RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}"/>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</UserControl.Styles>
+	<Border Width="650" Height="350" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" 
+			BorderThickness="1" Background="White">
+		<Grid Margin="10,10,0,10"  ColumnDefinitions="*,250" >
+			<Grid Margin="5" RowDefinitions="Auto,Auto,*" >
+
+				<Border Grid.Row="1" BorderBrush="Gainsboro"  BorderThickness="0,1,0,0"
+						Margin="20,32,-10,20" Height="2"/>
+				
+				<TextBlock Grid.Row="1" FontSize="24"  Margin="10,17,0,0"
+						   Text="Add Licenses "
+						   Foreground="SteelBlue" HorizontalAlignment="Left" Background="White"  />
+
+				<Grid DataContext="{Binding AvailableModules[0]}" Grid.Row="2"
+					  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  Margin="15,5,0,5" >
+					<Grid ColumnDefinitions="auto" RowDefinitions="auto,*">
+						<Grid  RowDefinitions="*,auto">
+							<ListBox ItemsSource="{Binding Packages}"
+									 SelectedItem="{Binding SelectedPackage}"
+									 Margin="15" Background="White"
+									 Classes="RadioButtonListBox">
+							</ListBox>
+							<StackPanel Grid.Row="1"  Orientation="Horizontal" Margin="10,0,10,10">
+								<TextBlock Text="Purchase Quantity:" Margin="10" />
+								<TextBox Text="{Binding PurchaseQuantity}" Width="100"/>
+							</StackPanel>
+						</Grid>
+					</Grid>
+				</Grid>
+			</Grid>
+
+			<DockPanel Margin="0,13,0,0" Grid.Column="2"
+					   HorizontalAlignment="Stretch"
+					   VerticalAlignment="Stretch" >
+
+				<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+							HorizontalAlignment="Stretch"
+							Height="38" Width="175"
+							VerticalContentAlignment="Center"
+							Command="{Binding PurchaseModules}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Cart"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Add Packs"/>
+					</StackPanel>
+				</Button>
+
+				<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+						HorizontalAlignment="Stretch"
+						Height="38" Width="175"
+						VerticalContentAlignment="Center"
+						Command="{Binding CancelPurchase}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Backspace"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Cancel Purchase"/>
+					</StackPanel>
+				</Button>
+
+				<Border Width="230" BorderBrush="Gainsboro" Background="WhiteSmoke"
+						HorizontalAlignment="Center" VerticalAlignment="Bottom"
+						BorderThickness="1" Padding="10" Margin="0,10,10,0">
+					
+					<StackPanel >
+						<TextBlock Text="Items" FontSize="14" FontStyle="Italic" FontWeight="Bold" Margin="0,5"/>
+						<TextBlock HorizontalAlignment="Left" TextWrapping="NoWrap"
+								   Text="{Binding CartInfo, FallbackValue='Storyboard Royalties 100'}"
+								   FontSize="12"/>
+
+					</StackPanel>
+				</Border>
+			</DockPanel>
+		</Grid>
+	</Border>
+</UserControl>

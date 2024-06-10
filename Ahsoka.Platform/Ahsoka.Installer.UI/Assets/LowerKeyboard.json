@@ -1,0 +1,130 @@
+{
+  "KeyRow": [
+    {
+      "HorizontalRowOffset": 0,
+      "VerticalTextOffset": 4,
+      "KeyInfo": [
+        {
+          "KeyText": "q"
+        },
+        {
+          "KeyText": "w"
+        },
+        {
+          "KeyText": "e"
+        },
+        {
+          "KeyText": "r"
+        },
+        {
+          "KeyText": "t"
+        },
+        {
+          "KeyText": "y"
+        },
+        {
+          "KeyText": "u"
+        },
+        {
+          "KeyText": "i"
+        },
+        {
+          "KeyText": "o"
+        },
+        {
+          "KeyText": "p"
+        },
+        {
+          "KeyText": "["
+        },
+        {
+          "KeyText": "]"
+        }
+      ]
+    },
+    {
+      "HorizontalRowOffset": 10,
+      "VerticalTextOffset": 4,
+      "KeyInfo": [
+        {
+          "KeyText": "a"
+        },
+        {
+          "KeyText": "s"
+        },
+        {
+          "KeyText": "d"
+        },
+        {
+          "KeyText": "f"
+        },
+        {
+          "KeyText": "g"
+        },
+        {
+          "KeyText": "h"
+        },
+        {
+          "KeyText": "j"
+        },
+        {
+          "KeyText": "k"
+        },
+        {
+          "KeyText": "l"
+        },
+        {
+          "KeyText": ";"
+        },
+        {
+          "KeyText": "'"
+        }
+      ]
+    },
+    {
+      "HorizontalRowOffset": 0,
+      "VerticalTextOffset": 4,
+      "KeyInfo": [
+        {
+          "KeyText": "SymbolsAndNumbers",
+          "State": 3
+        },
+        {
+          "KeyText": "z"
+        },
+        {
+          "KeyText": "x"
+        },
+        {
+          "KeyText": "c"
+        },
+        {
+          "KeyText": "v"
+        },
+        {
+          "KeyText": "b"
+        },
+        {
+          "KeyText": "n"
+        },
+        {
+          "KeyText": "m"
+        },
+        {
+          "KeyText": ","
+        },
+        {
+          "KeyText": "."
+        },
+        {
+          "KeyText": "Space",
+          "State": 5
+        },
+        {
+          "KeyText": "Backspace",
+          "State": 4
+        }
+      ]
+    }
+  ]
+}

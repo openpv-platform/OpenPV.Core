@@ -1,0 +1,270 @@
+using Ahsoka.Installer.Components;
+using Ahsoka.ServiceFramework;
+using Ahsoka.System;
+using Ahsoka.System.Hardware;
+using Ahsoka.Utility;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading;
+
+namespace Ahsoka.Test;
+
+[TestClass]
+public class GeneralTests : ViewModelBase
+{
+    private object myValue = null;
+    public object MyValue { get { return this.LazyLoad(ref myValue); } }
+
+    public TestContext TestContext { get; set; }
+
+    [ClassCleanup]
+    public static void StopLogging()
+    {
+        AhsokaLogging.StopMemoryLog();
+    }
+
+    [TestMethod]
+    public void LoadHardwareInfo()
+    {
+        AhsokaLogging.StartMemoryLog(100, AhsokaVerbosity.Low);
+
+        //Pull Sample Hardware Def
+        string solution_dir = Path.GetDirectoryName(Environment.ProcessPath);
+        while (!solution_dir.EndsWith("Ahsoka.Platform"))
+            solution_dir = Path.GetDirectoryName(solution_dir);
+
+        var fileName = Path.Combine(solution_dir, @"Ahsoka.Core\Resources\OpenViewS50HardwareConfiguration.json");
+
+        string jsonText = File.ReadAllText(fileName);
+
+        // Serialize a Hardware Info from both Manual and Auto and compare 
+        // should find if someone missed a property
+        var info1 = JsonConvert.DeserializeObject<HardwareInfo>(jsonText);
+        var info2 = JsonUtility.Deserialize<HardwareInfo>(jsonText);
+
+        string newText1 = JsonConvert.SerializeObject(info1);
+        string newText2 = JsonUtility.Serialize(info2);
+
+        //File.WriteAllText(@"C:\Users\Jake\Desktop\HardwareConfiguration.test1", newText1);
+        //File.WriteAllText(@"C:\Users\Jake\Desktop\HardwareConfiguration.test2", newText2);
+
+        Assert.AreEqual(newText1, newText2);
+    }
+
+    [TestMethod]
+    public void ClassLoaderTest()
+    {
+        var subClasses = ClassLoader.GetSubclasses(typeof(FileSystemComponentBase));
+        Assert.IsTrue(subClasses.Any());
+
+        var interfaces = ClassLoader.GetItemsWithInterface(typeof(ICanCancel));
+        Assert.IsTrue(interfaces.Any());
+    }
+
+
+    [TestMethod]
+    public void GeneralCoverageTests()
+    {
+        // Random small accesses to increase code coverage
+
+        var info = FirmwarePreRequisites.GetBSPInfo(PlatformFamily.OpenViewLinux);
+        Console.WriteLine($"{info.RequiredCodeName}:{info.MinVersion}:{info.FirmwareFilter}");
+        info = FirmwarePreRequisites.GetBSPInfo(PlatformFamily.OpenViewLinuxPro);
+        Console.WriteLine($"{info.RequiredCodeName}:{info.MinVersion}:{info.FirmwareFilter}");
+        info = FirmwarePreRequisites.GetBSPInfo(PlatformFamily.Windows64);
+        Console.WriteLine($"{info.RequiredCodeName}:{info.MinVersion}:{info.FirmwareFilter}");
+
+        PlatformSupportPathInfo.GetPlatformResourcePath(PlatformFamily.Windows64);
+
+        foreach (var item in Enum.GetValues<InstallerPaths>())
+            SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(item);
+
+        Assert.IsNull(HardwareInfo.GetHardwareInfoByDescription("BadName"));
+        Console.WriteLine(SystemInfo.HardwareInfo.PlatformDescription);
+
+        ClassLoader.AddAssembly(Assembly.GetExecutingAssembly());
+
+        Assert.IsNotNull(this.MyValue); // Test Lazy Loader
+    }
+
+
+
+    [TestMethod]
+    public void ProcessUtilityTests()
+    {
+        // Random small accesses to increase code coverage
+        ProcessUtility.RunProcessScript("cmd /c dir", ".", out string _, out string _);
+        ProcessUtility.RunProcessInWindow("cmd", "/c dir", false, ".");
+        var _ = ProcessUtility.CreateProcessInWindow("cmd", "/c dir", "."); // Don't start.
+    }
+
+
+
+    [TestMethod]
+    public void FilePathTests()
+    {
+        string permData = ApplicationDataPaths.GetPermanentDataPath();
+
+        string permAppData = Path.Combine(permData, "MyTestFile");
+        File.WriteAllText(permAppData, "MyTestFile");
+        Assert.IsTrue(File.Exists(permAppData));
+
+        string localData = ApplicationDataPaths.GetLocalDataPath();
+
+        string localAppData = Path.Combine(localData, "MyTestFile");
+        File.WriteAllText(localAppData, "MyTestFile");
+        Assert.IsTrue(File.Exists(localAppData));
+
+        string path = ApplicationDataPaths.GetPersistentDataPath();
+
+        string appData = Path.Combine(path, "MyTestFile");
+        File.WriteAllText(appData, "MyTestFile");
+        Assert.IsTrue(File.Exists(appData));
+
+        string serviceDataPath = SystemInfo.HardwareInfo.TargetPathInfo.GetServiceDataPath("MyService");
+        string serviceData = Path.Combine(serviceDataPath, "MyTestFile");
+        File.WriteAllText(serviceData, "MyTestServiceFile");
+        Assert.IsTrue(File.Exists(serviceData));
+
+        // Clear App Folder...Service Should Still Exist
+        ApplicationDataPaths.ClearAppData();
+        Assert.IsTrue(!File.Exists(appData));
+        Assert.IsTrue(!File.Exists(localAppData));
+
+        Assert.IsTrue(File.Exists(serviceData));
+
+        // Service Data should Go.
+        ApplicationDataPaths.ClearAppData(true, true);
+        Assert.IsTrue(!File.Exists(serviceData));
+
+        /// Verify Permanent
+        Assert.IsTrue(File.Exists(permAppData));
+        File.Delete(permAppData);
+    }
+
+    [TestMethod]
+    public void FileTests()
+    {
+
+        string testValue = "TestValue";
+
+        string tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string tempFolder2 = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        string tempFile = Path.Combine(tempFolder, Guid.NewGuid().ToString());
+        string tempFile2 = Path.Combine(tempFolder2, Path.GetFileName(tempFile));
+
+        Directory.CreateDirectory(tempFolder);
+        File.WriteAllText(tempFile, testValue);
+
+        // Copy Folder and Verify the Copied Result
+        FileUtilities.CopyDirectory(tempFolder, tempFolder2, true, new Progress<String>());
+
+        string text = File.ReadAllText(tempFile2);
+
+        Assert.AreEqual(testValue, text);
+
+        Directory.Delete(tempFolder, true);
+        Directory.Delete(tempFolder2, true);
+
+    }
+
+    [TestMethod]
+    public void ProcessUtilityTest()
+    {
+        string commandLine = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily.Windows64), "CommandLine", "Ahsoka.CommandLine");
+
+        StringBuilder builder = new();
+        CancellationTokenSource source = new();
+        var progress = new LocalProgress<CommandOutput>(info =>
+        {
+            builder.AppendLine(info.Data);
+        });
+
+        ProcessUtility.RunProcessAsync(commandLine, "InvalidArgs", null, progress, source.Token);
+
+        string results = builder.ToString();
+
+        // Check that Critical Plugins Loaded.
+        Assert.IsTrue(results.Contains("--StartInstallService"), results);
+        Assert.IsTrue(results.Contains("--LoadApplication"), results);
+        Assert.IsTrue(results.Contains("--Package"), results);
+        Assert.IsTrue(results.Contains("--FactoryPrep"), results);
+        Assert.IsTrue(results.Contains("--Prep"), results);
+        Assert.IsTrue(results.Contains("--GetHardwareModel"), results);
+        Assert.IsTrue(results.Contains("--GetHardwareSerialNumber"), results);
+        Assert.IsTrue(results.Contains("--StartServices"), results);
+
+    }
+
+    [TestMethod]
+    public void TestSecurityFunctions()
+    {
+        using SshKeyGenerator gen = new(1024);
+        string privateKey = gen.ToPrivateKey();
+        Assert.IsTrue(privateKey.Contains("-----END RSA PRIVATE KEY-----"));
+
+        string toPublicKey = gen.ToPublicKey();
+        Assert.IsTrue(toPublicKey.Contains("-----END PUBLIC KEY-----"));
+
+        string toRfcPublicKey = gen.ToRfcPublicKey("MyExampleKey");
+        Assert.IsTrue(toRfcPublicKey.Contains("ssh-rsa"));
+
+        string toXml = gen.ToXml();
+        Assert.IsTrue(toXml.Contains("<RSAKeyValue>"));
+    }
+
+    [TestMethod]
+    public void StringTests()
+    {
+        var result = "MyValueIsHigh".SplitCamelCase();
+        Assert.AreEqual(result, "My Value Is High");
+
+        StringBuilder builder = new();
+        builder.Append("Line1\n");
+        builder.Append("Line2");
+        builder = builder.RemoveToLastLine();
+        Assert.AreEqual("Line1", builder.ToString());
+    }
+
+
+    [TestMethod]
+    public void SimpleViewModelTest()
+    {
+        TestViewModel model = new(this)
+        {
+            ValueObject = this,
+            Value = 1234
+        };
+
+        Assert.AreEqual(model.ParentViewModel, this);
+        Assert.AreEqual(model.ValueObject, this);
+        Assert.AreEqual(model.Value, 1234);
+    }
+
+    public class TestViewModel : ChildViewModelBase<GeneralTests>
+    {
+        public TestViewModel(GeneralTests tests) :
+            base(tests)
+        { }
+
+        private int myValue;
+        private GeneralTests myValueObject;
+
+        public int Value
+        {
+            get { return myValue; }
+            set { OnSetValue(ref myValue, value); }
+        }
+
+        public GeneralTests ValueObject
+        {
+            get { return myValueObject; }
+            set { OnSetObject(ref myValueObject, value); }
+        }
+    }
+}

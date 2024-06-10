@@ -1,0 +1,173 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="135"
+             x:Class="Ahsoka.CustomerTools.Views.SparkSubscriptionSelectionView" >
+
+	<Border BoxShadow="2 3 6 2 DarkGray" Margin="15,7,22,7"  Height="100"
+			 BorderBrush="Gainsboro" BorderThickness="1">
+		<Grid>
+			<Grid VerticalAlignment="Stretch">
+				<StackPanel Orientation="Horizontal" Margin="20,35" HorizontalAlignment="Left"
+							IsVisible="{Binding IsFreeTier, FallbackValue=true}">
+
+					<StackPanel Margin="24,0" Width="200" >
+						<StackPanel Orientation="Horizontal" >
+							<material:MaterialIcon Width="16" Height="16" Foreground="SteelBlue" Kind="Star"></material:MaterialIcon>
+							<TextBlock Margin="4" Text="Create Apps for OpenView"
+								    Grid.Row="4" Foreground="Gray"/>
+						</StackPanel>
+
+						<StackPanel Orientation="Horizontal" >
+							<material:MaterialIcon Width="16" Height="16" Foreground="SteelBlue" Kind="Star"></material:MaterialIcon>
+							<TextBlock Margin="4" Text="Generate Packages (OPV)"
+								    Grid.Row="4" Foreground="Gray"/>
+						</StackPanel>
+					</StackPanel>
+					<StackPanel Width="200">
+						<StackPanel Orientation="Horizontal" >
+							<material:MaterialIcon Width="16" Height="16" Foreground="SteelBlue" Kind="Star"></material:MaterialIcon>
+							<TextBlock Margin="4" Text="Run / Test on Desktops"
+								     Grid.Row="4" Foreground="Gray"/>
+						</StackPanel>
+						<StackPanel Orientation="Horizontal" >
+							<material:MaterialIcon Width="16" Height="16" Foreground="SteelBlue" Kind="Star"></material:MaterialIcon>
+							<TextBlock Margin="4" Text="Direct Device Loads (USB)"
+								   Grid.Row="4" Foreground="Gray"/>
+						</StackPanel>
+					</StackPanel>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal" Margin="20,35" HorizontalAlignment="Left"
+							IsVisible="{Binding !IsFreeTier, FallbackValue=true}">
+					<StackPanel  Margin="24,0" Width="200">
+						<StackPanel Orientation="Horizontal" >
+							<material:MaterialIcon Width="16" Height="16" Foreground="Gray" Kind="Star"></material:MaterialIcon>
+							<TextBlock Margin="4" Text="All OpenPV Free Features + "
+								    Grid.Row="4" Foreground="Gray"/>
+						</StackPanel>
+						<StackPanel Margin="0,0,0,0" Orientation="Horizontal">
+							<material:MaterialIcon Width="16" Height="16" Foreground="SteelBlue" Kind="Star"></material:MaterialIcon>
+							<TextBlock Margin="4" Text="Over the Air Updates "
+								   Grid.Row="4" Foreground="Gray"/>
+						</StackPanel>
+					</StackPanel>
+
+					<StackPanel Width="200">
+						<StackPanel  Orientation="Horizontal">
+							<material:MaterialIcon  Width="16" Height="16" Foreground="SteelBlue" Kind="Star"></material:MaterialIcon>
+							<TextBlock Margin="4" Text="Cloud Storage for Apps and Keys"
+								   Grid.Column="0" Grid.Row="4" Foreground="Gray"/>
+						</StackPanel>
+						<StackPanel Orientation="Horizontal"  IsVisible="{Binding !IsCustomTier}">
+							<material:MaterialIcon  Width="16" Height="16" Foreground="SteelBlue" Kind="Star"></material:MaterialIcon>
+							<TextBlock Margin="4" Text="{Binding MaxDevices, StringFormat='Support Up To {0} Devices', FallbackValue='OTA Device Limit: 0'}"
+								   Grid.Column="0" Grid.Row="4" Foreground="Gray"/>
+						</StackPanel>
+					</StackPanel>
+				</StackPanel>
+			</Grid>
+
+
+			<TextBlock HorizontalAlignment="Left" Margin="22,10" VerticalAlignment="Top"
+				Text="{Binding TierNameText, FallbackValue='OpenPV'}"
+				FontSize="16" Foreground="SteelBlue"
+				IsVisible="{Binding IsCurrentTierMonthly}" />
+
+			<TextBlock HorizontalAlignment="Left" Margin="22,10" VerticalAlignment="Top"
+						Text="{Binding TierNameText, FallbackValue='OpenPV'}"
+						FontSize="16" Foreground="SteelBlue"
+						IsVisible="{Binding IsCurrentTierYearly}" />
+
+			<TextBlock HorizontalAlignment="Left" Margin="22,10" VerticalAlignment="Top"
+				Text="{Binding TierName, StringFormat=' {0}', FallbackValue='OpenPV'}"
+				FontSize="16"  Foreground="Gray"
+				IsVisible="{Binding !IsCurrentTier}" />
+
+			<Border VerticalAlignment="Stretch" HorizontalAlignment="Right"
+						  Width="350" Background="WhiteSmoke"/>
+
+			<Border IsVisible="{Binding !IsCurrentTier}" VerticalAlignment="Stretch" HorizontalAlignment="Left"
+				  Width="15" Margin="-1" Background="Gainsboro"/>
+
+
+			<Border IsVisible="{Binding IsCurrentTier}" VerticalAlignment="Stretch" HorizontalAlignment="Left"
+			  Width="15" Margin="-1" Background="SteelBlue"/>
+
+			<Grid Width="350" IsVisible="{Binding IsFreeTier, FallbackValue=true}"
+			  VerticalAlignment="Stretch" HorizontalAlignment="Right">
+
+				<StackPanel Orientation="Vertical" Margin="5"
+									VerticalAlignment="Center" HorizontalAlignment="Left" >
+
+					<StackPanel HorizontalAlignment="Left" Orientation="Horizontal" >
+						<Button Background="White" IsEnabled="{Binding !IsCurrentTierMonthly}"
+							Height="34" BorderBrush="SteelBlue" Width="165" Margin="20,0,10,0"
+							VerticalContentAlignment="Center"  VerticalAlignment="Center"	Command="{Binding ChangeSubscriptionMonthly}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Subscriptions"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Choose Free"/>
+							</StackPanel>
+						</Button>
+						<TextBlock VerticalAlignment="Center" Text="Free: $0" Padding="3"
+							FontSize="14" Margin="5,5,0,5"  FontStyle="Italic" Foreground="SteelBlue"/>
+					</StackPanel>
+
+				</StackPanel>
+			</Grid>
+
+			<Grid Width="350" IsVisible="{Binding !IsFreeTier, FallbackValue=true}"
+				  VerticalAlignment="Stretch" HorizontalAlignment="Right">
+
+
+				<StackPanel IsVisible="{Binding !IsCustomTier}" Orientation="Vertical" Margin="5"
+							VerticalAlignment="Center" HorizontalAlignment="Left" >
+
+					<StackPanel HorizontalAlignment="Left" Orientation="Horizontal" >
+						<Button Background="White" IsEnabled="{Binding !IsCurrentTierMonthly}"
+							Height="34" BorderBrush="SteelBlue" Width="165" Margin="20,0,10,10"
+							VerticalContentAlignment="Center"  VerticalAlignment="Center"	Command="{Binding ChangeSubscriptionMonthly}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Subscriptions"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Choose Monthly"/>
+							</StackPanel>
+						</Button>
+						<TextBlock VerticalAlignment="Center" Text="{Binding MonthlyPrice, StringFormat='Monthly: {0} ', FallbackValue='Monthly: $99.99'}"
+							FontSize="14" Margin="5,5,0,15"  FontStyle="Italic" Foreground="SteelBlue"/>
+
+					</StackPanel>
+
+					<StackPanel HorizontalAlignment="Left"   Orientation="Horizontal" >
+						<Button Background="White" IsEnabled="{Binding !IsCurrentTierYearly}"
+							Height="34" BorderBrush="SteelBlue" Width="165" Margin="20,0,10,0"
+							VerticalContentAlignment="Center"  VerticalAlignment="Center"	Command="{Binding ChangeSubscriptionYearly}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Subscriptions"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Choose Yearly"/>
+							</StackPanel>
+						</Button>
+						<TextBlock VerticalAlignment="Center" Text="{Binding YearlyPrice, StringFormat='Yearly: {0} ' FallbackValue='Yearly: $99.99'}"
+							FontSize="14"  Margin="5,5,0,5"  FontStyle="Italic" Foreground="SteelBlue"/>
+
+					</StackPanel>
+				</StackPanel>
+			</Grid>
+
+
+			<StackPanel IsVisible="{Binding IsCustomTier}" Orientation="Vertical" Margin="25"
+						VerticalAlignment="Center" HorizontalAlignment="Right" Width="300">
+			
+				<TextBlock VerticalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
+					Text="Contact Sales for Subscription Pricing above 10,000 Devices"
+					FontSize="14" Margin="5,5,0,5"  FontStyle="Italic" Foreground="SteelBlue"/>
+
+			</StackPanel>
+
+
+		</Grid>
+	</Border>
+
+</UserControl>

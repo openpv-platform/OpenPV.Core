@@ -1,0 +1,79 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="450" Background="#33555555"
+             x:Class="Ahsoka.CustomerTools.Views.SparkProjectArtifactView" >
+
+	<Border Margin="20" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
+		<Grid Margin="10,10,0,10" Grid.ColumnDefinitions="*,220" Grid.RowDefinitions="auto,*">
+			<TextBlock FontSize="22" Grid.Row="0"  Text="{Binding ParentViewModel.TeamName, StringFormat='Artifacts for {0}', FallbackValue='Artifacts for None'}" />
+			<DataGrid Margin="0,45,10,0"
+					   HorizontalAlignment="Stretch"
+					   VerticalAlignment="Stretch"
+						ItemsSource="{Binding DevelopmentKeys}"
+						SelectedItem="{Binding SelectedDevelopmentKey}"
+						AutoGenerateColumns="False" >
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Key Name" Binding="{Binding ArtifactName}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Creator"  Binding="{Binding ArtifactCreator}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="IsLocal?"  Binding="{Binding IsLocal}" IsReadOnly="True"/>
+				</DataGrid.Columns>
+			</DataGrid>
+			<DockPanel Margin="0,13,0,0" Grid.Column="2" VerticalAlignment="Top"
+					   HorizontalAlignment="Center">
+
+				<Button Margin="3,3,5,3" DockPanel.Dock="Top"
+										HorizontalAlignment="Stretch"
+										Height="38" Width="165"
+										VerticalContentAlignment="Center"
+										Command="{Binding Back}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Backspace"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text=" Return"/>
+					</StackPanel>
+				</Button>
+
+				<Grid Margin="3,8,5,3" Background="Gainsboro" Width="165" DockPanel.Dock="Top" Height="1"/>
+
+				<StackPanel IsEnabled="{Binding IsAdmin}">
+
+					<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+					HorizontalAlignment="Stretch"
+					Height="38" Width="165"
+					VerticalContentAlignment="Center"
+					Command="{Binding CreateKey}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Plus"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Create Key"/>
+						</StackPanel>
+					</Button>
+
+					<Button Margin="3,3,5,3" DockPanel.Dock="Top"
+						HorizontalAlignment="Stretch"
+						Height="38" Width="165"
+						VerticalContentAlignment="Center"
+						Command="{Binding RemoveKey}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Minus"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Remove Key"/>
+						</StackPanel>
+					</Button>
+					<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+						HorizontalAlignment="Stretch"
+						Height="38" Width="165"
+						IsEnabled="{Binding !SelectedDevelopmentKey.IsLocal}}"
+						VerticalContentAlignment="Center"
+						Command="{Binding DownloadKey}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Download"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Download Key"/>
+						</StackPanel>
+					</Button>
+				</StackPanel>
+			</DockPanel>
+		</Grid>
+	</Border>
+</UserControl>

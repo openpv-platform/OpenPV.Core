@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+		<RootNamespace>Ahsoka</RootNamespace>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<!-- <PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile> -->
+  </PropertyGroup>
+
+	<ItemGroup>
+		<AdditionalFiles Include="..\..\Ahsoka.Proto\Cygnus*.proto;..\..\Ahsoka.Proto\reach.proto">
+			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		</AdditionalFiles>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
+	  <ProjectReference Include="..\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="protobuf-net.BuildTools" Version="3.2.33">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+</Project>

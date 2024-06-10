@@ -1,0 +1,84 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="450"
+         	 xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.CustomerTools.Views.ConsoleView" 
+			 Background="White">
+	<Grid>
+
+		<!--
+		<ScrollViewer Margin="12,40,0,0" 
+					  HorizontalAlignment="Stretch"
+					  HorizontalScrollBarVisibility="Auto" 
+					  VerticalScrollBarVisibility="Auto">-->
+			<TextBox Name="Scroller"  Margin="12,40,12,12"  IsReadOnly="True" 
+					 Background="White" BorderThickness="0" Padding="3"
+					 HorizontalAlignment="Stretch" TextWrapping="NoWrap"
+					 Text="{Binding ConsoleOutput}"  
+					 Foreground="#FF111111" FontFamily="Consolas"/>
+
+		<!--	</ScrollViewer>-->
+
+		<DockPanel  
+					LastChildFill="True"
+					HorizontalAlignment="Stretch" 
+					Height="40" 
+					VerticalAlignment="Top">
+
+			<Button IsVisible="{Binding ParentViewModel.ProgressVisible}" Margin="4" Grid.Column="2" Grid.Row="0" Height="30"
+					DockPanel.Dock="Right"
+					VerticalAlignment="Top"
+					Command="{Binding ParentViewModel.Cancel}"
+					Background="Transparent">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="18" Height="18" Foreground="SteelBlue" Kind="Cancel"></material:MaterialIcon>
+					<TextBlock Margin="4,0" VerticalAlignment="Center" FontSize="13"  Text="Cancel"/>
+				</StackPanel>
+			</Button>
+			
+			<Button IsVisible="{Binding !ParentViewModel.ProgressVisible}" Margin="4" Width="32" Grid.Column="2" Grid.Row="0" Height="30"
+				DockPanel.Dock="Right"
+				VerticalAlignment="Top"
+				Command="{Binding ClosePopup}"
+				Background="Transparent">
+				<material:MaterialIcon Padding="5"  Background="Transparent"
+									   Foreground="SteelBlue" Kind="Close"/>
+			</Button>
+			<Button IsVisible="{Binding !ParentViewModel.ProgressVisible}" Margin="4, 4, 8,4" Grid.Column="1" Grid.Row="0" Width="32" Height="30"
+				DockPanel.Dock="Right"
+				VerticalAlignment="Top"
+				Command="{Binding CopyConsole}"
+				Background="Transparent">
+				<material:MaterialIcon Padding="5"  Background="Transparent"
+									   Foreground="SteelBlue" Kind="ContentCopy"/>
+			</Button>
+
+			<Button IsVisible="{Binding !ParentViewModel.ProgressVisible}" Margin="4, 4, 8,4" Grid.Column="1" Grid.Row="0"  Height="30"
+				DockPanel.Dock="Right"
+				VerticalAlignment="Top"
+				Command="{Binding FetchInstallerJournal}"
+				Background="Transparent">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="18" Height="18" Foreground="SteelBlue" Kind="ApplicationCog"></material:MaterialIcon>
+					<TextBlock Margin="4,0" VerticalAlignment="Center" FontSize="13"  Text="Watch Installer"/>
+				</StackPanel>	
+			</Button>
+			<Button IsVisible="{Binding !ParentViewModel.ProgressVisible}" Margin="4, 4, 4,4" Grid.Column="1" Grid.Row="0" Height="30"
+				DockPanel.Dock="Right"
+				VerticalAlignment="Top"
+				Command="{Binding FetchApplicationJournal}"
+				Background="Transparent">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="18" Height="18" Foreground="SteelBlue" Kind="Application"></material:MaterialIcon>
+					<TextBlock Margin="4,0" VerticalAlignment="Center" FontSize="13"  Text="Watch Application"/>
+				</StackPanel>
+			</Button>
+			
+			<TextBlock VerticalAlignment="Center" DockPanel.Dock="Left"
+					FontSize="22" Margin="8,0" Foreground="SteelBlue" Text="Console"/>
+
+		</DockPanel>
+	</Grid>
+</UserControl>

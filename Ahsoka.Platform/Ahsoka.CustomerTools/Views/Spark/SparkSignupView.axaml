@@ -1,0 +1,104 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+	         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="650"
+             x:Class="Ahsoka.CustomerTools.Views.SparkSignupView" Background="#33555555">
+	
+	<Border Width="520" VerticalAlignment="Center"  BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
+		<StackPanel>
+			<Grid  Margin="50,10" HorizontalAlignment="Center" VerticalAlignment="Center"  
+				  ColumnDefinitions="Auto,Auto" 
+				  RowDefinitions="*,*,*,*,*,*,*,*,95">
+			
+				<Grid Grid.ColumnSpan="2" Margin="10,10,10,30">
+					<material:MaterialIcon Margin="-30" Width="48" HorizontalAlignment="Left"
+							   Grid.Row="0" Height="48" Foreground="SteelBlue" Kind="Sparkles"></material:MaterialIcon>
+					<TextBlock FontWeight="Bold" Margin="25,20" Foreground="Black" FontSize="46">OpenPV Toolkit</TextBlock>
+					<TextBlock Margin="0,3" HorizontalAlignment="Center" VerticalAlignment="Bottom"
+							    Foreground="DarkGray" FontStyle="Italic" Grid.Row="1" FontSize="12">Open PowerVision Toolkit by Enovation Controls Copyright 2022</TextBlock>
+				</Grid>
+	
+				<TextBlock ToolTip.Tip="URL For Spark Services." VerticalAlignment="Center"
+						   IsVisible="{Binding IsAdvanced}" Margin="0,5,5,20"
+						 Text="Spark URL:" Grid.Row="1" Grid.Column="0"/>
+				<ComboBox SelectedItem="{Binding SparkUrl}" ItemsSource="{Binding SparkUrlList}"
+					 Grid.Row="1" Grid.Column="1" 
+					 IsVisible="{Binding IsAdvanced}"
+					 HorizontalAlignment="Left" Width="310"  Margin="5,5,5,20"/>
+
+				<TextBlock ToolTip.Tip="First and Last Name." VerticalAlignment="Center"
+						 Text="Name:" Grid.Row="2" Grid.Column="0" />
+				<TextBox Text="{Binding FirstName}"
+						 Grid.Row="2" Grid.Column="1" Margin="5"  Width="150"
+						 HorizontalAlignment="Left" TextWrapping="1"/>
+				<TextBox Text="{Binding LastName}"
+						 Grid.Row="2" Grid.Column="1"  Width="150"
+						HorizontalAlignment="Left" TextWrapping="1" Margin="165,5,5,5" />
+		
+				<TextBlock ToolTip.Tip="Organization or Business Name." VerticalAlignment="Center"
+									 Text="Company:" Grid.Row="3" Grid.Column="0" />
+				<TextBox Text="{Binding CompanyName}"
+						 Grid.Row="3" Grid.Column="1"  Width="310"
+						 HorizontalAlignment="Left" TextWrapping="1" Margin="5" />	
+				
+				<TextBlock ToolTip.Tip="Email Address to use as you Login." VerticalAlignment="Center"
+							 Text="Email:" Grid.Row="4" Grid.Column="0"/>
+				<TextBox Text="{Binding LoginName}"   Width="310" 
+						 Grid.Row="4" Grid.Column="1"   HorizontalAlignment="Left"
+						 TextWrapping="1" Margin="5"/>
+
+				<!--<TextBlock ToolTip.Tip="Password to use when logging into Spark" VerticalAlignment="Center"
+						 Text="Password:" Grid.Row="5" Grid.Column="0" Margin="0,20,5,5" />
+				<TextBox Text="{Binding PasswordNew}"
+						 Grid.Row="5" Grid.Column="1"  Width="310" 
+						 HorizontalAlignment="Left" TextWrapping="1" Margin="5,20,5,5" PasswordChar="*"/>
+
+				<TextBlock ToolTip.Tip="Password to use when logging into Spark" VerticalAlignment="Center"
+					 Text="Confirm:" Grid.Row="6" Grid.Column="0" Margin="0,5,5,30"/>
+				<TextBox Text="{Binding PasswordNewConfirmed}"
+						 Grid.Row="6" Grid.Column="1"  Width="310"
+						 HorizontalAlignment="Left" TextWrapping="1"  Margin="5,5,5,30" PasswordChar="*"/>
+				-->
+			
+				<ProgressBar VerticalAlignment="Top" Margin="0,14" MinHeight="2"
+						     IsIndeterminate="True" IsVisible="{Binding IsLoggingIn}"
+							 Grid.Row="8" Grid.ColumnSpan="2"></ProgressBar>
+
+
+				<StackPanel Orientation="Horizontal" 
+							Grid.Row="8"
+							Grid.Column="0" Grid.ColumnSpan="2"
+							HorizontalAlignment="Center">
+
+					<Button Margin="5,3,155,3"
+						HorizontalAlignment="Left"
+						Height="32"
+						VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+						Command="{Binding BackToLogin}"
+						Content="Return to Login">
+					</Button>
+
+					<Button Margin="3,3,5,3"
+						HorizontalAlignment="Center"
+						Height="32" Width="64"
+						VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+						Command="{Binding CompleteSignUp}" 
+						Background="SteelBlue"
+						Foreground="White"
+						Content="Signup">
+					</Button>
+
+					<Button Margin="3,3,5,3"
+						HorizontalAlignment="Center"
+						Height="32" Width="64"
+						VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+						Command="{Binding Cancel}"
+						Content="Cancel">
+					</Button>
+				</StackPanel>
+			</Grid>
+		</StackPanel>
+	</Border>
+</UserControl>

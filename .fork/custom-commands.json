@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Sync Dev and Main",
+    "target": "repository",
+    "ui": {
+      "title": "Execute Sync",
+      "description": "Pull Main and Dev?",
+      "buttons": [
+        {
+          "title": "Execute",
+          "action": {
+            "type": "sh",
+            "script": "git fetch --update-head-ok origin main:main develop:develop",
+            "showOutput": false,
+            "waitForExit": true
+          }
+        },
+        {
+          "title": "Cancel",
+          "action": {
+            "type": "cancel"
+          }
+        }
+      ]
+    }
+  }
+]

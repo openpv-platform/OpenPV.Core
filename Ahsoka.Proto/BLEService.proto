@@ -1,0 +1,200 @@
+syntax = "proto3";
+
+package AhsokaBLE;
+option csharp_namespace = "Ahsoka.Services.Bluetooth.LE";
+
+message BLEMessageTypes
+{
+    enum Ids
+    {
+        NONE                                  = 0;
+        // BT CONFIRATION NOT IMPLEMENTED
+        //GET_BLUETOOTH_CONFIGURATION         = 1;
+        //SET_BLUETOOTH_CONFIGURATION         = 2;
+
+        // System Enable
+        ENABLE_ADAPTER                      = 4;
+        DISABLE_ADAPTER                     = 5;
+
+        // Notifications
+        ADAPTER_ENABLED                     = 6;
+        ADAPTER_DISABLED                    = 7;
+
+        // PAIRING
+        PAIRING_REQUESTED                   = 8;
+        CONFIRM_PAIRING_REQUEST             = 9;
+        PAIRING_CANCELLED                   = 10;
+
+        // Setup
+        CREATE_ADVERTISEMENT                = 11;
+        CREATE_SERVICE                      = 12;
+        REMOVE_SERVICE                      = 13;
+        REMOVE_ADVERTISEMENT                = 14;
+
+        // Characteristic Management
+        SET_CHARACTERISTIC_VALUE            = 15;
+        SEND_CHARACTERISTIC_NOTIFICATION    = 16;
+
+         // Characteristic Callbacks
+        CHARACTERISTIC_VALUE_WRITE          = 17;
+        CHARACTERISTIC_VALUE_READ           = 18;
+        CHARACTERISTIC_VALUE_READ_RESULT    = 19;
+
+        // System Enable
+        IS_ADAPTER_ENABLED                  = 20;
+
+        // Notifications
+        ADAPTER_READY                       = 21;
+    }
+}
+
+message BLEPairingRequest
+{
+    string                  passcode           = 1;
+    BLEPairingRequestType   request_type       = 2;
+}
+
+message BLEPairingConfirmation
+{
+    bool                   confirmed           = 1;
+    string                 message             = 2;
+}
+
+
+message BLEAdapterRequest
+{
+    string local_name = 1;
+}
+
+message BLEIsAdapterEnabledResponse
+{
+    string local_name = 1;
+    bool is_enabled = 2;
+}
+
+message BLEConnectionNotification
+{
+    BLEConnectionState  state           = 2;
+}
+
+message BLECharacteristicValue
+{
+    string          uuid         = 2;
+    bytes           value        = 3;
+    uint32          offset       = 4;
+    bool            handled      = 5;
+}
+
+message BLEServiceInfo
+{
+    string                   uuid            = 2;
+}
+
+message BLECharacteristicInfo
+{
+    string  uuid = 2;
+}
+
+message BLEAdvertisementProperties
+{
+    BLEAdvertisementType    type                = 2;
+    repeated string         service_uuids       = 3;
+    map<int32, bytes>       manufacture_data    = 4;
+    repeated string         solicit_uuids       = 5;
+}
+
+message BLEAdvertisementInfo
+{
+   // string                  local_name          = 8;
+}
+
+message BLEServiceProperties
+{
+    string                                  uuid            = 1;
+    string                                  local_name      = 2;
+    bool                                    primary         = 3;
+    repeated BLECharacteristicProperties    characteristics = 4;
+}
+
+message BLECharacteristicProperties
+{
+    string                                          uuid            = 1;
+    repeated BLECharacteristicFlag                  flags           = 2;
+    repeated BLECharacteristicDescriptorProperties  descriptors     = 3;
+    optional string                                 name            = 4;
+    bool                                            use_notify_for_read  = 5;
+    bool                                            use_notify_for_write = 6;
+}
+
+message BLECharacteristicDescriptorProperties
+{
+    string                      uuid    = 1;
+    repeated BLEDescriptorFlag  flags   = 2;
+    bytes                       value   = 3;
+}
+
+// -----------------------------
+// Bluetooth Enumerations
+// -----------------------------
+
+enum BLEAdvertisementType
+{
+    NONE            = 0;
+    // BROADCAST    = 1;
+    PERIPHERAL      = 2;
+}
+
+enum BLEConnectionState
+{
+    CLIENT_READY        = 0;
+    //CLIENT_POWERING_ON  = 2;
+    //CLIENT_CONFIGURING  = 3;
+    CLIENT_NOT_READY    = 4;
+}
+
+enum BLECharacteristicFlag
+{
+    BROADCAST                       = 0;
+    READ                            = 1;
+    WRITE_WITHOUT_RESPONSE          = 2;
+    WRITE                           = 3;
+    NOTIFY                          = 4;
+    INDICATE                        = 5;
+    AUTHENTICATED_SIGNED_WRITES     = 6;
+    EXTENDED_PROPERTIES             = 7;
+    RELIABLE_WRITE                  = 8;
+    WRITABLE_AUXILIARIES            = 9;
+    ENCRYPT_READ                    = 10;
+    ENCRYPT_WRITE                   = 11;
+    ENCRYPT_NOTIFY                  = 12;
+    ENCRYPT_INDICATE                = 13;
+    ENCRYPT_AUTHENTICATED_READ      = 14;
+    ENCRYPT_AUTHENTICATED_WRITE     = 15;
+    ENCRYPT_AUTHENTICATED_NOTIFY    = 16;
+    ENCRYPT_AUTHENTICATED_INDICATE  = 17;
+    SECURE_READ                     = 18;
+    SECURE_WRITE                    = 19;
+    SECURE_NOTIFY                   = 20;
+    SECURE_INDICATE                 = 21;
+    AUTHORIZE                       = 22;
+}
+
+enum BLEDescriptorFlag
+{
+    DESCRIPTOR_READ                        = 0;
+    DESCRIPTOR_WRITE                       = 1;
+    DESCRIPTOR_ENCRYPT_READ                = 2;
+    DESCRIPTOR_ENCRYPT_WRITE               = 3;
+    DESCRIPTOR_ENCRYPT_AUTHENTICATED_READ  = 4;
+    DESCRIPTOR_ENCRYPT_AUTHENTICATED_WRITE = 5;
+    DESCRIPTOR_SECURE_READ                 = 6;
+    DESCRIPTOR_SECURE_WRITE                = 7;
+    DESCRIPTOR_AUTHORIZE                   = 8;
+}
+
+enum BLEPairingRequestType
+{
+    DISPLAY_UNTIL_CANCELLED     = 0; // Used for Keyboards, Confirmation not Required
+    CONFIRM_VALUE               = 1;
+    CONFIRM_NO_VALUE            = 2;
+}

@@ -1,0 +1,137 @@
+syntax = "proto3";
+
+package AhsokaIO;
+option csharp_namespace = "Ahsoka.Services.IO";
+
+message IOMessageTypes
+{
+    enum Ids
+    {
+        NONE = 0;
+
+        // message IDs to Set IO Pins
+        SET_DIGITAL_OUTPUT = 1;
+        SET_ANALOG_OUTPUT = 2;
+
+        SET_POLL_INTERVAL = 3;
+        GET_POLL_INTERVAL = 4;
+
+        // message IDs to Read IO Pins
+        GET_ANALOG_INPUT = 10;
+        GET_DIGITAL_INPUT = 11;
+
+        // message IDs for requesting IO Pins
+        RETRIEVE_DIGITAL_OUTPUTS = 20;
+        RETRIEVE_DIGITAL_INPUTS = 21;
+        RETRIEVE_ANALOG_OUTPUTS = 22;
+        RETRIEVE_ANALOG_INPUTS = 23;
+
+        // message IDs to Set / Get Hardware Configurations
+        SET_HARDWARE_CONFIG = 30;
+        GET_HARDWARE_CONFIG = 31;
+    }
+}
+
+
+// ***************************************
+// Hardware Configuration Message
+// ***************************************
+// message IOHardwareInfo
+// {
+//     int32 analog_input_count = 1;
+//     int32 analog_output_count = 2;
+//     int32 digital_input_count = 3;
+//     int32 digital_output_count = 4;
+// }
+
+
+message PollingInterval
+{
+    int32 polling_interval_ms = 1;
+}
+
+// **************************************************
+// Digital & Analog Input Specific messages & enums
+// **************************************************
+message AnalogInputList
+{
+    repeated AnalogInput analog_inputs = 1;
+}
+
+message AnalogInput
+{
+    int32 pin = 1;
+    string name = 2;
+}
+
+message DigitalInputList
+{
+    repeated DigitalInput digital_inputs = 1;
+}
+
+message DigitalInput
+{
+    int32 pin = 1;
+    string name = 2;
+}
+
+
+// **************************************************
+// Digital & Analog Output Specific messages and enums
+// **************************************************
+
+message DigitalOutputList
+{
+    repeated DigitalOutput digital_outputs = 1;
+}
+
+message DigitalOutput
+{
+    int32 pin = 1;
+    string name = 2;
+    PinState state = 3;
+}
+
+enum PinState
+{
+    LOW = 0;
+    HIGH = 1;
+}
+
+message AnalogOutputList
+{
+    repeated AnalogOutput analog_outputs = 1;
+}
+
+message AnalogOutput
+{
+    int32 pin = 1;
+    string name = 2;
+	double milli_volts = 3;
+}
+
+
+
+// **********************************************
+// Get / Set Response Messages
+// **********************************************
+
+message GetInputResponse
+{
+    double value = 1;
+    ReturnCode ret = 2;
+    string error_description = 3;
+}
+
+message SetOutputResponse
+{
+    int32 pin = 1;
+    ReturnCode ret = 2;
+    string error_description = 3;
+}
+
+enum ReturnCode
+{
+    FAILED = 0;
+    SUCCESS = 1;
+}

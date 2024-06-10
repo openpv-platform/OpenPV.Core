@@ -1,0 +1,11 @@
+[Match]
+Name=<ADAPTERID>
+
+[Link]
+MACAddress=<MAC>
+
+[Network]
+DHCP=NO
+DNS=<DNS>
+Address=<ADDRESS>
+Gateway=<GATEWAY>

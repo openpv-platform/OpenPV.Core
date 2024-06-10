@@ -1,0 +1,315 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="600"
+			 xmlns:material="using:Material.Icons.Avalonia"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.CustomerTools.Views"
+			 x:Class="Ahsoka.CustomerTools.Views.ConnectionsView" Background="#33555555">
+
+	<UserControl.Styles>
+		<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+	</UserControl.Styles>
+	<Border Margin="30" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="225"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="200"/>
+			</Grid.ColumnDefinitions>
+
+			<Border BorderBrush="Gainsboro"  BorderThickness="1,0,0,0" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Background="WhiteSmoke" VerticalAlignment="Stretch" Margin="0,0,0,0">
+				<StackPanel Grid.Column="1" HorizontalAlignment="Center" >
+					<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12,36,12,12"
+				   Foreground="DimGray"
+				   Text="Actions"
+				   Grid.Column="1"/>
+
+					<Button Margin="3,3,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							Command="{Binding AddItem}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Add"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Add Display"/>
+						</StackPanel>
+					</Button>
+					<Button Margin="3,3,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							Command="{Binding RemoveItem}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Minus"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Remove Display"/>
+						</StackPanel>
+					</Button>
+
+					<StackPanel IsVisible="{Binding SupportsOpenPVTools}">
+						<Button Margin="3,13,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							IsEnabled="{Binding !ParentViewModel.IsOffline}"
+							Command="{Binding Prep}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="KeyboardArrowRight"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Prep Target"/>
+							</StackPanel>
+						</Button>
+
+						<Button Margin="3,3,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							IsVisible="{Binding CanFactoryPrep}"
+							IsEnabled="{Binding !ParentViewModel.IsOffline}"
+							Command="{Binding ShowFactoryPrepData}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Factory"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Prep (Factory)"/>
+							</StackPanel>
+						</Button>
+
+						<Button Margin="3,13,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							Command="{Binding SecureDevice}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Secure"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Lock Display"/>
+							</StackPanel>
+
+						</Button>
+
+						<Button Margin="3,3,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							Command="{Binding UnSecureDevice}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="UnlockedVariant"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Unlock Display"/>
+							</StackPanel>
+
+						</Button>
+
+						<Button Margin="3,13,5,3"
+								HorizontalAlignment="Stretch"
+								Height="38"
+								VerticalContentAlignment="Center"
+								Command="{Binding FlashBSP}">
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="FlashCircle"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Flash Distribution"/>
+							</StackPanel>
+						</Button>
+					</StackPanel>
+
+					<Button Margin="3,13,5,3"
+						HorizontalAlignment="Stretch"
+						Height="38"
+						VerticalContentAlignment="Center"
+						Command="{Binding InstallApplication}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="ArrowDownRight"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Load Application..."/>
+						</StackPanel>
+					</Button>
+
+				</StackPanel>
+			</Border>
+
+			<Border Grid.Column="0" BorderBrush="WhiteSmoke"  BorderThickness="0,0,1,0">
+				<ListBox ItemsSource="{Binding ConnectionList}" SelectedItem="{Binding EditConfigurationInfo}" SelectionMode="AlwaysSelected" Background="WhiteSmoke">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Grid Margin="-10" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+								<Grid Margin="5">
+									<StackPanel>
+										<TextBlock Text="{Binding Description}" HorizontalAlignment="Stretch" FontSize="16"  TextWrapping="1" />
+										<TextBlock Text="{Binding HostName}" HorizontalAlignment="Stretch" FontSize="12" FontStyle="Italic" TextWrapping="1" />
+									</StackPanel>
+									<Button  HorizontalAlignment="Right"
+											 BorderThickness="0"
+											  Width="32"
+											  Height="32"
+											 VerticalContentAlignment="Center"
+											 Command="{Binding FavoriteChanged}">
+										<Grid>
+											<material:MaterialIcon ToolTip.Tip="Favorite Item" IsVisible="{Binding IsFavorite}" Width="28" Height="28" Foreground="SteelBlue" Kind="Star"></material:MaterialIcon>
+											<material:MaterialIcon ToolTip.Tip="Favorite Item" IsVisible="{Binding !IsFavorite}" Width="28" Height="28" Foreground="Gray" Kind="StarOutline"></material:MaterialIcon>
+										</Grid>
+									</Button>
+								</Grid>
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</Border>
+
+
+			<TabControl Grid.Column="1" DockPanel.Dock="Top" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="3">
+				<TabItem>
+					<TabItem.Header>
+						<TextBlock
+							FontSize="18"
+							Text="Ahsoka Connection Setup"/>
+					</TabItem.Header>
+					<DockPanel Margin="10" HorizontalAlignment="Stretch" LastChildFill="False" >
+						<Border DockPanel.Dock="Top"  Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+							<Grid Margin="5" ColumnDefinitions="130,330" RowDefinitions="*,*,*,*,*,*,*,*" >
+
+								<TextBlock Text="Platform Family:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+								<ComboBox Height="32" Grid.Row="0" 
+										  Width="250" Grid.Column="1" 
+										  SelectedItem="{Binding EditConfigurationInfo.PlatformDescription}" ItemsSource="{Binding PlatformDescriptions}"
+										   HorizontalAlignment="Left"
+										   VerticalAlignment="Center"  Margin="5"/>
+
+								<TextBlock Text="Description:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+								<TextBox HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.Description}" Grid.Row="1" Grid.Column="1" Margin="5" Width="200"/>
+
+								<TextBlock Text="Host Name / IP:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+								<TextBox HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.HostName}" Grid.Row="2" Grid.Column="1" Margin="5" Width="200"/>
+
+								<TextBlock Text="Service Port:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+								<TextBox HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.SystemServicePort}" Grid.Row="3" Grid.Column="1" Margin="5" Width="50" />
+
+								<TextBlock FontSize="12" Text="* The Service Port is used to communicate with a System Service running on the target to get information about the system. (Default = 5001)"
+										   Grid.Row="7" Foreground="Gray" Grid.Column="1" VerticalAlignment="Center" Margin="5" TextWrapping="Wrap"/>
+							</Grid>
+						</Border>
+						<Border DockPanel.Dock="Bottom" Margin="20" Padding="10" BorderBrush="Gainsboro" BorderThickness="1" Background="WhiteSmoke">
+							<TextBlock Text="Configures the communication with the target to load and query device information.  This communication conduit is used to talk to the Ahsoka Services running on the target."  TextWrapping="Wrap" FontSize="12"
+									   VerticalAlignment="Center"/>
+						</Border>
+					</DockPanel>
+				</TabItem>
+				<TabItem  IsEnabled="{Binding SupportsOpenPVTools}">
+					<TabItem.Header>
+						<TextBlock
+							FontSize="18"
+							Text="SSH Connection Setup"/>
+					</TabItem.Header>
+					<DockPanel Margin="10" HorizontalAlignment="Stretch" LastChildFill="False" >
+						<Border DockPanel.Dock="Top"  Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+							<Grid Margin="5" ColumnDefinitions="130,330" RowDefinitions="*,*,*,*,*,*,*,*" >
+
+								<TextBlock Text="Host Name / IP:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+								<TextBox HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.HostName}" Grid.Row="2" Grid.Column="1" Margin="5" Width="200"/>
+
+								<TextBlock Text="Login Name:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+								<TextBox HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.UserName}" Grid.Row="4" Grid.Column="1" Margin="5" Width="200"/>
+
+
+								<TextBlock Text="Use Team Keys:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+
+								<StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1"  Width="200"  Margin="5" HorizontalAlignment="Left" >
+									<ComboBox  PlaceholderText="No Team Selected" SelectedItem="{Binding EditConfigurationInfo.SelectedTeam}" ItemsSource="{Binding EditConfigurationInfo.TeamsList}" Grid.Row="4" Grid.Column="1" Width="250" HorizontalContentAlignment="Left" />
+									<Button Margin="6,4,4,4" Grid.Column="2" Grid.Row="0" Width="24" Height="24"
+											HorizontalAlignment="Right"
+											VerticalAlignment="Center" ToolTip.Tip="Clear Team"
+											Command="{Binding EditConfigurationInfo.RemoveTeam}"
+											Background="Transparent">
+										<material:MaterialIcon Padding="5"  Background="Transparent"
+															   Foreground="SteelBlue" Kind="Close"/>
+									</Button>
+								</StackPanel>
+
+								<TextBlock IsVisible="{Binding EditConfigurationInfo.SelectedTeam, Converter={x:Static ObjectConverters.IsNotNull}}"
+									   Text="Selected Key:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+
+								<ComboBox MinWidth="200" Height="32" Grid.Row="6" Grid.Column="1"
+										 IsVisible="{Binding EditConfigurationInfo.SelectedTeam, Converter={x:Static ObjectConverters.IsNotNull}}"
+									     SelectedItem="{Binding  EditConfigurationInfo.SelectedKey}" ItemsSource="{Binding EditConfigurationInfo.SelectedTeam.DevelopmentKeys}"
+										 HorizontalAlignment="Left" VerticalAlignment="Center"  Margin="5"/>
+
+								<TextBlock IsVisible="{Binding EditConfigurationInfo.SelectedTeam, Converter={x:Static ObjectConverters.IsNull}}"
+										   Text="Key File:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
+
+								<StackPanel  IsVisible="{Binding EditConfigurationInfo.SelectedTeam, Converter={x:Static ObjectConverters.IsNull}}" Orientation="Horizontal" Grid.Row="6" Grid.Column="1"  HorizontalAlignment="Left" >
+									<TextBox IsReadOnly="True" Background="WhiteSmoke" HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.PrivateKeyFile}" Grid.Row="6" Grid.Column="1" Margin="5" Width="300"/>
+									<Button Margin="0,4,4,4" Width="24" Height="24"
+												HorizontalAlignment="Right"
+												VerticalAlignment="Center" ToolTip.Tip="Clear Team"
+												Command="{Binding EditConfigurationInfo.SelectKeyFile}"
+												Background="Transparent">
+										<material:MaterialIcon Padding="5"  Background="Transparent"
+															   Foreground="SteelBlue" Kind="Edit"/>
+									</Button>
+								</StackPanel>
+							</Grid>
+						</Border>
+						<Border DockPanel.Dock="Bottom" Margin="20" Padding="10" BorderBrush="Gainsboro" BorderThickness="1" Background="WhiteSmoke">
+							<TextBlock Text="Configures communication with the display over SSH.  From here you can specify the key files, login names etc for communicating securely with the shell on the target.  This is used for Prep, as well as other tools such as viewing journals.  Note that both SSH and Ahsoka Services use the same HostName"  TextWrapping="Wrap" FontSize="12"
+									   VerticalAlignment="Center"/>
+						</Border>
+					</DockPanel>
+				</TabItem>
+			</TabControl>
+
+			<Border IsVisible="{Binding ShowFactoryPrep, FallbackValue=true}" Grid.ColumnSpan="3" BorderBrush="DarkGray" Background="#44888888" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+				<Border  BoxShadow="5 5 10 2 DarkGray" Height="350" Width="500" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="White" BorderThickness="1">
+					<Grid VerticalAlignment="Center">
+						<Grid Margin="5" ColumnDefinitions="150,Auto" RowDefinitions="*,*,*,*,*,*,*">
+							<TextBlock FontWeight="Bold" Margin="20" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="Enter OTP Values for the Target" Grid.Row="0" Grid.Column="0"/>
+							<TextBlock Margin="40,0" VerticalAlignment="Center" Text="Part Number:" Grid.Row="1" Grid.Column="0"/>
+							<TextBox Margin="4" VerticalAlignment="Center" Text="{Binding FactoryInfo.PartNumber, FallbackValue=00000000}" Grid.Row="1" Grid.Column="1" Width="275" HorizontalContentAlignment="Center" TextWrapping="NoWrap"/>
+						
+							<TextBlock Margin="40,0" VerticalAlignment="Center" Text="Serial Number:" Grid.Row="2" Grid.Column="0"/>
+							<TextBox Margin="4" VerticalAlignment="Center" Text="{Binding FactoryInfo.SerialNumber, FallbackValue=00000000}" Grid.Row="2" Grid.Column="1" Width="275" HorizontalContentAlignment="Center" TextWrapping="NoWrap"/>
+							
+							<TextBlock Margin="40,0" VerticalAlignment="Center" Text="MAC:" Grid.Row="3" Grid.Column="0"/>
+							<TextBox Margin="4" VerticalAlignment="Center" Text="{Binding FactoryInfo.MacAddress, FallbackValue=00000000}" Grid.Row="3" Grid.Column="1" Width="275" HorizontalContentAlignment="Center" TextWrapping="NoWrap"/>
+
+							<TextBlock Margin="40,0" VerticalAlignment="Center" Text="Spark Login:" Grid.Row="4" Grid.Column="0"/>
+							<TextBox Margin="4" VerticalAlignment="Center" Text="{Binding FactoryPrepConnectionInfo.Login}" Grid.Row="4" Grid.Column="1" Width="275" HorizontalContentAlignment="Center" TextWrapping="NoWrap"/>
+
+							<TextBlock Margin="40,0" VerticalAlignment="Center" Text="Spark Password:" Grid.Row="5" Grid.Column="0"/>
+							<TextBox Margin="4" VerticalAlignment="Center" PasswordChar="*" Text="{Binding FactoryPrepConnectionInfo.Password}" Grid.Row="5" Grid.Column="1" Width="275" HorizontalContentAlignment="Center" TextWrapping="NoWrap"/>
+
+							<Button Grid.Row="6" Margin="3,13,5,18" Grid.Column="1" Grid.ColumnSpan="2"
+												HorizontalAlignment="Right"
+												Height="38"
+												VerticalContentAlignment="Center"
+												Command="{Binding CancelFactoryPrep}" >
+								<StackPanel Orientation="Horizontal">
+									<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Cancel"/>
+								</StackPanel>
+							</Button>
+							<Button Grid.Row="6" Margin="3,13,95,18" Grid.Column="1"
+												HorizontalAlignment="Right"
+												Height="38"
+												VerticalContentAlignment="Center"
+												Command="{Binding FactoryPrep}" >
+								<StackPanel Orientation="Horizontal">
+									<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="KeyboardArrowRight"></material:MaterialIcon>
+									<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Continue..."/>
+								</StackPanel>
+							</Button>
+						</Grid>
+					</Grid>
+				</Border>
+			</Border>
+
+			<CustomerTools:DependenciesView Grid.Column="1"
+					Grid.ColumnSpan="3" DataContext="{Binding Deps}"/>
+
+			<Button Margin="4" Grid.Column="2" Grid.Row="0" Width="24" Height="24"
+					HorizontalAlignment="Right"
+					VerticalAlignment="Top"
+					Command="{Binding ClosePopup}"
+					Background="Transparent">
+				<material:MaterialIcon Padding="5"  Background="Transparent"
+									   Foreground="SteelBlue" Kind="Close"/>
+			</Button>
+		</Grid>
+		
+	</Border>
+</UserControl>

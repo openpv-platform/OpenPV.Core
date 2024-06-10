@@ -1,0 +1,40 @@
+[
+  {
+    "PackageName": "Google Protocol Buffers",
+    "PackageVersion": "3.6.0.1",
+    "Copyright": "Copyright Google Inc.",
+    "Description": "A language-neutral, platform-neutral extensible mechanism for serializing structured data.",
+    "LicenseUrl": "https://github.com/protocolbuffers/protobuf/blob/main/LICENSE",
+    "LicenseType": "BSD"
+  },
+  {
+    "PackageName": "libzmq",
+    "PackageVersion": "5.2.2",
+    "Description": "An open-source universal messaging library",
+    "LicenseUrl": "http://wiki.zeromq.org/area:licensing",
+    "LicenseType": "LGPL"
+  },
+  {
+    "PackageName": "cppzmq",
+    "PackageVersion": "4.6.0",
+    "Description": "cppzmq is a C++ binding for libzmq.",
+    "LicenseUrl": "https://github.com/zeromq/cppzmq/blob/master/LICENSE",
+    "LicenseType": "MIT"
+  },
+  {
+    "PackageName": "vcpkg",
+    "PackageVersion": "2022.10.19 Release",
+    "Description": "C/C++ dependency manager from Microsoft For all platforms, buildsystems, and workflows",
+    "LicenseUrl": "https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt",
+    "LicenseType": "MIT"
+  },
+  {
+    "PackageName": "OpenViewLinux Source Request",
+    "PackageVersion": "1.0",
+    "Copyright": "Click Show License to Request",
+    "Description": "Click Show License to Request",
+    "LicenseUrl": "mailto:support@enovationcontrols.com?Subject=Open%20Source%20Software%20Request%20for%20OpenViewLinux%20BSP&Body=I%20would%20like%20to%20request%20access%20to%20the%20open%20source%20software%20included%20in%20the%20OpenViewLinux%20BSP%20Distributions.",
+    "LicenseType": "Various"
+  }
+
+]

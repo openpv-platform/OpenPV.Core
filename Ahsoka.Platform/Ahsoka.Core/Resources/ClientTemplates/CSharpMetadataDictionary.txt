@@ -1,0 +1,25 @@
+
+    public static class CanModelMetadata
+    {
+        internal static Dictionary<uint,Dictionary<string, CanPropertyInfo>> metadata = new();
+        internal static Dictionary<string, CanPropertyInfo> GetMetadata(uint canID) { return metadata[canID]; }
+        internal static void AddMetadata(uint canID, Dictionary<string, CanPropertyInfo> properties) 
+        {
+            metadata.Add(canID, properties);
+        }
+
+        internal static CanPropertyInfo GetPropertyInfo(uint canID, uint signalID)
+        {
+            return metadata[canID].Values.FirstOrDefault(x=>x.SignalId == signalID );
+        }
+
+        internal static CanPropertyInfo GetPropertyInfo(uint canID, string signalName)
+        {
+            return metadata[canID][signalName];
+        }
+
+        static CanModelMetadata()
+        {
+%METADATA_BODY%
+        }
+    }

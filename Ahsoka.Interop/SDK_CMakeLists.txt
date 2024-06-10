@@ -1,0 +1,39 @@
+﻿# CMakeList.txt : CMake project for Ahsoka.System.Client, include source and define
+# project specific logic here.
+#
+cmake_minimum_required (VERSION 3.8)
+
+#Determine Platfrom
+set(AhsokaPlatform $ENV{AhsokaPlatform})
+message("Building for Platform: " ${AhsokaPlatform})
+
+# Add ProtoBuf and zero mq as well as our Proto Compiled Outputs
+find_library ( PROTO_LIB NAMES protobuf )
+find_library ( ZMQ_LIB NAMES zmq)
+
+#Create Variable for Service Headers
+get_filename_component(Messages inc/messages/ ABSOLUTE)
+get_filename_component(Services inc/services/ ABSOLUTE)
+set(Headers ${Messages} ${Services})
+
+#Create Variable for Library
+get_filename_component(Library lib/libAhsoka.Client.Shared.so ABSOLUTE)
+
+# Set Globals
+set(AhsokaHeaders ${Headers} PARENT_SCOPE)
+set(AhsokaLibs ${Library} zmq protobuf PARENT_SCOPE)
+
+function(add_ahsoka target_name)
+
+    target_include_directories(${target_name} PRIVATE ${AhsokaHeaders})  # Include Headers or Ahsoka
+    target_link_libraries(${target_name} PRIVATE Qt5::Widgets ${AhsokaLibs}) #Include Library List for Ahsoka.
+
+    ADD_CUSTOM_COMMAND(TARGET ${target_name}
+            POST_BUILD
+            COMMAND echo Create Command Line Folder
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/Outputs/CommandLine
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/CommandLine ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK/lib/libAhsoka.Client.Shared.so ${CMAKE_SOURCE_DIR}/Outputs/libAhsoka.Client.Shared.so
+    )
+
+endfunction()

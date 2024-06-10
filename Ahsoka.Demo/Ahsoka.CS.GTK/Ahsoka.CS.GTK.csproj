@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<Platforms>AnyCPU;x64</Platforms>
+		<TargetFramework>net7.0</TargetFramework>
+		<NoWarn>CS0612</NoWarn>
+	</PropertyGroup>
+
+	<ItemGroup Label="Reference to Ahsoka Nuget Packages" Condition="!Exists('../../Demo.Build.props')">
+		<PackageReference Include="Ahsoka.Core" Version="(2.*,3.0)" />
+	</ItemGroup>
+
+
+	<Import Label="Ahsoka Local Build Properties" Condition="Exists('../../Demo.Build.props')" Project="../../Demo.Build.props" />
+
+	<ItemGroup>
+	  <Compile Remove="publish\**" />
+	  <EmbeddedResource Remove="publish\**" />
+	  <None Remove="publish\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="GtkSharp" Version="3.24.24.95" />
+	</ItemGroup>
+
+</Project>

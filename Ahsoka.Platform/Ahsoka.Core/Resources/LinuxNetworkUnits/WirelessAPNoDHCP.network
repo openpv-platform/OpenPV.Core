@@ -1,0 +1,14 @@
+[Match]
+Name=<ADAPTERID>
+
+[Link]
+MACAddress=<MAC>
+
+[Network]
+DHCPServer=NO
+
+[Misc]
+SSID=<SSID>
+ChannelNumber=<CHANNEL_NUMBER>
+SecurityType=<SECURITY_TYPE>
+PassKey=<PASS_KEY>

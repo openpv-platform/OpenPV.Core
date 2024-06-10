@@ -1,0 +1,35 @@
+#include "DefaultServiceClient.h"
+#include "DefaultServiceMessages.hpp"
+#include "AhsokaClientEndPoint.hpp"
+
+using namespace std;
+using namespace DefaultNameSpace;
+
+namespace DefaultNameSpace
+{
+    typedef AhsokaClientEndPoint<DefaultTransportIdEnum> DefaultService_t;
+	
+	DefaultServiceClient::DefaultServiceClient():
+       AhsokaServiceFramework::AhsokaEndPointWithCallback<DefaultTransportIdEnum>(new DefaultService_t(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceMessages()))
+    {
+        
+    }
+
+    DefaultServiceClient::DefaultServiceClient(ServiceConfiguration config):
+	    AhsokaServiceFramework::AhsokaEndPointWithCallback<DefaultTransportIdEnum>(new DefaultService_t(config, DefaultServiceMessages()))
+    {
+        
+    }
+
+	void DefaultServiceClient::RegisterListener(MessageReceived_t callback)
+    {
+        return GetEndPoint<DefaultService_t>()->NotifyMessageReceived(callback);     
+    }
+
+%SERVICE_METHODS%
+
+
+	#if __has_include("DefaultServiceClientExtensions.cxx") 
+	# include "DefaultServiceClientExtensions.cxx"
+	#endif
+}

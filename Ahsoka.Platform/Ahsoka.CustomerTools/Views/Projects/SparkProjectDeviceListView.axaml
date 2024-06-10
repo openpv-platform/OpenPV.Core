@@ -1,0 +1,121 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.CustomerTools.Views"
+		     xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 mc:Ignorable="d" d:DesignWidth="1250" d:DesignHeight="450" Background="#33555555"
+             x:Class="Ahsoka.CustomerTools.Views.SparkProjectDeviceListView" >
+
+	<Border Margin="20" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
+		<Grid Margin="10,10,0,10" Grid.ColumnDefinitions="*,220" Grid.RowDefinitions="auto,*">
+			<TextBlock FontSize="22" Grid.Row="0"  Text="{Binding ParentViewModel.TeamName, StringFormat='Registered Target Devices for {0}', FallbackValue='Registered Target Devices for None'}" />
+
+			<StackPanel Margin="10,55,10,10" Orientation="Horizontal" IsVisible="{Binding FiltersVisible, FallbackValue=true}">
+				<TextBlock Foreground="DarkGray" Text="Search:" VerticalAlignment="Center" Margin="3,3,3,5"/>
+				<TextBox BorderBrush="DarkGray" Watermark="Device Description" Padding="5"  Width="150" MaxHeight="28" Height="28" MinHeight="28" HorizontalAlignment="Left" FontSize="12" 
+						 Text="{Binding DeviceSearchInfo.Description}"  Margin="5" />
+				<TextBox  BorderBrush="DarkGray" Watermark="Serial Number" Padding="5"  Width="150" MaxHeight="28" Height="28" MinHeight="28" HorizontalAlignment="Left" FontSize="12"
+					      Text="{Binding DeviceSearchInfo.SerialNumber}"  Margin="5" />
+				<TextBox  BorderBrush="DarkGray" Watermark="Device ID" Padding="5"  Width="150" MaxHeight="28" Height="28" MinHeight="28" HorizontalAlignment="Left" FontSize="12" 
+						  Text="{Binding DeviceSearchInfo.DeviceID}"  Margin="5" />
+				<ComboBox  BorderBrush="DarkGray" Padding="6,0,0,0" PlaceholderText="Track" Width="155" MaxHeight="28" MinHeight="28"
+					 SelectedItem="{Binding DeviceSearchInfo.CurrentTrack}" PlaceholderForeground="DimGray" ItemsSource="{Binding TrackList}"
+					 HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" Margin="5"/>
+
+				<Button  DockPanel.Dock="Top" IsDefault="True"
+					HorizontalAlignment="Stretch"
+					Height="28" Width="32"
+					VerticalContentAlignment="Center"
+					Command="{Binding SearchDevices}" >
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Search"></material:MaterialIcon>
+				</Button>
+			</StackPanel>
+			<DataGrid  Margin="0,0,10,0"  Grid.Row="1"
+					   HorizontalAlignment="Stretch"
+					   VerticalAlignment="Stretch"
+					   ItemsSource="{Binding Devices}"
+					    SelectedItem="{Binding SelectedDevice}"
+						AutoGenerateColumns="False">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Device Description" Width="200" Binding="{Binding Description}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Current Track" Binding="{Binding Track}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Part Number" Binding="{Binding PartNumber}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Serial Number" Binding="{Binding SerialNumber}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Device ID" Binding="{Binding DeviceID}" IsReadOnly="True"/>
+				</DataGrid.Columns>
+			</DataGrid>
+			<DockPanel Margin="0,13,0,0" Grid.RowSpan="2" Grid.Column="2" VerticalAlignment="Top"
+					   HorizontalAlignment="Center">
+
+				<Button Margin="3,3,5,3" DockPanel.Dock="Top"
+										HorizontalAlignment="Stretch"
+										Height="38" Width="165"
+										VerticalContentAlignment="Center"
+										Command="{Binding Back}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Backspace"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text=" Return"/>
+					</StackPanel>
+				</Button>
+
+				<Grid Margin="3,8,5,3" Background="Gainsboro" Width="165" DockPanel.Dock="Top"
+					Height="1"/>
+
+				<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+						IsEnabled="{Binding !ParentViewModel.IsViewer}"
+						HorizontalAlignment="Stretch"
+					Height="38" Width="165"
+					VerticalContentAlignment="Center"
+					Command="{Binding RenameDevice}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Rename"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Rename Device"/>
+					</StackPanel>
+				</Button>
+				<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+						IsEnabled="{Binding !ParentViewModel.IsViewer}"
+						HorizontalAlignment="Stretch"
+						Height="38" Width="165"
+						VerticalContentAlignment="Center"
+						Command="{Binding PromoteDevice}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="ArrowUp"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Promote Device"/>
+					</StackPanel>
+				</Button>
+				<Button Margin="3,3,5,3" DockPanel.Dock="Top"
+						IsEnabled="{Binding !ParentViewModel.IsViewer}"
+						HorizontalAlignment="Stretch"
+						Height="38" Width="165"
+						VerticalContentAlignment="Center"
+						Command="{Binding DemoteDevice}">
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="ArrowDown"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Demote Device"/>
+					</StackPanel>
+				</Button>
+
+				<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+					HorizontalAlignment="Stretch"
+					Height="38" Width="165"
+					IsEnabled="{Binding IsAdmin}"
+					VerticalContentAlignment="Center"
+					Command="{Binding RemoveDevice}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Minus"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Remove Device"/>
+					</StackPanel>
+				</Button>
+
+
+			</DockPanel>
+			<Grid IsVisible="{Binding !Devices.Count}" Background="White" Grid.Row="1" Grid.RowSpan="3" Grid.ColumnSpan="1">
+				<TextBlock Foreground="DimGray" FontSize="19" VerticalAlignment="Center" HorizontalAlignment="Center">Use Search to Discover Devices</TextBlock>
+			</Grid>
+			<CustomerTools:SparkProjectLoadingView Grid.RowSpan="3" Grid.ColumnSpan="3"/>
+		</Grid>
+	</Border>
+
+</UserControl>

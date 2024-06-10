@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+// Added Well Known Types to support Datetime
+import "google/protobuf/timestamp.proto";
+
+package AhsokaServivcesDemo;
+option csharp_namespace = "Ahsoka.Services.Demo";
+
+
+// We start by Defining the Transport level messages we will handle
+// Each of these represents either a message / receipt or simply a notificaiton
+// Messages typically look like "API Calls" such as SetTime / GetTime
+// Notifications typically look like "Events" and Describe an event that occured.
+//
+// In our example servivce we will have the following messages
+//     1) A GetTime Message / Method that will return the Current Time and Time Zone (GET_TIME).  This message will block 
+//        and return the current time.
+//     2) A SetTime Message (SET_TIME) message that will take the time an set it.  This call will be done async so will immediately return
+//        an emptymessage (an ACK effectly) to let the client know that its accepted the message.
+//     3) A SetTimeNotification message will be broadcast async once the time has been set.
+
+message TimeServiceMessageTypes
+{
+	enum Ids
+	{
+		NONE = 0;
+		GET_TIME = 3;
+		SET_TIME = 1;
+		SET_TIME_COMPLETE_NOTIFICATION = 4;
+	}
+}
+
+// This Object is used by GetTime and SetTime
+message TimeInfo
+{
+	google.protobuf.Timestamp current_time = 1;
+	int32 time_zone = 2;
+}
+
+// This Object is used by SetTimeNotification to communicate
+// the result of the async operation SetTime
+message SetTimeResult
+{
+	google.protobuf.Timestamp current_time = 1;
+	int32 time_zone = 2;
+	bool success = 3;
+}
+

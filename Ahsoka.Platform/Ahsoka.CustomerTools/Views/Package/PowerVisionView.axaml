@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.CustomerTools.Views.PowerVisionView">
+
+	<Grid >
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="220"/>
+		</Grid.ColumnDefinitions>
+		
+		<StackPanel HorizontalAlignment="Stretch" DataContext="{Binding SelectedPackage.PowerVisionViewModel}" >
+			<StackPanel.Styles>
+				<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+			</StackPanel.Styles>
+			<Border IsVisible="False" Margin="20,10,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+				<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
+					<TextBlock Text="DotNet Project Name:" Grid.Row="0" Grid.Column="0"/>
+					<TextBox Text="{Binding ProjectPath}" Grid.Row="0" Width="300" Grid.Column="1" />
+					<Button  Margin="5,0"  Grid.Row="0" Grid.Column="2" Content="Choose Path..." Command="{Binding SetProject}"/>
+
+					<TextBlock Text="DotNet Publish Profile:" Grid.Row="1" Grid.Column="0"/>
+					<TextBox Text="{Binding PublishProfile}" Width="300" Grid.Row="1" Grid.Column="1" />
+					<Button  Margin="5,0"  Grid.Row="1" Grid.Column="2" Content="Choose Path..." Command="{Binding SetPublishProfile}"/>
+
+
+				</Grid>
+			</Border>
+		</StackPanel>
+	</Grid>
+</UserControl>
+

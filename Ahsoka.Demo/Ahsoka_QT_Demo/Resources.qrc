@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Resources/bg.jpg</file>
+        <file>Resources/Electrical_Environmental.png</file>
+        <file>Resources/Interfaces.png</file>
+        <file>Resources/Measurements.png</file>
+        <file>Resources/EnovationLogo.png</file>
+        <file>Resources/Hardware.png</file>
+        <file>Resources/LinuxLogo.png</file>
+        <file>Resources/QRCode.png</file>
+        <file>Resources/Display.png</file>
+        <file>Resources/Asset 1.png</file>
+        <file>Resources/Asset 2.png</file>
+        <file>Resources/Asset 3.png</file>
+        <file>Resources/Asset 4.png</file>
+        <file>Resources/Asset 5.png</file>
+        <file>Resources/Asset 6.png</file>
+        <file>Resources/Asset 7.png</file>
+        <file>Resources/Asset 8.png</file>
+        <file>Resources/Asset 9.png</file>
+        <file>Resources/Asset 10.png</file>
+        <file>Resources/Asset 11.png</file>
+        <file>Resources/bg_scaled.png</file>
+        <file>Resources/bg_scaled_Test.png</file>
+    </qresource>
+</RCC>

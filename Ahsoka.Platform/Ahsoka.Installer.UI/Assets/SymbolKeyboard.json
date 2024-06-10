@@ -1,0 +1,119 @@
+{
+  "KeyRow": [
+    {
+      "HorizontalRowOffset": 0,
+      "KeyInfo": [
+
+        {
+          "KeyText": "1"
+        },
+        {
+          "KeyText": "2"
+        },
+        {
+          "KeyText": "3"
+        },
+        {
+          "KeyText": "4"
+        },
+        {
+          "KeyText": "5"
+        },
+        {
+          "KeyText": "6"
+        },
+        {
+          "KeyText": "7"
+        },
+        {
+          "KeyText": "8"
+        },
+        {
+          "KeyText": "9"
+        },
+        {
+          "KeyText": "0"
+        },
+        {
+          "KeyText": "_"
+        },
+        {
+          "KeyText": "="
+        }
+      ]
+    },
+    {
+      "HorizontalRowOffset": 10,
+      "KeyInfo": [
+        {
+          "KeyText": "!"
+        },
+        {
+          "KeyText": "@"
+        },
+        {
+          "KeyText": "#"
+        },
+        {
+          "KeyText": "$"
+        },
+        {
+          "KeyText": "%"
+        },
+        {
+          "KeyText": "^"
+        },
+        {
+          "KeyText": "&"
+        },
+        {
+          "KeyText": "*"
+        },
+        {
+          "KeyText": "("
+        },
+        {
+          "KeyText": ")"
+        },
+        {
+          "KeyText": "-"
+        },
+        {
+          "KeyText": "+"
+        }
+      ]
+    },
+    {
+      "HorizontalRowOffset": 20,
+      "KeyInfo": [
+        {
+          "KeyText": "Caps",
+          "State": 1
+        },
+        {
+          "KeyText": "`"
+        },
+        {
+          "KeyText": "~"
+        },
+        
+        {
+          "KeyText": "|"
+        },
+        {
+          "KeyText": "\\"
+        },
+        {
+          "KeyText": "?"
+        },
+        {
+          "KeyText": "/"
+        },
+        {
+          "KeyText": "Backspace",
+          "State": 4
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "version": "2.1.1.10032",
+  "applicationType": "Dotnet",
+  "userInterfaceType": "None",
+  "systemOrientation": "DefaultOrientation",
+  "execCommand": "Ahsoka.CS.GTK",
+  "packageName": "Ahsoka.CS.GTK",
+  "packageDescription": "GTK IO Demo",
+  "applicationVersion": "1.0",
+  "packageApplicationFolder": "publish",
+  "packageOutputDirectory": "../PackageOutput",
+  "startupLogoPath": "EnovLogo.png",
+  "includeInstallerUI": false,
+  "licenses": [],
+  "dotNetInfo": {
+    "projectPath": "Ahsoka.CS.GTK.csproj",
+    "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
+  },
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "services": [],
+      "customServiceEnabled": "Disabled",
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "startupDelay": 0
+    },
+    "environmentValues": []
+  },
+  "canCalibrationFiles": {},
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
+  "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "components": []
+}

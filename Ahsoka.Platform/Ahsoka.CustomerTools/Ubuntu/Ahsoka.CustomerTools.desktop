@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=OpenPV
+Exec=/usr/share/OpenPV.DeveloperToolkit/OpenPV.DeveloperToolkit
+Icon=/usr/share/icons/OpenPV.DeveloperToolkit.ico
+Terminal=false
+StartupNotify=true

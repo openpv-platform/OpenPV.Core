@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<eventdefinitions>
+  <event format="8u1 unsigned_int_64 8s1 signed_int_64 4f1 float 4u1 unsigned_int_32 4s1 signed_int_32 4f10 float_array 4u10 unsigned_int_array 4s10 signed_int_array 2u1 unsigned_int_16 2s1 signed_int_16 1u1 unsigned_int_8 1s1 signed_int_8 1s0 string" name="generate_event_test" type="0x40">
+    <field name="float"/>
+    <field name="float_array"/>
+    <field name="signed_int_16"/>
+    <field name="signed_int_32"/>
+    <field name="signed_int_64"/>
+    <field name="signed_int_8"/>
+    <field name="signed_int_array"/>
+    <field name="string"/>
+    <field name="unsigned_int_16"/>
+    <field name="unsigned_int_32"/>
+    <field name="unsigned_int_64"/>
+    <field name="unsigned_int_8"/>
+    <field name="unsigned_int_array"/>
+  </event>
+</eventdefinitions>

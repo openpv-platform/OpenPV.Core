@@ -1,0 +1,18 @@
+#General Rules
+.*
+!.gitignore
+
+#Generated Files
+bin/
+obj/
+GeneratedObjects/
+StoryboardExport/
+publish/
+
+#Storyboard Project
+!StoryboardProject/.project
+StoryboardProject/sbsim*.tmp
+
+#User Configurations
+*.user
+Local.props

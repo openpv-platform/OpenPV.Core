@@ -1,0 +1,64 @@
+#!/bin/bash
+
+kernel_name=$(uname -s)
+kernel_version=$(uname -r)
+hardware_architecture=$(uname -p)
+platform_os=$(uname -o)
+
+Help()
+{
+    # display help menu
+    echo "Usage: bsp-version [OPTION]..."
+    echo "  -h      Print Help Message"
+    echo "  -a      Print all information"
+    echo "  -v      Print BSP version"
+    echo "  -d      Print BSP Description"
+    echo "  -k      Print kernel information"
+    echo
+}
+
+version_info()
+{
+    echo "BSP Version:      $(cat /usr/share/bsp-info/bsp-version)"
+}
+
+bsp_description()
+{
+    echo "BSP Description:  $(cat /usr/share/bsp-info/bsp-description)"
+}
+
+kernel_info()
+{
+    echo "Kernel:           ${kernel_name} ${kernel_version}"
+    echo "Architecture:     ${hardware_architecture}"
+    echo "Operating System: ${platform_os}"
+}
+
+
+while getopts ":avdkh" opt; do
+    case $opt in
+        a)
+            version_info
+            bsp_description
+            kernel_info
+            ;;
+        v)
+            version_info
+            ;;
+        d)
+            bsp_description
+            ;;
+        k)
+            kernel_info
+            ;;
+        *)
+            Help
+            exit;;
+        \?)
+            echo "Invalid Option..."
+            echo
+            Help
+            exit;;
+    esac
+done 
+

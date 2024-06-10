@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package Ahsoka.Services.Bluetooth;
+
+enum CallState
+{
+    NOT_IN_CALL = 0;
+    OUTGOING_CALL_SETUP = 1;
+    INCOMING_CALL_SETUP = 2;
+    CALL_RINGING = 3;
+    IN_CALL_ON_DISPLAY = 4;
+    IN_CALL_ON_HAND_SET = 5;
+}
+
+message PhoneStatus
+{
+    CallState state = 1;
+    string network_status = 2;
+    int32 signal = 3;
+    int32 battery = 4;
+    bool roaming = 5;
+    string network_name = 6;
+    bool voice_dial_available = 7;
+    bool voice_dial_active = 8;
+    int32 mic_volume = 9;
+    int32 speaker_volume = 10;
+
+    repeated Call calls = 20;
+}
+
+message Call
+{
+    int32 call_index = 1;
+    string call_description = 2;
+    string call_number = 3;
+    int32 call_start_time = 4;
+    bool is_active = 5;
+    bool is_on_hold = 6;
+}
+
+message CallCommand
+{
+    CallCommands command = 1;
+    string command_data = 2;
+}
+
+message CallCommandResponse
+{
+    CallCommands command = 1;
+    string command_data = 2;
+    bool success = 3;
+}
+
+message CallNotification
+{
+    Call call = 1;
+}
+
+enum CallCommands
+{
+    ANSWER = 1;
+    HANGUP = 2;
+    DIAL = 3;
+    REDIAL = 4;
+    PLAY_TONE = 5;
+    HOLD_FLASH = 6;
+    SWITCH_TO_PHONE = 7;
+    SWITCH_TO_DISPLAY = 8;
+}
+
+
+
+

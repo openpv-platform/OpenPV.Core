@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>Ahsoka</RootNamespace>
+		<TrimMode>copyused</TrimMode>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+	</PropertyGroup>
+	
+	<PropertyGroup Label="Suppress Errors for GPIO Project">
+		<SuppressWindowsPlatformTargetingRequiredError>true</SuppressWindowsPlatformTargetingRequiredError>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="..\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
+		<ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Label="Package Outputs">
+		<Content Include="..\PlatformSupport\Windows64_TargetSupport\CommandLine\**">
+			<Link>PlatformSupport\Windows64_TargetSupport\CommandLine\%(RecursiveDir)%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+			<Visible>false</Visible>
+			<PackagePath>contentFiles/any/any/PlatformSupport\Windows64_TargetSupport\CommandLine\</PackagePath>
+			<PackageCopyToOutput>false</PackageCopyToOutput>
+			<IncludeInPackage>true</IncludeInPackage>
+			<Pack>true</Pack>
+		</Content>
+
+		<None Update="Ahsoka.CommandLine.props" Pack="true" PackagePath="build" />
+		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
+</Project>

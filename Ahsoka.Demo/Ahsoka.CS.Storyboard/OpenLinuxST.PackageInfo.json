@@ -1,0 +1,39 @@
+{
+  "version": "2.1.1.10029",
+  "applicationType": "Dotnet",
+  "userInterfaceType": "Storyboard",
+  "systemOrientation": "DefaultOrientation",
+  "execCommand": "Ahsoka.CS.Storyboard",
+  "packageName": "Ahsoka.CS.Storyboard",
+  "packageDescription": "Ahsoka Storyboard Demo",
+  "applicationVersion": "1.0",
+  "packageApplicationFolder": "publish",
+  "packageOutputDirectory": "../PackageOutput",
+  "startupLogoPath": "StoryboardProject/images/bg_wood.png",
+  "includeInstallerUI": false,
+  "licenses": [],
+  "storyboardInfo": {},
+  "dotNetInfo": {
+    "projectPath": "Ahsoka.CS.Storyboard.csproj",
+    "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
+  },
+  "cppInfo": {},
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "services": [],
+      "customServiceEnabled": "Disabled",
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "startupDelay": 0
+    },
+    "environmentValues": []
+  },
+  "canCalibrationFiles": {},
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
+  "securityMode": "None",
+  "applicationId": "dcab7071-7440-4aea-a9c1-f1f7e8ce895d",
+  "components": []
+}

@@ -1,0 +1,19 @@
+#pragma once
+
+#include <string>
+#include "AhsokaMessagesBase.hpp"
+#include <functional>
+#include "AhsokaServices.h"
+
+namespace DefaultNameSpace
+{
+    class DefaultServiceMessages : public AhsokaServiceFramework::AhsokaMessagesBase
+    {
+        public:
+
+            DefaultServiceMessages()
+            {
+%REGISTER_SERVICE_MESSAGES%
+            }
+    };
+}

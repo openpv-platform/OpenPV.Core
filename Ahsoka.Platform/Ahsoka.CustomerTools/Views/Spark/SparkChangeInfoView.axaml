@@ -1,0 +1,65 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.CustomerTools.Views.SparkChangeInfoView">
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="220"/>
+		</Grid.ColumnDefinitions>
+
+		<StackPanel Grid.Column="1"
+					HorizontalAlignment="Center" >
+
+			<Button Margin="3,27,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					Command="{Binding ChangeInfo}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Update"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Update Info"/>
+				</StackPanel>
+			</Button>
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					Command="{Binding Logout}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Logout"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Logout"/>
+				</StackPanel>
+			</Button>
+			<Grid Height="20"/>
+		</StackPanel>
+
+		<StackPanel HorizontalAlignment="Stretch" >
+			<StackPanel.Styles>
+				<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+			</StackPanel.Styles>
+			<Border Margin="20,0,20,00" Padding="10" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+				<Grid HorizontalAlignment="Left" VerticalAlignment="Center" ColumnDefinitions="160,Auto,Auto" RowDefinitions="*,*,*,*,*"
+				  IsVisible="{Binding ViewInfoChange}" Grid.Column="0">
+					<TextBlock VerticalAlignment="Center" Text="Email Address:" Grid.Row="0" Grid.Column="0"/>
+					<TextBox Text="{Binding EmailAddress}" Grid.Row="0" Grid.Column="1"  Width="280" TextWrapping="1" Margin="5" />
+
+					<TextBlock VerticalAlignment="Center" Text="First Name:" Grid.Row="1" Grid.Column="0"/>
+					<TextBox Text="{Binding FirstName}" Grid.Row="1" Grid.Column="1"  Width="280" TextWrapping="1" Margin="5" />
+
+					<TextBlock VerticalAlignment="Center" Text="Last Name:" Grid.Row="2" Grid.Column="0"/>
+					<TextBox Text="{Binding LastName}" Grid.Row="2" Grid.Column="1"  Width="280" TextWrapping="1" Margin="5" />
+
+					<TextBlock VerticalAlignment="Center" Text="Spark Server:" Grid.Row="3" Grid.Column="0"/>
+					<TextBox Text="{Binding SparkUrl}" IsReadOnly="True" Background="WhiteSmoke" Grid.Row="3" Grid.Column="1"  Width="280" TextWrapping="1" Margin="5" />
+					<TextBlock VerticalAlignment="Center" Text="*Logout to Change Active Server:" Grid.Row="4" Foreground="DimGray" Grid.Column="1"/>
+				</Grid>
+			</Border>
+		
+		</StackPanel>
+	</Grid>
+</UserControl>

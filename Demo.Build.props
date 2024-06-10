@@ -1,0 +1,27 @@
+﻿<Project>
+	<PropertyGroup Label="Development References Windows" Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+		<AhsokaCommandLinePath>..\..\Ahsoka.Platform\PlatformSupport\Windows64_TargetSupport\CommandLine\Ahsoka.CommandLine.exe</AhsokaCommandLinePath>
+	</PropertyGroup>
+	<PropertyGroup Label="Development References OSX" Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+		<AhsokaCommandLinePath>..\..\Ahsoka.Platform\PlatformSupport\MacOSARM64_TargetSupport\CommandLine\Ahsoka.CommandLine</AhsokaCommandLinePath>
+	</PropertyGroup>
+	<PropertyGroup Label="Development References Linux" Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+		<AhsokaCommandLinePath>..\..\Ahsoka.Platform\PlatformSupport\Ubuntu64_TargetSupport\CommandLine\Ahsoka.CommandLine</AhsokaCommandLinePath>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!--Prevent Queries when running our code generator-->
+		<EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
+	</PropertyGroup>
+	
+	<Target Name="PreBuild" BeforeTargets="PreBuildEvent" Condition="'$(SolutionName)' != 'Ahsoka.Platform' and '$(RuntimeIdentifier)'=='linux-arm'">
+		<Exec ContinueOnError="true" Command="dotnet restore --runtime linux-arm" />
+	</Target>
+	
+	<ItemGroup Label="Development References" >
+		<ProjectReference Include="..\..\Ahsoka.Platform\Ahsoka.Core\Ahsoka.Core.csproj" />
+		<ProjectReference Include="..\..\Ahsoka.Platform\Ahsoka.Core.Drawing\Ahsoka.Core.Drawing.csproj" />
+		<ProjectReference Include="..\..\Ahsoka.Platform\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
+		<ProjectReference Include="..\..\Ahsoka.Platform\Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
+	</ItemGroup>
+</Project>

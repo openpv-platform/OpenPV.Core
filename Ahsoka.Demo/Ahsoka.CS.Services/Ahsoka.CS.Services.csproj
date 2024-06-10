@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<Platforms>AnyCPU;x64</Platforms>
+		<TargetFramework>net7.0</TargetFramework>
+		<RootNamespace>Ahsoka.Services.Demo</RootNamespace>
+		</PropertyGroup>
+
+	<!-- This set of Nuget Packages Allows us to Include a .proto file and have it autogenerate classes -->
+	<ItemGroup Label="Reference to Ahsoka Nuget Packages" Condition="!Exists('../../Demo.Build.props')">
+		<PackageReference Include="Ahsoka.Core" Version="(2.*,3.0)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AdditionalFiles Include="Service\*.proto" />
+	</ItemGroup>
+
+	<!-- This set of Nuget Packages Allows us to Include a .proto file and have it autogenerate classes -->
+	<ItemGroup>
+		<PackageReference Include="protobuf-net" Version="3.2.30" />
+		<PackageReference Include="protobuf-net.BuildTools" Version="3.2.33">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	
+	<Import Label="Ahsoka Local Build Properties" Condition="Exists('../../Demo.Build.props')" Project="../../Demo.Build.props" />
+	
+</Project>

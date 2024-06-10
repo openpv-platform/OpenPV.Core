@@ -1,0 +1,25 @@
+{
+  "ReleaseID": "00000000-0000-0000-0000-000000000000",
+  "ChannelName": "OpenPV for Windows",
+  "AvailableToVersion": null,
+  "ContainerType": 0,
+  "TrackType": 0,
+  "ReleaseName": "OpenPV Developer Tools",
+  "ContainerName": "OpenPV",
+  "ContainerVersion": "1.0.0",
+  "ReleaseNotes": null,
+  "LaunchPath": "OpenPV.DeveloperToolkit.exe",
+  "InstallCommand": null,
+  "UnInstallCommand": null,
+  "SizeInBytes": 0,
+  "OriginalFileSizeInBytes": 0,
+  "Contents": [
+    {
+      "Path": "OpenPV.Installer.msi",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    }
+  ],
+  "Dependencies": null
+}

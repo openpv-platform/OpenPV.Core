@@ -1,0 +1,28 @@
+[Unit]
+Description=Ahsoka Application Service
+DefaultDependencies=false
+Wants=ahsoka-early.target
+
+# Before lists all the services we want to defer until the systemd-notify command allows them to run
+# Some are suggested and may not actually hurt our boot time
+Before=systemd-timesyncd.service \
+        kmod-static-nodes.service \
+        local-fs.target \
+        mount-partitions.service \
+        proc-fs-nfsd.mount \
+        rpcbind.service \
+        systemd-journald.service \
+        systemd-network-generator.service \
+        systemd-random-seed.service \
+        systemd-sysctl.service \
+        systemd-udevd.service
+
+[Service]
+Type=notify
+NotifyAccess=all
+RemainAfterExit=true
+ExecStart=/usr/local/Ahsoka/start.sh
+ExecStopPost=systemctl start Ahsoka.Installer.service
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,113 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>Ahsoka</RootNamespace>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<NoWarn>CS0618;NU5100</NoWarn> <!--Until Spark Is Upgraded-->
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Remove="Properties\**" />
+		<Compile Remove="Spark\Client\**" />
+		<Compile Remove="Spark\DataTransferObjects\**" />
+		<Compile Remove="Spark\Security\**" />
+		<EmbeddedResource Remove="Properties\**" />
+		<EmbeddedResource Remove="Spark\Client\**" />
+		<EmbeddedResource Remove="Spark\DataTransferObjects\**" />
+		<EmbeddedResource Remove="Spark\Security\**" />
+		<None Remove="Properties\**" />
+		<None Remove="Spark\Client\**" />
+		<None Remove="Spark\DataTransferObjects\**" />
+		<None Remove="Spark\Security\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Storyboard\Proto\StartupConfiguration.proto" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AdditionalFiles Include="Storyboard\Proto\StartupConfiguration.proto">
+		  <CustomToolNamespace>Models</CustomToolNamespace>
+		</AdditionalFiles>
+	</ItemGroup>
+
+	<ItemGroup>
+		<AdditionalFiles Include="..\..\Ahsoka.Proto\*.proto" Exclude="..\..\Ahsoka.Proto\BLE*.proto;..\..\Ahsoka.Proto\Cygnus*.proto;..\..\Ahsoka.Proto\reach.proto">
+			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		</AdditionalFiles>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Spark\SparkUploadTool.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+		<EmbeddedResource Include="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="DbcParserLib" Version="1.5.0" />
+		<PackageReference Include="ELFSharp" Version="2.17.3" />
+		<PackageReference Include="EnovationCloud.Core" Version="4.2.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
+		<PackageReference Include="NetMQ" Version="4.0.1.13" />
+		<PackageReference Include="protobuf-net" Version="3.2.30" />
+		<PackageReference Include="protobuf-net.BuildTools" Version="3.2.33">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="System.Drawing.Common" Version="5.0.3" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.3.1" />
+		
+		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+		<PackageReference Include="MQTTnet" Version="4.3.3.952" />
+		<PackageReference Include="System.Device.Gpio" Version="3.1.0" />
+		<PackageReference Include="SocketCANSharp" Version="0.11.0" />
+
+		<PackageReference Include="SSH.NET" Version="2023.0.1" />
+	</ItemGroup>
+
+	<ItemGroup Label="Windows Only Modules - If Only I could Figure Out how to Exclude Them???">
+		<PackageReference Include="Doxygen" Version="1.8.14">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="InTheHand.Net.Bluetooth" Version="4.1.40" />
+		<PackageReference Include="SharpZipLib" Version="1.4.2" />
+		<PackageReference Include="SimpleWifi.netstandard" Version="2.0.0" />
+		<PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.0" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<None Update="Ahsoka.Core.props">
+			<PackagePath>build</PackagePath>
+			<Pack>true</Pack>
+		</None>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
+</Project>

@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>Ahsoka</RootNamespace>
+		<TrimMode>copyused</TrimMode>
+	</PropertyGroup>
+	
+
+	<ItemGroup>
+		<ProjectReference Include="..\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
+		<ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
+</Project>

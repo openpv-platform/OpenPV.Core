@@ -1,0 +1,35 @@
+#pragma once
+#include <string>
+#include <functional>
+#include <memory>
+#include "AhsokaServices.h"
+
+using namespace std;
+using namespace DefaultNameSpace;
+
+#if __has_include("DefaultServiceClientIncludes.h") 
+# include "DefaultServiceClientIncludes.h"
+#endif
+
+namespace DefaultNameSpace
+{
+	const std::string DefaultServiceName = "DefaultService";
+
+	class DefaultServiceClient : public AhsokaServiceFramework::AhsokaEndPointWithCallback<DefaultTransportIdEnum>
+	{
+		public:
+
+			DefaultServiceClient();
+			DefaultServiceClient(ServiceConfiguration config);
+
+			void RegisterListener(MessageReceived_t callback);
+
+			// The Following Notifications Are Available at the RegisterListenerCallback
+%SERVICE_NOTIFICATIONS%
+%SERVICE_METHODS%
+
+			#if __has_include("DefaultServiceClientExtensions.h") 
+			# include "DefaultServiceClientExtensions.h"
+			#endif
+	};
+}

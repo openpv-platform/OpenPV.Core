@@ -1,0 +1,12 @@
+[Match]
+Name=<ADAPTERID>
+
+[Link]
+MACAddress=<MAC>
+
+[Network]
+DHCP=YES
+
+[DHCP]
+RouteMetric=10
+ClientIdentifier=mac

@@ -1,0 +1,44 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<!--Disable Build Outputs-->
+	<Target Name="Build" />
+	<Target Name="Rebuild" />
+
+	<PropertyGroup>
+		<ESPSource_Root>$([System.IO.Path]::GetFullPath('$(SolutionDir)..\'))</ESPSource_Root>
+	</PropertyGroup>
+
+	<Target Name="Clean ESP Firmware" BeforeTargets="BeforeClean">
+		<Message Text="Cleaning ESP Firmware" Importance="high" />
+		<Delete Files="$(ESPSource_Root)\BuildOutputs\Firmware\OpenViewLinux_TargetSupport\ESPFirmware.zip" />
+	</Target>
+
+	<Target Name="BuildWiFiFirmware" AfterTargets="PostBuildEvent" Condition="!Exists('$(ESPSource_Root)\BuildOutputs\Firmware\OpenViewLinux_TargetSupport\ESPFirmware.zip')">
+		
+		<Message Text="Stopping Containers" Importance="high" />
+		<Exec ContinueOnError="true" IgnoreExitCode="true" WorkingDirectory="$(ESPSource_Root)" Command="docker kill Ahsoka.ESPBuilder" />
+	
+		<Message Text="Building ESP32 Firmwware at $(ESPSource_Root)" Importance="high" />
+		<Exec WorkingDirectory="$(ESPSource_Root)" Command="docker pull openpv/openview_espidf" />
+		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(ESPSource_Root)" Command="chmod +x $(ESPSource_Root)/Ahsoka.Interop/ThirdParty/esp-hosted/docker/build_firmware.sh" />
+		<Exec ContinueOnError="true" Timeout="300000" WorkingDirectory="$(ESPSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(ESPSource_Root)/Ahsoka.Interop/ThirdParty/esp-hosted:/esp-hosted --rm --entrypoint &quot;/esp-hosted/docker/build_firmware.sh&quot; --name Ahsoka.ESPBuilder openpv/openview_espidf" />
+		
+		<Message Text="Copying Outputs from $(ESPSource_Root)\Ahsoka.Interop\ThirdParty\esp-hosted\ESPFirmware.zip" Importance="high" />
+		<Copy SourceFiles="$(ESPSource_Root)Ahsoka.Interop\ThirdParty\esp-hosted\ESPFirmware.zip" DestinationFolder="$(ESPSource_Root)BuildOutputs\Firmware\OpenViewLinux_TargetSupport" />
+	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+
+</Project>

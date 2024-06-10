@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.CustomerTools.Views.CppView">
+
+	<Grid DataContext="{Binding CppViewModel}">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="240"/>
+		</Grid.ColumnDefinitions>
+		<StackPanel Grid.Column="1"
+			HorizontalAlignment="Center">
+			<TextBlock FontSize="18"
+			   VerticalAlignment="Top"
+			   HorizontalAlignment="Center"
+			   Margin="12,40,12,12"
+			   Foreground="DimGray"
+			   Text="C++ Actions "/>
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					Command="{Binding InstallSDK}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Toolbox"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="{Binding FrameworkButtonText, FallbackValue='Add SDK Package'}"/>
+				</StackPanel>
+			</Button>
+			<Button Margin="3,3,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding DeleteSDK}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Delete"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Delete SDK Package"/>
+				</StackPanel>
+			</Button>
+		</StackPanel>
+
+		<StackPanel Margin="0,0,0,0" HorizontalAlignment="Stretch"  >
+			<StackPanel.Styles>
+				<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+			</StackPanel.Styles>
+			<Border Margin="20,10,0,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+				<Grid Margin="5" ColumnDefinitions="175,Auto,Auto" RowDefinitions="*,*,*,*,*">
+					<TextBlock Text="C++ Project Folder:" Grid.Row="0" Grid.Column="0"/>
+					<TextBox Text="{Binding ProjectPath}" Grid.Row="0" Width="300" Grid.Column="1" />
+					<Button  Margin="5,0"  Grid.Row="0" Grid.Column="2" Content="Choose Path..." Command="{Binding SetProjectDirectory}"/>
+					<TextBlock VerticalAlignment="Bottom" Text="{Binding InstalledFramework, FallbackValue=(No Framework Installed)}" 
+							   MaxWidth="400" Grid.ColumnSpan="4" HorizontalAlignment="Left" 
+							   Padding="0,30,5,5" FontStyle="Italic" TextWrapping="Wrap" 
+							   Grid.Row="1" Grid.Column="1" />
+					<TextBlock VerticalAlignment="Top" Text="{Binding CurrentFramework, FallbackValue=(Current Version)}" 
+							   Grid.ColumnSpan="3" HorizontalAlignment="Left" 
+							   Padding="0,5,5,5" FontStyle="Italic" TextWrapping="Wrap" 
+							   Grid.Row="2" Grid.Column="1" />
+				</Grid>
+			</Border>
+		</StackPanel>
+	</Grid>
+</UserControl>
+

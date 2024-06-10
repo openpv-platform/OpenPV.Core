@@ -1,0 +1,32 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<Platforms>AnyCPU;x64</Platforms>
+		<TargetFramework>net7.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup Label="Reference to Ahsoka Nuget Packages" Condition="!Exists('../../Demo.Build.props')">
+		<PackageReference Include="Ahsoka.Core.Drawing" Version="(2.*,3.0)" />
+		<PackageReference Include="Ahsoka.Core" Version="(2.*,3.0)" />
+	</ItemGroup>
+
+	<Import Label="Ahsoka Local Build Properties" Condition="Exists('../../Demo.Build.props')" Project="../../Demo.Build.props" />
+	
+	<PropertyGroup>
+		<PackageInfoPath>OpenLinuxST.PackageInfo.json</PackageInfoPath>
+		<CanClassNameSpace>Ahsoka.CS.CAN</CanClassNameSpace>
+		<CanClassOutputFile>obj/GeneratedCanObjects.cs</CanClassOutputFile>
+		<CanClassBase>CanViewModelBase</CanClassBase>
+		<CanGenerateClassesOnBuild>True</CanGenerateClassesOnBuild>
+	</PropertyGroup>
+	<ItemGroup>
+	  <None Update="Cloud.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	  <None Update="STDemoPackage.1.cancalibration.json">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
+	</ItemGroup>
+</Project>

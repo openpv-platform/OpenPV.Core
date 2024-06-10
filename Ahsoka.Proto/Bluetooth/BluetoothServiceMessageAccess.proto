@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package Ahsoka.Services.Bluetooth;
+
+
+message TextMessage
+{
+    string text_message_content = 1;
+    string text_message_number = 2;
+    string text_message_name = 3;
+}
+
+message TextMessageReponse
+{
+    bool text_message_sent = 1;
+}
+
+
+

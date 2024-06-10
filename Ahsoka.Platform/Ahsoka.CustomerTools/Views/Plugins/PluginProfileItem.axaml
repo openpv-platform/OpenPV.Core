@@ -1,0 +1,16 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="450" d:DesignHeight="200"
+             x:Class="Ahsoka.CustomerTools.Views.PluginProfileItem">
+	<Grid Margin="0,5,8,8"  Background="{Binding BackColor}" >
+		<Grid Margin="20,8,8,8" VerticalAlignment="Stretch">
+			<TextBlock Foreground="{Binding IconColor}" HorizontalAlignment="Left"
+					   VerticalAlignment="Top" Margin="0,5,0,0" FontSize="16" FontWeight="Bold" Text="{Binding ProfileName, FallbackValue='Profile Name'}"  />
+			<TextBlock MinHeight="75" Foreground="{Binding IconColor}" TextWrapping="Wrap"
+					   HorizontalAlignment="Left" FontSize="12" VerticalAlignment="Top" 
+					   Text="{Binding ProfileDescription, FallbackValue='Description of the Profile Items'}" Name="TextVersion" Margin="0,28,25,0"/>
+		</Grid>
+	</Grid>
+</UserControl>

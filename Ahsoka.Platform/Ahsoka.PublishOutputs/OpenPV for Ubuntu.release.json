@@ -1,0 +1,24 @@
+{
+  "ReleaseID": "00000000-0000-0000-0000-000000000000",
+  "ChannelName": "OpenPV for Ubuntu",
+  "AvailableToVersion": null,
+  "ContainerType": 0,
+  "TrackType": 0,
+  "ReleaseName": "OpenPV Developer Tools",
+  "ContainerName": "OpenPV",
+  "ContainerVersion": "1.0.0",
+  "ReleaseNotes": null,
+  "InstallCommand": null,
+  "UnInstallCommand": null,
+  "SizeInBytes": 0,
+  "OriginalFileSizeInBytes": 0,
+  "Contents": [
+    {
+      "Path": "OpenPV.DeveloperToolkit.*.deb",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    }
+  ],
+  "Dependencies": null
+}

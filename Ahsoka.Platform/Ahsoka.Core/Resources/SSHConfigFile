@@ -1,0 +1,5 @@
+﻿Host KEYNAME
+     HostName HOSTNAME
+     User USERNAME
+     IdentityFile KEYFILEPATH
+

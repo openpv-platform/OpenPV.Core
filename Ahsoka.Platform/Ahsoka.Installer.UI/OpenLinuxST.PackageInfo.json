@@ -1,0 +1,25 @@
+{
+  "version": "1.247.1.10015",
+  "applicationType": "Dotnet",
+  "userInterfaceType": "None",
+  "execCommand": "Ahsoka.Installer.UI",
+  "packageName": "Installer.App",
+  "applicationVersion": "1.0",
+  "packageApplicationFolder": "..\\PlatformSupport\\OpenViewLinux_TargetSupport\\InstallerUI",
+  "packageOutputDirectory": "..\\PackageOutput",
+  "includeInstallerUI": false,
+  "debugMode": true,
+  "teamId": "00000000-0000-0000-0000-000000000000",
+  "dotNetInfo": {
+    "projectPath": "Ahsoka.Installer.UI.csproj",
+    "publishProfile": "Properties\\PublishProfiles\\LinuxOutputs.pubxml"
+  },
+  "canCalibrationFiles": {},
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
+  "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "components": []
+}

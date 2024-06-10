@@ -1,0 +1,26 @@
+{
+  "version": "1.251.1.10015",
+  "applicationType": "Dotnet",
+  "userInterfaceType": "Storyboard",
+  "execCommand": "Ahsoka.CS.Storyboard.IO",
+  "packageName": "Ahsoka.CS.Storyboard.IO",
+  "packageDescription": "Ahsoka Storyboard Demo with IO",
+  "applicationVersion": "1.0",
+  "packageApplicationFolder": "publish",
+  "packageOutputDirectory": "../PackageOutput",
+  "startupLogoPath": "StoryboardProject/images/LogoSplash.png",
+  "includeInstallerUI": false,
+  "storyboardInfo": {},
+  "dotNetInfo": {
+    "projectPath": "Ahsoka.CS.Storyboard.IO.csproj",
+    "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
+  },
+  "canCalibrationFiles": {},
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
+  "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "components": []
+}

@@ -1,0 +1,261 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net7.0</TargetFramework>
+		<OutputType>WinExe</OutputType>
+		<RuntimeIdentifiers>win-x64;linux-arm;linux-x64;osx-arm64</RuntimeIdentifiers>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<SignAssembly>False</SignAssembly>
+		<NoWarn>CS0618</NoWarn>	<!--Until Spark Is Upgraded-->
+		<TrimMode>copyused</TrimMode>
+		<AssemblyName>OpenPV.DeveloperToolkit</AssemblyName>
+	</PropertyGroup>
+
+	<PropertyGroup Label="Suppress Errors for GPIO Project">
+		<SuppressWindowsPlatformTargetingRequiredError>true</SuppressWindowsPlatformTargetingRequiredError>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Content Include="..\..\Ahsoka.Documentation\html\**">
+			<Link>APIHelp\%(RecursiveDir)%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>true</Visible>
+		</Content>
+	</ItemGroup>
+
+	<PropertyGroup>
+		<CFBundleName>OpenPV.DeveloperToolkit</CFBundleName> <!-- Also defines .app file name -->
+		<CFBundleDisplayName>OpenPV.DeveloperToolkit</CFBundleDisplayName>
+		<CFBundleIdentifier>com.openpv.customertools</CFBundleIdentifier>
+		<CFBundleVersion>1.0.0</CFBundleVersion>
+		<CFBundleShortVersionString>1.0</CFBundleShortVersionString>
+		<CFBundlePackageType>APPL</CFBundlePackageType>
+		<CFBundleSignature>123123</CFBundleSignature>
+		<CFBundleExecutable>OpenPV.DeveloperToolkit</CFBundleExecutable>
+		<CFBundleIconFile>OpenPV.icns</CFBundleIconFile> <!-- Will be copied from output directory -->
+		<NSPrincipalClass>NSApplication</NSPrincipalClass>
+		<NSHighResolutionCapable>true</NSHighResolutionCapable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Remove=".gitignore" />
+		<None Remove="Ubuntu\OpenPV.DeveloperToolkit.desktop" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Avalonia" Version="11.0.9" />
+		<PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.9" />
+		<PackageReference Include="Avalonia.Controls.ItemsRepeater" Version="11.0.9" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.0.9" />
+		<PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.9" />
+		<PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.13" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.9" />
+		<PackageReference Include="Material.Icons.Avalonia" Version="2.1.0" />
+		<PackageReference Include="Deadpikle.AvaloniaProgressRing" Version="0.10.5" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection" Version="8.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Abstractions" Version="8.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.Extensions" Version="8.0.2" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+		<PackageReference Include="Packaging.Targets" Version="0.1.220-*">
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+
+		<PackageReference Include="Dotnet.Bundle" Version="*" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Assets\OpenPV-Icon.ico">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Ubuntu\InstallQtToolchain.sh">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</None>
+	
+		<AvaloniaResource Include="Styles\Styles.axaml" />
+		<AvaloniaResource Include="Assets\*" />
+		<Resource Include="Assets\OpenPV-Icon.ico" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\Resources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>Resources.resx</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\MainWindow\Connections.axaml.cs">
+	    <DependentUpon>Connections.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\MainWindow\ConnectionDetailsView.axaml.cs">
+	    <DependentUpon>ConnectionDetailsView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANDiagnosticEventView.axaml.cs">
+	    <DependentUpon>CANDiagnosticEventView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANDiagnosticEventEditView.axaml.cs">
+	    <DependentUpon>CANDiagnosticEventEditView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\DeveloperView.axaml.cs">
+	    <DependentUpon>DeveloperView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\PackageInfoView.axaml.cs">
+	    <DependentUpon>PackageInfoView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\ServiceOptionsView.axaml.cs">
+	    <DependentUpon>ServiceOptionsView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\StartupOptionsView.axaml.cs">
+	    <DependentUpon>StartupOptionsView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\PowerVisionView.axaml.cs">
+	    <DependentUpon>PowerVisionView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\OpenPackageView.axaml.cs">
+	    <DependentUpon>OpenPackageView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\StoryboardView.axaml.cs">
+	    <DependentUpon>StoryboardView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Plugins\PluginProfileView.axaml.cs">
+	    <DependentUpon>PluginProfileView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Plugins\PluginDownloadView.axaml.cs">
+	    <DependentUpon>PluginDownloadView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Plugins\PluginsView.axaml.cs">
+	    <DependentUpon>PluginsView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Plugins\PluginProfileItem.axaml.cs">
+	    <DependentUpon>PluginProfileItem.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Plugins\WelcomeView.axaml.cs">
+	    <DependentUpon>WelcomeView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkModulePackSelectionView.axaml.cs">
+	    <DependentUpon>SparkModulePackSelectionView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkModulePackView.axaml.cs">
+	    <DependentUpon>SparkModulePackView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectEditView.axaml.cs">
+	    <DependentUpon>SparkProjectEditView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectUpdateModuleList.axaml.cs">
+	    <DependentUpon>SparkProjectUpdateModuleList.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectLoadingView.axaml.cs">
+	    <DependentUpon>SparkProjectLoadingView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectArtifactView.axaml.cs">
+	    <DependentUpon>SparkProjectArtifactView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectMemberListView.axaml.cs">
+	    <DependentUpon>SparkProjectMemberListView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectAddModuleList.axaml.cs">
+	    <DependentUpon>SparkProjectAddModuleList.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectModuleList.axaml.cs">
+	    <DependentUpon>SparkProjectModuleList.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectAppListView.axaml.cs">
+	    <DependentUpon>SparkProjectAppListView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectDeviceListView.axaml.cs">
+	    <DependentUpon>SparkProjectDeviceListView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Spark\SubscriptionView.axaml.cs">
+	    <DependentUpon>SubscriptionView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANMessageEditView.axaml.cs">
+	    <DependentUpon>CANMessageEditView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANMessageValueView.axaml.cs">
+	    <DependentUpon>CANMessageValueView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANMessageMuxView.axaml.cs">
+	    <DependentUpon>CANMessageMuxView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANMessageSignalView.axaml.cs">
+	    <DependentUpon>CANMessageSignalView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANNodeEditView.axaml.cs">
+	    <DependentUpon>CANNodeEditView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANMessageView.axaml.cs">
+	    <DependentUpon>CANMessageView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANNodeView.axaml.cs">
+	    <DependentUpon>CANNodeView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CANSetup.axaml.cs">
+	    <DependentUpon>CANSetup.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\MainWindow\UpdatesView.axaml.cs">
+	    <DependentUpon>UpdatesView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\CppView.axaml.cs">
+	    <DependentUpon>CppView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\DotNetView.axaml.cs">
+	    <DependentUpon>DotNetView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\MainWindow\DependenciesView.axaml.cs">
+	    <DependentUpon>DependenciesView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Spark\SparkChangePasswordView.axaml.cs">
+	    <DependentUpon>SparkChangePasswordView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\MainWindow\AboutView.axaml.cs">
+	    <DependentUpon>AboutView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Spark\SparkSignupView.axaml.cs">
+	    <DependentUpon>SparkSignupView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Projects\SparkProjectView.axaml.cs">
+	    <DependentUpon>SparkProjectView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\MainWindow\NewItemView.axaml.cs">
+	    <DependentUpon>NewItemView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Spark\SparkUploadView.axaml.cs">
+	    <DependentUpon>SparkUploadView.axaml</DependentUpon>
+	  </Compile>
+		<Compile Update="Views\Package\PackageEditor.axaml.cs">
+			<DependentUpon>PackageEditor.axaml</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+	
+
+
+	<PropertyGroup Label="Debian Packaging">
+		<PublishSelfContained>true</PublishSelfContained>
+		<PackageDir>..\SparkUpload</PackageDir>
+	</PropertyGroup>
+	
+	<ItemGroup Label="Debian Packaging">
+		<Content Include="Ubuntu\Ahsoka.CustomerTools.desktop" CopyToPublishDirectory="Always">
+			<LinuxPath>/usr/share/applications/OpenPV.DeveloperToolkit.desktop</LinuxPath>
+		</Content>
+		<Content Include="Assets\OpenPV-Icon.ico" CopyToPublishDirectory="Always">
+			<LinuxPath>/usr/share/icons/OpenPV.DeveloperToolkit.ico</LinuxPath>
+		</Content>
+		<DebDotNetDependencies Include="libc6,xterm,xdg-utils" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\Resources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
+</Project>

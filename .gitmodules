@@ -1,0 +1,20 @@
+[submodule "Ahsoka.ThirdParty"]
+	path = Ahsoka.ThirdParty
+	url = ../Ahsoka.ThirdParty
+	
+[submodule "Ahsoka.EspHosted"]
+	path = Ahsoka.Interop/ThirdParty/esp-hosted
+	url = ../Ahsoka.EspHosted
+	branch = release/v0.4-rcd-develop
+
+[submodule "Ahsoka.Interop/ThirdParty/tiny-process-library"]
+	path = Ahsoka.Interop/ThirdParty/tiny-process-library
+	url = https://gitlab.com/eidheim/tiny-process-library.git
+
+[submodule "Ahsoka.Coprocessor/openview_s/firmware/CM4/Middlewares/Third_Party/lwip"]
+	path = Ahsoka.Coprocessor/openview_s/firmware/CM4/Middlewares/Third_Party/lwip
+	url = https://enovation.visualstudio.com/Engineering/_git/Forks.stm32_mw_lwip
+	branch = main
+[submodule "Ahsoka.Platform/ThirdParty/DiscUtils"]
+	path = Ahsoka.Platform/ThirdParty/DiscUtils
+	url = https://enovation.visualstudio.com/Engineering/_git/Forks.DiscUtils

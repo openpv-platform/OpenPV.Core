@@ -1,0 +1,65 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="50"
+             x:Class="Ahsoka.CustomerTools.Views.StatusBar">
+	<Border Grid.Row="4" BorderBrush="Gainsboro"  Background="WhiteSmoke" BorderThickness="0,1,0,0" >
+		<Grid>
+			<DockPanel LastChildFill="False">
+
+				<Button Background="Transparent" Command="{Binding ActiveConnection.ShowConnectionDetails}" Height="19" Width="19" Margin="10,0" ToolTip.Tip="Click to Show Details" >
+					<Border CornerRadius="2" Background="{Binding ActiveConnection.ConnectionColor, FallbackValue=SteelBlue}" Height="15" Width="15"   VerticalAlignment="Center"/>
+				</Button>
+				<TextBlock Margin="0,1,10,1"  Foreground="{Binding ActiveConnection.ConnectionColor, FallbackValue=SteelBlue}" FontSize="14"  VerticalAlignment="Center"
+					   Text="{Binding ActiveConnection.ConnectionDescription, FallbackValue=Connected}"/>
+				
+				<Border IsVisible="{Binding IsWorking, FallbackValue=True}"
+						 Width="25" Height="25" Margin="0,1,10,1"
+						 DockPanel.Dock="Right" 
+						 Grid.Column="1" Grid.Row="0"  
+						 CornerRadius="2" 
+						 BorderThickness="0" 
+						 BorderBrush="LightGray">
+					<progRing:ProgressRing 
+						   Width="20"
+						   Height="20"
+						   IsActive="True"
+						   Foreground="SteelBlue" />
+				</Border>
+				
+				<Border  IsVisible="{Binding IsWorking, FallbackValue=True}"
+						 Width="1" Height="26" Margin="0,1,10,1"
+						 DockPanel.Dock="Right"
+						 Grid.Column="1" Grid.Row="0"
+						 CornerRadius="2"
+						 BorderThickness="1,0,0,0"
+						 BorderBrush="LightGray"/>
+
+				
+				<Button DockPanel.Dock="Right" Padding="2" Command="{Binding ActiveConnection.StopApplication}" ToolTip.Tip="Stop Application" >
+					<Viewbox Stretch="Uniform" Width="20" Height="20">
+						<material:MaterialIcon Kind="Stop"></material:MaterialIcon>
+					</Viewbox>
+				</Button>
+				<Button DockPanel.Dock="Right"  Padding="2" Command="{Binding ActiveConnection.RebootDisplay}" ToolTip.Tip="Reboot Display" >
+					<Viewbox Stretch="Uniform" Width="20" Height="20">
+						<material:MaterialIcon Kind="RestartAlert"></material:MaterialIcon>
+					</Viewbox>
+				</Button>
+
+
+				
+				<ComboBox Foreground="Gray" BorderBrush="Gray" BorderThickness=".5" MinWidth="125" Margin="10,9,8,10" FontSize="13" Height="26" Padding="4,4,4,3" DockPanel.Dock="Right" VerticalAlignment="Center"
+						  ItemsSource="{Binding Connections.ConnectionList}"
+						  SelectedItem="{Binding ActiveConnection.Connection}" ></ComboBox>
+				<TextBlock DockPanel.Dock="Right" Foreground="Gray" Margin="0,1,0,1"  FontSize="14" VerticalAlignment="Center">Active Connection:</TextBlock>
+
+				
+			</DockPanel>
+		</Grid>
+	</Border>
+
+</UserControl>

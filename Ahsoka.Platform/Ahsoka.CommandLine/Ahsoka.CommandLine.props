@@ -1,0 +1,5 @@
+﻿<Project>
+	<PropertyGroup>
+		<AhsokaCommandLinePath>$(MSBuildThisFileDirectory)..\contentFiles\any\any\PlatformSupport\Windows64_TargetSupport\CommandLine\Ahsoka.CommandLine</AhsokaCommandLinePath>
+	</PropertyGroup>
+</Project>

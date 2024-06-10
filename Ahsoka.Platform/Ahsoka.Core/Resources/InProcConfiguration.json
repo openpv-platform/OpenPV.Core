@@ -1,0 +1,67 @@
+{
+  "services": [
+    {
+      "serviceName": "InstallService",
+      "listenAddress": "inproc://InstallService",
+      "connectionAddress": "inproc://InstallService",
+      "notificationListenAddress": "inproc://InstallServiceNotifications",
+      "notificationConnectionAddress": "inproc://InstallServiceNotifications"
+    },
+    {
+      "serviceName": "DataService",
+      "listenAddress": "inproc://DataService",
+      "connectionAddress": "inproc://DataService",
+      "notificationListenAddress": "inproc://DataServiceNotifications",
+      "notificationConnectionAddress": "inproc://DataServiceNotifications"
+    },
+    {
+      "serviceName": "SystemService",
+      "listenAddress": "tcp://*:5001",
+      "connectionAddress": "tcp://localhost:5001",
+      "notificationListenAddress": "tcp://*:6001",
+      "notificationConnectionAddress": "tcp://localhost:6001"
+    },
+    {
+      "serviceName": "SparkService",
+      "listenAddress": "tcp://*:5002",
+      "connectionAddress": "tcp://localhost:5002",
+      "notificationListenAddress": "tcp://*:6002",
+      "notificationConnectionAddress": "tcp://localhost:6002"
+    },
+    {
+      "serviceName": "NetworkService",
+      "listenAddress": "inproc://NetworkService",
+      "connectionAddress": "inproc://NetworkService",
+      "notificationListenAddress": "inproc://NetworkServiceNotifications",
+      "notificationConnectionAddress": "inproc://NetworkServiceNotifications"
+    },
+    {
+      "serviceName": "BluetoothService",
+      "listenAddress": "inproc://BluetoothService",
+      "connectionAddress": "inproc://BluetoothService",
+      "notificationListenAddress": "inproc://BluetoothServiceNotifications",
+      "notificationConnectionAddress": "inproc://BluetoothServiceNotifications"
+    },
+    {
+      "serviceName": "IotService",
+      "listenAddress": "inproc://IotService",
+      "connectionAddress": "inproc://IotService",
+      "notificationListenAddress": "inproc://IotService",
+      "notificationConnectionAddress": "inproc://IotServiceNotifications"
+    },
+    {
+      "serviceName": "IOService",
+      "listenAddress": "inproc://IOService",
+      "connectionAddress": "inproc://IOService",
+      "notificationListenAddress": "inproc://IOServiceNotifications",
+      "notificationConnectionAddress": "inproc://IOServiceNotifications"
+    },
+    {
+      "serviceName": "CanService",
+      "listenAddress": "inproc://CANService",
+      "connectionAddress": "inproc://CANService",
+      "notificationListenAddress": "inproc://CANServiceNotifications",
+      "notificationConnectionAddress": "inproc://CANServiceNotifications"
+    }
+  ]
+}

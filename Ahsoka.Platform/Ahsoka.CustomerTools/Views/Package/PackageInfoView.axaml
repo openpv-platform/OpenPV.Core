@@ -1,0 +1,232 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.CustomerTools.Views"
+             xmlns:material="using:Material.Icons.Avalonia" 
+             x:Class="Ahsoka.CustomerTools.Views.PackageInfoView">
+		
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="250"/>
+		</Grid.ColumnDefinitions>
+		<StackPanel Margin="-15" Grid.Column="1"
+					HorizontalAlignment="Center" >
+			<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12"
+				   Foreground="DimGray"
+				   Text="Package Actions "/>
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					IsVisible="{Binding SelectedPackage.IsOpenView}"
+					VerticalContentAlignment="Center"
+					Command="{Binding SelectedPackage.GenerateInstallPackage}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Webpack"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Generate Package"/>
+				</StackPanel>
+			</Button>
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					IsVisible="{Binding SelectedPackage.IsOpenView}"
+					VerticalContentAlignment="Center"
+					Command="{Binding SelectedPackage.DeletePackage}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Delete"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Delete Package"/>
+				</StackPanel>
+			</Button>
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					IsVisible="{Binding SelectedPackage.IsOpenView}"
+					VerticalContentAlignment="Center"
+					Command="{Binding SelectedPackage.GoToPackage}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="OpenInApp"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Show Package Folder"/>
+				</StackPanel>
+			</Button>
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					Command="{Binding SelectedPackage.LoadToTarget}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Download"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Load To Target"/>
+				</StackPanel>
+			</Button>
+
+			<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12,24,12,12"
+				   Foreground="DimGray"
+				   Text="Provisioning"
+				   Grid.Column="1"/>
+
+			<Button Margin="3,3,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							Command="{Binding SelectedPackage.SparkViewModel.ProvisionDisplay}"
+							ToolTip.Tip="Provision Display for OTA and Other Software Modules.">
+				<Button.IsEnabled>
+					<MultiBinding Converter="{x:Static BoolConverters.And}">
+						<Binding Path="ActiveConnection.IsConnected"/>
+						<Binding Path="!IsOffline"/>
+					</MultiBinding>
+				</Button.IsEnabled>
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="License"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="License Target"/>
+				</StackPanel>
+			</Button>
+
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					IsEnabled="{Binding !IsOffline}"
+					Command="{Binding SelectedPackage.SparkViewModel.UploadToSpark}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Upload"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Upload To Spark"/>
+				</StackPanel>
+			</Button>
+
+			<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12,24,12,12"
+				   Foreground="DimGray"
+				   Text="Developer Actions "
+				   Grid.Column="1"/>
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					IsEnabled="{Binding SelectedPackage.IsLaunchCompatible}"
+					Command="{Binding SelectedPackage.LaunchDevTool}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Launch"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch Container"/>
+				</StackPanel>
+			</Button>
+
+		</StackPanel>
+		<ScrollViewer>
+			<StackPanel DataContext="{Binding SelectedPackage}" HorizontalAlignment="Stretch" >
+				<StackPanel.Styles>
+					<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+				</StackPanel.Styles>
+
+				<Border Margin="20,20,20,0" Padding="3"  BorderThickness="0,0,0,1">
+					<Grid Margin="5" ColumnDefinitions="150,Auto,25,125,Auto" RowDefinitions="36,36,36,*">
+						<TextBlock TabIndex="0" Text="Package Name:" Grid.Row="0" Grid.Column="0"/>
+						<TextBox Text="{Binding PackageName, FallbackValue=PackageName}" Grid.Row="0"  Width="250"  Grid.Column="1" TextWrapping="1"/>
+
+						<TextBlock TabIndex="0" Text="Package Description:" Grid.Row="1" Grid.Column="0"/>
+						<TextBox Text="{Binding PackageDescription, FallbackValue=PackageDescription}" Grid.Row="1"  Width="450"  Grid.Column="1" TextWrapping="1"/>
+
+						<TextBlock Text="Target Platform:" Grid.Row="2" Grid.Column="0"/>
+						<ComboBox  Grid.Row="2" Grid.Column="1" SelectedItem="{Binding PlatformDescription}"
+								   ItemsSource="{Binding PlatformDescriptions}"  Width="250" />
+
+						<TextBlock IsVisible="False" Text="Package Type:" Grid.Row="3" Grid.Column="0"/>
+						<ComboBox IsVisible="False" Grid.Row="3"  Grid.Column="1" SelectedItem="{Binding PackageType}"
+								   ItemsSource="{Binding PackageTypes}"  Width="250" />
+
+						<TextBlock TabIndex="0" Text="Application Version:" Grid.Row="4" Grid.Column="0"/>
+						<TextBox Text="{Binding ApplicationVersion, FallbackValue=1.0}" Grid.Row="4"  Width="250"  Grid.Column="1" TextWrapping="1"/>
+
+					
+
+					</Grid>
+				</Border>
+				<Border IsVisible="{Binding IsOpenView}"
+					 Margin="20,0,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,1,0,1">
+					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="auto,36,36,36,auto">
+
+						<TextBlock  ToolTip.Tip="Path where your development tool outputs your application files."
+								 Text="Application Output:" Grid.Row="1" Grid.Column="0"/>
+						<Button  Margin="5,0"  Grid.Row="1" Grid.Column="2" Content="Choose Path..." Command="{Binding SetApplicationDir}"/>
+						<TextBox Text="{Binding PackageApplicationFolder}" Grid.Row="1" Grid.Column="1"  Width="280" TextWrapping="1" IsReadOnly="True"/>
+
+						<TextBlock Text="Package Output:"
+								   ToolTip.Tip="Path where the Generate process will create your output (opv) files."
+								   Grid.Row="2" Grid.Column="0"/>
+						<Button Margin="5,0" Grid.Row="2" Grid.Column="2" Content="Choose Path..." Command="{Binding SetOutputDir}"/>
+						<TextBox Text="{Binding PackageOutputDirectory}" Grid.Row="2" Grid.Column="1" Width="280" TextWrapping="1"  IsReadOnly="True"/>
+
+						<TextBlock Text="Execute Command:" Grid.Row="3" Grid.Column="0"/>
+						<TextBox Text="{Binding ExecCommand}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Width="325" TextWrapping="1" />
+
+						<TextBlock IsVisible="{Binding IsOpenView}" Text="Upgrade Installer:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
+						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeInstallerUI}" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="4" Width="325"/>
+					</Grid>
+				</Border>
+				<Border Margin="20,0,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,1,0,0">
+					<Grid Margin="5" ColumnDefinitions="150,Auto" RowDefinitions="*,auto">
+						<TextBlock Text="Provisioning Project:"  Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+							<ComboBox  SelectedItem="{Binding SparkViewModel.SelectedTeam}" ItemsSource="{Binding SparkViewModel.OTATeamsList}" Grid.Row="4" Grid.Column="1" Width="250"  />
+							<TextBlock Text="(Used for Licensing and OTA)" Grid.Row="1" Grid.Column="0"/>
+						</StackPanel>
+						<TextBlock IsVisible="{Binding SparkViewModel.HasModules}" Text="Licensed Modules:" VerticalAlignment="Top" Margin="5,8" Grid.Column="0" Grid.Row="1"/>
+						<ItemsRepeater IsVisible="{Binding SparkViewModel.HasModules}" Grid.Row="1" Grid.Column="1" Width="450" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+									   ItemsSource="{Binding SparkViewModel.AvailableModules}">
+							<ItemsRepeater.Layout>
+								<StackLayout Spacing="0" Orientation="Vertical"/>
+							</ItemsRepeater.Layout>
+							<ItemsRepeater.ItemTemplate>
+								<DataTemplate>
+									<Grid ColumnDefinitions="*">
+										<CheckBox Background="White" Margin="0,3" 
+												  VerticalAlignment="Top" IsChecked="{Binding IsSelected}" 
+												  Content="{Binding ModuleName, StringFormat='Require License for {0}' FallbackValue='Require License For None'}"/>
+									</Grid>
+								</DataTemplate>
+							</ItemsRepeater.ItemTemplate>
+						</ItemsRepeater>
+					</Grid>
+				</Border>
+				<Border IsVisible="{Binding IsOpenView}" Margin="20,0,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,1,0,1">
+					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
+						<TextBlock Text="System Orientation:" Grid.Row="0" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+							<ComboBox  SelectedItem="{Binding SystemOrientation}" ItemsSource="{Binding Orientations}" Grid.Row="4" Grid.Column="1" Width="250"  />
+							<TextBlock Text="(Rotates Logo and Installer)" ToolTip.Tip="Orientation is available via the SYSTEM_ORIENTATION environment variable." Grid.Row="1" Grid.Column="0"/>
+						</StackPanel>
+						
+						<TextBlock ToolTip.Tip="Path where your development tool outputs your application files."
+								 Text="Startup Logo:" Grid.Row="1" Grid.Column="0"/>
+						<Button  Margin="5,0"  Grid.Row="1" Grid.Column="2" Content="Choose Path..." Command="{Binding SetStartLogo}"/>
+						<TextBox Text="{Binding StartupLogoPath}" Grid.Row="1" Grid.Column="1"  Width="280" TextWrapping="1" IsReadOnly="True"/>
+
+						<Border Margin="2" BorderBrush="Gainsboro" BorderThickness="1" Grid.Column="1" 
+								Grid.Row="2"
+								MinWidth="250" MinHeight="100"
+								MaxWidth="250" MaxHeight="100">
+							<Image Source="{Binding StartupLogoImage}" Stretch="Uniform"  ToolTip.Tip="Startup Logo." />
+						</Border>
+					</Grid>
+				</Border>
+
+			</StackPanel>
+		</ScrollViewer>
+		<CustomerTools:DependenciesView Grid.Column="0" IsVisible="{Binding True, FallbackValue=False}"
+					Grid.ColumnSpan="3" 
+					DataContext="{Binding SelectedPackage.Deps}"/>
+		
+
+	</Grid>
+</UserControl>
+

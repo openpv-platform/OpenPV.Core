@@ -1,0 +1,127 @@
+{
+  "KeyRow": [
+    {
+      "HorizontalRowOffset": 0,
+      "KeyInfo": [
+        {
+          "KeyText": "Q"
+        },
+        {
+          "KeyText": "W"
+        },
+        {
+          "KeyText": "E"
+        },
+        {
+          "KeyText": "R"
+        },
+        {
+          "KeyText": "T"
+        },
+        {
+          "KeyText": "Y"
+        },
+        {
+          "KeyText": "U"
+        },
+        {
+          "KeyText": "I"
+        },
+        {
+          "KeyText": "O"
+        },
+        {
+          "KeyText": "P"
+        },
+        {
+          "KeyText": "{"
+        },
+        {
+          "KeyText": "}"
+        }
+      ]
+    },
+    {
+      "HorizontalRowOffset": 10,
+      "KeyInfo": [
+        {
+          "KeyText": "A"
+        },
+        {
+          "KeyText": "S"
+        },
+        {
+          "KeyText": "D"
+        },
+        {
+          "KeyText": "F"
+        },
+        {
+          "KeyText": "G"
+        },
+        {
+          "KeyText": "H"
+        },
+        {
+          "KeyText": "J"
+        },
+        {
+          "KeyText": "K"
+        },
+        {
+          "KeyText": "L"
+        },
+        {
+          "KeyText": ":"
+        },
+        {
+          "KeyText": "\""
+        }
+      ]
+    },
+    {
+      "HorizontalRowOffset": 0,
+      "KeyInfo": [
+        {
+          "KeyText": "Lower",
+          "State": 2
+        },
+        {
+          "KeyText": "Z"
+        },
+        {
+          "KeyText": "X"
+        },
+        {
+          "KeyText": "C"
+        },
+        {
+          "KeyText": "V"
+        },
+        {
+          "KeyText": "B"
+        },
+        {
+          "KeyText": "N"
+        },
+        {
+          "KeyText": "M"
+        },
+        {
+          "KeyText": "<"
+        },
+        {
+          "KeyText": ">"
+        },
+        {
+          "KeyText": "Space",
+          "State": 5
+        },
+        {
+          "KeyText": "Backspace",
+          "State": 4
+        }
+      ]
+    }
+  ]
+}

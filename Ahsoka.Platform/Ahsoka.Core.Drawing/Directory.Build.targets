@@ -1,0 +1,16 @@
+﻿<Project>
+
+
+	<ItemGroup Label="Native Libraries for Cairo GLES">
+		
+		<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Cairo.GLES.so">
+			<Link>AhsokaLib\Ahsoka.Cairo.GLES.so</Link>
+			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Cairo.GLES.so</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<IncludeInPackage>true</IncludeInPackage>
+			<Pack>true</Pack>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>true</Visible>
+		</Content>
+	</ItemGroup>
+</Project>

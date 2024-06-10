@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 mc:Ignorable="d" d:DesignWidth="650" 
+             x:Class="Ahsoka.CustomerTools.Views.SparkModulePackView"  >
+
+	<Border BoxShadow="2 2 10 2 Gainsboro" Margin="15,5,25,10"
+			BorderBrush="Gainsboro" BorderThickness="1" >
+		<Grid ColumnDefinitions="*,auto">
+
+			<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Top">
+				<TextBlock Margin="8" DockPanel.Dock="Top"
+						   Text="{Binding ModuleName, FallbackValue='No Module Listed'}"
+							FontSize="24"  HorizontalAlignment="Left" Foreground="Gray" />
+				<TextBlock Margin="15,10,15,0" DockPanel.Dock="Top" Text="{Binding ModuleDescription,FallbackValue='No Product Description'}"
+						   FontSize="14" VerticalAlignment="Stretch" TextWrapping="Wrap" HorizontalAlignment="Left" Foreground="Gray" />
+			</DockPanel>
+
+		
+			<Border Margin="15" Grid.Column="1" BorderBrush="SteelBlue" HorizontalAlignment="Right"
+					BorderThickness="1" Background="white" Padding="15">
+				<Grid RowDefinitions="auto,auto,auto,*,*">
+
+			
+					<Border VerticalAlignment="Top" Background="SteelBlue" Margin="-15,-15,-15,0" Height="25">
+						<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" 
+								FontSize="12" 
+								   Text="{Binding ModuleText, FallbackValue='Licenses: 0 of 123 Remaining'}"
+							 
+								Foreground="White" FontWeight="Light" />
+					</Border>
+
+					<!--
+					<TextBlock Margin="0,10,0,10" Grid.Row="1" FontSize="12" HorizontalAlignment="Center" Text="{Binding DeviceText, FallbackValue='Licenses: 0 of 123 Remaining'}"
+							  Foreground="Gray"/>-->
+					<ProgressBar Grid.Row="2" Margin="10,15,10,5"  BorderBrush="Gray" BorderThickness="1" Padding="2" 
+								 CornerRadius="0" Minimum="0"  Background="White"
+								 Foreground="{Binding BarColor, FallbackValue=Gray}"
+								 Maximum="1"
+								 Value="{Binding PercentUsed, FallbackValue=0.5}"
+								 Height="11" Width="175" MaxWidth="200" MinWidth="200"/>
+
+					<Button Margin="3,11,5,3" Grid.Row="3" 
+							HorizontalAlignment="Stretch"
+							Height="34" Width="145"
+							VerticalContentAlignment="Center"
+							VerticalAlignment="Bottom"
+							Command="{Binding PurchaseAdditionalLicenses}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Plus"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Add Licenses..."/>
+						</StackPanel>
+					</Button>
+
+					<Button Classes="link" FontSize="12" Grid.Row="4" VerticalAlignment="Bottom" Margin="10,0"
+						HorizontalAlignment="Center"
+						Command="{Binding ViewHistory}"
+						Foreground="SteelBlue" Background="White"
+						Content="View Purchase History">
+					</Button>
+				</Grid>
+			</Border>
+		
+		</Grid>
+	</Border>
+
+</UserControl>

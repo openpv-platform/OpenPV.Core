@@ -1,0 +1,45 @@
+{
+  "factoryInfo": {
+    "rootPath": "/usr/local/Ahsoka",
+    "platformFamily": "OpenViewLinux",
+    "platformQualifier": "ST4Plus",
+    "partNumber": "11111111",
+    "serialNumber": "22222222",
+    "hardwareId": "0",
+    "securityModelNumber": "",
+    "hostName": "OpenView",
+    "userName": "root",
+    "password": ""
+  },
+  "screenInfo": {
+    "screenWidth": "1024",
+    "screenHeight": "600",
+    "screenDpi": "96"
+  },
+  "bluetoothInfo": {
+    "bluetoothAdapters": [
+      {
+        "index": "0",
+        "deviceInterfacePath": "/org/bluez/hci0",
+        "stack": "BlueZ"
+      }
+    ]
+  },
+  "networkInfo": {
+    "adapterInfoList": [
+      {
+        "adapterId": "ethsta0",
+        "adapterType": "WiFiClient",
+        "description": "Onboard Wireless Client",
+        "macAddress": "",
+        "module": "esp32"
+      }
+    ]
+  },
+  "ioInfo": {
+    "analogInputs": [],
+    "analogOutputs": [],
+    "digitalInputs": [],
+    "digitalOutputs": []
+  }
+}

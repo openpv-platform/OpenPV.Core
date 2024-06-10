@@ -1,0 +1,22 @@
+<Project>
+
+	<PropertyGroup>
+		<Copyright>Copyright © $([System.DateTime]::UtcNow.Year) Enovation Controls ($([System.DateTime]::UtcNow.ToString("s")))</Copyright>
+		<TargetFramework>net6.0</TargetFramework>
+		<NoWarn>CA2101;NU5100;AD0001;CA1822;SYSLIB1054;IDE0057;CA1822</NoWarn>
+		<PackageOutputPath>../../LocalNugetFeed</PackageOutputPath>
+		<NoDefaultExcludes>true</NoDefaultExcludes>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<Platforms>AnyCPU;x64</Platforms>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Debug'">
+		<DebugType>embedded</DebugType>
+		<DebugSymbols>true</DebugSymbols>
+	</PropertyGroup>
+
+</Project>

@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MiniGauge</class>
+ <widget class="QWidget" name="MiniGauge">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>120</width>
+    <height>120</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MiniGauge</string>
+  </property>
+  <widget class="QWidget" name="MG" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>120</width>
+     <height>120</height>
+    </rect>
+   </property>
+   <widget class="QLabel" name="MG_BG">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>120</width>
+      <height>120</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="S50Resources.qrc">:/Resources/S50 Demo/Resources/S50 Demo/MiniGauge/Ellipse 8.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ArcSpace">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>120</width>
+      <height>120</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_Arc_FG">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>120</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="S50Resources.qrc">:/Resources/S50 Demo/Resources/S50 Demo/MiniGauge/Ellipse 19.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_Arc_FG_Rim">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>120</width>
+      <height>60</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="S50Resources.qrc">:/Resources/S50 Demo/Resources/S50 Demo/MiniGauge/Ellipse 16.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_Warning_FG_TL">
+    <property name="geometry">
+     <rect>
+      <x>84</x>
+      <y>11</y>
+      <width>22</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="S50Resources.qrc">:/Resources/S50 Demo/Resources/S50 Demo/MiniGauge/Ellipse 29.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_Warning_FG_Solid">
+    <property name="geometry">
+     <rect>
+      <x>86</x>
+      <y>11</y>
+      <width>23</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="S50Resources.qrc">:/Resources/S50 Demo/Resources/S50 Demo/MiniGauge/Ellipse 27.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_Warning_FG_Dark">
+    <property name="geometry">
+     <rect>
+      <x>87</x>
+      <y>8</y>
+      <width>25</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="S50Resources.qrc">:/Resources/S50 Demo/Resources/S50 Demo/MiniGauge/Ellipse 28.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_Critical_FG_TL">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>27</y>
+      <width>17</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="S50Resources.qrc">:/Resources/S50 Demo/Resources/S50 Demo/MiniGauge/Ellipse 21.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_Critical_FG_Solid">
+    <property name="geometry">
+     <rect>
+      <x>102</x>
+      <y>27</y>
+      <width>14</width>
+      <height>33</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="S50Resources.qrc">:/Resources/S50 Demo/Resources/S50 Demo/MiniGauge/Ellipse 26.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_Critical_FG_Dark">
+    <property name="geometry">
+     <rect>
+      <x>105</x>
+      <y>24</y>
+      <width>15</width>
+      <height>36</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="S50Resources.qrc">:/Resources/S50 Demo/Resources/S50 Demo/MiniGauge/Ellipse 25.png</pixmap>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_Lbl_PSI">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>70</y>
+      <width>20</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>190</red>
+          <green>190</green>
+          <blue>190</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="text">
+     <string>PSI</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MG_PSI_Indicator">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>48</y>
+      <width>40</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="palette">
+     <palette>
+      <active>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </active>
+      <inactive>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>255</red>
+          <green>255</green>
+          <blue>255</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </inactive>
+      <disabled>
+       <colorrole role="WindowText">
+        <brush brushstyle="SolidPattern">
+         <color alpha="255">
+          <red>190</red>
+          <green>190</green>
+          <blue>190</blue>
+         </color>
+        </brush>
+       </colorrole>
+      </disabled>
+     </palette>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>15</pointsize>
+      <weight>75</weight>
+      <bold>true</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>000</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources>
+  <include location="S50Resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

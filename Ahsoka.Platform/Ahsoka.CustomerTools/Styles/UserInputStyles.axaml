@@ -1,0 +1,31 @@
+﻿<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Design.PreviewWith>
+        <Border Padding="20">
+            <!-- Add Controls for Previewer Here -->
+        </Border>
+    </Design.PreviewWith>
+
+	<Style Selector="ComboBox">
+		<Setter Property="BorderBrush" Value="Gainsboro"/>
+		<Setter Property="Height" Value="32"/>
+		<Setter Property="Margin" Value="2,2,0,2"/>
+		<Setter Property="FontSize" Value="12"/>
+	</Style>
+	<Style Selector="TextBlock">
+		<Setter Property="Padding" Value="5,2"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+		<Setter Property="Margin" Value="5,2,0,2"/>
+		<Setter Property="FontSize" Value="13"/>
+	</Style>
+	<Style Selector="TextBox">
+		<Setter Property="BorderBrush" Value="Gainsboro"/>
+		<Setter Property="TextWrapping" Value="0"/>
+		<Setter Property="Padding" Value="7"/>
+		<Setter Property="VerticalAlignment" Value="Center"/>
+		<Setter Property="HorizontalAlignment" Value="Left"/>
+		<Setter Property="Height" Value="32"/>
+		<Setter Property="Margin" Value="2,2,0,2"/>
+		<Setter Property="FontSize" Value="13"/>
+	</Style>
+</Styles>

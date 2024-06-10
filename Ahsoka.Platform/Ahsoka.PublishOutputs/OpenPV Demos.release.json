@@ -1,0 +1,102 @@
+{
+  "ReleaseID": "00000000-0000-0000-0000-000000000000",
+  "ChannelName": "OpenPV Demos",
+  "AvailableToVersion": null,
+  "ContainerType": 0,
+  "TrackType": 0,
+  "ReleaseName": "OpenPV Demos",
+  "ContainerName": "OpenPV",
+  "ContainerVersion": "1.0.0",
+  "ReleaseNotes": null,
+  "InstallCommand": null,
+  "UnInstallCommand": null,
+  "SizeInBytes": 0,
+  "OriginalFileSizeInBytes": 0,
+  "Contents": [
+    {
+      "Path": "Ahsoka.CS.Blank.Basic.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.Blank.Advanced.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.Blank.Storyboard.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.Services.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.Cairo.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.BLE.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.CAN.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.GTK.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.Storyboard.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.Storyboard.IO.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka_QT_Blank.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka_QT_Demo.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka_QT_CAN.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.Codesys.IO.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    }
+  ],
+  "Dependencies": null
+}

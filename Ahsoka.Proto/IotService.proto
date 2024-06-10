@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+import "protobuf-net/protogen.proto";
+
+package AhsokaIot;
+option csharp_namespace = "Ahsoka.Services.Iot";
+
+message IotMessageTypes
+{
+	enum Ids
+	{
+		NONE = 0;
+		CREATE_CLIENT = 1;
+		DESTROY_CLIENT = 3;
+		SUBSCRIBE_TOPIC = 4;
+		UNSUBSCRIBE_TOPIC = 5;
+		PUBLISH_TOPIC = 6;
+		TOPIC_RECEIVED_NOTIFICATION = 7;
+	}
+}
+
+message ClientInfo
+{
+	string broker_address = 1;
+	int32 broker_port = 2;
+	string device_user_name = 3;
+	string device_password = 4;
+	bool use_custom_tls_cert = 5;
+	string custom_tls_public_key_path = 6;
+	string custom_tls_cert_private_key_path = 7;
+	string custom_tls_root_ca_path = 8 [(.protobuf_net.fieldopt).name = "CustomTlsRootCAPath"];
+}
+
+message ClientMessage
+{
+	string client_id = 1;
+}
+
+message ClientConnectionInfo
+{
+	string client_id = 1;
+	ClientState client_state = 2;
+	string broker_address = 3;
+	int32 broker_port = 4;
+	string result_text = 5;
+}
+
+enum ClientState
+{
+	NO_STATE = 0;
+	CONNECTED = 1;
+	TOPIC_SUBSCRIBED = 2;
+	TOPIC_UNSUBSCRIBED = 3;
+	DISCONNECTED = 4;
+	CONNECTION_ERROR = 5;
+}
+
+message TopicSubscription
+{
+	string client_id = 1;
+	string topic_name = 2;
+	TopicQualityOfService quality_of_service = 3;
+}
+
+message TopicResult
+{
+	string client_id = 1;
+	string result_text = 2;
+	TopicResultStatus status = 3;
+}
+
+enum TopicQualityOfService
+{
+	AT_MOST_ONCE = 0;
+	AT_LEAST_ONCE = 1;
+	EXACTLY_ONCE = 2;
+}
+
+message TopicMessage
+{
+	string client_id = 1;
+	string topic_name = 2;
+	bytes payload = 4;
+}
+
+
+enum TopicResultStatus
+{
+	SUCCESS = 0;
+	ERROR = 1;
+}

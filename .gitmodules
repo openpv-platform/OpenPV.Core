@@ -1,10 +1,10 @@
 [submodule "Ahsoka.ThirdParty"]
 	path = Ahsoka.ThirdParty
-	url = ../Ahsoka.ThirdParty
+	url = https://dev.azure.com/enovation/engineering/_git/Ahsoka.ThirdParty
 	
 [submodule "Ahsoka.EspHosted"]
 	path = Ahsoka.Interop/ThirdParty/esp-hosted
-	url = ../Ahsoka.EspHosted
+	url = https://dev.azure.com/enovation/engineering/_git/Ahsoka.EspHosted
 	branch = release/v0.4-rcd-develop
 
 [submodule "Ahsoka.Interop/ThirdParty/tiny-process-library"]

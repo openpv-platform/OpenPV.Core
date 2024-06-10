@@ -64,6 +64,9 @@ add_executable(Ahsoka.QT.CAN
     ${Generated}
 )
 
+File(GLOB Calibration *.cancalibration.json)
+FILE(COPY ${Calibration} DESTINATION ${CMAKE_SOURCE_DIR}/Outputs/)
+
 target_include_directories(Ahsoka.QT.CAN PRIVATE ${AhsokaHeaders})
 target_link_libraries(Ahsoka.QT.CAN PRIVATE Qt5::Widgets ${AhsokaLibs})
 

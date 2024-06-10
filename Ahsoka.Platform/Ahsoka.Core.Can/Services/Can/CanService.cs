@@ -164,9 +164,8 @@ public class CanService : AhsokaServiceBase<CanMessageTypes.Ids>
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Failed to Open {item.Port} - {ex.Message}");
             }
-            
-           
         }
+
         SendMessageInternal(messageHeader, calibration);
     }
 

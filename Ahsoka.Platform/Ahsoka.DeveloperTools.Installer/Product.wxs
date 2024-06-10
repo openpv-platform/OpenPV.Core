@@ -1,0 +1,66 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+	<?define ProductVersion=!(bind.fileVersion.ExecutableId) ?>
+	<?define IconVersion="!(bind.property.ProductVersion.Major).!(bind.property.ProductVersion.Minor)" ?>
+
+	<Package Name="OpenPV $(var.ProductVersion)"
+			 Language="1033"
+			 Version="$(var.ProductVersion)"
+			 Manufacturer="Enovation Controls"
+			 UpgradeCode="C40AB1B4-71B6-4A9C-8571-63595448C7A4"
+			 InstallerVersion="200">
+
+		<MajorUpgrade AllowDowngrades="yes" />
+		<MediaTemplate EmbedCab="yes" />
+
+		<Property Id="INSTALLDIR" Secure="yes" />
+		<Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" Secure="yes"  />
+
+		<!--This sets the icon in add/remove programs-->
+		<Property Id="ARPPRODUCTICON" Value="OpenPV-Icon.ico" />
+		<Property Id="MSIINSTALLPERUSER" Value="1" />
+		<Property Id="DISABLEADVTSHORTCUTS" Value="1" />
+		<Property Id="UPDATING_AUTOMATICALLY" Value="0" Secure="yes" />
+
+		<CustomAction Id="LaunchApplication" ExeCommand="" Execute="immediate" Impersonate="yes" Return="asyncNoWait" FileRef="ExecutableId" />
+
+		<Feature Id="ProductFeature" Title="Ahsoka.OpenPV.Installer" Level="1">
+		
+			<Files Include="$(var.BasePath)\**" Directory="INSTALLDIR">
+				<Exclude Files="$(var.BasePath)\OpenPV.DeveloperToolkit.exe" />
+			</Files>
+
+			<File Directory="INSTALLDIR" Id="ExecutableId" DiskId="1" Source="$(var.BasePath)\OpenPV.DeveloperToolkit.exe" KeyPath="yes">
+
+				<Shortcut Id="ProgramDirShortcutId"
+						  Directory="ProgramMenuFolder"
+						  Name="OpenPV $(var.IconVersion)"
+						  WorkingDirectory="INSTALLDIR"
+						  Icon="OpenPVIcon.ico"
+						  Advertise="yes" />
+
+				<Shortcut Id="DesktopShortcutId"
+						  Directory="DesktopFolder"
+						  Name="OpenPV $(var.IconVersion)"
+						  WorkingDirectory="INSTALLDIR"
+						  Icon="OpenPVIcon.ico"
+						  IconIndex="0"
+						  Advertise="yes" />
+			</File>
+
+		</Feature>
+
+		<InstallExecuteSequence>
+			<Custom Action="LaunchApplication" After="InstallFinalize" Condition="UPDATING_AUTOMATICALLY=1" />
+		</InstallExecuteSequence>
+
+		<Icon Id="OpenPVIcon.ico" SourceFile="$(var.BasePath)\Assets\OpenPV-Icon.ico"  />
+	
+		<StandardDirectory Id="ProgramFilesFolder">
+			<Directory Id="INSTALLDIR" Name="Ahsoka.OpenPV.Installer" />
+		</StandardDirectory>
+
+		<StandardDirectory Id="DesktopFolder" />
+		<StandardDirectory Id="ProgramMenuFolder" />
+	</Package>
+</Wix>

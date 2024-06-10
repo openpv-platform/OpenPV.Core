@@ -11,7 +11,7 @@ using CygnusCommandInfo = Cygnus.Reach.CommandInfo;
 namespace Ahsoka.Services.Cygnus;
 
 [AhsokaService(Name)]
-internal class CygnusService : AhsokaTCPServiceBase<CygnusMessageTypes.Ids>
+internal class CygnusService : AhsokaServiceBase<CygnusMessageTypes.Ids>
 {
     public const string Name = "CygnusService";
 
@@ -90,7 +90,7 @@ internal class CygnusService : AhsokaTCPServiceBase<CygnusMessageTypes.Ids>
         ProtoBuf.Serializer.Serialize(fileInfoStream, fileInfo);
         byte[] fileInfoByteArray = fileInfoStream.ToArray();
 
-        UpdateDataServiceKey($"{CygnusServerService.ReachConfigFiles}{fileInfo.Name}", fileInfoByteArray);
+        UpdateCacheValue($"{CygnusServerService.ReachConfigFiles}{fileInfo.Name}", fileInfoByteArray);
 
         SendMessageInternal(messageHeader);
     }
@@ -118,13 +118,13 @@ internal class CygnusService : AhsokaTCPServiceBase<CygnusMessageTypes.Ids>
         byte[] commandInfoByteArray = commandInfoStream.ToArray();
 
         string commandKeyString = $"{CygnusServerService.ReachConfigCommands}{commandInfoName.Name}";
-        UpdateDataServiceKey(commandKeyString, commandInfoByteArray);
+        UpdateCacheValue(commandKeyString, commandInfoByteArray);
 
         // NOTE: BMG (Jan. 25, 2024) We are initializing the command data value to be an array of size 1, because a
         // serialized "SendCommand" protobuf structure with default values is of size 0, so if we initialize to an empty
         // array we could miss receiving the send command for command at index 0.
         if (ReachCommandDataKeyId <= 0)
-            ReachCommandDataKeyId = UpdateDataServiceKey(CygnusServerService.ReachCommandData, new byte[1] { 0x00 }).ValueId;
+            ReachCommandDataKeyId = UpdateCacheValue(CygnusServerService.ReachCommandData, new byte[1] { 0x00 });
 
         CygnusServiceCommandInfoResponse response = new();
         response.CommandInfo = cygnusCommandInfo;
@@ -149,7 +149,7 @@ internal class CygnusService : AhsokaTCPServiceBase<CygnusMessageTypes.Ids>
         }
 
         CygnusServiceEnableCLIResponse response = new();
-        response.DataKeyId = UpdateDataServiceKey(CygnusServerService.ReachCLIData, Array.Empty<byte>()).ValueId;
+        response.DataKeyId = UpdateCacheValue(CygnusServerService.ReachCLIData, Array.Empty<byte>());
 
         SendMessageInternal(messageHeader, response);
     }

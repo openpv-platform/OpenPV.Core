@@ -3,11 +3,14 @@ using Ahsoka.Services.Install;
 using Ahsoka.Services.Network;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
+using Ahsoka.Utility;
 using Mono.Unix;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
+using System.Net.Mime;
 using System.Text;
 
 namespace Ahsoka.Installer.Components;
@@ -20,6 +23,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
     public const string AppNameFile = "AppName.txt";
     public const string AppVersionFile = "AppVersion.txt";
     public const string AppTypeFile = "AppType.txt";
+    public const string ServiceSecurityFile = "ServiceKey.info";
     public const string AppDescriptionFile = "AppDescription.txt";
     public const string ComponentTypeGuid = "333C0904-F3D6-4381-B9E4-B230A21CB464";
     const string ApplicationTypeKeyAttribute = "applicationType";
@@ -53,14 +57,28 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         List<InstallerPlugin> installerPlugins, 
         IProgress<PackageProgressInfo> progress)
     {
-
-
         // Add Version Info to .appinfo Folder
         if (info.ApplicationVersion != null)
             additionalFiles[$"{AppInfoFolder}/{AppVersionFile}"] = Encoding.UTF8.GetBytes(info.ApplicationVersion);
 
         if (info.PackageDescription != null)
             additionalFiles[$"{AppInfoFolder}/{AppDescriptionFile}"] = Encoding.UTF8.GetBytes(info.PackageDescription);
+
+        string pathToCert = PackageInformation.GetPackageCertPath(info.ServiceInfo.RuntimeConfiguration.ServiceKey, KeyTypes.ServiceKey);
+        if (File.Exists(pathToCert))
+        {
+            var fileData = File.ReadAllText(pathToCert);
+            var keyData = JsonUtility.Deserialize<DeviceKeyInfo>(fileData);
+
+            var securityConfig = new ServiceFramework.SecurityConfiguration()
+            {
+                ApplicationId = info.ApplicationId.ToByteArray(),
+                RequireChallenge = info.ServiceInfo.RuntimeConfiguration.RequireChallenge,
+                TokenPublicKey = keyData.PublicKey
+                // We Do not send Private Key to Display
+            };
+            additionalFiles[$"{AppInfoFolder}/{ServiceSecurityFile}"] = Encoding.UTF8.GetBytes(JsonUtility.Serialize(securityConfig));
+        }
 
         additionalFiles[$"{AppInfoFolder}/{AppNameFile}"] = Encoding.UTF8.GetBytes(info.PackageName);
         additionalFiles[$"{AppInfoFolder}/{AppTypeFile}"] = Encoding.UTF8.GetBytes(info.ApplicationType.ToString());
@@ -101,9 +119,10 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)
     {
-        if (!ValidateLicenses(context, item))
-            return InstallResult.MissingLicenseForComponent;
-
+        var valid = ValidateLicenses(context, item);
+        if (!valid)
+            context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"One or more licenses were not valid." });
+        
         var result = base.OnInstallComponent(context, item);
 
         if (OperatingSystem.IsLinux())
@@ -117,6 +136,11 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
             // Install Ahsoka.Application.service
             string unitFileContents = Properties.Resources.Ahsoka_Application;
+
+            // TODO: Use forking until BSP can support Notify correctly.
+            if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
+                unitFileContents = unitFileContents.Replace("notify", "forking");
+
             string pathToSystemUnitFile = LinuxPathInfo.CreateSystemManagerPath("system/Ahsoka.Application.service");
 
             File.WriteAllText(pathToSystemUnitFile, unitFileContents);
@@ -139,26 +163,58 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             string appCommand = item.Attributes[ExecCommandKeyAttribute];
             string workingDirectory = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
 
+            context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Application Type {projectType} found with app command {appCommand}" });
+
+
             // Run Installer Plugin to handle 
-            InstallerPlugin appPlugin = InstallerPlugin.GetPlugin(projectType);
+            InstallerPlugin appPlugin = InstallerPlugin.GetApplicationPlugin(projectType);
             appPlugin?.ModifyTargetInstall(workingDirectory, appCommand);
 
+            AddInstaller(context, item);
+
             // Enable the Services for Application Startup.
-            output = Process.Start("systemctl", "disable Ahsoka.Installer.service");
+            output = Process.Start("systemctl", "disable Ahsoka.Installer.service -q");
             output.WaitForExit();
             if (output.ExitCode != 0)
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to disable Ahsoka.Installer.service" });
+            else
+                context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Disabled Ahsoka.Installer.service" });
 
-            output = Process.Start("systemctl", "enable Ahsoka.Application.service");
+            output = Process.Start("systemctl", "enable Ahsoka.Application.service -q");
             output.WaitForExit();
             if (output.ExitCode != 0)
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to enable Ahsoka.Application.service" });
+            else
+                context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Enabled Ahsoka.Application.service" });
         }
+
+
+        void AddInstaller(InstallContext context, PackageComponent item)
+        {
+            string workingDirectory = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot),"CommandLine");
+
+            string tempFile = SystemInfo.HardwareInfo.TargetPathInfo.GetTempFileName();
+            using (FileStream installer = new(tempFile, FileMode.Create))
+                context.InstallEngine.ExtractPackage(CommandLineComponent.CommandLineComponentType, installer, context.Progress);
+
+            context.Log?.Report(new InstallLogInfo()
+            {
+                LogMessage = $"Inflating CommandLine to {workingDirectory}", LogMessageType = LogMessageType.Information,
+            });
+
+            // Extract Zip to Output Area
+            PackagingUtility.ExtractPackage(tempFile, workingDirectory, context.Progress, context.Log);
+
+            // Remove Temp File
+            File.Delete(tempFile);
+        }
+        
         return result;
     }
 
     private bool ValidateLicenses(InstallContext context, PackageComponent item)
     {
+        bool licensesValid = true;
         context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Validating Licenses" });
 
         foreach (var attributeValue in item.Attributes)
@@ -169,12 +225,12 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Validating License for Module {licenseKeyName}" });
                 if (!ModuleLicenseManager.IsLicensed(attributeValue.Value))
                 {
-                    context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to find License for Module {licenseKeyName}"});
-                    return false;
+                    licensesValid = false;
+                    context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to find License for Module {licenseKeyName} on Target but may be available in Spark" });
                 }
             }
         }
-        return true;
+        return licensesValid;
     }
 
     private void AddScript(InstallContext context, string fileToCopy)

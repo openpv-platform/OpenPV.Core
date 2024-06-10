@@ -1,0 +1,129 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="900"
+			 xmlns:svg="clr-namespace:Avalonia.Svg.Skia;assembly=Avalonia.Svg.Skia"
+		     xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+             x:Class="Ahsoka.DeveloperTools.Views.WelcomeView" >
+
+	<Border  BoxShadow="5 5 10 2 DarkGray"
+			 VerticalAlignment="Center" Width="700" Grid.ColumnSpan="2"
+			 BorderBrush="DarkGray" Background="White" BorderThickness="1">
+		<Grid>
+			<Button HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch" Focusable="False"
+							Command="{Binding CloseNewInstallHelp}"
+							 Padding="0" Margin="0" BorderBrush="Transparent">
+
+				<StackPanel Margin="-5" Background="White"  Orientation="Vertical"
+							VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+
+					<StackPanel Grid.ColumnSpan="2" Margin="0,30,0,0" HorizontalAlignment="Center">
+						<Image Margin="8"  Height="85" Name="svgSourceImage">
+							<Image.Source>
+								<svg:SvgImage Source="/Assets/OpenPV-Logo.svg" />
+							</Image.Source>
+						</Image>
+					</StackPanel>
+
+					<TextBlock  Foreground="SteelBlue" FontSize="14" Margin="0,0,0,0"
+										VerticalAlignment="Center" HorizontalAlignment="Center"
+										TextWrapping="Wrap" Padding="10" TextAlignment="Center"
+										Text="{Binding VersionString, FallbackValue='Version=???'}"/>
+					<TextBlock  Foreground="SteelBlue" FontSize="14" Margin="90,-16,90,10"
+								VerticalAlignment="Center" HorizontalAlignment="Center"
+								TextWrapping="Wrap"
+								Padding="10" TextAlignment="Center"
+								Text="Lets explore some tools to get you started."/>
+
+					<StackPanel Margin="50,0" HorizontalAlignment="Stretch" IsVisible="{Binding !IsFreeTier, FallbackValue=true}">
+
+						<StackPanel Margin="5" Orientation="Horizontal" >
+							<Border VerticalAlignment="Center" Width="65" Height="50" BorderBrush="LightSteelBlue" BorderThickness="1" Padding="4">
+								<StackPanel >
+									<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Download"></material:MaterialIcon>
+									<TextBlock Foreground="DimGray" HorizontalAlignment="Center" FontSize="12"  Text="Plugins"/>
+								</StackPanel>
+							</Border>
+							<TextBlock FontFamily="11" VerticalAlignment="Center" Width="500" Margin="15,0" TextWrapping="Wrap"
+									   Text="Download and Install software packages specific to your development profiile. Each time you upgrade OpenPV, you will be taken to the PlugIns Tool to download the tools needed to work with your new version of OpenPV."
+									 Foreground="Gray" FontStyle="Italic"/>
+						</StackPanel>
+
+						<StackPanel Margin="5"  Orientation="Horizontal">
+							<Border VerticalAlignment="Center"  Width="65" Height="50" BorderBrush="LightSteelBlue" BorderThickness="1" Padding="4">
+								<StackPanel >
+									<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Console"></material:MaterialIcon>
+									<TextBlock Foreground="DimGray" HorizontalAlignment="Center" FontSize="12"  Text="Console"/>
+								</StackPanel>
+							</Border>
+							<TextBlock  FontFamily="11" VerticalAlignment="Center" Width="500" Margin="15,0" TextWrapping="Wrap"
+											   Text="Displays Information about tasks that occur while running OpenPV Developer Toolkit.  Also usefull to show logs for your application and installation processes."
+									 Foreground="Gray" FontStyle="Italic"/>
+						</StackPanel>
+
+						<StackPanel Margin="5"  Orientation="Horizontal">
+							<Border VerticalAlignment="Center"  Width="65" Height="50" BorderBrush="LightSteelBlue" BorderThickness="1" Padding="4">
+								<StackPanel >
+									<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Connection"></material:MaterialIcon>
+									<TextBlock Foreground="DimGray" HorizontalAlignment="Center" FontSize="12"  Text="Displays"/>
+								</StackPanel>
+							</Border>
+							<TextBlock  FontFamily="11" VerticalAlignment="Center" Width="500" Margin="15,0" TextWrapping="Wrap"
+									 Text="From the Displays Tool you can configure communication with your OpenView Display.  Here you can access the 'Flash' tools as well as 'Prep' and 'Install' Software Packages to the display."
+									   Foreground="Gray" FontStyle="Italic"/>
+						</StackPanel>
+
+						<StackPanel Margin="5"  Orientation="Horizontal">
+							<Border VerticalAlignment="Center"  Width="65" Height="50" BorderBrush="LightSteelBlue" BorderThickness="1" Padding="4">
+								<StackPanel >
+									<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Toolbox"></material:MaterialIcon>
+									<TextBlock Foreground="DimGray" HorizontalAlignment="Center" FontSize="12"  Text="Projects"/>
+								</StackPanel>
+							</Border>
+							<TextBlock  FontFamily="11" VerticalAlignment="Center" Width="500" Margin="15,0" TextWrapping="Wrap"
+											   Text="In the Projects Tool, you can create online projects that allow you to share device information between team members as well as create subscriptions enabling over the air updates to your projects."
+									 Foreground="Gray" FontStyle="Italic"/>
+						</StackPanel>
+
+						<StackPanel Margin="5"  Orientation="Horizontal">
+							<Border VerticalAlignment="Center"  Width="65" Height="50" BorderBrush="LightSteelBlue" BorderThickness="1" Padding="4">
+								<StackPanel >
+									<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="HelpBox"></material:MaterialIcon>
+									<TextBlock Foreground="DimGray" HorizontalAlignment="Center" FontSize="12"  Text="Docs"/>
+								</StackPanel>
+							</Border>
+							<TextBlock  FontFamily="11" VerticalAlignment="Center" Width="500" Margin="15,0" TextWrapping="Wrap"
+											   Text="For more detail about the OpenPV SDK (Ahsoka.Core) and other available API's, click the Docs Icon or follow the link below to access the OpenPV Support Site."
+									 Foreground="Gray" FontStyle="Italic"/>
+						</StackPanel>
+
+					</StackPanel>
+
+					<StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="4">
+						<Button  Classes="link" Margin="25"
+							Height="24"
+							VerticalContentAlignment="Center"
+							Command="{Binding ShowSupportSite}"
+							Foreground="SteelBlue" Background="White"
+							Content="Click Here to acccess the OpenPV Support Site"	>
+						</Button>
+					</StackPanel>
+
+				</StackPanel>
+			</Button>
+
+			<Button Margin="4" Grid.Column="2" Grid.Row="0" Width="32" Height="32"
+				HorizontalAlignment="Right"
+				VerticalAlignment="Top"
+				Command="{Binding CloseNewInstallHelp}"
+				Background="Transparent">
+				<material:MaterialIcon Padding="5"  Background="Transparent"
+									   Foreground="SteelBlue" Kind="Close"/>
+			</Button>
+		</Grid>
+	</Border>
+</UserControl>

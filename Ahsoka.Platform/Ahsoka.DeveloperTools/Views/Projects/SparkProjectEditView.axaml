@@ -1,0 +1,159 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+		     mc:Ignorable="d" d:DesignWidth="850" d:DesignHeight="650"
+             xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.SparkProjectEditView">
+	<Grid>
+		<ScrollViewer Margin="0,0,220,0">
+			<Grid RowDefinitions="auto,auto,auto" ColumnDefinitions="auto,auto"  >
+				<Border BorderBrush="Gainsboro" Background="SteelBlue" Width="290" Height="200"
+					Margin="15,15,15,15" BoxShadow="2 2 10 2 Gainsboro">
+					<StackPanel Margin="20">
+						<TextBlock FontSize="20" Text="{Binding TeamName, FallbackValue='None'}"
+								   Foreground="White" HorizontalAlignment="Center"/>
+						<material:MaterialIcon Width="36" Height="36" Margin="4" Foreground="White" Kind="ToolboxOutline"/>
+
+						<Grid Margin="10,15,0,0">
+							<material:MaterialIcon HorizontalAlignment="Left" Width="22" Height="22" Margin="4" Foreground="White"  Kind="IdCard"/>
+							<TextBlock HorizontalAlignment="Left" Text="{Binding TeamIDShort, FallbackValue='None'}"
+								  FontSize="12"
+								  Foreground="White" Margin="32,8,12,0"/>
+							<TextBlock HorizontalAlignment="Left" Text="{Binding TeamID, FallbackValue='None'}"
+								  FontSize="12"
+								  Foreground="White" Opacity=".5" Margin="32,8,12,0" ToolTip.Tip="{Binding TeamID}"/>
+						</Grid>
+
+						<Grid Margin="10,0,0,0">
+							<material:MaterialIcon  HorizontalAlignment="Left" Width="22" Height="22" Margin="4" Foreground="White" Kind="AdministratorOutline"/>
+							<TextBlock  HorizontalAlignment="Left" Text="{Binding OwnerEmailAddress, FallbackValue='jake.pratt@enovationcontrols.com'}"
+								  FontSize="12"
+								  Foreground="White" TextTrimming="CharacterEllipsis" Margin="32,8,12,0" />
+						</Grid>
+
+					</StackPanel>
+				</Border>
+
+				<Border Grid.Column="0" Grid.Row="2" BorderBrush="Gainsboro" Background="White" Width="290" Height="200"
+						Margin="15,0,15,15" BoxShadow="2 2 10 2 Gainsboro">
+					<Grid Margin="20" HorizontalAlignment="Center">
+						<StackPanel>
+							<TextBlock FontSize="20" Text="Module Setup" Foreground="DimGray"
+									   HorizontalAlignment="Center" FontWeight="Light"  />
+
+							<material:MaterialIcon Width="36" Height="36" Margin="4" Foreground="DimGray" Kind="Lego"/>
+							<TextBlock Text="Purchase and Configure Software Modules and Licenses for your project"
+									  TextAlignment="Center" TextWrapping="Wrap" LineHeight="16"
+									  FontSize="11"  Foreground="Gray"  Margin="10" />
+						</StackPanel>
+						<Button Classes="link" VerticalAlignment="Bottom" Margin="0,0,0,-20"
+								Height="38" Grid.Row="1"
+								HorizontalAlignment="Center"
+								Command="{Binding Modules.ShowModules}"
+								Foreground="SteelBlue" Background="White"
+								Content="MANAGE MODULES >">
+						</Button>
+					</Grid>
+				</Border>
+
+				<Border Grid.Row="0" Grid.Column="1" BorderBrush="Gainsboro" Width="290" Height="200" Background="White"
+						Margin="0,15,15,15" BoxShadow="2 2 10 2 Gainsboro">
+					<Grid Margin="20" HorizontalAlignment="Center">
+						<StackPanel>
+							<TextBlock FontSize="20" DockPanel.Dock="Top" Text="Project Members" Foreground="DimGray"
+									   HorizontalAlignment="Center" FontWeight="Light"  />
+
+							<material:MaterialIcon Width="36" Height="36" Margin="4" Foreground="DimGray" Kind="People"/>
+							<TextBlock Text="Add and remove project member as well as configure their access and role."
+									  TextAlignment="Center" TextWrapping="Wrap" LineHeight="16"
+									  FontSize="12"  Foreground="Gray"  Margin="10"/>
+
+
+						</StackPanel>
+						<Button Classes="link"
+								Height="38" VerticalAlignment="Bottom" Margin="0,0,0,-20"
+								HorizontalAlignment="Center"
+								Command="{Binding Members.ShowMembers}"
+								Foreground="SteelBlue" Background="White"
+								Content="MANAGE MEMBERS >">
+						</Button>
+					</Grid>
+				</Border>
+
+				<Border Grid.Row="2" Grid.Column="1" BorderBrush="Gainsboro" Width="290" Height="200" Background="White"
+						Margin="0,0,15,15" BoxShadow="2 2 10 2 Gainsboro">
+					<Grid Margin="20" HorizontalAlignment="Center">
+						<StackPanel>
+							<TextBlock FontSize="20" DockPanel.Dock="Top" Text="Security Artifacts" Foreground="DimGray"
+									   HorizontalAlignment="Center" FontWeight="Light"  />
+
+							<material:MaterialIcon Width="36" Height="36" Margin="4" Foreground="DimGray" Kind="FileCabinet"/>
+							<TextBlock Text="Manage shared artifacts for this project such as device keys and certificates."
+									  TextAlignment="Center" TextWrapping="Wrap" LineHeight="16"
+									  FontSize="12"  Foreground="Gray"  Margin="10"/>
+						</StackPanel>
+						<Button Classes="link"
+								Height="38"  VerticalAlignment="Bottom" Margin="0,0,0,-20"
+								HorizontalAlignment="Center"
+								Command="{Binding Artifacts.ShowArtifacts}"
+								Foreground="SteelBlue"
+								Content="MANAGE ARTIFACTS >">
+						</Button>
+					</Grid>
+				</Border>
+				<Border Grid.Row="1" BorderBrush="Gainsboro" Width="290" Height="200" Background="White"
+					Margin="15,0,15,15" BoxShadow="2 2 10 2 Gainsboro">
+					<Grid Margin="20" HorizontalAlignment="Center">
+						<StackPanel>
+							<TextBlock FontSize="20" DockPanel.Dock="Top" Text="Applications" Foreground="DimGray"
+									   HorizontalAlignment="Center" FontWeight="Light"  />
+
+							<material:MaterialIcon Width="36" Height="36" Margin="4" Foreground="DimGray" Kind="Apps"/>
+							<TextBlock Text="View and Manage the list of Application Releases in this Project."
+									  TextAlignment="Center" TextWrapping="Wrap" LineHeight="16"
+									  FontSize="12"  Foreground="Gray"  Margin="10"/>
+						</StackPanel>
+
+						<Button Classes="link" VerticalAlignment="Bottom" Margin="0,0,0,-20"
+								Height="38"
+								HorizontalAlignment="Center"
+								Command="{Binding Applications.ShowApplications}"
+								Foreground="SteelBlue" Background="White"
+								Content="MANAGE APPLICATIONS >">
+						</Button>
+					</Grid>
+				</Border>
+
+				<Border Grid.Row="1" Grid.Column="1" BorderBrush="Gainsboro" Width="290" MaxHeight="200" Background="White"
+						Margin="0,0,15,15" BoxShadow="2 2 10 2 Gainsboro">
+					<Grid Margin="20" HorizontalAlignment="Center">
+						<StackPanel>
+							<TextBlock FontSize="20" DockPanel.Dock="Top" Text="Target Devices" Foreground="DimGray"
+									   HorizontalAlignment="Center" FontWeight="Light"  />
+
+							<material:MaterialIcon Width="36" Height="36" Margin="4" Foreground="DimGray" Kind="Devices"/>
+
+							<TextBlock Text="View and manage the devices for which have been added to this project."
+									  TextAlignment="Center" TextWrapping="Wrap" LineHeight="16"
+									  FontSize="12"  Foreground="Gray"  Margin="10"/>
+						</StackPanel>
+						<Button Classes="link" VerticalAlignment="Bottom" Margin="0,0,0,-20"
+								Height="38"  HorizontalAlignment="Center"
+								Command="{Binding Devices.ShowDevices}"
+								Foreground="SteelBlue"
+								Content="MANAGE TARGETS >">
+						</Button>
+					</Grid>
+				</Border>
+
+
+				
+				
+			</Grid>
+		</ScrollViewer>
+		<CustomerTools:SparkProjectLoadingView IsVisible="False"/>
+	</Grid>
+</UserControl>

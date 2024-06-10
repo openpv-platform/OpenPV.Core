@@ -9,6 +9,8 @@ internal class SshKeyGenerator : IDisposable
 {
     private readonly RSA csp;
 
+    public RSA Key => csp;
+
     public SshKeyGenerator(int keySize)
     {
         if (OperatingSystem.IsWindows())

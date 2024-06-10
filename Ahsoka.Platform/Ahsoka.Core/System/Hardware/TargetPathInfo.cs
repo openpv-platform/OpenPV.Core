@@ -54,6 +54,10 @@ public partial class TargetPathInfo
 
         switch (path)
         {
+            case InstallerPaths.ApplicationSigningKeyPath:
+                return $"{fieldRoot}/signing_key.appcert";
+
+
             case InstallerPaths.WatchFolder:
                 return $"{GetAhsokaPath("watcher")}";
 
@@ -81,8 +85,11 @@ public partial class TargetPathInfo
                 return $"/usr/share/psplash/splash.png";
 
             case InstallerPaths.ApplicationVersion:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.AppVersionFile);
-
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder, ApplicationOutputComponent.AppVersionFile);
+            
+            case InstallerPaths.ServiceSecurityFile:
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.ServiceSecurityFile);
+            
             case InstallerPaths.ApplicationDescription:
                 return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.AppDescriptionFile);
 
@@ -96,7 +103,6 @@ public partial class TargetPathInfo
                 return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder, StartupInstallerPlugin.AutoStartFileName);
 
             case InstallerPaths.CoProcessorApplicationPath:
-                
                 return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.CoProcessorFolder);
 
             case InstallerPaths.InstallerVersion:
@@ -147,7 +153,6 @@ public partial class TargetPathInfo
             FactoryPaths.HardwareDeviceSigningKeyPEMFile => $"{factoryHardwareRoot}/DeviceKeyPEM.cert",
             FactoryPaths.HardwareDeviceSigningPublicKeyFile => $"{factoryHardwareRoot}/DevicePublicKey.cert",
             FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile => $"{factoryHardwareRoot}/DevicePublicKeyPEM.cert",
-            FactoryPaths.HardwarePackageValidationKeyPEMFile => $"{factoryHardwareRoot}/PackageKeyPEM.cert",
             FactoryPaths.HardwareManifestFile => $"{factoryHardwareRoot}/Manifest.info",
             FactoryPaths.HardwareManifestSignatureFile => $"{factoryHardwareRoot}/Manifest.sig",
             FactoryPaths.ModuleLicenseFile => $"{factoryHardwareRoot}/ModuleLicenseInfo.pbuff",
@@ -265,6 +270,11 @@ public enum InstallerPaths
     /// Path to the Application Version File
     /// </summary>
     ApplicationVersion,
+   
+    /// <summary>
+    /// Path to the Application ID
+    /// </summary>
+    ApplicationId,
 
     /// <summary>
     /// Path to the Application Description File
@@ -294,7 +304,17 @@ public enum InstallerPaths
     /// <summary>
     /// Path to the CoProcessor Customer Application
     /// </summary>
-    CoProcessorApplicationPath
+    CoProcessorApplicationPath,
+
+    /// <summary>
+    /// Signing Key used for Decrypting Applications
+    /// </summary>
+    ApplicationSigningKeyPath,
+
+    /// <summary>
+    /// Service Security Info
+    /// </summary>
+    ServiceSecurityFile,
 }
 
 /// <summary>

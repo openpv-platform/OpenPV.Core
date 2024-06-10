@@ -25,7 +25,6 @@ BuildOutputs/*
 Ahsoka.Interop/*.ninja
 Ahsoka.Interop/BuildOutput/*
 BuildOutput/**/*
-Ahsoka.Proto/Models/*
 Ahsoka.Containers/OpenView_SDK/*-toolchain-*snapshot.sh
 Ahsoka.Interop/Ahsoka.Client.Shared/ServiceFramework/ServiceConfiguration.hpp
 Ahsoka.Platform/AhsokaDeb/*
@@ -37,10 +36,8 @@ Ahsoka.QT/Ahsoka_QT_Demo/CMakeLists.txt.user
 Ahsoka.Platform/Ahsoka.Core/Resources/Licenses.json
 *txt.user.*
 **/**/build-*
-Ahsoka.Demo/SparkUpload/*
+
 Ahsoka.QT/Ahsoka_QT_Blank/Ahsoka.Client.Shared
-Ahsoka.Platform/SparkAppUpload/*
-Ahsoka.Platform/SparkDevUpload/*
 Ahsoka.Documentation/*
 /Ahsoka.Demo/Ahsoka.Demo.SBIO/GeneratedObjects/*
 *.code-workspace
@@ -51,4 +48,10 @@ Ahsoka.Platform/Ahsoka.CustomerTools/.avalonia-build-tasks/*
 Ahsoka.Platform/Ahsoka.Test/.avalonia-build-tasks/*
 Ahsoka.Demo/Ahsoka.CS.CAN/Ahsoka.Client.Shared/**/*
 Ahsoka.Demo/*/Directory.Build.props
-Ahsoka.Proto/output/*
+Extensions/*
+SparkUpload/*
+PlatformSupport/*
+
+Ahsoka.Platform/FirmwareDownload/**/*
+Ahsoka.Containers/OpenViewPro_SDK/*.bin
+Ahsoka.Demo/Ahsoka_CPP_Services/Outputs/*

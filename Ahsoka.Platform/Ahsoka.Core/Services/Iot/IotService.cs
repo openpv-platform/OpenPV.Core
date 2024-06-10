@@ -19,7 +19,7 @@ namespace Ahsoka.Services.Iot;
 
 
 [AhsokaService(IotService.Name)]
-public class IotService : AhsokaTCPServiceBase<IotMessageTypes.Ids>
+public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
 {
     #region Fields
     public const string Name = "IotService";

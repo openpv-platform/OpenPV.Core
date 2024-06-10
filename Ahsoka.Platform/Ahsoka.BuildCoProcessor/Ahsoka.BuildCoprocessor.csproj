@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -26,8 +25,8 @@
 		
 		<Message Text="Building CM4 Firmwware at $(CP_Source_Root)" Importance="high" />
 		<Exec WorkingDirectory="$(CP_Source_Root)" Command="docker pull openpv/openview_cubeide" />
-		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(CP_Source_Root)/Ahsoka.Coprocessor/openview_s/build_firmware.sh" />
-		<Exec ContinueOnError="true" Timeout="300000" WorkingDirectory="$(CP_Source_Root)" Command="docker run -v $(CP_Source_Root):/workspaces --rm --entrypoint &quot;/workspaces/Ahsoka.Coprocessor/openview_s/build_firmware.sh&quot; --name Ahsoka.CoProcessorBuilder openpv/openview_cubeide" />
+		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(CP_Source_Root)/Ahsoka.Coprocessor/openview_s/build_setup.sh" />
+		<Exec ContinueOnError="true" Timeout="300000" WorkingDirectory="$(CP_Source_Root)" Command="docker run -v $(CP_Source_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Coprocessor/openview_s/build_setup.sh&quot; --name Ahsoka.CoProcessorBuilder openpv/openview_cubeide" />
 	</Target>
 
 	<ItemGroup>

@@ -10,7 +10,7 @@ namespace Ahsoka.Services.Cygnus;
 /// <summary>
 /// A TCP client for Ahsoka serial socket communication with the Cygnus server
 /// </summary>
-public class TCPCygnusServerClient : AhsokaClientBase<ReachMessageTypes, TCPClientSerialSocket>
+public class TCPCygnusServerClient : AhsokaClientBase<ReachMessageTypes>
 {
     /// <summary>
     /// Default Constructor
@@ -19,6 +19,7 @@ public class TCPCygnusServerClient : AhsokaClientBase<ReachMessageTypes, TCPClie
         : base(ConfigurationLoader.GetServiceConfig(CygnusServerInterfaceService<TCPClientSerialSocket>.Name), new CygnusServerServiceMessages())
     {
     }
+
 
     /// <summary>
     /// Creates a Default Service Instance for In Proc and
@@ -35,7 +36,7 @@ public class TCPCygnusServerClient : AhsokaClientBase<ReachMessageTypes, TCPClie
     /// </summary>
     public void Connect()
     {
-        this.Socket.Connect();
+        this.Socket.Connect(this);
     }
 
     /// <summary>

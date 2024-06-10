@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -15,12 +14,11 @@
 	</PropertyGroup>
 	
 	<Target Name="BuildPreReqs" BeforeTargets="PreBuildEvent">
-		<Exec Command="dotnet run --project ../Ahsoka.ClientGenerator/Ahsoka.ClientGenerator.csproj --GenerateClients ../../Ahsoka.Interop/Ahsoka.Client.Shared/Services --property:IGNORE_PREREQS=YES" />
-		<MSBuild Projects="../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../Ahsoka.BuildCoprocessor/Ahsoka.BuildCoprocessor.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" BuildInParallel="false" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
+		<MSBuild Projects="../Ahsoka.DownloadBSP/Ahsoka.DownloadBSP.csproj;../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../Ahsoka.BuildCoprocessor/Ahsoka.BuildCoprocessor.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="true" />
 	</Target>
 
 	<Target Name="CleanPreReqs" AfterTargets="BeforeClean">
-		<MSBuild Projects="../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../Ahsoka.BuildCoprocessor/Ahsoka.BuildCoprocessor.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" Targets="BeforeClean" BuildInParallel="false" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
+		<MSBuild Projects="../Ahsoka.DownloadBSP/Ahsoka.DownloadBSP.csproj;../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../Ahsoka.BuildCoprocessor/Ahsoka.BuildCoprocessor.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" Targets="BeforeClean" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
 	</Target>
 	
 </Project>

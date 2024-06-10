@@ -14,7 +14,7 @@ namespace Ahsoka.Services.Demo;
 /// It also demostrates a simple method of selecting a platform specific implemntation of the service
 /// for windows and linux.
 /// </summary>
-public class TimeService : AhsokaTCPServiceBase<TimeServiceMessageTypes.Ids>
+public class TimeService : AhsokaServiceBase<TimeServiceMessageTypes.Ids>
 {
     #region Fields
     readonly ITimeServiceImplemntation timeServiceImplemntation;

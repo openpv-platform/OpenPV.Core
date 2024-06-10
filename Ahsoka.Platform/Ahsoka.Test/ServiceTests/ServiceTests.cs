@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class ServiceTests
+public class ServiceTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 
@@ -119,6 +119,16 @@ public class ServiceTests
     }
 
     [TestMethod]
+    public void TestMissingServiceConfig()
+    {
+        var service1 = ConfigurationLoader.GetServiceConfig("TestConfig");
+        var service2 = ConfigurationLoader.GetServiceConfig("TestConfig2");
+
+        Assert.IsFalse(service1.DataListenURI.Equals(service2.DataListenURI));
+    }
+
+
+    [TestMethod]
     public void TestBaseServiceExternalComponents()
     {
         // Test Configuration Builder
@@ -138,17 +148,24 @@ public class ServiceTests
                      .StartWithExternalServices();
 
         // Run Sample Test Code
-        ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
-        ServiceSelfTests.PrintServerMetrics(systemClient);
+        var task = Task.Run(() =>
+        {
+            ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
+            ServiceSelfTests.PrintServerMetrics(systemClient);
 
-        var buzzerConfig = systemClient.GetBuzzerConfig();
-        systemClient.SetBuzzerConfig(buzzerConfig);
+            var buzzerConfig = systemClient.GetBuzzerConfig();
+            systemClient.SetBuzzerConfig(buzzerConfig);
 
-        // Request Service Shutdown
-        systemClient.RequestServiceShutdown();
+            // Request Service Shutdown
+            systemClient.RequestServiceShutdown();
+        });
+
+        var result = task.Wait(10000);
 
         // Stop the Runtimes
         AhsokaRuntime.ShutdownAll();
+
+        Assert.IsTrue(result,"The test process did not complete");
     }
 
     private void ApplicationServiceClient_NotificationReceived(object sender, NotificationEventArgs<SystemMessageTypes.Ids> e)
@@ -165,8 +182,8 @@ public class ServiceTests
             Console.WriteLine(info);
         });
 
-        var prep = RemoteTargetToolFactory.GetToolsForPlatform( PlatformFamily.Windows64);
-     
+        var prep = RemoteTargetToolFactory.GetToolsForPlatform(PlatformFamily.Windows64);
+
         // Create Hardware Info
         HardwareInfo hardware = HardwareInfo.GetHardwareInfo(PlatformFamily.Windows64, "Desktop");
 
@@ -183,14 +200,6 @@ public class ServiceTests
         CommandLine.Execute(new string[] { "--GetHardwareSerialNumber" });
 
         CommandLine.Execute(new string[] { "--Verify" });
-    }
-
-    //[TestMethod]
-    public void UploadPackageToSpark()
-    {
-        CommandLine.Execute(new string[] {"--UploadToSpark",
-            @"C:\Users\Jake\Desktop\ST Setup",
-            "sparkserviceprod.azurewebsites.net", "build@enovationcontrols.com", "c3156bfd-0e84-422b-b978-ad137168adf9", "22.08.10" });
     }
 
     [TestMethod]
@@ -255,8 +264,6 @@ public class ServiceTests
         // Stop the Runtimes
         AhsokaRuntime.ShutdownAll();
     }
-
-
 }
 
 

@@ -1136,5 +1136,9 @@
     }
   ],
   "diagnosticEvents": [],
-  "version": "2.7.1.10014"
+  "generatorEnabled": true,
+  "generatorNamespace": "DEMO_CAN",
+  "generatorOutputFile": "Generated\\CANModels.generated.h",
+  "generatorBaseClass": "CanViewModelBase",
+  "version": "3.0.1.10026"
 }

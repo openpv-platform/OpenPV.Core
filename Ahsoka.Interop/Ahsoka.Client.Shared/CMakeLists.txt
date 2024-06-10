@@ -6,12 +6,9 @@ cmake_minimum_required (VERSION 3.8)
 include(CheckCCompilerFlag)
 check_c_compiler_flag(-Wdeprecated-declarations HAVE_DEPRECATED_DECLARATIONS)
 
-#Include the Service Configuration
-embed_resource("../../Ahsoka.Platform/Ahsoka.Core/Resources/OPVServicesConfiguration.json" "ServiceFramework/ServiceConfiguration.hpp" "ServiceConfig")
-
 # Add source to this project's executable.
 FILE(GLOB ServiceFramework ServiceFramework/*.cpp)
-FILE(GLOB Service Services/*.cpp)
+
 
 # Define Library (.dll - static for windows .so - shared) for linux)
 IF (WIN32)
@@ -21,7 +18,7 @@ ELSE()
 ENDIF()
 
 # Add Included Folders.
-target_include_directories(Ahsoka.Client.Shared PUBLIC Services ServiceFramework)
+target_include_directories(Ahsoka.Client.Shared PUBLIC ServiceFramework)
 
 # Disable compiler warnings
 IF (HAVE_DEPRECATED_DECLARATIONS)
@@ -68,18 +65,8 @@ FILE(COPY ${ServiceFrameworkHeaders} DESTINATION ${AHSOKA_BUILD_OUTPUTS}/inc/ser
 #Pick up Proto Headers and Include in Output Folder
 ADD_CUSTOM_COMMAND(TARGET Ahsoka.Client.Shared
         POST_BUILD
-        COMMAND echo Create Proto Header Folder 
+        COMMAND echo Create Proto Header Folder
         COMMAND ${CMAKE_COMMAND} -E make_directory ${AHSOKA_BUILD_OUTPUTS}/inc/messages
         COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/Configuration.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/DataService.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/BLEService.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/InstallService.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/IOService.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/IotService.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/NetworkService.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/SparkService.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
         COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/Services.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/SystemService.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/CanService.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
-        COMMAND ${CMAKE_COMMAND} -E copy ${PROTO_HEADER_DIR}/CanConfiguration.pb.h ${AHSOKA_BUILD_OUTPUTS}/inc/messages
 )

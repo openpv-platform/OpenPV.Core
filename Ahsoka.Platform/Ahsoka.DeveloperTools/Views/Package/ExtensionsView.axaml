@@ -1,0 +1,93 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           	 xmlns:sys="clr-namespace:System;assembly=mscorlib"
+		     mc:Ignorable="d" d:DesignWidth="1085" d:DesignHeight="450"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.ExtensionsView">
+
+	<Grid HorizontalAlignment="Stretch" DataContext="{Binding SelectedPackage.ExtensionsViewModel}" >
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="250"/>
+		</Grid.ColumnDefinitions>
+
+		<Grid.Styles>
+			<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+		</Grid.Styles>
+
+		<StackPanel  Margin="-15" Grid.Column="1"
+			HorizontalAlignment="Center">
+			<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12" 
+				   Foreground="DimGray"
+			   Text=" Service Actions "/>
+			<Button Margin="3,3,5,3"
+								HorizontalAlignment="Stretch"
+								Height="38"
+								IsEnabled="{Binding SelectedExtension.HasUx}"
+								VerticalContentAlignment="Center"
+								Command="{Binding SelectedExtension.ShowUx}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="ServiceToolbox"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"
+							   ToolTip.Tip="Edit this Extension."
+							   Text="Configure Extension..."/>
+				</StackPanel>
+			</Button>
+		</StackPanel>
+
+		<Grid  ColumnDefinitions="205,auto,*" RowDefinitions="*,20">
+			<Border BorderBrush="Gainsboro" BorderThickness="0"
+					Margin="20,0"
+					Grid.ColumnSpan="3" Grid.Row="0"
+					HorizontalAlignment="Stretch">
+				<Grid RowDefinitions="40,*,auto" ColumnDefinitions="*">
+					<TextBlock Margin="20,10,10,-30" Text="Installed Extensions" FontSize="16"
+							   TextWrapping="Wrap" Foreground="SteelBlue" HorizontalAlignment="Left"
+							   Grid.Row="0" Grid.Column="2"/>
+					<Border Grid.ColumnSpan="3" Grid.Row="2" BorderBrush="Gainsboro" 
+							BorderThickness="1" Background="WhiteSmoke"
+							Margin="20,0,20,20" Padding="10,10,10,10"
+							HorizontalAlignment="Stretch">
+						<TextBlock Grid.Row="2"  Text="Extensions are optional services and libraries you can add to your project to extend the Core OpenPV Functionality.  To download extensions, select the Extensions Plugin on the Plugin Tool."
+							 FontSize="14" TextWrapping="Wrap"  FontStyle="Italic"
+							 Foreground="SteelBlue" HorizontalAlignment="Left" />
+					</Border>
+					<Border VerticalAlignment="Stretch" 
+							Grid.Column="0" Grid.Row="1" BorderBrush="Gainsboro" BorderThickness="1"
+							Margin="20,20,20,20" Padding="10,10,10,10">
+						<ListBox SelectedItem="{Binding SelectedExtension}"  ItemsSource="{Binding AvailableExtensions}" Background="Transparent" >
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<Grid ColumnDefinitions="30,*,auto,auto,auto,auto" Margin="-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+										<Button Margin="0,3,0,0"
+												HorizontalAlignment="Left"
+												 BorderThickness="0"
+												 Width="24"
+												 Height="24"
+												 VerticalContentAlignment="Center"
+												ToolTip.Tip="Check to add or exclude Optional Extensions from your Application."
+												 Command="{Binding IncludeChanged}">
+											<Grid>
+												<material:MaterialIcon IsVisible="{Binding IsIncluded}" Width="20" Height="20" Foreground="SteelBlue" Kind="CheckboxMarked"></material:MaterialIcon>
+												<material:MaterialIcon IsVisible="{Binding !IsIncluded}" Width="20" Height="20" Foreground="Gray" Kind="CheckboxBlank"></material:MaterialIcon>
+											</Grid>
+										</Button>
+
+										<TextBlock Text="{Binding ExtensionName}" Margin="0,3,0,0"  HorizontalAlignment="Stretch" FontSize="14" Grid.Column="1" TextWrapping="1" />
+									</Grid>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</Border>
+				</Grid>
+			</Border>
+		</Grid>
+	</Grid>
+	
+</UserControl>
+

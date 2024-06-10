@@ -27,14 +27,21 @@ FILE(GLOB Sources *.cpp)
 FILE(GLOB Forms *.ui)
 FILE(GLOB Resources *.qrc)
 
+#Add Ahsoka Library Subdirectory
+add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
+
 add_executable(Ahsoka.QT.Blank
     ${Sources}
     ${Forms}
     ${Resources}
+    ${AhsokaSources}
 )
 
-#Add Ahsoka Library Subdirectory
-add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
+target_include_directories(Ahsoka.QT.Blank PRIVATE ${AhsokaHeaders})  # Include Headers or Ahsoka
+target_link_libraries(Ahsoka.QT.Blank PRIVATE Qt5::Widgets ${AhsokaLibs}) #Include Library List for Ahsoka.
+
+
+message(CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 
 add_ahsoka(Ahsoka.QT.Blank)
 

@@ -1,0 +1,35 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.0">
+  <PropertyGroup>
+    <OutputName>OpenPV.Installer</OutputName>
+    <Name>Ahsoka.OpenPV.Installer</Name>
+    <UpdateAssemblyInfo>false</UpdateAssemblyInfo>
+    <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
+    <SuppressIces>ICE60;ICE61</SuppressIces>
+    <OutputPath>..\..\SparkUpload\</OutputPath>
+    <DebugType>Full</DebugType>
+	<DefaultCompressionLevel>mszip</DefaultCompressionLevel>
+    <SuppressValidation>True</SuppressValidation>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.0" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.0" />
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.0" />
+    <PackageReference Include="WixToolset.Heat" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="OpenPV-Icon.ico" />
+  </ItemGroup>
+  <PropertyGroup>
+    <LinkerBaseInputPaths>..\..\PlatformSupport\Ahsoka.Tools\Windows64</LinkerBaseInputPaths>
+    <DefineConstants>BasePath=..\..\PlatformSupport\Ahsoka.Tools\Windows64</DefineConstants>
+  </PropertyGroup>
+  <Target Name="CustomBeforeBuild" BeforeTargets="BeforeBuild">
+    <Exec Condition="true" Command="dotnet publish ..\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj -p:PublishProfile=WindowsOutputs" />
+  </Target>
+  <ItemGroup>
+    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>

@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
@@ -25,15 +24,21 @@
 
 		<Message Text="Stopping Containers" Importance="high" />
 		<Exec ContinueOnError="true" IgnoreExitCode="true" WorkingDirectory="$(InteropSource_Root)" Command="docker kill Ahsoka.CoreBuilder" />
+		<Exec ContinueOnError="true" IgnoreExitCode="true" WorkingDirectory="$(InteropSource_Root)" Command="docker kill Ahsoka.CoreBuilderPro" />
 
-		<Message Text="Building Linux Interop Libraries at $(InteropSource_Root)" Importance="high" />
-		<Exec WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openview_sdk_2_0" />
-		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(InteropSource_Root)/Ahsoka.Interop/Build_CPP_SDK.sh" />
-		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/workspaces/Ahsoka.Platform --rm --entrypoint &quot;/workspaces/Ahsoka.Platform/Ahsoka.Interop/Build_CPP_SDK.sh&quot; --name Ahsoka.CoreBuilder openpv/openview_sdk_2_0" />
+		<Message Text="Building OpenView Interop Libraries at $(InteropSource_Root)" Importance="high" />
+		<Exec Condition="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openview_sdk_3_0" />
+		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(InteropSource_Root)/Ahsoka.Interop/build_setup.sh" />
+		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Interop/build_setup.sh&quot; --name Ahsoka.CoreBuilder openpv/openview_sdk_3_0" />
+		
+		
+		<Message Text="Building OpenViewPro Interop Libraries at $(InteropSource_Root)" Importance="high" />
+		<Exec Condition ="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openviewpro_sdk_3_0" />
+		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(InteropSource_Root)/Ahsoka.Interop/build_setup_pro.sh" />
+		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Interop/build_setup_pro.sh&quot; --name Ahsoka.CoreBuilderPro openpv/openviewpro_sdk_3_0" />
 
-		<Message Condition="false" Text="Building Windows Libraries" Importance="high" />
-		<Exec Condition="false" Command="$(InteropSource_Root)/Ahsoka.Interop/Build_CPP_SDK.bat" />
 	</Target>
+
 
 	<ItemGroup>
 		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">

@@ -32,7 +32,7 @@ public abstract class CygnusSerialSocket : AhsokaSerialSocket
     }
 
     // TODO: BMG (Nov. 21, 2023) If this is going to be used long term, reduce the number of allocations made.
-    internal override void SendMessage(byte[] header, byte[] data, byte[] clientId, bool sendAsNotification)
+    public override void SendMessage(byte[] header, byte[] data, byte[] clientId, bool sendAsNotification)
     {
         using MemoryStream headerStream = new MemoryStream(header);
         AhsokaMessageHeader ahsokaHeader = ProtoBuf.Serializer.Deserialize<AhsokaMessageHeader>(headerStream);
@@ -236,11 +236,8 @@ public abstract class CygnusSerialSocket : AhsokaSerialSocket
 
     }
 
-    internal override bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool receiveAsNotification, int timeOutInMs = int.MaxValue)
+    public override bool ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId, bool isNotification)
     {
-        if (timeOutInMs > maxTimeoutValue)
-            timeOutInMs = maxTimeoutValue;
-
         if (!ReceiveOverInterface(out byte[] packetData, out clientId)) {
             // There was no message available for us to retrieve from the underlying interface.
             header = null;

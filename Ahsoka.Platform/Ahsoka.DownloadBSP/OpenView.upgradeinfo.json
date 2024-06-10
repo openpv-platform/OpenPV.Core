@@ -1,0 +1,10 @@
+{
+  "UpgradeName" : "OpenView 3.0 BSP Upgrade",
+  "PlatformFamily": "OpenViewLinux",
+  "UpgradesTo": "2.2024-02-27T105810.otatest.023e22e",
+  "UpgradeFile": "b8e76e0-023e22e.zip",
+  "UpgradesFrom": [
+    "2023-07-12T144614.kirkstone.b8e76e0",
+    "2023-09-07T080255.kirkstone.387e4f0"
+  ]
+}

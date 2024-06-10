@@ -1,0 +1,151 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+			 mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="650"  Background="#33555555"
+             xmlns:material="using:Material.Icons.Avalonia"
+		     xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+             x:Class="Ahsoka.DeveloperTools.Views.SparkProjectView">
+	
+	<Border Margin="10" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="220"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="220"/>
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="auto"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			
+			<Border BorderBrush="Gainsboro" BorderThickness="1,0,0,0"
+				Grid.Row="0" Grid.RowSpan="2" Grid.Column="2"  
+					Background="WhiteSmoke"  VerticalAlignment="Stretch" Margin="0,0,0,0"/>
+
+			<CustomerTools:SparkProjectEditView Background="WhiteSmoke" DataContext="{Binding SelectedTeam}" VerticalAlignment="Stretch"
+										 Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="2" />
+			
+			<Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" 
+				 Background="White"	BorderBrush="Gainsboro" BorderThickness="0,0,1,0">
+				<Grid RowDefinitions="auto,*,auto">
+					<ListBox Background="Transparent" ItemsSource="{Binding Teams}" Grid.Row="1" 
+							 SelectedItem="{Binding SelectedTeam}" 
+							 SelectionMode="AlwaysSelected" >
+						<ListBox.ItemTemplate>
+							<DataTemplate>
+								<Grid HorizontalAlignment="Stretch" VerticalAlignment="Center">
+									<Grid Margin="0,0,-5,0">
+										<StackPanel VerticalAlignment="Center">
+											<TextBlock Text="{Binding TeamName}" HorizontalAlignment="Stretch" FontSize="14"  TextWrapping="1" />
+											<TextBlock Text="{Binding TeamIDShort}" HorizontalAlignment="Stretch" FontSize="12" FontStyle="Italic" TextWrapping="1" />
+										</StackPanel>
+										<Button  HorizontalAlignment="Right"
+												 BorderThickness="0"
+												 Background="Transparent"
+												  Width="28"
+												  Height="28"
+												 VerticalContentAlignment="Center"
+												 Command="{Binding FavoriteChanged}">
+											<Grid>
+												<material:MaterialIcon ToolTip.Tip="Favorite Item" IsVisible="{Binding IsFavorite}" Width="24" Height="24" Foreground="SteelBlue" Kind="Star"></material:MaterialIcon>
+												<material:MaterialIcon ToolTip.Tip="Favorite Item" IsVisible="{Binding !IsFavorite}" Width="24" Height="24" Foreground="Gray" Kind="StarOutline"></material:MaterialIcon>
+											</Grid>
+										</Button>
+									</Grid>
+								</Grid>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+					
+				</Grid>
+			</Border>
+
+			<Border Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" >
+				<DockPanel Grid.Column="2" HorizontalAlignment="Center"  LastChildFill="False">
+					
+					<Border BorderBrush="Gainsboro" BorderThickness="1,0,0,0"
+							DockPanel.Dock="Left" Margin="-15,15" />
+					
+					<TextBlock DockPanel.Dock="Top" FontSize="18"
+					   VerticalAlignment="Top"
+					   HorizontalAlignment="Center"
+					   Margin="0,36,0,12"
+					   Foreground="DimGray"
+					   Text="Actions"
+					   Grid.Column="1"/>
+					<Button Margin="3,3,5,3" DockPanel.Dock="Top"
+							HorizontalAlignment="Stretch"
+							Height="38" Width="165"
+							VerticalContentAlignment="Center"
+							Command="{Binding CreateTeam}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Create"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Create Project..."/>
+						</StackPanel>
+					</Button>
+					<Button DockPanel.Dock="Top"
+							IsEnabled="{Binding SelectedTeam, Converter={x:Static ObjectConverters.IsNotNull}}"
+							Margin="3,3,5,3" Width="165"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							Command="{Binding RenameTeam}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Rename"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Rename Project..."/>
+						</StackPanel>
+					</Button>
+					<Button DockPanel.Dock="Top"
+							IsEnabled="{Binding SelectedTeam, Converter={x:Static ObjectConverters.IsNotNull}}"
+							Margin="3,3,5,3" Width="165"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							Command="{Binding RemoveTeam}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Delete"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Remove Project..."/>
+						</StackPanel>
+					</Button>
+
+					<Button Margin="3,3,5,3" DockPanel.Dock="Top"
+							HorizontalAlignment="Stretch"
+							Height="38" Width="165"
+							VerticalContentAlignment="Center"
+							IsEnabled="{Binding SelectedTeam, Converter={x:Static ObjectConverters.IsNotNull}}"
+							Command="{Binding SelectedTeam.LoadTeam}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Refresh"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Refresh Project"/>
+						</StackPanel>
+					</Button>
+					<Grid DockPanel.Dock="Bottom">
+						<TextBlock IsVisible="{Binding !IsError}" Margin="5,20" Width="180"
+								   TextWrapping="Wrap" TextAlignment="Center"
+								   HorizontalAlignment="Center" VerticalAlignment="Bottom"
+								   Foreground="Black" FontSize="13"
+								   Text="{Binding ResultText, FallbackValue='No Error'}"/>
+
+						<TextBlock IsVisible="{Binding IsError}" Margin="5,20" Width="180" TextWrapping="Wrap"
+								   HorizontalAlignment="Center" TextAlignment="Center"
+								   Foreground="Red" FontSize="13" VerticalAlignment="Bottom"
+								   Text="{Binding ResultText, FallbackValue='Error Found'}"/>
+					</Grid>
+				</DockPanel>
+			</Border>
+
+			<Button Margin="4" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Width="24" Height="24"
+				HorizontalAlignment="Right"
+				VerticalAlignment="Top"
+				Command="{Binding ClosePopup}"
+				Background="Transparent">
+				<material:MaterialIcon Padding="5"  Background="Transparent"
+									   Foreground="SteelBlue" Kind="Close"/>
+			</Button>
+			
+		</Grid>
+		
+	</Border>	
+</UserControl>

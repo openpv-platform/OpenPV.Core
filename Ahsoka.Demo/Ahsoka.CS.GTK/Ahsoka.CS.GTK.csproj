@@ -4,12 +4,14 @@
 		<OutputType>Exe</OutputType>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<Platforms>AnyCPU;x64</Platforms>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<NoWarn>CS0612</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup Label="Reference to Ahsoka Nuget Packages" Condition="!Exists('../../Demo.Build.props')">
-		<PackageReference Include="Ahsoka.Core" Version="(2.*,3.0)" />
+		<PackageReference Include="Ahsoka.Core" Version="(3.*,4.0)" />
+		<PackageReference Include="Ahsoka.Core.DataService" Version="(3.*,4.0)" />
+		<PackageReference Include="Ahsoka.Core.Drawing" Version="(3.*,4.0)" />
 	</ItemGroup>
 
 

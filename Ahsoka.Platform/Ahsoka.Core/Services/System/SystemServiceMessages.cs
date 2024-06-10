@@ -1,6 +1,9 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Utility;
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Ahsoka.Services.System;
 
@@ -29,13 +32,30 @@ internal class SystemServiceMessages : AhsokaMessagesBase
         this.RegisterServiceRequest(SystemMessageTypes.Ids.GetIgnitionPin, typeof(EmptyNotification), typeof(IgnitionState));
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.SetBootLogo, typeof(BootLogoInfo), typeof(EmptyNotification));
-
         this.RegisterServiceRequest(SystemMessageTypes.Ids.UpdateTouchTune, typeof(TouchTuneInfo), typeof(TouchTuneInfoReply));
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.RequestShutdown, typeof(ShutdownInformation), typeof(EmptyNotification));
 
         this.RegisterServiceNotification(SystemMessageTypes.Ids.IgnitionOffNotification, typeof(EmptyNotification));
         this.RegisterServiceNotification(SystemMessageTypes.Ids.IgnitionOnNotification, typeof(EmptyNotification));
+    }
+
+    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    {
+        var result = base.GetAdditionalClientResources(type);
+        result.Add("inc\\services\\SystemServiceClientExtensions.h", Properties.Resources.SystemServiceClientExtensionsH);
+
+        result.Add("Ahsoka.Proto\\SystemService.proto", Properties.Resources.SystemService);
+
+        if (includeImplementation)
+            result.Add("inc\\services\\SystemServiceClientExtensions.cxx", Properties.Resources.SystemServiceClientExtensionsCXX);
+
+        return result;
+    }
+
+    public override KnownDataKeys GetKnownValues()
+    {
+        return new SystemServiceDataKeys();
     }
 }
 

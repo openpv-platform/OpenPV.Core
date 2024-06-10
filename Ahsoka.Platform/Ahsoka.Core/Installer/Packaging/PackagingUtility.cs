@@ -81,7 +81,7 @@ public class PackagingUtility
         var fileInfo = new FileInfo(path);
         var fileSize = fileInfo.Length;
         long filePosition = 0;
-        long percentComplete = 0;
+        long percentComplete;
 
         // ZipFile.ExtractToDirectory(path, outputPath, true);
         using var archive = ZipFile.Open(path, ZipArchiveMode.Read);
@@ -99,10 +99,11 @@ public class PackagingUtility
                     Directory.CreateDirectory(directory);
 
                 entry.ExtractToFile(pathToFile, true);
+                File.SetLastWriteTime(pathToFile, DateTime.Now);
 
                 percentComplete = (int)((filePosition / (float)fileSize) * 100);
-                log.Report(new InstallLogInfo() { LogMessage = $"   Extracted {entry.FullName}", LogMessageType = LogMessageType.Information });
-                progress.Report(new InstallProgressInfo() { UpdatePercentOnly = true, PercentComplete = (int)percentComplete });
+                log?.Report(new InstallLogInfo() { LogMessage = $"   Extracted {entry.FullName}", LogMessageType = LogMessageType.Information });
+                progress?.Report(new InstallProgressInfo() { UpdatePercentOnly = true, PercentComplete = (int)percentComplete });
             }
         }
     }

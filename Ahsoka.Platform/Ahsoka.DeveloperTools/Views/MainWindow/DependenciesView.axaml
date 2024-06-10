@@ -1,0 +1,65 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Ahsoka.DeveloperTools.Views.DependenciesView" 
+			 Background="#00888888"
+			 IsVisible="{Binding !HasDependencies, FallbackValue=false}" >
+	<Border BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+				<Border VerticalAlignment="Center" BoxShadow="5 5 10 2 DarkGray" Width="550" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="White" BorderThickness="1">
+					<Grid>
+						<StackPanel IsVisible="{Binding !InvalidPlatform}" VerticalAlignment="Center">
+							<TextBlock Foreground="SteelBlue" FontSize="16"
+									   VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"  TextWrapping="Wrap"
+									   Margin="20" Text="The following packages are missing or could not be found.  "/>
+
+							<ItemsRepeater Margin="0,0,20,0"
+										   HorizontalAlignment="Center"
+										   ItemsSource="{Binding MissingDependenciesText}">
+								<ItemsRepeater.ItemTemplate>
+									<DataTemplate>
+										<Border Margin="0,0,0,0" Padding="5">
+											<TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+													 FontStyle="Italic"  FontSize="13" Text="{Binding}"/>
+										</Border>
+									</DataTemplate>
+								</ItemsRepeater.ItemTemplate>
+							</ItemsRepeater>
+
+							<TextBlock Foreground="SteelBlue" FontSize="16"
+									   VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"  TextWrapping="Wrap"
+									   Margin="16" Text="Go to the Plugin Manager and download 'PlatformSupport' packages for the listed plaforms to continue."/>
+
+							<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+									VerticalAlignment="Center" Margin="0,0,0,20"
+									Grid.Column="2" Grid.Row="0">
+								<Button
+									Command="{Binding GoToAddIns}" FontSize="13"
+									Background="Transparent" Padding="10"
+									Content="Go To Plugin Manager"/>
+								<Button
+									Command="{Binding IgnorePluginManager}"  Padding="10"
+									FontSize="13"
+									Background="Transparent" Content="Ignore and Continue"/>
+							</StackPanel>
+						</StackPanel>
+
+						<StackPanel IsVisible="{Binding InvalidPlatform}" VerticalAlignment="Center">
+							<TextBlock Foreground="SteelBlue" FontSize="16"
+									   VerticalAlignment="Center" HorizontalAlignment="Center" TextAlignment="Center"  TextWrapping="Wrap"
+									   Margin="20" Text="The plaform family is not valid, please check the Platform Family drop down and select a value from the list..  "/>
+
+							<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+									VerticalAlignment="Center" Margin="0,0,0,20"
+									Grid.Column="2" Grid.Row="0">
+								<Button
+									Command="{Binding IgnorePluginManager}"  Padding="10"
+									FontSize="13"
+									Background="Transparent" Content="Continue and Edit Platform"/>
+							</StackPanel>
+						</StackPanel>
+					</Grid>
+				</Border>
+			</Border>
+</UserControl>

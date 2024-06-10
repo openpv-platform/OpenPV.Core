@@ -6,7 +6,6 @@ using System;
 
 namespace Ahsoka.Application.Storyboard;
 
-[DataServiceInfo("Buzzer")]
 public partial class FEEBuzzerRequest
 {
     private static readonly uint FrequencyMin = 100;
@@ -15,7 +14,7 @@ public partial class FEEBuzzerRequest
     private static readonly byte VolumeMin = 0;
     private static readonly byte VolumeMax = 100;
 
-    public FEEBuzzerRequest()
+    public void Init()
     {
         Frequency = ApplicationViewModelRoot.Default.BuzzerModel.Frequency;
         VolumePercent = ApplicationViewModelRoot.Default.BuzzerModel.VolumePercent;

@@ -1,16 +1,16 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.245.0/containers/cpp
 {
-	"name": "OpenPV Base",
+	"name": "OpenPV Select Base",
 
-	"image": "openpv/openview_sdk",
+	"image": "openpv/openview_sdk_3_0",
 	// Build from Docker File
 	//"build": {
 	//	"dockerfile": "Dockerfile"
 	//},
 	
 	// Name Container the Same as Workspace	
-	"runArgs": ["--name", "${localWorkspaceFolderBasename}"],
+	"runArgs": ["--name", "OpenViewBase${localWorkspaceFolderBasename}","--rm"],
 	
 	// Configure tool-specific properties.
 	"customizations": {

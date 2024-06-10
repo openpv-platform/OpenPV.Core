@@ -5,7 +5,7 @@ public partial class BrightnessUpdate
 {
     public void Init()
     {
-        DemoViewModelRoot.Default.SystemClient.GetBrightness();
+        HandleMessage(DemoViewModelRoot.Default.SystemClient.GetBrightness());
     }
 
     internal void HandleMessage(BrightnessInfo response)

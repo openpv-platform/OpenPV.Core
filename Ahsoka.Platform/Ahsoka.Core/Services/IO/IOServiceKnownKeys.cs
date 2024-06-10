@@ -6,7 +6,6 @@ namespace Ahsoka.Services.System;
 /// <summary>
 /// List of Key Values Available in this Service
 /// </summary>
-[AhsokaServiceDataValues(IOService.Name)]
 public class IOServiceDataKeys : KnownDataKeys
 {
     /// <summary>

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 namespace Ahsoka.Services.Bluetooth;
 
 [AhsokaService(Name)]
-public class BluetoothService : AhsokaTCPServiceBase<BluetoothMessageTypes.Ids>
+public class BluetoothService : AhsokaServiceBase<BluetoothMessageTypes.Ids>
 {
     public const string Name = "BluetoothService";
     BluetoothConfiguration configuration;

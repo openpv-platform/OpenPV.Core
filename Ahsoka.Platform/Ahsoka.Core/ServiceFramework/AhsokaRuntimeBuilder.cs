@@ -1,5 +1,4 @@
-﻿using Ahsoka.Services.Data;
-using Ahsoka.System;
+﻿using Ahsoka.System;
 using Ahsoka.Utility;
 using Microsoft.Extensions.Hosting.Systemd;
 using System;
@@ -50,7 +49,7 @@ public partial class AhsokaRuntime
         /// <param name="endPoints">Array of client runtimes</param>
         /// <returns>AhsokaRuntimeBuilder to continue building until a Start Method is used.</returns>
         /// <exception cref="ArgumentException"></exception>
-        public AhsokaRuntimeBuilder AddClients(params IAhsokaClientEndpoint[] endPoints)
+        public AhsokaRuntimeBuilder AddClients(params IAhsokaClientEndPoint[] endPoints)
         {
             if (this.endPoints.Count > 0 && !isClient)
                 throw new ArgumentException("Client and Service Endpoints can not be added to the same runtime.");
@@ -136,7 +135,7 @@ public partial class AhsokaRuntime
                 throw new ArgumentException("Must specify Client Endpoints for using StartWithInternalServices");
 
             List<IAhsokaServiceEndpoint> services = new();
-            foreach (IAhsokaClientEndpoint item in endPoints.Cast<IAhsokaClientEndpoint>())
+            foreach (IAhsokaClientEndPoint item in endPoints.Cast<IAhsokaClientEndPoint>())
                 services.Add(item.CreateDefaultService());
 
             stopwatch.ResetTiming("Services Created");
@@ -182,18 +181,13 @@ public partial class AhsokaRuntime
 
             List<IAhsokaServiceEndpoint> services = new();
             foreach (var item in config.Services)
-            {
+            {           
                 var type = types.FirstOrDefault(x => x.Key.ServiceName == item.ServiceName);
                 if (type.Value == null)
                     throw new ArgumentException($"Could not find service to match {item.ServiceName}");
                 else
                 {
-                    IAhsokaServiceEndpoint service;
-                    if (type.Value == typeof(DataService))
-                        service = DataService.DefaultDataService;
-                     else
-                        service = ClassLoader.CreateType(type.Value, item) as IAhsokaServiceEndpoint;
-
+                    IAhsokaServiceEndpoint service = ClassLoader.CreateType(type.Value, item) as IAhsokaServiceEndpoint;
                     services.Add(service);
                     stopwatch.ResetTiming($"{service.ServiceConfig.ServiceName} Added To List");
                 }
@@ -222,6 +216,8 @@ public partial class AhsokaRuntime
             if (!OperatingSystem.IsWindows())
                 Process.Start("chmod", "+x " + executablePath).WaitForExit();
 
+            CancellationTokenSource tokenSource = new CancellationTokenSource();
+
             IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
             {
                 if (!String.IsNullOrEmpty(info.Data))
@@ -229,14 +225,17 @@ public partial class AhsokaRuntime
                     if (!info.Error)
                         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "External Process Information: " + info.Data);
                     else
+                    {
                         AhsokaLogging.LogMessage(AhsokaVerbosity.High, "External Process Error: " + info.Data);
+                        tokenSource.Cancel();
+                    }
                 }
             });
 
             Task.Run(() =>
             {
-                ProcessUtility.RunProcessAsync(executablePath, $"--StartServices {configurationFile}", null, progressText, CancellationToken.None);
-            });
+                ProcessUtility.RunProcessAsync(executablePath, $"--StartServices {configurationFile}", null, progressText, tokenSource.Token);
+            },tokenSource.Token);
         }
         #endregion
     }
@@ -254,7 +253,6 @@ public partial class AhsokaRuntime
         SystemdNotifier notifier = new();
         notifier.Notify(ServiceState.Ready);
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Releasing Startup (System Notify)");
-
     }
 
     /// <summary>
@@ -272,4 +270,22 @@ public partial class AhsokaRuntime
         }
     }
     #endregion
+}
+
+/// <summary>
+/// Attribute used to Describe Services
+/// </summary>
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public class AhsokaServiceAttribute : Attribute
+{
+    /// <summary>
+    /// Name of the Service / Service Configuration
+    /// </summary>
+    public string ServiceName { get; init; }
+
+    /// <summary>
+    /// Constructor for Specifying Service
+    /// </summary>
+    /// <param name="serviceName"></param>
+    public AhsokaServiceAttribute(string serviceName) { ServiceName = serviceName; }
 }

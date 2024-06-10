@@ -151,7 +151,10 @@ public sealed class WiFiNetworkManager
         var networkReady = Task.Run(() =>
         {
             using var stopwatch = new AhsokaStopwatch("Start Networking");
-            ConfigureAdapter(client);
+            var result = ConfigureAdapter(client);
+            if (!result)
+                ConnectionStateChanged?.Invoke(this, ConnectionState);
+
         });
     }
 
@@ -258,11 +261,8 @@ public sealed class WiFiNetworkManager
                 }
             });
 
-            UpdateNetworkList(task.Result);
+            UpdateNetworkList(task.GetAwaiter().GetResult());
         }
-
-
-
     }
 
     /// <summary>

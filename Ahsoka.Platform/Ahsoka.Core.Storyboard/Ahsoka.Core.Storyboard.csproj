@@ -1,0 +1,69 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<RootNamespace>Ahsoka</RootNamespace>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<DebugType>portable</DebugType>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Storyboard\Proto\StartupConfiguration.proto" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AdditionalFiles Include="Storyboard\Proto\StartupConfiguration.proto">
+	    <CustomToolNamespace>Models</CustomToolNamespace>
+	  </AdditionalFiles>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="protobuf-net" Version="3.2.30" />
+		<PackageReference Include="protobuf-net.BuildTools" Version="3.2.33">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<Target Name="AfterDrawingBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'">
+		<Message Text="Copy Storyboard Extension..." Importance="high" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.extensioninfo.json" DestinationFiles="$(SolutionDir)..\Extensions\Storyboard Extension\Ahsoka.Core.Storyboard.extensioninfo.json" />
+		<Copy SourceFiles="$(SolutionDir)Ahsoka.Core.Storyboard\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Storyboard.dll" DestinationFiles="$(SolutionDir)..\Extensions\Storyboard Extension\lib\Ahsoka.Core.Storyboard.dll" />
+	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Properties\StoryboardResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>StoryboardResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\StoryboardResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>StoryboardResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
+	</ItemGroup>
+
+</Project>

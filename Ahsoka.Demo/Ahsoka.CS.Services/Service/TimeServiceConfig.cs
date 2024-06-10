@@ -31,7 +31,6 @@ internal static class TimeServiceConfig
             //      NotificationConnectionAddress = "tcp://localhost:6099"   // Connect to localhost:6099 used by Clients
             //
             DataChannel = 5099,
-            NotificationChannel = 6099,
             TcpListenAddress = "localhost",
             TcpConnectionAddress = "localhost",
         };

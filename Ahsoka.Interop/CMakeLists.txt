@@ -5,6 +5,8 @@ cmake_minimum_required (VERSION 3.8)
 
 project ("Ahsoka.Interop")
 
+add_subdirectory ("Ahsoka.Proto")
+
 #Allow Resource Embedding
 include(Functions.cmake)
 
@@ -34,5 +36,8 @@ ENDIF()
 
 # Add Cairo Interop build
 IF (${AHSOKA_BUILD_OUTPUTS} MATCHES "OpenViewLinux_TargetSupport/SDK$")
+    add_subdirectory ("Ahsoka.Cairo.GLES")
+ENDIF()
+IF (${AHSOKA_BUILD_OUTPUTS} MATCHES "OpenViewLinuxPro_TargetSupport/SDK$")
     add_subdirectory ("Ahsoka.Cairo.GLES")
 ENDIF()

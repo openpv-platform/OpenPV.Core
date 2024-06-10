@@ -7,6 +7,7 @@ nodeList_t* txNode[MAX_PORTS] = {0};
 nodeList_t* rxNodes[MAX_PORTS] = {0};
 nodeList_t* broadcastNode[MAX_PORTS] = {0};
 nodeList_t* decodeList = 0;
+nodeList_t* portList = 0;
 bool broadcastAvailable[MAX_PORTS] = {false, false};
 
 nodeList_t* createNodeList(void)

@@ -3,7 +3,6 @@ using Ahsoka.Utility;
 
 namespace Ahsoka.Application.Storyboard;
 
-[DataServiceInfo("DigitalOutput2", true)]
 public partial class BEEDigitalOutput2Status
 {
 

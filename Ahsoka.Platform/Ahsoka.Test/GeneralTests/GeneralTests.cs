@@ -1,3 +1,5 @@
+using Ahsoka.DeveloperTools.OpenPVTools;
+using Ahsoka.DeveloperTools.Spark;
 using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
@@ -15,7 +17,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class GeneralTests : ViewModelBase
+public class GeneralTests : LinearTestBase
 {
     private object myValue = null;
     public object MyValue { get { return this.LazyLoad(ref myValue); } }
@@ -38,7 +40,7 @@ public class GeneralTests : ViewModelBase
         while (!solution_dir.EndsWith("Ahsoka.Platform"))
             solution_dir = Path.GetDirectoryName(solution_dir);
 
-        var fileName = Path.Combine(solution_dir, @"Ahsoka.Core\Resources\OpenViewS50HardwareConfiguration.json");
+        var fileName = Path.Combine(solution_dir, @"Ahsoka.PublishOpenView\OpenViewS50HardwareConfiguration.json");
 
         string jsonText = File.ReadAllText(fileName);
 
@@ -53,6 +55,8 @@ public class GeneralTests : ViewModelBase
         //File.WriteAllText(@"C:\Users\Jake\Desktop\HardwareConfiguration.test1", newText1);
         //File.WriteAllText(@"C:\Users\Jake\Desktop\HardwareConfiguration.test2", newText2);
 
+        AhsokaLogging.StopMemoryLog();
+
         Assert.AreEqual(newText1, newText2);
     }
 
@@ -65,7 +69,6 @@ public class GeneralTests : ViewModelBase
         var interfaces = ClassLoader.GetItemsWithInterface(typeof(ICanCancel));
         Assert.IsTrue(interfaces.Any());
     }
-
 
     [TestMethod]
     public void GeneralCoverageTests()
@@ -92,8 +95,6 @@ public class GeneralTests : ViewModelBase
         Assert.IsNotNull(this.MyValue); // Test Lazy Loader
     }
 
-
-
     [TestMethod]
     public void ProcessUtilityTests()
     {
@@ -102,8 +103,6 @@ public class GeneralTests : ViewModelBase
         ProcessUtility.RunProcessInWindow("cmd", "/c dir", false, ".");
         var _ = ProcessUtility.CreateProcessInWindow("cmd", "/c dir", "."); // Don't start.
     }
-
-
 
     [TestMethod]
     public void FilePathTests()
@@ -231,24 +230,68 @@ public class GeneralTests : ViewModelBase
         Assert.AreEqual("Line1", builder.ToString());
     }
 
+    [TestMethod]
+    public void EncryptionTest() 
+    {
+        string testData = "TestData";
+        string path = Path.GetTempFileName();
+        StringEncryption.CreateSecureFile(path, testData);
+        var result = StringEncryption.ReadSecureFile(path);
+        string readableResult = StringEncryption.ToInsecureString(result);
+        Assert.AreEqual(testData, readableResult);
+    }
+
+    [TestMethod]
+    public void TestUpgradeInfo()
+    {
+        FirmwareUpdateInfo info = JsonUtility.Deserialize<FirmwareUpdateInfo>(Properties.Resources.OpenView_upgradeinfo);
+        Assert.IsNotNull(info);
+        Assert.IsTrue(info.UpgradesTo != null);
+        Assert.IsTrue(info.PlatformFamily == PlatformFamily.OpenViewLinux);
+        Assert.IsTrue(info.UpgradesFrom.Count > 0);
+    }
 
     [TestMethod]
     public void SimpleViewModelTest()
     {
-        TestViewModel model = new(this)
+        TestViewModelParent parent = new();
+
+        TestViewModel model = new(parent)
         {
             ValueObject = this,
             Value = 1234
         };
 
-        Assert.AreEqual(model.ParentViewModel, this);
+        Assert.AreEqual(model.ParentViewModel, parent);
         Assert.AreEqual(model.ValueObject, this);
         Assert.AreEqual(model.Value, 1234);
     }
 
-    public class TestViewModel : ChildViewModelBase<GeneralTests>
+
+    public class TestViewModelParent : ViewModelBase
     {
-        public TestViewModel(GeneralTests tests) :
+        public TestViewModelParent()
+        { }
+
+        private int myValue;
+        private GeneralTests myValueObject;
+
+        public int Value
+        {
+            get { return myValue; }
+            set { OnSetValue(ref myValue, value); }
+        }
+
+        public GeneralTests ValueObject
+        {
+            get { return myValueObject; }
+            set { OnSetObject(ref myValueObject, value); }
+        }
+    }
+
+    public class TestViewModel : ChildViewModelBase<TestViewModelParent>
+    {
+        public TestViewModel(TestViewModelParent tests) :
             base(tests)
         { }
 

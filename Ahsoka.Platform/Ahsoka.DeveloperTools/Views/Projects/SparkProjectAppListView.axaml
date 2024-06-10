@@ -1,0 +1,123 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:material="using:Material.Icons.Avalonia"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 mc:Ignorable="d" d:DesignWidth="1050" d:DesignHeight="450" Background="#33555555"
+             x:Class="Ahsoka.DeveloperTools.Views.SparkProjectAppListView" >
+
+	<Border Margin="20" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
+		<Grid Margin="10,10,0,10"  Grid.ColumnDefinitions="*,220" Grid.RowDefinitions="auto,*">
+			<TextBlock FontSize="22" Grid.Row="0"  Text="{Binding ParentViewModel.TeamName, StringFormat='Available Releases for {0}', FallbackValue='Available Applications for None'}" />
+			<StackPanel Margin="10,55,10,10"  Orientation="Horizontal" >
+				<TextBlock Foreground="DarkGray" Text="Search:" VerticalAlignment="Center" Margin="3,3,3,5"/>
+				<TextBox Watermark="Application Name" BorderBrush="DarkGray" Padding="5"  Width="150" MaxHeight="28" Height="28" MinHeight="28" HorizontalAlignment="Left" FontSize="12" 
+						 Text="{Binding ContainerSearchInfo.ContainerNameFilter}"  Margin="5" />
+				<TextBox  BorderBrush="DarkGray" Watermark="Release Version" Padding="5"  Width="150" MaxHeight="28" Height="28" MinHeight="28" HorizontalAlignment="Left" FontSize="12" 
+						  Text="{Binding ContainerSearchInfo.ContainerVersionFilter}"  Margin="5" />
+				<ComboBox  BorderBrush="DarkGray" Padding="6,0,0,0" PlaceholderText="Track" Width="155" MaxHeight="28" MinHeight="28"
+						 SelectedItem="{Binding ContainerSearchInfo.TrackType}" PlaceholderForeground="DimGray" 
+						   ItemsSource="{Binding TrackList}"
+						HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" Margin="5"/>
+				<Button  DockPanel.Dock="Top"
+					HorizontalAlignment="Stretch"
+					Height="28" Width="32"
+					VerticalContentAlignment="Center"
+					Command="{Binding SearchContainers}" >
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Search"></material:MaterialIcon>
+				</Button>
+			</StackPanel>
+			<DataGrid  Margin="0,0,10,0"  Grid.Row="1"
+					   HorizontalAlignment="Stretch"
+					   VerticalAlignment="Stretch"
+						ItemsSource="{Binding Applications}"
+						SelectedItem="{Binding SelectedApplication}"
+						AutoGenerateColumns="False">
+				<DataGrid.Styles>
+					<Style Selector="DataGridCell.DateValue">
+						<Setter Property="HorizontalContentAlignment" Value="Center" />
+					</Style>
+				</DataGrid.Styles>
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Application Name" Width="200" Binding="{Binding DTO.ContainerName}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Current Track" Binding="{Binding DTO.TrackType}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Release Version" Binding="{Binding DTO.ContainerVersion}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Created On" CellStyleClasses="DateValue" Binding="{Binding DTO.CreationDate, StringFormat={}{0:M/d/yyyy}}" IsReadOnly="True"/>
+				</DataGrid.Columns>
+			</DataGrid>
+
+			<DockPanel Margin="0,13,0,0" Grid.RowSpan="2" Grid.Column="2" VerticalAlignment="Top"
+					   HorizontalAlignment="Center">
+				<Button Margin="3,3,5,3" DockPanel.Dock="Top" IsDefault="True"
+										HorizontalAlignment="Stretch"
+										Height="38" Width="165"
+										VerticalContentAlignment="Center"
+										Command="{Binding Back}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Backspace"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text=" Return"/>
+					</StackPanel>
+				</Button>
+
+				<Grid Margin="3,8,5,3" Background="Gainsboro" Width="165" DockPanel.Dock="Top"
+					Height="1"/>
+
+				<StackPanel IsEnabled="{Binding IsAdmin}">
+					<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+						IsEnabled="{Binding !ParentViewModel.IsViewer}"
+						HorizontalAlignment="Stretch"
+					Height="38" Width="165"
+					VerticalContentAlignment="Center"
+					Command="{Binding PromoteApplication}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="ArrowUp"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Promote Release"/>
+						</StackPanel>
+					</Button>
+					<Button Margin="3,3,5,3" DockPanel.Dock="Top"
+							IsEnabled="{Binding !ParentViewModel.IsViewer}"
+						HorizontalAlignment="Stretch"
+						Height="38" Width="165"
+						VerticalContentAlignment="Center"
+						Command="{Binding DemoteApplication}">
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="ArrowDown"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Demote Release"/>
+						</StackPanel>
+					</Button>
+
+					<Button Margin="3,8,5,3" DockPanel.Dock="Top"
+							IsEnabled="{Binding !ParentViewModel.IsViewer}"
+						HorizontalAlignment="Stretch"
+						Height="38" Width="165"
+						VerticalContentAlignment="Center"
+						Command="{Binding RemoveApplication}" >
+						<StackPanel Orientation="Horizontal">
+							<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Minus"></material:MaterialIcon>
+							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Remove Release"/>
+						</StackPanel>
+					</Button>
+					<Grid DockPanel.Dock="Bottom">
+						<TextBlock IsVisible="{Binding !ParentViewModel.ParentViewModel.IsError}" Margin="5,20" Width="180"
+								   TextWrapping="Wrap" TextAlignment="Center"
+								   HorizontalAlignment="Center" VerticalAlignment="Bottom"
+								   Foreground="Black" FontSize="13"
+								   Text="{Binding ParentViewModel.ParentViewModel.ResultText, FallbackValue='No Error'}"/>
+
+						<TextBlock IsVisible="{Binding ParentViewModel.ParentViewModel.IsError}" Margin="5,20" Width="180" TextWrapping="Wrap"
+								   HorizontalAlignment="Center" TextAlignment="Center"
+								   Foreground="Red" FontSize="13" VerticalAlignment="Bottom"
+								   Text="{Binding ParentViewModel.ParentViewModel.ResultText, FallbackValue='Error Found'}"/>
+					</Grid>
+
+				</StackPanel>
+			</DockPanel>
+			<Grid IsVisible="{Binding !Applications.Count}" Background="White" Grid.Row="1" Grid.RowSpan="3" Grid.ColumnSpan="1">
+				<TextBlock Foreground="DimGray" FontSize="19" VerticalAlignment="Center" HorizontalAlignment="Center">Use Search to Discover Existing Applications</TextBlock>
+			</Grid>
+			<CustomerTools:SparkProjectLoadingView Grid.RowSpan="3" Grid.ColumnSpan="3"/>
+		</Grid>
+	</Border>
+</UserControl>

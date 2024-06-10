@@ -1,5 +1,5 @@
 #!/bin/bash
-APP_NAME="../PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app"
+APP_NAME="../../PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app"
 ENTITLEMENTS="../MyAppEntitlements.entitlements"
 SIGNING_IDENTITY="Developer ID Application: Enovation Controls LLC (C28LL293G6)"
 

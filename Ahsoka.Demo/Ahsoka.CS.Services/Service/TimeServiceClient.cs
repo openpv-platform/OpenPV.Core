@@ -8,7 +8,7 @@ namespace Ahsoka.Services.Demo;
 /// Ahsoka Service that allows Setting and Getting the time.  Here we use a generic template
 /// that provides the socket handling and queuing needed for an Ahsoka Service
 /// </summary>
-public class TimeServiceClient : AhsokaTCPClientBase<TimeServiceMessageTypes.Ids>
+public class TimeServiceClient : AhsokaClientBase<TimeServiceMessageTypes.Ids>
 {
     /// <summary>
     /// Constructor for use with Custom Service Configurations

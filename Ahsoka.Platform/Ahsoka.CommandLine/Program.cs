@@ -1,4 +1,4 @@
-﻿using Ahsoka.Services.Bluetooth.LE;
+﻿using Ahsoka.ServiceFramework;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
@@ -9,12 +9,9 @@ class Program
 {
     public static void Main(string[] args)
     {
-        Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff"));
+        //Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff"));
         using var stopwatch = new AhsokaStopwatch("Ahsoka.Commandline.Main()");
-
-        // Force BLE Lib to Load 
-        // TODO: Need a better solution long term.
-        new BLEServiceProperties() { };
+        //AhsokaLogging.LoggingVerbosity = AhsokaVerbosity.Low;
 
         List<string> mutableArgs = new(args);
 

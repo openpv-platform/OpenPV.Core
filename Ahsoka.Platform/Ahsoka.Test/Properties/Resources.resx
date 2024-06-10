@@ -121,6 +121,9 @@
   <data name="EventFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\ahsoka\resources\events\custom.evt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="OpenView_upgradeinfo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\Ahsoka.DownloadBSP\OpenView.upgradeinfo.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
   <data name="TestFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\canservicetests\resources\testfile.dbc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>

@@ -23,6 +23,7 @@ extern bool broadcastAvailable[MAX_PORTS];
 
 // list of ints used in configuration decoding
 extern nodeList_t* decodeList;
+extern nodeList_t* portList;
 
 extern nodeList_t* createNodeList(void);
 extern nodeList_t* findNode(uint32_t port, uint32_t id);

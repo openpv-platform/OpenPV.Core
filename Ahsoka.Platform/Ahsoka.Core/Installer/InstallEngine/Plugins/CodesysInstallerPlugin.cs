@@ -16,6 +16,9 @@ internal class CodesysInstallerPlugin : InstallerPlugin
 {
     internal override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
     {
+        if (packageInformation.ApplicationType != ApplicationType.CODESYS)
+            return;
+
         base.CheckPrerequisites(packageInformation, progress, token);
         if (!packageInformation.Licenses.Any(x => x.LicenseName == "CODESYS Runtime") 
             && packageInformation.PlatformFamily.ToString().StartsWith("OpenView"))
@@ -29,6 +32,9 @@ internal class CodesysInstallerPlugin : InstallerPlugin
         PackageInformation info, 
         IProgress<PackageProgressInfo> progress = null)
     {
+        if (info.ApplicationType != ApplicationType.CODESYS)
+            return;
+
         // Create Temp Folder
         string tempFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         Directory.CreateDirectory(tempFolder);
@@ -58,6 +64,9 @@ internal class CodesysInstallerPlugin : InstallerPlugin
         PackageInformation info, 
         IProgress<PackageProgressInfo> progress)
     {
+        if (info.ApplicationType != ApplicationType.CODESYS)
+            return;
+
         // Write Pre-Helper.
         string uihelperPath = $"{ApplicationOutputComponent.ComponentTypeGuid}.start_ui_helper.sh";
         additionalFiles[uihelperPath] = UTF8Encoding.UTF8.GetBytes(Properties.Resources.CODESYS_PreStart);
@@ -70,6 +79,9 @@ internal class CodesysInstallerPlugin : InstallerPlugin
    
     internal override void CleanupApplication(string buildLocation, PackageInformation info, IProgress<PackageProgressInfo> progress)
     {
+        if (info.ApplicationType != ApplicationType.CODESYS)
+            return;
+
         base.CleanupApplication(buildLocation, info, progress);
 
         if (Directory.Exists(buildLocation))

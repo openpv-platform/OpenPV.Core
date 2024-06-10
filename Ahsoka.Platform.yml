@@ -43,12 +43,18 @@ stages:
     - task: UseDotNet@2
       displayName: Load DotNet 7
       inputs:
+        packageType: 'runtime'
         version: '7.x'
         
+    - task: UseDotNet@2
+      displayName: Load DotNet 8
+      inputs:
+        version: '8.x'
+
     - task: gitversion/setup@0
       displayName: Install GitVersion
       inputs:
-        versionSpec: '5.8.1'
+        versionSpec: '5.x'
         preferLatestVersion: true
 
     - task: gitversion/execute@0
@@ -64,7 +70,7 @@ stages:
         projects: |
           **/Ahsoka.PublishOutputs.Mac.csproj
           **/Ahsoka.Installer.UI.csproj
-          **/Ahsoka.CustomerTools.csproj
+          **/Ahsoka.DeveloperTools.csproj
         feedsToUse: 'select'
 
     - task: InstallAppleCertificate@2
@@ -85,28 +91,28 @@ stages:
       displayName: Build Mac TargetSupport Packages
       inputs:
         command: 'build'
-        arguments: 'Ahsoka.Platform/Ahsoka.PublishOutputs.Mac/Ahsoka.PublishOutputs.Mac.csproj --configuration $(buildConfiguration)'
+        arguments: 'Ahsoka.Platform/Ahsoka.PublishMac/Ahsoka.PublishMac.csproj --configuration $(buildConfiguration)'
 
     - task: CmdLine@2
       displayName: 'Notorize OpenPV Application'
       inputs:
         script: |
-            echo $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/
-            xcrun notarytool submit  $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/MacOS.DeveloperToolkit.zip   --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
-            xcrun stapler staple $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app
-            ditto -c -k --sequesterRsrc --keepParent $(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app $(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/MacOS.DeveloperToolkit.zip
+            echo $(Build.SourcesDirectory)/PlatformSupport/Ahsoka.Tools/MacOS/
+            xcrun notarytool submit  $(Build.SourcesDirectory)/PlatformSupport/Ahsoka.Tools/MacOS/MacOS.DeveloperToolkit.zip   --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
+            xcrun stapler staple $(Build.SourcesDirectory)/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app
+            ditto -c -k --sequesterRsrc --keepParent $(Build.SourcesDirectory)/PlatformSupport/Ahsoka.Tools/MacOS/OpenPV.DeveloperToolkit.app $(Build.SourcesDirectory)/SparkUpload/MacOS.DeveloperToolkit.zip
 
     - task: CmdLine@2
       displayName: 'Notorize Command Line Items'
       inputs:
         script: |
-            echo $(Build.SourcesDirectory)$(Build.SourcesDirectory)/PlatformSupport/MacOSARM64_TargetSupport/
-            xcrun notarytool submit  $(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/MacOSARM64_TargetSupport.zip  --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
+            echo $(Build.SourcesDirectory)/PlatformSupport/MacOSARM64_TargetSupport/
+            xcrun notarytool submit  $(Build.SourcesDirectory)/SparkUpload/MacOSARM64_TargetSupport.zip  --wait --apple-id jake.pratt@enovationcontrols.com  --team-id C28LL293G6 --password 'ttme-abew-ddrf-pckx'
 
     - task: CopyFiles@2
       displayName: 'Moving Files to Upload Area'
       inputs:
-        Contents: '$(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/**'
+        Contents: '$(Build.SourcesDirectory)/SparkUpload/**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/SparkUpload'
         CleanTargetFolder: true
         OverWrite: true
@@ -143,9 +149,9 @@ stages:
         configFilePath: 'GitVersion.yml'
 
     - task: UseDotNet@2
-      displayName: Load DotNet 7
+      displayName: Load DotNet 8
       inputs:
-        version: '7.x'
+        version: '8.x'
 
     - task: NuGetAuthenticate@0
       displayName: 'NuGet Authenticate'
@@ -197,16 +203,26 @@ stages:
         vsVersion: '17.0'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
+        maximumCpuCount: true
         msbuildArchitecture: 'x64'
-
+    
     - task: VSBuild@1
-      displayName: 'Build Ahsoka.Platform On PC'
+      displayName: 'Build PublishOutputs'
       inputs:
-        solution: '$(solution)'
+        solution: 'Ahsoka.Platform/Ahsoka.PublishOutputs/Ahsoka.PublishOutputs.csproj'
         vsVersion: '17.0'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
+        maximumCpuCount: true
         msbuildArchitecture: 'x64'
+
+    - task: VSBuild@1
+      displayName: 'Build Windows Installer'
+      inputs:
+        solution: 'Ahsoka.Platform/Ahsoka.DeveloperTools.Installer/Ahsoka.DeveloperTools.Installer.wixproj'
+        vsVersion: '17.0'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
     - task: DotNetCoreCLI@2
       displayName: Run Ahsoka Tests
@@ -214,7 +230,7 @@ stages:
       inputs:
         command: test
         projects: '**/*Ahsoka.Test/*.csproj'
-        arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --blame-hang --blame-hang-timeout 120s --logger:"console;verbosity=detailed" --settings: Ahsoka.Platform/codecoverage.runsettings'
+        arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --blame-hang --blame-hang-timeout 120s -m:1 --logger:"console;verbosity=detailed" --settings: Ahsoka.Platform/codecoverage.runsettings'
 
     - task: CmdLine@2
       displayName: 'Remove User Secrets'
@@ -227,7 +243,7 @@ stages:
     - task: CopyFiles@2
       displayName: 'Moving Spark Artifacts to Upload Area'
       inputs:
-        Contents: '$(Build.SourcesDirectory)/Ahsoka.Platform/SparkUpload/**'
+        Contents: '$(Build.SourcesDirectory)/SparkUpload/**'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/SparkUpload'
         OverWrite: true
         flattenFolders: true
@@ -243,7 +259,7 @@ stages:
     - task: CopyFiles@2
       displayName: 'Moving CLI to Upload Area'
       inputs:
-        Contents: '$(Build.SourcesDirectory)/Ahsoka.Platform/PlatformSupport/Windows64_TargetSupport/CommandLine/**/*'
+        Contents: '$(Build.SourcesDirectory)/PlatformSupport/Windows64_TargetSupport/CommandLine/**/*'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/cli'
         OverWrite: true
         flattenFolders: true
@@ -301,7 +317,7 @@ stages:
       inputs:
         command: 'custom'
         custom: 'tool'
-        arguments: 'update --global  EnovationCloud.CommandLine --version 4.1.0'
+        arguments: 'update --global  EnovationCloud.CommandLine'
 
     - task: CmdLine@2
       displayName: 'Push Packages to Spark'

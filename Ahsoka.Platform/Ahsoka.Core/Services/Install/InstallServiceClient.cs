@@ -16,7 +16,7 @@ namespace Ahsoka.Services.Install;
 /// <summary>
 /// Client used to communicate with a running install process.
 /// </summary>
-public class InstallServiceClient : AhsokaTCPClientBase<InstallMessageTypes.Ids>
+public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 {
     #region Fields
     IInstallerUI installerUI;
@@ -58,38 +58,65 @@ public class InstallServiceClient : AhsokaTCPClientBase<InstallMessageTypes.Ids>
     /// <returns></returns>
     public InstallResult StartServiceAndInstall(string installFile, string passCode, bool useLocalInstaller)
     {
+        AutoResetEvent unpackReady = new(false);
+        bool unpackSuccessful = false;
+        AhsokaRuntime internalRuntime = null;
         var serviceTask = Task.Run(() =>
         {
             // Launch Installer....we will use this executable to run the installer...only for testing
             if (useLocalInstaller)
             {
-                // Start Async Service
-                AhsokaRuntime.CreateBuilder()
-                            .AddServices(new InstallService())
-                            .StartLocalRuntime()
-                            .WaitForShutdown();
+                unpackSuccessful = true;
 
+                // Start Async Service
+                internalRuntime = AhsokaRuntime.CreateBuilder()
+                            .AddServices(new InstallService())
+                            .StartLocalRuntime();
             }
             else
             {
                 // Unpack Installer so we can execute the Service In a Separate Process
-                UnPackInstaller(installFile, out string installerPath, out string installerArgs);
+                bool result = UnPackInstaller(installFile, out string installerPath, out string installerArgs);
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Installer unpacked with result: {result}");
 
-                // Start the Service
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Path = {installerPath}, Args = {installerArgs}");
-                RunServiceOutOfProcess(installerPath, installerArgs);// Blocks
+                if (result && File.Exists(installerPath))
+                {
+                    unpackSuccessful = true;
+                    unpackReady.Set();
 
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Process Finished.");
+                    // Start the Service
+                    RunServiceOutOfProcess(installerPath, installerArgs); // Blocks until finished
 
-                // Remove Installer Folder
-                Directory.Delete(Path.GetDirectoryName(installerPath), true);
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Process Finished.");
+
+                    // Remove Installer Folder
+                    string path = Path.GetDirectoryName(installerPath);
+                    while (Path.Exists(path))
+                        try { Directory.Delete(path, true); }
+                        catch { Task.Delay(100).Wait(); }
+                }
+                else
+                {
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Error Occurred");
+
+                    // Signal Unpack was successful
+                    unpackReady.Set();
+                }
             }
         });
 
         // Send Install Command to Service to Install
         var clientTask = Task.Run(() =>
         {
+            // Wait for Unpack if running Real Installer.
+            if (!useLocalInstaller)
+                unpackReady.WaitOne();
+
+            if (!unpackSuccessful)
+                return new InstallCompleteInfo() { Message = "Unable to Read Package", Result = InstallResult.InvalidFile };
+
             return ExecuteInstall(installFile, passCode);
+
         });
 
         // Wait for Service Task to Complete
@@ -115,6 +142,12 @@ public class InstallServiceClient : AhsokaTCPClientBase<InstallMessageTypes.Ids>
 
             returnValue = InstallResult.UnknownError;
             installerUI?.InstallComplete(new InstallCompleteInfo() { Result = InstallResult.UnknownError, Message = "The install process did not end successfully" });
+        }
+
+        if (internalRuntime != null)
+        {
+            internalRuntime.RequestShutdown();
+            internalRuntime.WaitForShutdown();
         }
 
         // Remove opv Package
@@ -149,6 +182,8 @@ public class InstallServiceClient : AhsokaTCPClientBase<InstallMessageTypes.Ids>
         if (!OperatingSystem.IsWindows())
             Process.Start("chmod", "+x " + installerPath).WaitForExit();
 
+        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+
         IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
         {
             try
@@ -162,16 +197,13 @@ public class InstallServiceClient : AhsokaTCPClientBase<InstallMessageTypes.Ids>
                 }
             }
             catch (Exception) { }
-
         });
 
-        ProcessUtility.RunProcessAsync(installerPath, installerArgs, null, progressText, CancellationToken.None);
+        ProcessUtility.RunProcessAsync(installerPath, installerArgs, null, progressText, cancellationTokenSource.Token);
     }
 
-    private void UnPackInstaller(string path, out string pathToInstallerFile, out string installerArguements)
+    private bool UnPackInstaller(string path, out string pathToInstallerFile, out string installerArguements)
     {
-        string pathToInstaller = string.Empty;
-
         string temp = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.TempRoot);
         if (!Directory.Exists(temp))
             Directory.CreateDirectory(temp);
@@ -190,44 +222,60 @@ public class InstallServiceClient : AhsokaTCPClientBase<InstallMessageTypes.Ids>
 
         installerUI?.Log(new InstallLogInfo()
         {
-            LogMessage = $"Extracting Installer to {tempInstallerPackageFile}"
+            LogMessage = $"Extracting Installer to {tempInstallerPackageFile}", LogMessageType = LogMessageType.Information
         });
 
-        using (FileStream installer = new(tempInstallerPackageFile, FileMode.Create))
-            installEngine.ExtractPackage(CommandLineComponent.CommandLineComponentType, installer);
-
-
-        // Extract InstallerPackage.zip to temp runtime directory
-        string installerRunPath = SystemInfo.HardwareInfo.TargetPathInfo.GetTempFileName();
-        Directory.CreateDirectory(installerRunPath);
-        if (Directory.Exists(installerRunPath))
-            Directory.Delete(installerRunPath, true);
-
-        installerUI?.InstallProgress(new InstallProgressInfo()
+        try
         {
-            Message = "Inflating Installer..."
-        });
+            using (FileStream installer = new(tempInstallerPackageFile, FileMode.Create))
+                installEngine.ExtractPackage(CommandLineComponent.CommandLineComponentType, installer);
 
-        installerUI?.Log(new InstallLogInfo()
+            // Extract InstallerPackage.zip to temp runtime directory
+            string installerRunPath = SystemInfo.HardwareInfo.TargetPathInfo.GetTempFileName();
+            Directory.CreateDirectory(installerRunPath);
+
+            installerUI?.InstallProgress(new InstallProgressInfo()
+            {
+                Message = "Inflating Installer..."
+            });
+
+            installerUI?.Log(new InstallLogInfo()
+            {
+                LogMessage = $"Inflating Installer to {installerRunPath}",
+                LogMessageType = LogMessageType.Information
+            });
+
+            ZipFile.ExtractToDirectory(tempInstallerPackageFile, installerRunPath);
+
+            // Delete temp file with InstallerPackage.zip
+            File.Delete(tempInstallerPackageFile);
+
+            // Path To Installer
+            var attributes = installEngine.GetComponentAttributes(CommandLineComponent.CommandLineComponentType);
+            pathToInstallerFile = Path.Combine(installerRunPath, attributes[CommandLineComponent.InstallerFileNameAttribute]);
+            installerArguements = attributes[CommandLineComponent.InstallerArgsAttribute];
+
+            installerUI?.Log(new InstallLogInfo()
+            {
+                LogMessage = $"Path: {pathToInstallerFile} Args:{installerArguements}",
+                LogMessageType = LogMessageType.Information
+            });
+
+            return true;
+        }
+        catch 
         {
-            LogMessage = $"Inflating Installer to {installerRunPath}"
-        });
+            installerArguements = pathToInstallerFile = string.Empty;
 
-        ZipFile.ExtractToDirectory(tempInstallerPackageFile, installerRunPath);
+            installerUI?.Log(new InstallLogInfo()
+            {
+                LogMessage = $"Could not unpack the installer. Verify that it was signed with the correct key as well as space is available to unpack.",
+                LogMessageType = LogMessageType.Error
+            });
 
+            return false;
+        }
 
-        // Delete temp file with InstallerPackage.zip
-        File.Delete(tempInstallerPackageFile);
-
-        // Path To Installer
-        var attributes = installEngine.GetComponentAttributes(CommandLineComponent.CommandLineComponentType);
-        pathToInstallerFile = Path.Combine(installerRunPath, attributes[CommandLineComponent.InstallerFileNameAttribute]);
-        installerArguements = attributes[CommandLineComponent.InstallerArgsAttribute];
-
-        installerUI?.Log(new InstallLogInfo()
-        {
-            LogMessage = $"Path: {pathToInstallerFile} Args:{installerArguements}"
-        });
     }
     #endregion
 }

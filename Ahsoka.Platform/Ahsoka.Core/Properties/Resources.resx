@@ -127,9 +127,6 @@
   <data name="Ahsoka.Application.Start" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ahsoka.application.start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="Ahsoka.Can.Start" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\ahsoka.can.start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="Ahsoka.Installer" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ahsoka.installer.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
@@ -148,15 +145,6 @@
   <data name="LinuxAppProfile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\linuxappprofile.sh;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="OpenViewS50HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\openviews50hardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="OpenViewST4HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\openviewst4hardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="OpenViewST4PlusHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\openviewst4plushardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="SSHConfigFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\sshconfigfile;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
@@ -166,29 +154,14 @@
   <data name="OPVServicesConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\OPVServicesConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="UbuntuHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\ubuntuhardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="WindowsHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\windowshardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="MacOSHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\macoshardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="WirelessClientDHCP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\linuxnetworkunits\wirelessclientdhcp.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="WirelessClientStatic" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\linuxnetworkunits\wirelessclientstatic.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="CPPClientCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="CPPClientHeader" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ClientTemplates\CPPClientHeader.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="CPPClientMessages" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ClientTemplates\CPPClientMessages.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="UntrustedPrivateKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\UntrustedPrivateKeyPEM.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -212,22 +185,49 @@
   <data name="WirelessAPNoDHCP" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LinuxNetworkUnits\WirelessAPNoDHCP.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="PowerVisionDisplayHardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\PowerVisionDisplayHardwareConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="SystemServiceClientExtensionsCXX" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SystemServiceClientExtensions.cxx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="CPPMetadataDictionary" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\clienttemplates\cppmetadatadictionary.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="SystemServiceClientExtensionsH" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\SystemServiceClientExtensions.h;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="CPPMetadataDictionaryIMPL" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\clienttemplates\cppmetadatadictionaryimpl.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="CPPClientMessages" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ClientTemplates\CPPClientMessages.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="CSharpMetadataDictionary" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\clienttemplates\csharpmetadatadictionary.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="CPPClientCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="StandardCanDefinitions" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\standardcandefinitions.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="Configuration" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\Configuration.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="OpenViewS70HardwareConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\openviews70hardwareconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  <data name="Functions" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\Ahsoka.Interop\Ahsoka.Proto\Functions.cmake;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="InstallService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\InstallService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="IOService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\IOService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="IotService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\IotService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="NetworkService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\NetworkService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SecurityService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\SecurityService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Services" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\Services.proto;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="SparkService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\SparkService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="SystemService" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\SystemService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="CMakeLists" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\CMakeLists.txt;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

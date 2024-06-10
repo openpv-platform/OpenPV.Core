@@ -1136,5 +1136,9 @@
     }
   ],
   "diagnosticEvents": [],
-  "version": "2.7.1.10014"
+  "generatorEnabled": true,
+  "generatorNamespace": "Ahsoka.CS.CAN",
+  "generatorOutputFile": "Generated\\GeneratedCanObjects.cs",
+  "generatorBaseClass": "CanViewModelBase",
+  "version": "3.0.1.10074"
 }

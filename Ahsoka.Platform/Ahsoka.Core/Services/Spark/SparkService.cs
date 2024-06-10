@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.System;
 using Ahsoka.Spark;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
@@ -17,10 +18,11 @@ using System.Threading;
 namespace Ahsoka.Services.Spark;
 
 [AhsokaService(Name)]
-public class SparkService : AhsokaTCPServiceBase<SparkMessageTypes.Ids>
+public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 {
     #region Fields
     CancellationTokenSource source = new();
+    string autoProvisionAddress = "enovation.powervisionspark.com";
     public const string Name = "SparkService";
     static readonly string deviceSigningKey = SystemInfo.HardwareInfo.GetDeviceSigningKey();
     #endregion
@@ -71,17 +73,7 @@ public class SparkService : AhsokaTCPServiceBase<SparkMessageTypes.Ids>
 
     private void HandleUpdateLicenseFile(AhsokaMessageHeader messageHeader, ModuleLicenseInfo licenseInfo)
     {
-        Console.WriteLine("Decoding License File");
-        using var stream = new MemoryStream();
-        ProtoBuf.Serializer.Serialize(stream, licenseInfo);
-
-        Console.WriteLine("Backing up and Writing new License File");
-
-        string fileName = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(FactoryPaths.ModuleLicenseFile);
-        if (File.Exists(fileName))
-            File.Move(fileName, fileName + ".old." + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
-
-        File.WriteAllBytes(fileName, stream.ToArray());
+        WriteLicenseFile(licenseInfo);
 
         SendMessageInternal(messageHeader);
     }
@@ -167,29 +159,53 @@ public class SparkService : AhsokaTCPServiceBase<SparkMessageTypes.Ids>
         {
             SparkSubscriptionInfo info = GetSparkSubscription();
 
+            // If no Provision INformation
+            if (String.IsNullOrEmpty(info.ChannelName)) 
+            {
+                var subInfo = AutoProvisionDeviceDTO();
+                if (info == null)
+                {
+                    AhsokaLogging.LogMessage( AhsokaVerbosity.High, "Could not retrieve Auto-Provisioning Info.");
+
+                    SendMessageInternal(messageHeader, new SparkReleaseInfo()
+                    {
+                        ResultText = "Could not Auto Provision Display",
+                        Result = MessageReplyStatus.Error
+                    });
+
+                    return;
+                }
+                else
+                {
+                    // Get Updated Subscription Info
+                    info = GetSparkSubscription();
+                }
+
+            }
+
+
             var privateKey = SystemInfo.HardwareInfo.GetDeviceSigningKey(false);
 
-            Console.WriteLine("Getting Auth Token");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Getting Auth Token");
             var auth = GetDeviceAuthorizationToken(info.SubscriptionUrl, Guid.Parse(info.DeviceId), privateKey);
-            Console.WriteLine("Received Auth -> Getting Containers");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Received Auth -> Getting Containers");
 
             var containers = SparkDisplayClient.SharedSparkClient.GetReleases();
-            Console.WriteLine($"Received {containers.Count} Containers");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Received {containers.Count} Containers");
 
             SparkReleaseInfo results = new();
 
             foreach (var item in containers)
             {
-                if (item.ReleaseName == info.ReleaseName)
-                    results.Releases.Add(new SparkRelease()
-                    {
-                        ReleaseId = item.ReleaseID.ToString(),
-                        ChannelName = item.ChannelName,
-                        ContainerVersion = item.ContainerVersion,
-                        Track = (SparkTrack)item.TrackType,
-                        ReleaseName = item.ReleaseName,
-                        ContainerName = item.ContainerName,
-                    });
+                results.Releases.Add(new SparkRelease()
+                {
+                    ReleaseId = item.ReleaseID.ToString(),
+                    ChannelName = item.ChannelName,
+                    ContainerVersion = item.ContainerVersion,
+                    Track = (SparkTrack)item.TrackType,
+                    ReleaseName = item.ReleaseName,
+                    ContainerName = item.ContainerName,
+                });
             }
 
             results.Result = MessageReplyStatus.Success;
@@ -217,19 +233,78 @@ public class SparkService : AhsokaTCPServiceBase<SparkMessageTypes.Ids>
         SendMessageInternal(messageHeader, subscription);
     }
 
+    private void HandleSetSparkSubscription(AhsokaMessageHeader messageHeader, SparkSubscription sparkSubscription)
+    {
+        WriteSubscriptionInfo(sparkSubscription);
+
+        SendMessageInternal(messageHeader);
+
+    }
+
+    private SparkSubscription AutoProvisionDeviceDTO()
+    {
+        // Verify that the System is "Valid" an not tampered with.
+        var factoryInfo = SystemInfo.HardwareInfo.FactoryInfo;
+        if (!SystemInfo.ValidatePlatform())
+            return null;
+
+        // Fetch Hardware ID
+        var coreInterop = SystemService.GetInterop();
+        var hardwareID = coreInterop.GetHardwareSerialNumber();
+        
+        try
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Attemping to Auto Provision at address {autoProvisionAddress}");
+            var results = SparkDisplayClient.SharedSparkClient.AutoProvisionDevice(autoProvisionAddress, new AutoProvisionDeviceDTO()
+            {
+                DeviceHardwareID = hardwareID,
+                DeviceID = factoryInfo.DeviceId,
+                DevicePublicKey = GetSigningKey(), // This Converts to Spark XML Keys
+                PartNumber = factoryInfo.PartNumber,
+                PlatformFamily = factoryInfo.PlatformFamily.ToString(),
+                SerialNumber = factoryInfo.SerialNumber,
+            });
+
+            if (results != null)
+            {
+                // Create Subscription Info
+                var subInfo = new SparkSubscription()
+                {
+                    ChannelName = SparkCustomerTools.CreateChannelName(results.SubscriptionInfo.ApplicationName, results.SubscriptionInfo.ApplicationId.ToString()),
+                    ReleaseName = results.SubscriptionInfo.ApplicationName,
+                    DeviceId = results.DeviceInfo.DeviceID.ToString(),
+                    SubscriptionUrl = autoProvisionAddress,
+                    IsFactorySubscrption = false,
+                };
+
+                // Write License Info
+                WriteLicenseFile(results.ModuleLicenseInfo);
+
+                // Write Subscription Info
+                WriteSubscriptionInfo(subInfo);
+
+                return subInfo;
+            }
+
+            return null;
+        } 
+        catch (Exception ex)
+        {
+            if (ex.InnerException is SparkException sparkEx)
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, sparkEx.Message);
+            else
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, ex.Message);
+
+            return null; 
+        }
+                    
+    }
+
     private static SparkSubscriptionInfo GetSparkSubscription()
     {
-        string deviceKey = deviceSigningKey;
-
-        //  Since the Display uses PEM Keys, we must convert to XML
-        if (deviceKey.Contains("BEGIN RSA PUBLIC KEY"))
-            deviceKey = RSAEncryption.ConvertPEMToPublicXML(deviceKey);
+        string deviceKey = GetSigningKey();
 
         var sub = SystemInfo.HardwareInfo.TargetPathInfo.GetCloudPath(CloudPaths.SparkSubscriptionFile);
-
-        // Look for a factory Subscription
-        if (!File.Exists(sub))
-            sub = SystemInfo.HardwareInfo.TargetPathInfo.GetCloudPath(CloudPaths.FactorySubscriptionFile);
 
         if (File.Exists(sub))
         {
@@ -259,7 +334,18 @@ public class SparkService : AhsokaTCPServiceBase<SparkMessageTypes.Ids>
         }
     }
 
-    private void HandleSetSparkSubscription(AhsokaMessageHeader messageHeader, SparkSubscription sparkSubscription)
+    private static string GetSigningKey()
+    {
+        string deviceKey = deviceSigningKey;
+
+        //  Since the Display uses PEM Keys, we must convert to XML
+        if (deviceKey != null  && deviceKey.Contains("BEGIN RSA PUBLIC KEY"))
+            deviceKey = RSAEncryption.ConvertPEMToPublicXML(deviceKey);
+       
+        return deviceKey;
+    }
+
+    private static void WriteSubscriptionInfo(SparkSubscription sparkSubscription)
     {
         string path = SystemInfo.HardwareInfo.TargetPathInfo.GetCloudPath(CloudPaths.SparkSubscriptionFile);
 
@@ -271,9 +357,21 @@ public class SparkService : AhsokaTCPServiceBase<SparkMessageTypes.Ids>
             Directory.CreateDirectory(directory);
 
         File.WriteAllText(path, JsonUtility.Serialize(sparkSubscription));
+    }
 
-        SendMessageInternal(messageHeader);
+    private static void WriteLicenseFile(ModuleLicenseInfo licenseInfo)
+    {
+        Console.WriteLine("Decoding License File");
+        using var stream = new MemoryStream();
+        ProtoBuf.Serializer.Serialize(stream, licenseInfo);
 
+        Console.WriteLine("Backing up and Writing new License File");
+
+        string fileName = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(FactoryPaths.ModuleLicenseFile);
+        if (File.Exists(fileName))
+            File.Move(fileName, fileName + ".old." + DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
+
+        File.WriteAllBytes(fileName, stream.ToArray());
     }
 
     private AuthorizationDTO GetDeviceAuthorizationToken(string url, Guid deviceId, string privateKey)

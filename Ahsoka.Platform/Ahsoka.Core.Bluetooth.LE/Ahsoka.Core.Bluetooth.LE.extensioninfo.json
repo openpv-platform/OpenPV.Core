@@ -1,0 +1,17 @@
+﻿{
+  "extensionName": "Bluetooth LE Extension",
+  "packageName": "Ahsoka.Core.Bluetooth.LE",
+  "serviceConfigurations": [
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "BLEService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+      "dataChannel": 5108,
+      "behaviors": "AutoStart"
+    }
+  ],
+  "hasCommands": "true",
+  "hasUx": "false"
+}

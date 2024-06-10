@@ -9,6 +9,7 @@ using Ahsoka.Utility.WiFi;
 using System;
 
 namespace Ahsoka.Demo.Storyboard;
+
 internal class DemoViewModelRoot
 {
     #region Fields
@@ -103,7 +104,7 @@ internal class DemoViewModelRoot
         };
 
         // Creates a Client Object to handle Messages Into and Out of Storyboard
-        DemoViewModelBase.StorybardClient = new(sbConfig);
+        DemoViewModelBase.StorybardClient = new(sbConfig, StoryboardMetadata.EventMetadata);
 
         // Start the UI and Channels
         DemoViewModelBase.StorybardClient.StartStoryboardUI();
@@ -125,7 +126,7 @@ internal class DemoViewModelRoot
     #region Dispatch Event Handlers
     public void HandleInputMessage(object model, StoryboardEventArgs sbArg)
     {
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Receiving message {sbArg.Message.EventAttribute.EventName}");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Receiving message {sbArg.Message.Name}");
 
         // This Call Constructs a Model Object from a Storyboard message in order to 
         // update our model objects.   Typically these are in response to User Inputs such as 
@@ -133,11 +134,11 @@ internal class DemoViewModelRoot
         var viewModel = sbArg.Message.GetObject<DemoViewModelBase>();
         if (viewModel != null)
         {
-            viewModel.UpdateModel(sbArg.Message.Target);
+            viewModel.UpdateModel();
         }
         else
         {
-            throw new ApplicationException($"No object for Event {sbArg.Message.EventAttribute.EventName}");
+            throw new ApplicationException($"No object for Event {sbArg.Message.Name}");
         }
     }
 

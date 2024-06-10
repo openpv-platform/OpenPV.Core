@@ -1,4 +1,6 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
+using System.Collections.Generic;
 
 namespace Ahsoka.Services.Network;
 
@@ -22,6 +24,18 @@ internal class NetworkServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(NetworkMessageTypes.Ids.ConnectionStateNotification, typeof(WirelessConnectionNotification));
         this.RegisterServiceNotification(NetworkMessageTypes.Ids.NetworkAdapterReady, typeof(AdapterInfo));
         this.RegisterServiceNotification(NetworkMessageTypes.Ids.WirelessSignalChanged, typeof(WirelessNetworkInfo));
+    }
+
+    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    {
+        var result = base.GetAdditionalClientResources(type);
+        result.Add("Ahsoka.Proto\\NetworkService.proto", Properties.Resources.NetworkService);
+        return result;
+    }
+
+    public override KnownDataKeys GetKnownValues()
+    {
+        return new NetworkServiceDataKeys();
     }
 }
 

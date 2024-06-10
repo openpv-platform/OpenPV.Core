@@ -5,7 +5,6 @@ namespace Ahsoka.Services.Network;
 /// <summary>
 /// List of Key Values Available in this Service
 /// </summary>
-[AhsokaServiceDataValues(NetworkService.Name)]
 public class NetworkServiceDataKeys : KnownDataKeys
 {
     /// <summary>

@@ -9,7 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace Ahsoka.Services.Network;
 
 [AhsokaService(Name)]
-public class NetworkService : AhsokaTCPServiceBase<NetworkMessageTypes.Ids>
+public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
 {
     #region Fields
     readonly NetworkPlatformImplementationBase networkInterface;
@@ -23,6 +23,7 @@ public class NetworkService : AhsokaTCPServiceBase<NetworkMessageTypes.Ids>
         {
             PlatformFamily.Windows64 => new WindowsNetworkImplementation(),
             PlatformFamily.OpenViewLinux => new STNetworkImplementation(),
+            PlatformFamily.OpenViewLinuxPro => new UbuntuNetworkImplementation(), // Temp
             PlatformFamily.Ubuntu64 => new UbuntuNetworkImplementation(),
             PlatformFamily.MacosArm64 => new MacOSNetworkImplementation(),
             _ => throw new NotImplementedException(),
@@ -46,7 +47,7 @@ public class NetworkService : AhsokaTCPServiceBase<NetworkMessageTypes.Ids>
         networkInterface.Init(this);
         stopwatch.StopTiming("Network Init Completed");
 
-        UpdateDataServiceKey(NetworkServiceDataKeys.Available, true);
+        UpdateCacheValue(NetworkServiceDataKeys.Available, true);
     }
 
     protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
@@ -221,14 +222,14 @@ public class NetworkService : AhsokaTCPServiceBase<NetworkMessageTypes.Ids>
             SendMessageInternal(messageHeader, new WirelessConnectionResponse() { AdapterId = adapterId, Ssid = ssid, State = connectionResult });
 
         //Notify Data Service of State
-        UpdateDataServiceKey(NetworkServiceDataKeys.NetworkState, connectionResult.ToString());
+        UpdateCacheValue(NetworkServiceDataKeys.NetworkState, connectionResult.ToString());
 
         if (connectionResult is WirelessConnectionState.ClientConnected)
-            UpdateDataServiceKey(NetworkServiceDataKeys.ClientNetworkName, ssid);
+            UpdateCacheValue(NetworkServiceDataKeys.ClientNetworkName, ssid);
         else if (connectionResult is WirelessConnectionState.ClientConnectionFailed or WirelessConnectionState.ClientDisconnected)
         {
-            UpdateDataServiceKey(NetworkServiceDataKeys.ClientNetworkName, string.Empty);
-            UpdateDataServiceKey(NetworkServiceDataKeys.IPAddress, string.Empty);
+            UpdateCacheValue(NetworkServiceDataKeys.ClientNetworkName, string.Empty);
+            UpdateCacheValue(NetworkServiceDataKeys.IPAddress, string.Empty);
         }
 
     }

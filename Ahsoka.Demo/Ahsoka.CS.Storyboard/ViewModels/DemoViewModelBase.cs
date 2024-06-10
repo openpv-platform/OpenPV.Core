@@ -1,9 +1,10 @@
 ﻿using Ahsoka.Storyboard;
 using Ahsoka.Utility;
+using System.Collections.Generic;
 
 namespace Ahsoka.Demo.Storyboard;
 
-public class DemoViewModelBase : ViewModelBase
+public abstract class DemoViewModelBase : StoryboardViewModelBase
 {
     #region Fields
     #endregion
@@ -13,10 +14,12 @@ public class DemoViewModelBase : ViewModelBase
     #endregion
 
     #region Methods
-    public DemoViewModelBase()
+    public DemoViewModelBase(string name, string format, StoryboardMessageDirection direction) : base(name, format, direction)
     {
 
     }
+
+    public DemoViewModelBase(StoryboardMessage message) : base(message) { }
     #endregion
 
     #region Storyboard Updates
@@ -28,15 +31,17 @@ public class DemoViewModelBase : ViewModelBase
 
     private void SendToStoryboard()
     {
-        StorybardClient?.SendEvent(this);
+        StorybardClient?.SendEvent(Message);
     }
 
     public virtual void OnUpdateStoryboard() { }
     #endregion
 
     #region Model Updates
-    public void UpdateModel(string target)
+    public void UpdateModel(string target = null)
     {
+        if (target == null) 
+            target = Message.Target;
         OnUpdateModel(target);
     }
 

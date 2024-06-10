@@ -13,7 +13,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class NetworkServiceTest
+public class NetworkServiceTest : LinearTestBase
 {
     static readonly bool testEnabled = false;// Disabled for local builds so it doesn't disable your wifi.
 
@@ -35,7 +35,9 @@ public class NetworkServiceTest
 
         string wifiAdapterId = null;
 
+        Console.WriteLine($"Getting Network Adapters");
         var networkAdapters = client.GetNetworkAdapters();
+        Console.WriteLine($"Adapters: {networkAdapters.Adapters.Count()}");
         foreach (var adapter in networkAdapters.Adapters)
         {
             Console.WriteLine();
@@ -139,10 +141,10 @@ public class NetworkServiceTest
             value = dataClient.GetKeyValues(keys.Keys.First().ToKeyList());
         }
 
-        client.DisableAdapter(new AdapterRequest() { AdapterId = wifiAdapterId });
+        if (wifiAdapterId != null)
+            client.DisableAdapter(new AdapterRequest() { AdapterId = wifiAdapterId });
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
         AhsokaRuntime.ShutdownAll();
     }
 
@@ -154,17 +156,28 @@ public class NetworkServiceTest
 
         // Start client for NetworkService
         var client = new NetworkServiceClient();
-        WiFiNetworkManager manager = new();
-        manager.Init(client);
-        manager.ConnectionStateChanged += (o, a) => { reset.Set(); };
-        manager.SelectedNetworkChanged += (o, e) => { };
-        manager.NetworkListChanged += (o, e) => { };
-        manager.AdapterEnabledChanged += (o, e) => { reset.Set(); };
-
         var networkAdapters = client.GetNetworkAdapters();
+        if (networkAdapters.Adapters.Any(x => x.AdapterType == NetworkAdapterType.WifiClient))
+        {
+            WiFiNetworkManager manager = new();
+            manager.Init(client);
 
-        manager.MoveDown();
-        manager.MoveUp();
+            manager.ConnectionStateChanged += (o, a) =>
+            {
+                // Connection State will trigger 
+                // once the init is completed and the firrst discover happens if needed.
+                reset.Set();
+            };
+            manager.SelectedNetworkChanged += (o, e) => { };
+            manager.NetworkListChanged += (o, e) => { };
+            manager.AdapterEnabledChanged += (o, e) => { };
+
+            // Wait for Init to Complete
+            reset.WaitOne();
+
+            manager.MoveDown();
+            manager.MoveUp();
+        }
 
         // Stop the Runtimes
         AhsokaRuntime.ShutdownAll();

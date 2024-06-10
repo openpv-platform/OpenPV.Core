@@ -1,7 +1,7 @@
 {
-  "version": "1.251.1.10015",
+  "version": "3.0.1.10050",
   "applicationType": "Dotnet",
-  "userInterfaceType": "Storyboard",
+  "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Storyboard.IO",
   "packageName": "Ahsoka.CS.Storyboard.IO",
   "packageDescription": "Ahsoka Storyboard Demo with IO",
@@ -9,18 +9,117 @@
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
   "startupLogoPath": "StoryboardProject/images/LogoSplash.png",
+  "packageSigningCertFile": "",
   "includeInstallerUI": false,
-  "storyboardInfo": {},
+  "licenses": [
+    {
+      "licenseName": "Storyboard Runtime",
+      "licenseId": "2a676c49-e0d2-4578-ae5b-6ce14fc59dc6"
+    }
+  ],
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Storyboard.IO.csproj",
     "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
   },
-  "canCalibrationFiles": {},
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensions": [
+        "Storyboard Extension",
+        "Data Service Extension",
+        "Cygnus Service Extension",
+        "Bluetooth LE Extension"
+      ],
+      "startupDelay": 3,
+      "requireChallenge": "NotRequired",
+      "services": [
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "IOService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5006,
+          "isExtension": false,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "DataService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5009,
+          "isExtension": true,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "CygnusServerInterfaceService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5010,
+          "isExtension": true,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "CygnusServerService",
+          "tcpListenAddress": "localhost",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5011,
+          "isExtension": true,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "CygnusService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5012,
+          "isExtension": true,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "BLEService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5008,
+          "isExtension": true,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        }
+      ]
+    },
+    "environmentValues": []
+  },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinux",
   "platformQualifier": "S70",
   "securityMode": "None",
-  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "applicationId": "6e05ae42-c6be-40df-ae8f-d138273ba3f7",
   "components": []
 }

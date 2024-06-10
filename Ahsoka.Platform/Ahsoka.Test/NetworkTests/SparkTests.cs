@@ -13,7 +13,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class SparkTests
+public class SparkTests : LinearTestBase
 {
     public static string DefaultTestSparkServer = "sparkservicedev.azurewebsites.net";
 
@@ -26,7 +26,7 @@ public class SparkTests
     {
         SparkTestsHelpers.GetSparkLogin(out string identity, out string password, out DefaultTestSparkServer);
 
-        var loginDto = SparkTeamClient.SharedSparkClient.LoginToSpark(DefaultTestSparkServer,
+        var loginDto = SparkAccountClient.SharedSparkClient.LoginToSpark(DefaultTestSparkServer,
                                  SparkEndPointType.Teams,
                                  SecurityGroopType.Account,
                                  identity, SecureLocalStrings.ToSecureString(password),
@@ -34,20 +34,20 @@ public class SparkTests
 
         Assert.IsNotNull(loginDto);
 
-        var subscriptions = SparkTeamClient.SharedSparkClient.GetSubscribedReleases();
+        var subscriptions = SparkAccountClient.SharedSparkClient.GetSubscribedReleases();
         Assert.IsNotNull(subscriptions);
 
-        var account = SparkTeamClient.SharedSparkClient.GetAccount();
+        var account = SparkAccountClient.SharedSparkClient.GetAccount();
         Assert.IsNotNull(account);
 
-        var releases = SparkTeamClient.SharedSparkClient.GetSparkClientReleases();
+        var releases = SparkAccountClient.SharedSparkClient.GetSparkClientReleases();
         Assert.IsNotNull(releases);
 
-        var availableReleases = SparkTeamClient.SharedSparkClient.GetAvailableReleases();
+        var availableReleases = SparkAccountClient.SharedSparkClient.GetAvailableReleases();
         Assert.IsNotNull(availableReleases);
 
         // Login with Refresh token
-        var newToken = SparkTeamClient.SharedSparkClient.LoginWithRefreshToken(DefaultTestSparkServer, loginDto);
+        var newToken = SparkAccountClient.SharedSparkClient.LoginWithRefreshToken(DefaultTestSparkServer, loginDto);
 
         // Test Tokens
         var tokenInfo = new TokenValidationInfo()
@@ -62,10 +62,10 @@ public class SparkTests
             TokenType = TokenType.AccessToken
         };
 
-        SparkTeamClient.SharedSparkClient.IsRefreshTokenStillValid(newToken);
+        SparkAccountClient.SharedSparkClient.IsRefreshTokenStillValid(newToken);
 
         // Logout (Clear Tokens)
-        SparkTeamClient.SharedSparkClient.RequestLogout();
+        SparkAccountClient.SharedSparkClient.RequestLogout();
 
         // Wait For Logout
         loginEvent.WaitOne(TimeSpan.FromSeconds(10));
@@ -161,7 +161,7 @@ public class SparkTests
             Console.WriteLine(e.InnerException);
         }
 
-        var teamDTO = SparkTeamClient.SharedSparkClient.LoginToSpark(
+        var teamDTO = SparkAccountClient.SharedSparkClient.LoginToSpark(
           DefaultTestSparkServer,
           SparkEndPointType.Teams,
           SecurityGroopType.Account,
@@ -171,7 +171,7 @@ public class SparkTests
 
         try
         {
-            var getResult = SparkTeamClient.SharedSparkClient.GetFactoryInfo(deviceDto.PlatformFamily, deviceDto.DeviceHardwareID);
+            var getResult = SparkAccountClient.SharedSparkClient.GetFactoryInfo(deviceDto.PlatformFamily, deviceDto.DeviceHardwareID);
 
             Assert.AreEqual(getResult.PlatformFamily, deviceDto.PlatformFamily);
             Assert.AreEqual(getResult.DeviceHardwareID, deviceDto.DeviceHardwareID);
@@ -191,7 +191,7 @@ public class SparkTests
             SparkProvisioningClient.SharedSparkClient.RemoveFactoryInfo(deviceDto.PlatformFamily, deviceDto.DeviceHardwareID);
 
             // Result should be empty
-            var getResult = SparkTeamClient.SharedSparkClient.GetFactoryInfo(deviceDto.PlatformFamily, deviceDto.DeviceHardwareID);
+            var getResult = SparkAccountClient.SharedSparkClient.GetFactoryInfo(deviceDto.PlatformFamily, deviceDto.DeviceHardwareID);
             Assert.AreEqual(getResult.DeviceID, Guid.Empty);
         }
         catch (Exception e)

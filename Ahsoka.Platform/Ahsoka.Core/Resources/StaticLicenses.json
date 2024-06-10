@@ -22,13 +22,6 @@
     "LicenseType": "MIT"
   },
   {
-    "PackageName": "vcpkg",
-    "PackageVersion": "2022.10.19 Release",
-    "Description": "C/C++ dependency manager from Microsoft For all platforms, buildsystems, and workflows",
-    "LicenseUrl": "https://github.com/microsoft/vcpkg/blob/master/LICENSE.txt",
-    "LicenseType": "MIT"
-  },
-  {
     "PackageName": "OpenViewLinux Source Request",
     "PackageVersion": "1.0",
     "Copyright": "Click Show License to Request",

@@ -1,0 +1,133 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="450"
+         	 xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.UpdatesView" 
+			 Background="White">
+	<Grid ColumnDefinitions="*,190">
+		<Border Width="400" Margin="4,44,0,0" BorderBrush="Gainsboro">
+			<DockPanel Margin="8,0">
+				<StackPanel DockPanel.Dock="Top" VerticalAlignment="Top" Height="45" Orientation="Horizontal" IsVisible="{Binding FiltersVisible, FallbackValue=true}">
+					<TextBlock Text="Filters:" VerticalAlignment="Center" Margin="3,3,3,5"/>
+					<ComboBox Padding="6,0,0,0"  Width="155" Height="28" SelectedItem="{Binding FilterTrack}" ItemsSource="{Binding TrackList}"
+								HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="12" Margin="5"/>
+					<TextBox Padding="5"  Width="150" MaxHeight="28" Height="28" MinHeight="28" HorizontalAlignment="Left" FontSize="12" Text="{Binding FilterText}"  Margin="5" />
+				</StackPanel>
+				<ListBox Margin="0,0,0,8" ItemsSource="{Binding DownloadItems}"
+						  SelectedItem="{Binding SelectedRelease}"  ScrollViewer.VerticalScrollBarVisibility="Auto"
+						  SelectionMode="AlwaysSelected" Background="White">
+					<ListBox.ItemTemplate>
+						<DataTemplate>
+							<Grid Margin="-12,-12, -12 ,-12" Background="{Binding BackColor}"  Height="78"  ClipToBounds="True" >
+								<Grid Margin="0,6,18,12">
+									<Border IsVisible="{Binding IsInstalled}" BorderBrush="WhiteSmoke" BorderThickness="0,0,2,0" Opacity="0.8"
+											HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-6,0,0" Width="9" Height="300" Background="SteelBlue"  />
+									<TextBlock Foreground="{Binding IconColor}" HorizontalAlignment="Left"
+											   VerticalAlignment="Top" Margin="15,5,0,0" FontSize="15" FontWeight="Bold" Text="{Binding ReleaseName, FallbackValue='Release Name'}" Name="AppName"  />
+									<TextBlock Foreground="{Binding IconColor}" HorizontalAlignment="Right"
+											   VerticalAlignment="Top" Margin="0,-12,10,0" FontSize="50" Opacity=".09" FontFamily="Arial Black" FontWeight="UltraBold"
+											   Text="{Binding TrackName, FallbackValue='Track'}" Name="TextTrackWatermark" />
+									<StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="15,23,0,0">
+										<TextBlock Foreground="{Binding IconColor}" HorizontalAlignment="Left" FontSize="12" VerticalAlignment="Top" Text="{Binding ContainerVersion, FallbackValue='1.0.0.0'}" Name="TextVersion" Margin="0,0,5,0"/>
+									</StackPanel>
+									<material:MaterialIcon Kind="Bookmark"
+										 HorizontalAlignment="Right"  VerticalAlignment="Top" Height="25" Width="19" Margin="0,-8,0,0"
+														   Foreground="{Binding IconColor, FallbackValue=White}" IsVisible="{Binding HasReleaseNotes}"/>
+
+									<TextBlock HorizontalAlignment="Left" Foreground="{Binding IconColor}" VerticalAlignment="Top" Margin="15,39,12,0" FontSize="12" Text="{Binding UploadDate, StringFormat={}{0:d}}, FallbackValue='Unknown'}" Name="TextTimestamp"  />
+									<TextBlock HorizontalAlignment="Right" Foreground="{Binding IconColor}" VerticalAlignment="Top" Margin="8,23,10,0" FontSize="12"  Text="{Binding TrackName, StringFormat='\{0\} Track', FallbackValue='Track Track'}" Name="TextTrack"  />
+									<TextBlock HorizontalAlignment="Right" Foreground="{Binding IconColor}" VerticalAlignment="Top" Margin="0,39,10,0" FontSize="12" Text="{Binding AppStatus, FallbackValue='AppStatus'}" Name="AppStatus"  />
+								</Grid>
+								<Border HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,-12,0,0" Height="6" Background="White"/>
+								<Border HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,0" Width="12" Background="White"/>
+
+							</Grid>
+						</DataTemplate>
+					</ListBox.ItemTemplate>
+				</ListBox>
+			</DockPanel>
+		</Border>
+		
+		<Border BorderBrush="Gainsboro"  BorderThickness="1,0,0,0" Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Background="WhiteSmoke" VerticalAlignment="Stretch" Margin="0,0,0,0">
+			<StackPanel Grid.Column="1" HorizontalAlignment="Center" >
+			
+
+				<Button Margin="3,44,5,3"
+						HorizontalAlignment="Stretch"
+						Height="38"
+						VerticalContentAlignment="Center"
+						Command="{Binding Install}" IsEnabled="{Binding SelectedRelease.IsAvailableOnline}">
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Verified"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Install Release..."/>
+					</StackPanel>
+				</Button>
+				<Button Margin="3,3,5,3"
+						HorizontalAlignment="Stretch"
+						Height="38"
+						VerticalContentAlignment="Center"
+						Command="{Binding Download}" IsEnabled="{Binding SelectedRelease.IsAvailableOnline}">
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Downloads"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Download..."/>
+					</StackPanel>
+				</Button>
+				<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					Command="{Binding ShowNotes}" IsEnabled="{Binding SelectedRelease.IsAvailableOnline}">
+					<StackPanel Orientation="Horizontal">
+						
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Notes"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Release Notes.."/>
+					</StackPanel>
+				</Button>
+				<Button Margin="3,13,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					Command="{Binding ToggleFilters}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="FilterSettings"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Toggle Filters"/>
+					</StackPanel>
+				</Button>
+
+				<Button Margin="3,3,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding RefreshList}" >
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Refresh"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Refresh List"/>
+					</StackPanel>
+				</Button>
+
+			</StackPanel>
+		</Border>
+
+		<DockPanel LastChildFill="True"
+			HorizontalAlignment="Stretch"
+			Height="40"
+			VerticalAlignment="Top" Grid.ColumnSpan="2">
+
+			<Button IsVisible="{Binding !ParentViewModel.ProgressVisible}" Margin="4,4" Width="24" Grid.Column="2"  Height="24"
+				DockPanel.Dock="Right"
+				VerticalAlignment="Top"
+				Command="{Binding ClosePopup}"
+				Background="Transparent">
+				<material:MaterialIcon Padding="5"  Background="Transparent"
+									   Foreground="SteelBlue" Kind="Close"/>
+			</Button>
+
+			<TextBlock VerticalAlignment="Center" DockPanel.Dock="Left" FontSize="22" Margin="8" Foreground="SteelBlue" Text="Available Releases"/>
+
+		</DockPanel>
+
+	
+	</Grid>
+</UserControl>

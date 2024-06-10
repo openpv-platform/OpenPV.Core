@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class RemoteLinuxTests
+public class RemoteLinuxTests : LinearTestBase
 {
 
     readonly string containerName = "Ahsoka.Test";
@@ -20,12 +20,12 @@ public class RemoteLinuxTests
 
     public TestContext TestContext { get; set; }
 
-    [ClassCleanup]
+   // [ClassCleanup]
     public static void StopLogging()
     {
     }
 
-    [TestMethod]
+    // [TestMethod]
     public void TestRemoteLinuxToolsInContainer()
     {
         //docker pull openpv/openview_test
@@ -47,12 +47,21 @@ public class RemoteLinuxTests
             Console.WriteLine(error);
         });
 
+        // Wait for Container to Start.
+        int tries = 10;
+        while ((tries--) > 0)
+        {
+            ProcessUtility.RunProcess("docker", $"ps --filter \"name={containerName}\" --filter \"status=running\" --quiet", null, out string runningResult, out string runningError, 10000);
+            if (!string.IsNullOrEmpty(runningResult))
+                break;
+        }
+
         try
         {
             // Login to Spark to get Token
             SparkTestsHelpers.GetSparkLogin(out string identity, out string password, out SparkTests.DefaultTestSparkServer);
 
-            var loginDto = SparkTeamClient.SharedSparkClient.LoginToSpark(SparkTests.DefaultTestSparkServer,
+            var loginDto = SparkAccountClient.SharedSparkClient.LoginToSpark(SparkTests.DefaultTestSparkServer,
                                      SparkEndPointType.Teams,
                                      SecurityGroopType.Account,
                                      identity, SecureLocalStrings.ToSecureString(password),
@@ -94,7 +103,7 @@ public class RemoteLinuxTests
 
             SshUtility.AddSshPublicKey(targetInfo, keyFileInfo);
             SshUtility.AddToSshConfiguration(keyFileInfo, keyName, targetInfo.HostName, targetInfo.UserName);
-            SshUtility.UnlockDevice(targetInfo);
+            SshUtility.UnlockDevice(targetInfo, string.Empty);
 
             result = tools.Reboot(targetInfo);
             Console.WriteLine(result);

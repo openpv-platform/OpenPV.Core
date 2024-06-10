@@ -11,5 +11,6 @@ extern void decodeSendCANMessages(uint8_t* buffer, uint32_t length);
 extern void decodeSendRecurringCANMessage(uint8_t* buffer, uint32_t length);
 extern void decodeAddCANFilter(uint8_t* buffer, uint32_t length);
 extern void decodeNetworkStateChanged(uint8_t* buffer, uint32_t length);
+extern void decodeCoprocessorReady();
 #endif
 

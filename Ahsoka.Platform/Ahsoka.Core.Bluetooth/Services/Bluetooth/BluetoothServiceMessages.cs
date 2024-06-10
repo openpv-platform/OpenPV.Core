@@ -1,4 +1,6 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
+using System.Collections.Generic;
 
 namespace Ahsoka.Services.Bluetooth;
 
@@ -78,5 +80,17 @@ internal class BluetoothServiceMessages : AhsokaMessagesBase
         // SPP
         this.RegisterServiceRequest(BluetoothMessageTypes.Ids.SPPDataRecieved, typeof(SPPData));
         this.RegisterServiceRequest(BluetoothMessageTypes.Ids.SPPSendData, typeof(SPPData));*/
+    }
+
+    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
+    {
+        var result = base.GetAdditionalClientResources(type);
+        result.Add("Ahsoka.Proto\\BluetoothServiceAudio.proto", Properties.BluetoothResources.BluetoothServiceAudio);
+        result.Add("Ahsoka.Proto\\BluetoothServiceData.proto", Properties.BluetoothResources.BluetoothServiceData);
+        result.Add("Ahsoka.Proto\\BluetoothServiceMessageAccess.proto", Properties.BluetoothResources.BluetoothServiceMessageAccess);
+        result.Add("Ahsoka.Proto\\BluetoothServicePhonebook.proto", Properties.BluetoothResources.BluetoothServicePhonebook);
+        result.Add("Ahsoka.Proto\\BluetoothServicePhoneCall.proto", Properties.BluetoothResources.BluetoothServicePhoneCall);
+        result.Add("Ahsoka.Proto\\BluetoothServiceService.proto", Properties.BluetoothResources.BluetoothServiceService);
+        return result;
     }
 }

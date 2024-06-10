@@ -26,14 +26,16 @@ internal static class UpgradeEngine
 
     internal static string ExecuteUpgrade(string fileName, string contents)
     {
+        string fileNameLocal = Path.GetFileName(fileName);
         context = new Dictionary<string, object>();
+        context["FileName"] = fileName;
 
         string returnValue = contents;
 
         List<UpgradeMethod> methods = new();
 
         foreach (var item in upgradeDictionary)
-            if (fileName.ToLowerInvariant().EndsWith(item.Key))
+            if (fileNameLocal.ToLowerInvariant().EndsWith(item.Key))
                 methods = item.Value;
 
         if (methods.Count > 0)
@@ -59,7 +61,7 @@ internal static class UpgradeEngine
     internal static string ExecuteUpgrade(string path)
     {
         string data = File.ReadAllText(path);
-        return ExecuteUpgrade(Path.GetFileName(path), data);
+        return ExecuteUpgrade(path, data);
     }
 }
 

@@ -5,6 +5,9 @@
 		<TrimMode>copyused</TrimMode>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>Ahsoka.CommandLine</ToolCommandName>
 	</PropertyGroup>
 	
 	<PropertyGroup Label="Suppress Errors for GPIO Project">
@@ -12,7 +15,6 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<ProjectReference Include="..\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
 		<ProjectReference Include="..\Ahsoka.Core\Ahsoka.Core.csproj" />
 	</ItemGroup>
 

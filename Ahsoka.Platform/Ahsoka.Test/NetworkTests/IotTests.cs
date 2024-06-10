@@ -1,6 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Iot;
-using Ahsoka.System;
 using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -9,7 +8,7 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class IotTests
+public class IotTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
     ClientMessage topicMessageResult = null;

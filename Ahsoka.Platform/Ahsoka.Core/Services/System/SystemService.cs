@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 namespace Ahsoka.Services.System;
 
 [AhsokaService(Name)]
-public class SystemService : AhsokaTCPServiceBase<SystemMessageTypes.Ids>
+public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 {
     #region Fields
     public const string Name = "SystemService";
@@ -50,6 +50,7 @@ public class SystemService : AhsokaTCPServiceBase<SystemMessageTypes.Ids>
             PlatformFamily.Ubuntu64 => new UbuntuServiceImplementation(),
             PlatformFamily.OpenViewLinux => new STServiceImplementation(),
             PlatformFamily.MacosArm64 => new MacOSServiceImplementation(),
+            PlatformFamily.OpenViewLinuxPro => new TIServiceImplementation(),
             _ => throw new PlatformNotSupportedException(),
         };
     }
@@ -81,11 +82,11 @@ public class SystemService : AhsokaTCPServiceBase<SystemMessageTypes.Ids>
         InitValues();
 
         // If Hardware Enabled Start Ignition Thread
-        if (!String.IsNullOrEmpty(config.NotificationURI) && !HardwareInteractionDisabled)
+        if (!HardwareInteractionDisabled)
         {
             cancelNotifications = new CancellationTokenSource();
 
-            UpdateDataServiceKey(SystemServiceDataKeys.CurrentIgnitionState, IgnitionStates.Unknown.EnumToInt());
+            UpdateCacheValue(SystemServiceDataKeys.CurrentIgnitionState, IgnitionStates.Unknown.EnumToInt());
 
             Task.Factory.StartNew(() =>
             {
@@ -112,7 +113,7 @@ public class SystemService : AhsokaTCPServiceBase<SystemMessageTypes.Ids>
                             };
 
                             // Update Ignition in Data Service
-                            UpdateDataServiceKey(SystemServiceDataKeys.CurrentIgnitionState, ignitionState.EnumToInt());
+                            UpdateCacheValue(SystemServiceDataKeys.CurrentIgnitionState, ignitionState.EnumToInt());
 
                             SendMessageInternal(header, new EmptyNotification(), true);
                         }
@@ -147,8 +148,8 @@ public class SystemService : AhsokaTCPServiceBase<SystemMessageTypes.Ids>
             }
         }
 
-        UpdateDataServiceKey(SystemServiceDataKeys.Available, true);
-        UpdateDataServiceKey(SystemServiceDataKeys.CurrentApplicationName, applicationName);
+        UpdateCacheValue(SystemServiceDataKeys.Available, true);
+        UpdateCacheValue(SystemServiceDataKeys.CurrentApplicationName, applicationName);
     }
 
     internal static string GetSystemInfo(out string applicationName, out string applicationDescription, out string applicationVersion, out string sdkVersion )
@@ -204,7 +205,7 @@ public class SystemService : AhsokaTCPServiceBase<SystemMessageTypes.Ids>
 
         // Add Keys to Data Service
         foreach(var item in platformVersions)
-            UpdateDataServiceKey(item.Key, item.Value);
+            UpdateCacheValue(item.Key, item.Value);
     }
 
     ~SystemService()

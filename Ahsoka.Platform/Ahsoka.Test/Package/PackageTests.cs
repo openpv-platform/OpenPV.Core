@@ -17,13 +17,13 @@ using System.Threading;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class PackagingTests
+public class PackagingTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
     static readonly Dictionary<string, PackageInformation> packageInfo = new();
 
     [AssemblyCleanup]
-    public static void Cleanup()
+    public static void TestCleanup()
     {
         string appOutputs = Path.Combine(Path.GetTempPath(), "AhsokaTestFolder");
 
@@ -115,9 +115,17 @@ public class PackagingTests
         string newTempFile = Path.GetTempFileName();
         File.Copy(tempFilePath, newTempFile, true);
 
-        client.StartServiceAndInstall(newTempFile, "PassCode", runInProc);
+        try
+        {
+            var result = client.StartServiceAndInstall(newTempFile, "PassCode", runInProc);
+        }
+        finally
+        {
+            File.Delete(newTempFile);
 
-        File.Delete(newTempFile);
+            client.CurrentRuntime.RequestShutdown();
+            AhsokaRuntime.ShutdownAll();
+        }
     }
 
 

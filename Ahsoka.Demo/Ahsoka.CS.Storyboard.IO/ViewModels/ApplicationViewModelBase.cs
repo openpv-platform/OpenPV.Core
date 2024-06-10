@@ -1,8 +1,9 @@
 ﻿using Ahsoka.Storyboard;
 using Ahsoka.Utility;
+using System.Collections.Generic;
 
 namespace Ahsoka.Application.Storyboard;
-public class ApplicationViewModelBase : ViewModelBase
+public abstract class ApplicationViewModelBase : StoryboardViewModelBase
 {
     #region Fields
     static readonly object syncRoot = new();
@@ -13,33 +14,34 @@ public class ApplicationViewModelBase : ViewModelBase
     #endregion
 
     #region Methods
-    public ApplicationViewModelBase()
+    public ApplicationViewModelBase(string name, string format, StoryboardMessageDirection direction) : base(name, format, direction)
     {
 
     }
+
+    public ApplicationViewModelBase(StoryboardMessage message) : base(message) { }
     #endregion
 
     #region Storyboard Updates
     public void UpdateStoryboard()
     {
-        lock (syncRoot)
-        {
-            OnUpdateStoryboard();
-            SendToStoryboard();
-        }
+        OnUpdateStoryboard();
+        SendToStoryboard();
     }
 
     private void SendToStoryboard()
     {
-        StorybardClient?.SendEvent(this);
+        StorybardClient?.SendEvent(Message);
     }
 
     public virtual void OnUpdateStoryboard() { }
     #endregion
 
     #region Model Updates
-    public void UpdateModel(string target)
+    public void UpdateModel(string target = null)
     {
+        if (target == null)
+            target = Message.Target;
         OnUpdateModel(target);
     }
 

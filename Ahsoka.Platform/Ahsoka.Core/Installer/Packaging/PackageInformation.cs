@@ -18,7 +18,6 @@ public class PackageInformation : PackageHeader
     // Package Type
     public string Version { get; set; }
     public ApplicationType ApplicationType { get; set; } = ApplicationType.Dotnet;
-    public UserInterfaceType UserInterfaceType { get; set; } = UserInterfaceType.Storyboard;
     public Orientation SystemOrientation { get; set; } = Orientation.DefaultOrientation;
     public string ExecCommand { get; set; }
     public string PackageName { get; set; }
@@ -27,22 +26,18 @@ public class PackageInformation : PackageHeader
     public string PackageApplicationFolder { get; set; }
     public string PackageOutputDirectory { get; set; }
     public string StartupLogoPath { get; set; }
+    public string PackageSigningCertFile { get; set; }
 
     public bool IncludeInstallerUI { get; set; } = false;
+    public bool IncludeFirmwareUpdate { get; set; } = false;
 
     public List<ModuleLicense> Licenses { get; set; } = new();
-
-    public StoryboardInformation StoryboardInfo { get; set; }
-
-    public QtInformation QtInfo { get; set; }
 
     public DotNetInformation DotNetInfo { get; set; }
 
     public CppInformation CppInfo { get; set; }
 
     public ServiceInfo ServiceInfo { get; set; } = new();
-
-    public string CanCalibration { get; set; }
 
     public static PackageInformation LoadPackageInformation(string path)
     {
@@ -109,11 +104,19 @@ public class PackageInformation : PackageHeader
     {
         return originalFilePath;
     }
-}
+    
+    public string GetPackageCertPath()
+    {
+        return GetPackageCertPath(this.PackageSigningCertFile, KeyTypes.PackageSigningKey);
+    }
 
-public class StoryboardInformation
-{
-
+    public static string GetPackageCertPath(string keyName, KeyTypes type)
+    {
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+            "AhsokaData",
+            "AhsokaCerts", 
+            (type == KeyTypes.PackageSigningKey ? keyName + ".appcert" : keyName + ".servicecert"));
+    }
 }
 
 public class DotNetInformation
@@ -125,11 +128,6 @@ public class DotNetInformation
 public class CppInformation
 {
     public string ProjectPath { get; set; }
-}
-
-public class QtInformation
-{
-
 }
 
 public class ServiceInfo
@@ -145,3 +143,16 @@ public class StartupEnvironmentValue
     public string VariableValue { get; set; }
 }
 
+public class DeviceKeyInfo
+{
+    public KeyTypes KeyTypes { get; set; }
+    public string PublicKey { get; set; }
+    public string PrivateKey { get; set; }
+}
+
+public enum KeyTypes
+{
+    DeviceKey,
+    PackageSigningKey,
+    ServiceKey,
+}

@@ -26,28 +26,50 @@ FILE(GLOB Headers *.h)
 FILE(GLOB Sources *.cpp *.hpp)
 FILE(GLOB Forms *.ui)
 FILE(GLOB Resources *.qrc)
+File(GLOB Generated Generated/*.cpp)
+
+
+# Beginning in OpenPV 3.0, Command Line Code Generators have been simplified and now execute as part of the
+# SDK Installation so this the targets (ExportCanClasses) / properties (Can Generator Properties) below are no
+# longer needed. With this change, the Developer Toolkit will generate your CAN Models as part of the SDK Update
+# or after Changes to the CanConfiguration.
+
+# NOTE: For developers that prefer to keep the model generation here as part of their local build system, you can set the
+# condition below to True to continue using the older style code generation method.  You
+# will need to disable the Code Generation in the Associated CAN Extension as well to avoid conflict
+
 
 # This Command runs the Ahsoka CAN Code Generator to Generate CAN Model Objects
 # Note we also copy the Can Calibration File to the Command Line Folder
 # for use in debugging on the Developer Machine (Ubuntu)
-add_custom_command(
-  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/Generated/CANModels.generated.h ${CMAKE_CURRENT_SOURCE_DIR}/Generated/CANModels.generated.cpp
-  COMMAND ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/Ubuntu64/CommandLine/Ahsoka.CommandLine --GenerateCANClasses ${CMAKE_SOURCE_DIR}/OpenLinuxST.QT.PackageInfo.json ${CMAKE_SOURCE_DIR}/Generated/CANModels.generated.h "DEMO_CAN" "CanViewModelBase" "Cpp"
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/STDemoPackage.1.cancalibration.json ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/CommandLine/
-  DEPENDS ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/Ubuntu64/CommandLine/Ahsoka.CommandLine main.cpp
-  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-)
+if(false)
+	add_custom_command(
+	  OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/Generated/CANModels.generated.h ${CMAKE_CURRENT_SOURCE_DIR}/Generated/CANModels.generated.cpp
+	  COMMAND ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/Ubuntu64/CommandLine/Ahsoka.CommandLine --GenerateCANClasses ${CMAKE_SOURCE_DIR}/OpenLinuxST.QT.PackageInfo.json ${CMAKE_SOURCE_DIR}/Generated/CANModels.generated.h "DEMO_CAN" "CanViewModelBase" "Cpp"
+	  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/STDemoPackage.1.cancalibration.json ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/CommandLine/
+	  DEPENDS ${SOURCE_FILES} ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/Ubuntu64/CommandLine/Ahsoka.CommandLine main.cpp
+	  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+	)
+endif()
+
+#Add Ahsoka Library Subdirectory
+add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
 
 # CREATE Executable called Ahsoka.QT.CAN
 add_executable(Ahsoka.QT.CAN
     ${Sources}
     ${Forms}
     ${Resources}
-    ${CMAKE_CURRENT_SOURCE_DIR}/Generated/CANModels.generated.cpp
+    ${AhsokaSources}
+    ${Generated}
 )
 
-#Add Ahsoka Library Subdirectory
-add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
+File(GLOB Calibration *.cancalibration.json)
+FILE(COPY ${Calibration} DESTINATION ${CMAKE_SOURCE_DIR}/Outputs/)
+
+target_include_directories(Ahsoka.QT.CAN PRIVATE ${AhsokaHeaders})
+target_link_libraries(Ahsoka.QT.CAN PRIVATE Qt5::Widgets ${AhsokaLibs})
+
 add_ahsoka(Ahsoka.QT.CAN)
 
 # Required to Deploy to the Target

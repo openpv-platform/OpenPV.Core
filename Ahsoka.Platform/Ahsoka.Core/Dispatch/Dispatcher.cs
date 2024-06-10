@@ -48,6 +48,7 @@ public class Dispatcher
     CancellationTokenSource tokenSource;
     readonly Dictionary<double, TimerTracker> timers = new();
     readonly List<ICanAutoStart> startupObjects = new();
+    readonly List<IAhsokaClientEndPoint> endpoints = new();
 
     // Foreground Worker and Alternative Invoker if needed
     Action<EventHandler> alternativeInvoker;
@@ -88,21 +89,20 @@ public class Dispatcher
         bool autoStartDispatcherSources = true,
         bool autoStopDispatcherSources = true)
     {
-
         isStarted = true;
         tokenSource = new CancellationTokenSource();
-
-        // start any items that are 
-        if (backgroundQueue.Count > 0)
-            StartBackgroundIfNotRunning();
 
         // Start AutoStart Objects
         if (autoStartDispatcherSources)
             AutoStartSources();
 
+        // start any items that are 
+        if (backgroundQueue.Count > 0)
+            StartBackgroundIfNotRunning();
+
         // Call Ahsoka Release Startup 
         AhsokaRuntime.ReleaseStartup();
-
+        
         if (alternativeInvoker == null)
             RunInvokerCore(autoStopDispatcherSources);
         else
@@ -149,8 +149,7 @@ public class Dispatcher
     /// <param name="source"></param>
     public void RegisterTimerCallback<T>(Action<object, T> timeElapsedCallback, TimeSpan interval, object source = null) where T : class
     {
-        if (source is ICanAutoStart autoSource)
-            AddAutoStartInternal(autoSource);
+         AddAutoStartInternal(source as IDispatchSource);
 
         // If Timer Exists, Add Dispatcher, otherwise create a new timer / tracker
         if (this.timers.TryGetValue(interval.TotalMilliseconds, out TimerTracker tracker))
@@ -206,8 +205,7 @@ public class Dispatcher
     /// <param name="dispatchSource"></param>
     public void RegisterCallback<T>(Action<object, T> callback, IDispatchSource dispatchSource) where T : class
     {
-        if (dispatchSource is ICanAutoStart autoSource)
-            AddAutoStartInternal(autoSource);
+        AddAutoStartInternal(dispatchSource);
 
         dispatchSource.HandleDispatchMessage += (o, e) =>
         {
@@ -313,23 +311,35 @@ public class Dispatcher
     #endregion
 
     #region  Internal Methods
-
     private void AutoStartSources()
     {
         // Pull Clients that Need a Runtime
-        var ahsokaClients = from x in startupObjects
-                            where x is IAhsokaClientEndpoint endPoint && endPoint.CurrentRuntime == null
-                            select x as IAhsokaClientEndpoint;
+        var autoStartList = endpoints.Where(x => x.ServiceConfig.Behaviors.HasFlag(System.EndPointBehaviors.AutoStart)); // Get Auto Start Services
+        var clientStartList = endpoints.Where(x => !x.ServiceConfig.Behaviors.HasFlag(System.EndPointBehaviors.AutoStart)); // Get Non Auto Start Services
 
-        AhsokaRuntime.CreateBuilder()
-            .AddClients(ahsokaClients.ToArray())
-            .StartWithInternalServices();
+        if (autoStartList.Any())
+        {
+            // Start  Auto Start Runtime(s)
+            var builder = AhsokaRuntime.CreateBuilder()
+                .AddClients(endpoints.ToArray())
+                .StartWithInternalServices();
+        }
 
-        var nonRuntimes = startupObjects.Where(x => x is not IAhsokaClientEndpoint).ToList();
+        if (clientStartList.Any())
+        {
+            // Start Auto Start Runtime for Local CLients (Non AutoStart)
+            var builder = AhsokaRuntime.CreateBuilder()
+                .AddClients(endpoints.ToArray())
+                .StartLocalRuntime();
+        }
+
+
+        var nonRuntimes = startupObjects.Where(x => x is not IAutoStartServiceClient).ToList();
         foreach (var item in nonRuntimes)
             item.AutoStart(this);
 
     }
+    
     private void StartBackgroundIfNotRunning()
     {
         // Wait for Start
@@ -341,11 +351,16 @@ public class Dispatcher
                 // Set Started
                 try
                 {
+                    var originalName = Thread.CurrentThread.Name;
+                    Thread.CurrentThread.Name = $"Dispatcher Background Loop";
+
                     // Run background Work
                     while (backgroundQueue.TryTake(out BackgroundWorkItem workItem, -1, tokenSource.Token))
                     {
                         workItem.Execute(this);
                     }
+
+                    Thread.CurrentThread.Name = originalName;
                 }
                 catch (OperationCanceledException) { }
             });
@@ -357,6 +372,9 @@ public class Dispatcher
         // Set Started
         try
         {
+            var originalName = Thread.CurrentThread.Name;
+            Thread.CurrentThread.Name = $"Dispatcher Invoker Core";
+
             while (eventQueue.TryTake(out EventItem messageData, -1, tokenSource.Token))
             {
                 if (alternativeInvoker != null)
@@ -364,6 +382,8 @@ public class Dispatcher
                 else
                     InvokeEventItem(messageData);
             }
+
+            Thread.CurrentThread.Name = originalName;
         }
         catch (OperationCanceledException) { }
 
@@ -378,10 +398,18 @@ public class Dispatcher
         messageData.Execute(this);
     }
 
-    internal void AddAutoStartInternal(ICanAutoStart autoStartClient)
+    internal void AddAutoStartInternal(IDispatchSource autoStartClient)
     {
-        if (!startupObjects.Contains(autoStartClient))
-            startupObjects.Add(autoStartClient);
+        if (autoStartClient is ICanAutoStart autoSource)
+        {
+            if (!startupObjects.Contains(autoSource))
+                startupObjects.Add(autoSource);
+        }
+        else if (autoStartClient is IAhsokaClientEndPoint client)
+        {
+            if (!endpoints.Contains(autoStartClient))
+                endpoints.Add(client);
+        }
     }
 
     #endregion

@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="450"
+         	 xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.ExtensionContainerView"
+			Background="#33555555">
+	<Grid>
+		<Border Name="Container" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" Margin="40" BorderThickness="1" Background="White">
+
+		</Border>
+		<Button Margin="44,44" Width="24" Grid.Column="2"  Height="24"
+				HorizontalAlignment="Right"
+			DockPanel.Dock="Right"
+			VerticalAlignment="Top"
+			Command="{Binding CloseExtension}"
+			Background="Transparent">
+			<material:MaterialIcon Padding="5"  Background="Transparent"
+								   Foreground="SteelBlue" Kind="Close"/>
+		</Button>
+
+
+	</Grid>
+</UserControl>

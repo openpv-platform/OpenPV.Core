@@ -1,7 +1,6 @@
 {
-  "version": "2.4.1.10025",
+  "version": "2.0.39.20043",
   "applicationType": "Cpp",
-  "userInterfaceType": "Qt",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.QT.Blank",
   "packageName": "Ahsoka.QT.Blank",
@@ -18,27 +17,30 @@
     "runtimeConfiguration": {
       "services": [
         {
+          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "notificationChannel": 6001,
-          "dataKeyValues": []
+          "isExtension": false,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
         }
       ],
-      "customServiceEnabled": "Disabled",
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
-      "startupDelay": 3
+      "extensions": [],
+      "startupDelay": 3,
+      "signingKey": ""
     },
     "environmentValues": []
   },
-  "canCalibrationFiles": {},
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinux",
-  "platformQualifier": "S50",
+  "platformQualifier": "S70",
   "securityMode": "None",
   "applicationId": "3f0b605c-f79e-4242-924e-4319d7ee670c",
   "components": []

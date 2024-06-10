@@ -7,7 +7,7 @@ namespace Ahsoka.Services.Network;
 /// <summary>
 /// Client for managing Network Interfaces and WiFi Connections.
 /// </summary>
-public class NetworkServiceClient : AhsokaTCPClientBase<NetworkMessageTypes.Ids>
+public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
 {
     /// <summary>
     /// Default Constructor which uses the Default Service Configuration

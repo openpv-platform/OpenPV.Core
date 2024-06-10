@@ -4,9 +4,6 @@ using Renci.SshNet;
 using System;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Ahsoka.Core.Bluetooth.LE")]
-[assembly: InternalsVisibleTo("Ahsoka.Core.Bluetooth")]
-
 namespace Ahsoka.Services.Network;
 
 

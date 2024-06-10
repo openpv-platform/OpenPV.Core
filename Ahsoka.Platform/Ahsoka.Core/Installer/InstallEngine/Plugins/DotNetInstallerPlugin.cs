@@ -10,6 +10,9 @@ internal class DotNetInstallerPlugin : InstallerPlugin
 {
     internal override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
     {
+        if (packageInformation.ApplicationType != ApplicationType.Dotnet)
+            return;
+
         if (packageInformation.DotNetInfo == null)
         {
             progress?.Report(new PackageProgressInfo() { Message = $"Invalid Project Information.  DotNet Package Information  cannot be null with a DotNet project type. " });

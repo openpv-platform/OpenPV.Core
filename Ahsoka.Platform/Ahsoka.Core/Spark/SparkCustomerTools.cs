@@ -15,7 +15,7 @@ namespace Ahsoka.Spark;
 
 public static class SparkCustomerTools
 {
-
+   
     public static bool ProvisionDisplayInSpark(ITargetConnectionInfo connectionInfo,
                                                 SparkConnectionInfo sparkInfo,
                                                 IProvisionDisplayRequest provisioningInfo,
@@ -25,7 +25,7 @@ public static class SparkCustomerTools
         sparkInfo.LoginToTeamClient();
 
         // Get the Team that we will be assigning this Display To
-        var teamList = SparkTeamClient.SharedSparkClient.GetTeams();
+        var teamList = SparkAccountClient.SharedSparkClient.GetTeams();
         var teamDto = teamList.FirstOrDefault(x => x.TeamID.ToString().StartsWith(provisioningInfo.ApplicationId.ToString()));
         if (teamDto == null)
         {
@@ -93,7 +93,7 @@ public static class SparkCustomerTools
         // Create License List Request
         var list = new ModuleLicenseList()
         {
-            ApplicationId = provisioningInfo.ApplicationId,
+            TeamId = provisioningInfo.ApplicationId,
             DeviceId = subInfo.DeviceId,
             Licenses = new List<ModuleLicense>(provisioningInfo.Licenses)
         };
@@ -113,7 +113,7 @@ public static class SparkCustomerTools
 
         // Get Module Info and Check if Valid
         progress.Report("Sending License List to Spark for Signing.");
-        ProvisioningResult result = SparkTeamClient.SharedSparkClient.ProvisionDeviceLicenses(teamID.ToString(), subInfo.DeviceId, new ProvisioningInfo() { ModuleLicenseList = list, DeviceInfo = deviceDto});
+        ProvisioningResult result = SparkAccountClient.SharedSparkClient.ProvisionDeviceLicenses(teamID.ToString(), subInfo.DeviceId, new ProvisioningInfo() { ModuleLicenseList = list, DeviceInfo = deviceDto});
 
         if (!RSAEncryption.VerifyDataSignature(result.ModuleLicenseInfo.Signature, result.ModuleLicenseInfo.LicenseData, Properties.Resources.ModuleLicensePublicKeyPEM))
         {
@@ -174,9 +174,108 @@ public static class SparkCustomerTools
         });
 
         // Crate Container and Upload
-        var container = SparkTeamClient.SharedSparkClient.CreateContainerData(uploadArea, new string[] { manifestFileName }, uploadInfo.ContainerVersion);
-        SparkTeamClient.SharedSparkClient.UploadContainer(container, team, progressLocal);
+        var container = SparkAccountClient.SharedSparkClient.CreateContainerData(uploadArea, new string[] { manifestFileName }, uploadInfo.ContainerVersion);
+        SparkAccountClient.SharedSparkClient.UploadContainer(container, team, progressLocal);
 
+        return true;
+    }
+
+    public static bool PreProvisionDevices(string deviceInfoFile,
+                                                SparkConnectionInfo sparkInfo,
+                                                IProvisionDisplayRequest provisioningInfo,
+                                                IProgress<string> progress,
+                                                List<ProvisionItem> deviceList = null)
+    {
+        sparkInfo.LoginToTeamClient();
+
+        var teamList = SparkAccountClient.SharedSparkClient.GetTeams();
+        var teamDto = teamList.FirstOrDefault(x => x.TeamID.ToString().StartsWith(provisioningInfo.ApplicationId.ToString()));
+        if (teamDto == null)
+        {
+            progress.Report($"Unknown Project (ApplicationID): {provisioningInfo.ApplicationId} - Required for Provisioning");
+            return false;
+        }
+
+        if (deviceList == null)
+        {
+            deviceList = new List<ProvisionItem>();
+            if (!DecodeDeviceCSV(deviceList, deviceInfoFile, progress))
+                return false;
+            progress.Report($"Starting Offline Provisioning Using License File: {deviceInfoFile}");
+        }
+        else
+            progress.Report($"Starting Offline Provisioning of Input Device List");
+
+
+        ProvisioningInfo info = new()
+        {
+            ModuleLicenseList = new()
+            {
+                Licenses = provisioningInfo.Licenses,
+                TeamId = teamDto.TeamID
+                // Full Device ID Assigned on Server from Gathered Info.
+            }
+        };
+
+        bool status = true;
+        foreach (var item in deviceList)
+        {
+            bool completed = true;
+            info.DeviceInfo = new DeviceDTO()
+            {
+                Description = $"Device ({item.ProvisionDeviceId})",
+                GroopID = teamDto.ReleaseDeviceGroup,
+                PartNumber = item.ProvisionPartNumber,
+                SerialNumber = item.ProvisionSerialNumber,
+                UseDeviceIDForLookup = true
+            };
+
+            var provisioningResult = SparkAccountClient.SharedSparkClient.PreProvisionDevice(teamDto.TeamID.ToString(), item.ProvisionPlatformFamily.ToString(), item.ProvisionDeviceId, info);
+
+            // Throw an Error if the License List was not accepted....aka returned list does not match
+            var responseList = ProtoBuf.Serializer.Deserialize<ModuleLicenseList>(new MemoryStream(provisioningResult.ModuleLicenseInfo.LicenseData));
+            foreach (var request in info.ModuleLicenseList.Licenses)
+                if (!responseList.Licenses.Any(x => x.LicenseId == request.LicenseId))
+                {
+                    progress.Report($"Provisioning failed to return a license for Module: {request.LicenseName} on DeviceID: {provisioningResult.DeviceInfo.DeviceID}");
+                    status = false;
+                    completed = false;
+                }
+            if (completed)
+                progress.Report($"Provisioning Completed - DeviceID: {provisioningResult.DeviceInfo.DeviceID} Found and Licensed");
+        }
+
+        return status;
+    }
+
+    public static bool DecodeDeviceCSV(List<ProvisionItem> deviceList, string deviceFile, IProgress<string> progress)
+    {
+        int lineNumber = 0;
+        try
+        {
+            progress.Report($"Beginning read of {deviceFile}");
+            if (File.Exists(deviceFile))
+            {
+                foreach (var fileLine in File.ReadAllLines(deviceFile))
+                {
+                    lineNumber++;
+                    var cols = fileLine.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                    if (cols.Length < 4)
+                        progress.Report($"Error Importing Line {lineNumber}");
+
+                    deviceList.Add(new ProvisionItem(Enum.Parse<System.PlatformFamily>(cols[0]), cols[1], cols[2], cols[3]));
+
+                    progress.Report($"Found DeviceID: {cols[3]} to Provision");
+                }
+            }
+            else
+                progress.Report($"{deviceFile} does not exist");
+        }
+        catch
+        {
+            progress.Report($"Error Importing Line {lineNumber}");
+            return false;
+        }
         return true;
     }
 
@@ -200,7 +299,7 @@ public static class SparkCustomerTools
     public static ReleaseDTO UpdateVersion(TeamDTO team, ReleaseDTO uploadInfo)
     {
         // Fetch This Channel
-        var channels = SparkTeamClient.SharedSparkClient.GetTeamContainers(team.TeamID.ToString(), uploadInfo.ChannelName);
+        var channels = SparkAccountClient.SharedSparkClient.GetTeamContainers(team.TeamID.ToString(), uploadInfo.ChannelName);
         if (channels.Count > 0)
         {
             try // Attempt to Sort by Version if we can.

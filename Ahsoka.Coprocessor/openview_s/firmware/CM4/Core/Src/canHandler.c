@@ -78,7 +78,7 @@ void canRxTask(void* argument)
 						// check here to see if data has changed, only send if the data has changed.
 						//add message to the list.
 						canRxMessages[numMessages].port = port;
-						canRxMessages[numMessages].id = id | (isExtended ? 0x80000000 : 0x0);
+						canRxMessages[numMessages].id = id & 0x1FFFFFFF;
 						canRxMessages[numMessages].dlc = RxHeader.DataLength >> 16;
 						canRxMessages[numMessages].msgType = foundMsg->msgType;
 						memcpy(canRxMessages[numMessages].data, RxData, canRxMessages[numMessages].dlc);

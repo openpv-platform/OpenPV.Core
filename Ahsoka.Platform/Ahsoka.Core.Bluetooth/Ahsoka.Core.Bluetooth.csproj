@@ -5,6 +5,8 @@
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -13,8 +15,8 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<AdditionalFiles Include="..\..\Ahsoka.Proto\Bluetooth\*.proto">
-			<Link>ProtoB\Bluetooth\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		<AdditionalFiles Include="Proto\*.proto">
+			<Link>Proto\%(RecursiveDir)%(Filename)%(Extension)</Link>
 		</AdditionalFiles>
 	</ItemGroup>
 
@@ -25,11 +27,11 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Linux.Bluetooth" Version="5.66.0" />
-		<PackageReference Include="Tmds.DBus" Version="0.16.0" />
+		<PackageReference Include="Tmds.DBus" Version="0.17.0" />
 	</ItemGroup>
 
 	<ItemGroup Label="Windows Only Modules - If Only I could Figure Out how to Exclude Them???">
-		<PackageReference Include="InTheHand.Net.Bluetooth" Version="4.1.40" />
+		<PackageReference Include="InTheHand.Net.Bluetooth" Version="4.1.43" />
 	</ItemGroup>
 	
 	<ItemGroup>
@@ -42,5 +44,22 @@
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
+	</ItemGroup>
+
+	
+	<ItemGroup>
+	  <Compile Update="Properties\BluetoothResources.Designer.cs">
+	    <DesignTime>True</DesignTime>
+	    <AutoGen>True</AutoGen>
+	    <DependentUpon>BluetoothResources.resx</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	
+	<ItemGroup>
+	  <EmbeddedResource Update="Properties\BluetoothResources.resx">
+	    <Generator>ResXFileCodeGenerator</Generator>
+	    <LastGenOutput>BluetoothResources.Designer.cs</LastGenOutput>
+	  </EmbeddedResource>
 	</ItemGroup>
 </Project>

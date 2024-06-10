@@ -1,108 +1,67 @@
 {
   "services": [
     {
+      "socketType": "TcpSocket",
       "serviceName": "InstallService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5000,
-      "notificationChannel": 6000
+      "dataChannel": 5000,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "SystemService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5001,
-      "notificationChannel": 6001
+      "dataChannel": 5001,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "SparkService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5002,
-      "notificationChannel": 6002
+      "dataChannel": 5002,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "NetworkService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5003,
-      "notificationChannel": 6003
+      "dataChannel": 5003,
+      "behaviors": "AutoStart"
     },
     {
-      "serviceName": "BluetoothService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5004,
-      "notificationChannel": 6004
-    },
-    {
+      "socketType": "TcpSocket",
       "serviceName": "IotService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5005,
-      "notificationChannel": 6005
+      "dataChannel": 5005,
+      "behaviors": "AutoStart"
     },
     {
+      "socketType": "TcpSocket",
       "serviceName": "IOService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5006,
-      "notificationChannel": 6006
+      "dataChannel": 5006,
+      "behaviors": "AutoStart"
     },
     {
-      "serviceName": "CanService",
+      "socketType": "TcpSocket",
+      "serviceName": "SecurityService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5007,
-      "notificationChannel": 6007
-    },
-    {
-      "serviceName": "BLEService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5008,
-      "notificationChannel": 6008
-    },
-    {
-      "serviceName": "DataService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5009,
-      "notificationChannel": 6009
-    },
-    {
-      "serviceName": "CygnusServerInterfaceService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5010,
-      "notificationChannel": 6010
-    },
-    {
-      "serviceName": "CygnusServerService",
-      "tcpListenAddress": "localhost",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5011,
-      "notificationChannel": 6011
-    },
-    {
-      "serviceName": "CygnusService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel" : 5012,
-      "notificationChannel": 6012
+      "dataChannel": 5007,
+      "behaviors": "AutoStart"
     }
   ]
 }

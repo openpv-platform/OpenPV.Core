@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("Ahsoka.Core.Bluetooth.LE")]
-[assembly: InternalsVisibleTo("Ahsoka.Core.Bluetooth")]
 
 namespace Ahsoka.Installer.Components;
 

@@ -10,7 +10,7 @@ namespace Ahsoka.Services.System;
 /// <summary>
 /// Client for talking to System Service
 /// </summary>
-public class SystemServiceClient : AhsokaTCPClientBase<SystemMessageTypes.Ids>
+public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
 {
 
     FileTransferClientHelper client;

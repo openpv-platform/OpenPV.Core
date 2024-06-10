@@ -10,7 +10,7 @@ namespace AhsokaServiceFramework
     class AhsokaConfiguration
     {
         public:
-
+        
             static void LoadConfiguration(const string& configurationFile);
             static ServiceConfiguration GetServiceConfiguration(const string& serviceName);
 

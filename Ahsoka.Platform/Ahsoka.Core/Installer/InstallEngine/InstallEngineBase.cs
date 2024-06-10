@@ -1,10 +1,10 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.Installer.Components;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
-using ProtoBuf.Meta;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,8 +12,8 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
-using System.Xml.Linq;
 
 namespace Ahsoka.Installer.InstallEngine;
 
@@ -47,6 +47,14 @@ public class InstallEngineBase
 
     public static InstallEngineBase GetInstallEngine(Stream fileStream, string privateKey = null)
     {
+        string appKey = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
+        if (File.Exists(appKey))
+        {
+            DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(File.ReadAllText(appKey));
+            privateKey = info.PrivateKey;
+            Console.WriteLine($"Using Private Device Key ({Path.GetFileName(appKey)}) to Read Package");
+        }
+
         privateKey ??= PrivateSigningkey;
 
         PackageContents packageContents = PackageContents.ReadPackageContents(fileStream, privateKey);
@@ -56,11 +64,11 @@ public class InstallEngineBase
     #endregion
 
     #region Methods
-    public static void PrintPackageManifest(string packageFile, IProgress<string> progress)
+    public static void PrintPackageManifest(string packageFile, string privateKey = null, IProgress<string> progress = null)
     {
         using FileStream stream = new(packageFile, FileMode.Open);
 
-        InstallEngineBase installEngine = InstallEngineBase.GetInstallEngine(stream);
+        InstallEngineBase installEngine = InstallEngineBase.GetInstallEngine(stream, privateKey);
 
         PackageContents contents = installEngine.PackageContents;
 
@@ -105,23 +113,13 @@ public class InstallEngineBase
         LoadComponents(packageInfo, components);
     }
 
-    public string CreateInstallPackage(string xmlPublicKey = null,
+    public string CreateInstallPackage(string pemKey = null,
         IProgress<PackageProgressInfo> progress = null)
     {
-        // Create Installer Items
-        List<InstallerPlugin> installedPlugins = new List<InstallerPlugin>()
-        {
-            InstallerPlugin.GetPlugin(PackageInformation.UserInterfaceType),
-            InstallerPlugin.GetPlugin(PackageInformation.ApplicationType),
-            new StartupInstallerPlugin(), // Generates Start Scripts.
-        };
+        RunGeneratorCommands(progress);
 
-        // Remove Nulls
-        installedPlugins = installedPlugins.Where(x => x != null).ToList();
-    
-        // Run Prerequisite Checks
-        foreach(var item in installedPlugins)
-            item.CheckPrerequisites(PackageInformation, progress, cancelToken.Token);
+        // Create Installer Items
+        List<InstallerPlugin> installedPlugins = RunInstallerPreReqs(progress);
 
         string applicationPath = PackageInformation.GetApplicationFullPath();
         string outputPath = PackageInformation.GetOutputFullPath();
@@ -150,7 +148,7 @@ public class InstallEngineBase
         }
 
         // Select Key
-        xmlPublicKey ??= PublicSigningkey;
+        pemKey ??= PublicSigningkey;
 
         // Create Components to include in the package
         Dictionary<Guid, PackageComponent> data = new();
@@ -171,7 +169,7 @@ public class InstallEngineBase
             // Open the File
             using FileStream fs = new(outputPath, FileMode.Create);
             // Write File
-            WriteOutputPackage(PackageInformation, fs, data.Values.ToList(), xmlPublicKey);
+            WriteOutputPackage(PackageInformation, fs, data.Values.ToList(), pemKey);
         }
         catch { throw; }
         finally
@@ -185,6 +183,71 @@ public class InstallEngineBase
         progress?.Report(new PackageProgressInfo() { Message = $"Finished Package Creation at {outputPathRelative}" });
 
         return outputPath;
+    }
+
+    private void RunGeneratorCommands(IProgress<PackageProgressInfo> progress)
+    {
+        // Execute Commands 
+        progress.Report(new PackageProgressInfo() { Message = "Running Code Generators..." });
+
+        foreach (var extensionName in PackageInformation.ServiceInfo.RuntimeConfiguration.Extensions)
+        {
+            var list = Extensions.GetCommands(PackageInformation, extensionName, CommandTypes.ModelGenerators | CommandTypes.BuildCommands);
+            foreach (var command in list)
+                if (command.Value == GeneratorCommandType.AhsokaCommandLine)
+                {
+                    // Split Arguments
+                    var args = new List<string>();
+                    args.AddRange(Regex.Matches(command.Key, @"[\""].+?[\""]|[^ ]+")
+                                    .Cast<Match>()
+                                    .Select(m => m.Value.Trim('"'))
+                                    .ToList());
+
+                    CommandLine.Execute(args.ToArray());
+                }
+                else
+                {
+                    string pathToCommand = command.Key.Substring(0, command.Key.IndexOf('"', 2) + 1).Trim('"');
+                    string processArgs = command.Key.Substring(command.Key.IndexOf('"', 2) + 2);
+
+                    progress.Report(new PackageProgressInfo() { Message = $"Executing Shell Command from..." });
+                    progress.Report(new PackageProgressInfo() { Message = $"   {pathToCommand}" });
+                    progress.Report(new PackageProgressInfo() { Message = $" " });
+                    progress.Report(new PackageProgressInfo() { Message = $"With Arguments..."});
+                    progress.Report(new PackageProgressInfo() { Message = $"   {processArgs}" });
+                    progress.Report(new PackageProgressInfo() { Message = $" " });
+
+                    IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
+                    {
+                        progress.Report(new PackageProgressInfo() { Message = info.Data});
+                    });
+
+                    if (OperatingSystem.IsLinux())
+                        ProcessUtility.RunProcessAsync("chmod", "+x " + pathToCommand, Environment.CurrentDirectory, progressText, CancellationToken.None);
+
+                    ProcessUtility.RunProcessAsync(pathToCommand, processArgs, Environment.CurrentDirectory, progressText, CancellationToken.None);
+                }
+        }
+    }
+
+    private List<InstallerPlugin> RunInstallerPreReqs(IProgress<PackageProgressInfo> progress)
+    {
+        List<InstallerPlugin> installedPlugins = new List<InstallerPlugin>();
+
+        // Add App Plugins Last
+        installedPlugins.Add(InstallerPlugin.GetApplicationPlugin(PackageInformation.ApplicationType));
+        installedPlugins.Add(new StartupInstallerPlugin()); // Generates Start Scripts.
+
+        foreach (var item in Extensions.GetExtensions<InstallerPlugin>())
+            installedPlugins.Add(item);
+
+        // Remove Nulls
+        installedPlugins = installedPlugins.Where(x => x != null).ToList();
+
+        // Run Prerequisite Checks
+        foreach (var item in installedPlugins)
+            item.CheckPrerequisites(PackageInformation, progress, cancelToken.Token);
+        return installedPlugins;
     }
 
     public InstallResult ValidatePackages(string passKey = null,
@@ -279,11 +342,6 @@ public class InstallEngineBase
         var context = new InstallContext(this, service, passKey);
         context.OpenLog();
 
-        // Cleanup Previous Install Data
-        service.SendLog(new InstallLogInfo() { LogMessage = "Cleaning Previous Install Data", LogMessageType = LogMessageType.Information });
-        CleanupPreviousInstalls(service);
-
-
         try
         {
             // Validate the Package
@@ -331,6 +389,10 @@ public class InstallEngineBase
             // Send Results
             installCompleteInfo = CreateFinalResultMessage(finalResult);
 
+            // Cleanup Previous Install Data
+            service.SendLog(new InstallLogInfo() { LogMessage = "Cleaning Previous Install Data", LogMessageType = LogMessageType.Information });
+            CleanupPreviousInstalls(service);
+
             context.CloseLog();
         }
 
@@ -353,10 +415,18 @@ public class InstallEngineBase
 
         // Optional Components.
         components.Add(new StartLogoComponent());
-        //components.Add(new DependencyComponent());
         components.Add(new InstallerUIComponent());
         components.Add(new NetworkFirmwareComponent());
-        components.Add(new CanInstallerComponent());
+
+        // Add any Extensions
+        var results = System.Extensions.GetExtensions<InstallEngineComponent>();
+        foreach(var item in results)
+        {
+            components.Add(item);
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Loading {item.ComponentName} Installer Extension");
+        }
+
+        components.Add(new FirmwareUpdateComponent());
         components.Add(new EndInstallEngineComponent());
     }
     #endregion
@@ -521,10 +591,10 @@ public class InstallEngineBase
 
     private void CleanupPreviousInstalls(InstallService service)
     {
-
         // Search for Temp Files from Previous Installs
-        string currentDirectory = Path.GetDirectoryName(Environment.ProcessPath);
         string path = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.TempRoot);
+        service.SendLog(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Temp Path {path}" });
+
         if (Directory.Exists(path))
             foreach (var file in Directory.GetFiles(path))
                 if (File.Exists(file))
@@ -538,8 +608,10 @@ public class InstallEngineBase
                 }
 
         if (Directory.Exists(path))
-            foreach (var dir in Directory.GetDirectories(path))
-                if (dir == currentDirectory)
+        {
+            var list = new DirectoryInfo(path).GetDirectories().OrderBy(x=>x.CreationTime);
+            foreach (var dir in list)
+                if (dir == list.Last())
                 {
                     service.SendLog(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Skip Delete for Current Temp Files" });
                 }
@@ -549,10 +621,11 @@ public class InstallEngineBase
 
                     try
                     {
-                        Directory.Delete(dir, true);
+                        Directory.Delete(dir.FullName, true);
                     }
                     catch (Exception) { } // Fail Silently.
                 }
+        }
 
 
         // Clear the Logs Folder of all but last 5 logs.
@@ -568,7 +641,6 @@ public class InstallEngineBase
         }
 
     }
-
 
     #endregion
 }

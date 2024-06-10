@@ -3,6 +3,7 @@ using Ahsoka.ServiceFramework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -91,6 +92,8 @@ public static class JsonUtility
             }
             else if (reader.TokenType == JsonToken.EndObject)
             {
+                currentObject?.ParseComplete();
+
                 depth--;
                 currentObject = stack.Pop();
                 propertyName = propertyStack.Pop();
@@ -124,6 +127,11 @@ public class ICanDeserializeBase
     internal virtual ICanDeserializeBase CreatePropertyObject(string propertyName)
     {
         return null;
+    }
+
+    internal virtual void ParseComplete()
+    {
+
     }
 
     internal virtual void SetProperty(string propertyName, string value)

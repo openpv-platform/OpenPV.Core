@@ -1,7 +1,7 @@
 // C++ level context implementation test
 #include <stdio.h>
 #include <stdlib.h>
-#include "../OpenPVGLESContext.h"
+#include "../OpenPvGLESContext.h"
 #include "../Wayland/xdg-shell-client-protocol.h"
 
 

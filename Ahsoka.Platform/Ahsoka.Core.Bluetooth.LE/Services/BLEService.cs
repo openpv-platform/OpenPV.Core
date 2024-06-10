@@ -6,7 +6,7 @@ using System;
 namespace Ahsoka.Services.Bluetooth.LE;
 
 [AhsokaService(Name)]
-internal class BLEService : AhsokaTCPServiceBase<BLEMessageTypes.Ids>
+internal class BLEService : AhsokaServiceBase<BLEMessageTypes.Ids>
 {
     public const string Name = "BLEService";
     readonly ImplementationBase bluetoothImplementation;

@@ -12,7 +12,7 @@ using ShimSkiaSharp;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class DataServiceTests
+public class DataServiceTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 
@@ -26,6 +26,7 @@ public class DataServiceTests
         // Start IO Service
         // Start client for NetworkService
         var dataClient = new DataServiceClient();
+        dataClient.EnableCache(); // Starts Cache Service
      
         // Create a System Service and Start it.
         // We only start this so we have Service Data in the Global Data Service
@@ -83,7 +84,7 @@ public class DataServiceTests
         Assert.IsTrue(keyValues.Values.First(x => x.KeyInfo.Key == dataKI.Key).DataValue[3] == 4);
 
         // Subscriptions
-        var subscriptionList = new KeySubscriptionRequest();
+        var subscriptionList = new KeySubscriptionRequest() { SubscriberId = ((IAhsokaClientEndPoint)dataClient).GetClientId().ToGuidString() };
         subscriptionList.SubscribeToKeys.AddRange(new KeyInfo[] { floatKI, intKI, stringKI, uintKI, dataKI });
         var subscriberInfo = dataClient.SubscribeToKeys(subscriptionList);
 
@@ -127,7 +128,6 @@ public class DataServiceTests
    // [TestMethod]
     public void TestDataServiceIOValues()
     {
-
         // Start clients
         var dataClient = new DataServiceClient();
         var ioclient = new IOServiceClient();

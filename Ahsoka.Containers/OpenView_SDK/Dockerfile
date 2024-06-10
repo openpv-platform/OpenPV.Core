@@ -72,6 +72,8 @@ COPY --from=build /usr/local/bin/protoc /usr/local/bin/protoc
 COPY --from=build /usr/local/lib/ /usr/local/lib/
 COPY --from=build /usr/local/include/google /usr/local/include/google
 
+ADD UbuntuHardwareConfiguration.json /usr/local/Ahsoka/factory/hardware/HardwareConfiguration.json
+
 RUN \
     apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends \

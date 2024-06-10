@@ -1,9 +1,12 @@
-﻿using Ahsoka.System.Hardware;
+﻿using Ahsoka.Services.System;
+using Ahsoka.Spark;
+using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Renci.SshNet;
 using Renci.SshNet.Common;
 using System;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Ahsoka.System;
@@ -129,11 +132,10 @@ internal class SshUtility
         return $"Device Locked to KeyFile {keyFiles.PrivateKeyPath}";
     }
 
-    public static string UnlockDevice(IConnectionInfo info, IProgress<string> progress = null)
+    public static string UnlockDevice(IConnectionInfo info, string applicationLockFile, IProgress<string> progress = null)
     {
         // Connect to Device
         SshClient sshClient = SshUtility.CreateSshClient(info);
-        //ScpClient scpClient = RemoteToolsFactory.CreateScpClient(info);
 
         progress?.Report("Enable Logins on Device");
 
@@ -145,7 +147,10 @@ internal class SshUtility
         string DropbearArgs = " -B";    // -B Allows Blank Logins
         _ = sshClient.RunCommand($"echo DROPBEAR_EXTRA_ARGS={DropbearArgs} > /etc/default/dropbear");
 
-        _ = SshUtility.CreateSshClient(info, true);
+        // Remove Application Lock File
+        _ = sshClient.RunCommand($"rm {applicationLockFile}");
+
+        _ = SshUtility.CreateSshClient(info, false);
 
         return $"Device UnLocked";
     }
@@ -211,11 +216,35 @@ internal class SshUtility
     {
         string sshKeyFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh\\Ahsoka");
         string sshFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
+
         return new KeyFileInfo()
         {
             PrivateKeyPath = Path.Combine(sshKeyFolder, keyName),
             ConfigPath = Path.Combine(sshFolder, "config"),
             Name = keyName
         };
+    }
+
+    public static string AddApplicationKey(IConnectionInfo info, string keyFile, string targetPath)
+    {
+        // Connect to Device
+        SshClient sshClient = SshUtility.CreateSshClient(info);
+        ScpClient scpClient = SshUtility.CreateScpClient(info);
+
+        string signingFilePath = Path.GetDirectoryName(targetPath);
+
+        var sshResult = sshClient.RunCommand($"mkdir -p {signingFilePath.Replace("\\","/")}");
+        if (sshResult.Error != string.Empty)
+            throw new Exception(sshResult.Result);
+
+        try
+        {
+            using FileStream key = new FileStream(keyFile, FileMode.Open);
+            scpClient.Upload(key, targetPath);
+        }
+        catch (ScpException) { } // File Doesn't Exist.
+
+        return $"Installer Signing Key installed at  {signingFilePath}";
+
     }
 }

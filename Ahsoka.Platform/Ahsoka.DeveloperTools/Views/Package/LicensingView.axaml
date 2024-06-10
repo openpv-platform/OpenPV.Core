@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+             xmlns:material="using:Material.Icons.Avalonia" 
+             x:Class="Ahsoka.DeveloperTools.Views.LicensingView">
+		
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="250"/>
+		</Grid.ColumnDefinitions>
+		<StackPanel Margin="-15" Grid.Column="1"
+					HorizontalAlignment="Center" >
+			
+		
+		</StackPanel>
+		<ScrollViewer>
+			<StackPanel DataContext="{Binding SelectedPackage}" HorizontalAlignment="Stretch" >
+				<StackPanel.Styles>
+					<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+				</StackPanel.Styles>
+
+				<Border IsVisible="{Binding IsOpenView}" Margin="20,20,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,1">
+					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
+						<TextBlock Text="System Orientation:" Grid.Row="0" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+							<ComboBox  SelectedItem="{Binding SystemOrientation}" ItemsSource="{Binding Orientations}" Grid.Row="4" Grid.Column="1" Width="250"  />
+							<TextBlock Text="(Rotates Logo and Installer)" ToolTip.Tip="Orientation is available via the SYSTEM_ORIENTATION environment variable." Grid.Row="1" Grid.Column="0"/>
+						</StackPanel>
+
+						<TextBlock ToolTip.Tip="Path where your development tool outputs your application files."
+								 Text="Startup Logo:" Grid.Row="1" Grid.Column="0"/>
+						<Button  Margin="5,0"  Grid.Row="1" Grid.Column="2" Content="Choose Path..." Command="{Binding SetStartLogo}"/>
+						<TextBox Text="{Binding StartupLogoPath}" Grid.Row="1" Grid.Column="1"  Width="280" TextWrapping="1" IsReadOnly="True"/>
+
+						<Border Margin="2" BorderBrush="Gainsboro" BorderThickness="1" Grid.Column="1"
+								Grid.Row="2"
+								MinWidth="250" MinHeight="100"
+								MaxWidth="250" MaxHeight="100">
+							<Image Source="{Binding StartupLogoImage}" Stretch="Uniform"  ToolTip.Tip="Startup Logo." />
+						</Border>
+					</Grid>
+				</Border>
+
+
+				
+			</StackPanel>
+		</ScrollViewer>
+		<CustomerTools:DependenciesView Grid.Column="0" IsVisible="{Binding True, FallbackValue=False}"
+					Grid.ColumnSpan="3" 
+					DataContext="{Binding SelectedPackage.Deps}"/>
+
+	</Grid>
+</UserControl>
+

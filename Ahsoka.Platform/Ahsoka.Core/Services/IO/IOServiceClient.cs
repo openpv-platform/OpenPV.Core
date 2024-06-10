@@ -6,7 +6,7 @@ namespace Ahsoka.Services.IO;
 /// <summary>
 /// Ahsoka Client for IO Service
 /// </summary>
-public class IOServiceClient : AhsokaTCPClientBase<IOMessageTypes.Ids>
+public class IOServiceClient : AhsokaClientBase<IOMessageTypes.Ids>
 {
     /// <summary>
     /// Default Constructor which uses the Default Service Configuration

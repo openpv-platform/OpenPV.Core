@@ -1,5 +1,6 @@
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
+using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Linq;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class HardwareInfoTests
+public class HardwareInfoTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 
@@ -37,12 +38,15 @@ public class HardwareInfoTests
         runtimeconfig.Services.Add(new ServiceConfiguration()
         {
             DataChannel = 5100,
-            NotificationChannel = 6100,
             TcpListenAddress = "127.0.0.1",
             TcpConnectionAddress = "127.0.0.1",
-            ServiceName = "FakeConfig"
-
+            ServiceName = "FakeConfig",
+            SocketType = TransportSocketTypes.SerialSocket,
+            Behaviors =  EndPointBehaviors.AutoStart
         });
+
+        string result = JsonUtility.Serialize(runtimeconfig);
+        var decoded = JsonUtility.Deserialize<RuntimeConfiguration>(result);
 
         ConfigurationLoader.SetRuntimeConfiguration(runtimeconfig);
 

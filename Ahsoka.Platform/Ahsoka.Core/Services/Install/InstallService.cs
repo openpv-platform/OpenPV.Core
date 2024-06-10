@@ -1,15 +1,18 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.Installer;
 using Ahsoka.Installer.InstallEngine;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
+using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Install;
 
 [AhsokaService(Name)]
-public class InstallService : AhsokaTCPServiceBase<InstallMessageTypes.Ids>
+public class InstallService : AhsokaServiceBase<InstallMessageTypes.Ids>
 {
     public const string Name = "InstallService";
     InstallProgressInfo lastInfo;
@@ -58,7 +61,6 @@ public class InstallService : AhsokaTCPServiceBase<InstallMessageTypes.Ids>
         {
             // Load InstallComponents
             InstallEngineBase createPackageEngine = InstallEngineBase.GetInstallEngine(stream);
-
             // Package the file.
             result = createPackageEngine.RunInstall(this, request.InstallPassKey);
         }

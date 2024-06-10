@@ -1,0 +1,99 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           	 xmlns:sys="clr-namespace:System;assembly=mscorlib"
+		     mc:Ignorable="d" d:DesignWidth="1085" d:DesignHeight="450"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.StartupOptionsView">
+
+	<Grid HorizontalAlignment="Stretch" DataContext="{Binding SelectedPackage.StartupViewModel}" >
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="250"/>
+		</Grid.ColumnDefinitions>
+
+		<Grid.Styles>
+			<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+		</Grid.Styles>
+		
+		<StackPanel  Grid.Column="1" Margin="-15"
+			HorizontalAlignment="Center">
+			<TextBlock FontSize="18" IsVisible="False"
+			   VerticalAlignment="Top"
+			   HorizontalAlignment="Center"
+			   Margin="12"
+			   Foreground="DimGray"
+			   Text=" Startup Actions "/>
+		
+		</StackPanel>
+
+		<Grid Margin="5,20,25,5" ColumnDefinitions="175,auto,*" RowDefinitions="auto,auto,auto,auto,*,20">
+
+			<TextBlock Margin="15,0,0,3" Text="Auto Release System:" Grid.Row="0" Grid.Column="0"/>
+			<StackPanel Grid.ColumnSpan="2" VerticalAlignment="Center" Orientation="Horizontal" Grid.Column="1" Grid.Row="0">
+				<ComboBox ItemsSource="{Binding StartupOptions}" Grid.Column="1" Grid.Row="0"
+							  SelectedItem="{Binding ReleaseOption}" Width="250" />
+				<TextBlock Text="Release System (Network, SSH, etc.) automatically instead of relying on 'ReleaseStartup()'"
+						   TextWrapping="Wrap" MaxWidth="350" Foreground="DimGray" HorizontalAlignment="Left"
+						   Grid.Row="0" Grid.Column="2"/>
+			</StackPanel>
+
+			<TextBlock Margin="15,0,0,3" Text="After Start Delay:" Grid.Row="2" Grid.Column="0"/>
+			<StackPanel Grid.ColumnSpan="2" VerticalAlignment="Center" Orientation="Horizontal" Grid.Column="1" Grid.Row="2">
+				<ComboBox Grid.Column="1" Grid.Row="2"
+						  SelectedItem="{Binding StartDelay}" ItemsSource="{Binding StartupDelays}" Width="250" >
+				</ComboBox>
+				<TextBlock Text="Number of seconds after Application Start to wait for Service Startup or ReleaseStartup()."
+						   TextWrapping="Wrap" MaxWidth="350" Foreground="DimGray" HorizontalAlignment="Left"
+						   Grid.Row="2" Grid.Column="2"/>
+			</StackPanel>
+
+			<TextBlock Margin="15,0,0,3" Text="Auto Start Services:" Grid.Row="1" Grid.Column="0"/>
+			<StackPanel Grid.ColumnSpan="2" VerticalAlignment="Center" Orientation="Horizontal" Grid.Column="1" Grid.Row="1">
+				<ComboBox ItemsSource="{Binding StartupOptions}" Grid.Column="1" Grid.Row="1"
+					  SelectedItem="{Binding StartupOption}" Width="250" />
+				<TextBlock Text="Automatically start configured OpenPV Services in an external application."
+						   TextWrapping="Wrap" MaxWidth="300" Foreground="DimGray" HorizontalAlignment="Left"
+						   Grid.Row="1" Grid.Column="2"/>
+			</StackPanel>
+
+			
+			<Border BoxShadow="2 2 2 1 Gainsboro" BorderBrush="Gainsboro" BorderThickness="1"
+					Margin="20,20,0,0"
+					Grid.ColumnSpan="3" Grid.Row="4"
+					HorizontalAlignment="Stretch">
+
+				<Grid Margin="5,10,0,0" RowDefinitions="24,*" Grid.ColumnSpan="3" >
+					<StackPanel VerticalAlignment="Top" Orientation="Horizontal" Background="White" HorizontalAlignment="Right" >
+						<Button Command="{Binding AddEnvItem}" Margin="3" VerticalAlignment="Top"
+							 Width="26" Height="26" Background="Transparent"  BorderBrush="Transparent">
+							<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Plus"></material:MaterialIcon>
+						</Button>
+						<Button Command="{Binding RemoveEnvItem}" Margin="3,3,12,3" VerticalAlignment="Top"
+							Width="26" Height="26" Background="Transparent"  BorderBrush="Transparent">
+							<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Minus"></material:MaterialIcon>
+						</Button>
+					</StackPanel>
+					
+					<TextBlock FontSize="16" Text="Environment Variables"  Foreground="DimGray" HorizontalAlignment="Left"/>
+
+					<DataGrid Grid.Row="1"  Grid.ColumnSpan="1"
+							 SelectionMode="Single" VerticalAlignment="Stretch"
+							 ItemsSource="{Binding EnvironmentValues}"
+							 SelectedItem="{Binding SelectedVariable}"
+							 Margin="10" AutoGenerateColumns="False" >
+						<DataGrid.Columns>
+							<DataGridTextColumn Header="Variable Name" MinWidth="200"  Width="Auto" Binding="{Binding VariableName}" />
+							<DataGridTextColumn Header="Value" CellStyleClasses="gdp"  Width="Auto" Binding="{Binding VariableValue}" />
+						</DataGrid.Columns>
+					</DataGrid>
+				</Grid>
+				
+			
+			</Border>
+		
+		</Grid>
+	</Grid>
+</UserControl>
+

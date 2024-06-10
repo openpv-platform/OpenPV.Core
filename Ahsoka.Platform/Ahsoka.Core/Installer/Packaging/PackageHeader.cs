@@ -113,15 +113,6 @@ public enum ApplicationType
     PowerVision = 6,
 }
 
-public enum UserInterfaceType
-{
-    None = 0,
-    Storyboard = 1,
-    Qt = 2,
-    CODESYS = 3,
-    PowerVision = 4
-}
-
 public enum SecurityModes
 {
     None = 0,
@@ -155,7 +146,7 @@ public static class PlatformExtensions
         {
             PlatformFamily.Windows64 => "win",
             PlatformFamily.MacosArm64 => "macOS",
-            PlatformFamily.OpenViewLinux or PlatformFamily.RaspberryPiOS32 => "linux",
+            PlatformFamily.OpenViewLinux => "linux",
             _ => "any",
         };
     }

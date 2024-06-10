@@ -3,6 +3,7 @@ using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.IO;
+using System.Threading;
 
 namespace Ahsoka.Commands;
 
@@ -18,15 +19,14 @@ internal static class ServiceCommands
         RuntimeConfiguration configuration;
         if (configurationFile.EndsWith("pbuff"))
         {
-            FileStream stream = new (configurationFile, FileMode.Open);
-            configuration = ProtoBuf.Serializer.Deserialize<RuntimeConfiguration>(stream);
+            using (FileStream stream = new FileStream(configurationFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                configuration = ProtoBuf.Serializer.Deserialize<RuntimeConfiguration>(stream);
         }
         else
         {
             string config = File.ReadAllText(configurationFile);
-            configuration = JsonUtility.Deserialize<RuntimeConfiguration>(config);
-        }
-         
+            configuration = JsonUtility.Deserialize<RuntimeConfiguration>(config);       
+        }   
 
         // Run and Block Executable Until Shutdown
         // Used for Running Ahsoka Services in a Separate Process

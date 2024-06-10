@@ -32,7 +32,19 @@
       "Hash": null
     },
     {
+      "Path": "OpenViewLinuxPro_TargetSupport.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
       "Path": "MacOSARM64_TargetSupport.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "PowerVision_TargetSupport.zip",
       "DownloadToken": null,
       "SizeInBytes": 0,
       "Hash": null

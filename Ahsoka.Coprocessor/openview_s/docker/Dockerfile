@@ -22,6 +22,7 @@ RUN \
     apt-get upgrade -y && \
     apt-get install -y --no-install-recommends \
         git \
+		rsync \
         ./st-stlink-server-*-linux-amd64.deb \
         ./st-stlink-udev-rules-*-linux-all.deb \
         ./st-stm32cubeide-*_amd64.deb && \

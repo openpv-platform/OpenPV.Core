@@ -17,10 +17,11 @@ public sealed class CygnusTCPClientSerialSocket : CygnusSerialSocket
 {
     DealerSocket Socket { get; set; }
 
-    internal override void Connect()
+    protected override void OnConnect(IAhsokaEndPoint endPoint)
     {
         try
         {
+            this.EndPoint = endPoint;
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Starting Client {EndPoint.ServiceConfig.ServiceName} @ {EndPoint.ServiceConfig.DataURI}");
 
 
@@ -39,7 +40,7 @@ public sealed class CygnusTCPClientSerialSocket : CygnusSerialSocket
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Starting Client {EndPoint.ServiceConfig.ServiceName} @ {EndPoint.ServiceConfig.DataURI} with Result {IsConnected}");
     }
 
-    internal override void Disconnect()
+    protected override void OnDisconnect()
     {
         if (IsConnected)
         {
@@ -56,7 +57,7 @@ public sealed class CygnusTCPClientSerialSocket : CygnusSerialSocket
         }
     }
 
-    private protected override bool TransmitOverInterface(byte[] packetData, byte[] clientId)
+    protected override bool TransmitOverInterface(byte[] packetData, byte[] clientId)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Sending Client Message from {EndPoint.ServiceConfig.ServiceName}");
 
@@ -77,7 +78,7 @@ public sealed class CygnusTCPClientSerialSocket : CygnusSerialSocket
         return true;
     }
 
-    private protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId, int timeOutInMs = int.MaxValue)
+    protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Client Message on {EndPoint.ServiceConfig.ServiceName}");
 
@@ -110,10 +111,11 @@ public sealed class CygnusTCPServiceSerialSocket : CygnusSerialSocket
     RouterSocket Socket { get; set; }
     NetMQMonitor Monitor { get; set; }
 
-    internal override void Connect()
+    protected override void OnConnect(IAhsokaEndPoint endPoint)
     {
         try
         {
+            this.EndPoint = endPoint;
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Starting Service {EndPoint.ServiceConfig.ServiceName} @ {EndPoint.ServiceConfig.DataListenURI}");
             SocketPoller = new NetMQPoller();
             Socket = new RouterSocket();
@@ -128,7 +130,7 @@ public sealed class CygnusTCPServiceSerialSocket : CygnusSerialSocket
 
             Socket.ReceiveReady += (o, e) =>
             {
-                ((IAhsokaServiceEndpoint)EndPoint).ServiceDataReady();
+                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage(false);
             };
 
             Monitor.Accepted += (o, e) =>
@@ -143,7 +145,7 @@ public sealed class CygnusTCPServiceSerialSocket : CygnusSerialSocket
         catch { IsConnected = false; }
     }
 
-    internal override void Disconnect()
+    protected override void OnDisconnect()
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Disconnecting {EndPoint.ServiceConfig.ServiceName}");
 
@@ -162,7 +164,7 @@ public sealed class CygnusTCPServiceSerialSocket : CygnusSerialSocket
 
     }
 
-    private protected override bool TransmitOverInterface(byte[] packetData, byte[] clientId)
+    protected override bool TransmitOverInterface(byte[] packetData, byte[] clientId)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Sending Service Message on {EndPoint.ServiceConfig.ServiceName} ");
 
@@ -181,7 +183,7 @@ public sealed class CygnusTCPServiceSerialSocket : CygnusSerialSocket
         return true;
     }
 
-    private protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId, int timeOutInMs = int.MaxValue)
+    protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId)
     {
         NetMQMessage message = new();
         if (Socket.TryReceiveMultipartMessage(ref message, 2))

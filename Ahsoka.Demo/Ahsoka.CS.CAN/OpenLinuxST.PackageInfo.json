@@ -1,7 +1,6 @@
 {
-  "version": "2.7.1.10014",
+  "version": "3.0.1.20065",
   "applicationType": "Dotnet",
-  "userInterfaceType": "None",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.CAN",
   "packageName": "Ahsoka.CS.CAN",
@@ -11,6 +10,7 @@
   "packageOutputDirectory": "../PackageOutput",
   "startupLogoPath": "EnovLogo.png",
   "includeInstallerUI": false,
+  "includeFirmwareUpdate": false,
   "licenses": [],
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.CAN.csproj",
@@ -19,15 +19,40 @@
   "cppInfo": {},
   "serviceInfo": {
     "runtimeConfiguration": {
-      "services": [],
-      "customServiceEnabled": "Disabled",
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
-      "startupDelay": 0
+      "extensions": [
+        "CAN Service Extension"
+      ],
+      "startupDelay": 0,
+      "requireChallenge": "NotRequired",
+      "services": [
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "CanService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5007,
+          "isExtension": false,
+          "behaviors": "AutoStart",
+          "configurationFile": "STDemoPackage.1.cancalibration.json"
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        }
+      ]
     },
     "environmentValues": []
   },
-  "canCalibration": "STDemoPackage.1.cancalibration.json",
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinux",

@@ -1,38 +1,28 @@
-﻿using Ahsoka.Services.Data;
+﻿using Ahsoka.Services.Security;
 using Ahsoka.System;
 using Ahsoka.Utility;
+using Azure;
 using System;
 
 namespace Ahsoka.ServiceFramework;
 
 #pragma warning disable CS1591
 
-public class AhsokaServiceAttribute : Attribute
-{
-    public string ServiceName { get; init; }
 
-    public AhsokaServiceAttribute(string serviceName) { ServiceName = serviceName; }
-}
-
-public class AhsokaServiceDataValues : Attribute
-{
-    public string ServiceName { get; init; }
-
-    public AhsokaServiceDataValues(string serviceName) { ServiceName = serviceName; }
-}
 public interface IAhsokaServiceEndpoint : IAhsokaEndPoint
 {
     int MessageReceiveCount { get; set; }
     int MessageSendCount { get; set; }
 
-    void ServiceDataReady();
+    void ClientConnected();
 }
 
-public abstract class AhsokaServiceBase<TTransportIds, TAhsokaSocket> : AhsokaEndPoint<TTransportIds, TAhsokaSocket>, IAhsokaServiceEndpoint
-    where TTransportIds : Enum
-    where TAhsokaSocket : AhsokaSocket, new()
+
+public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTransportIds>, IAhsokaServiceEndpoint
+    where TTransportIds : Enum, new()
 {
     #region Fields
+    internal static bool IsServiceStarted { get; private set; }
     private string publisherId => ServiceConfig.ServiceName;
     #endregion
 
@@ -41,6 +31,14 @@ public abstract class AhsokaServiceBase<TTransportIds, TAhsokaSocket> : AhsokaEn
         base(config, messages)
     {
 
+    }
+
+    protected override IAhsokaSocket CreateSocket(ServiceConfiguration config)
+    {
+        if (config.SocketType == TransportSocketTypes.TcpSocket)
+            return new TCPServiceSocket();
+        else
+            throw new Exception("Socket Type is Not Supported");
     }
 
     protected virtual AhsokaMessageHeader CreateReplyMessageHeader(AhsokaMessageHeader header, TTransportIds transportId)
@@ -59,18 +57,66 @@ public abstract class AhsokaServiceBase<TTransportIds, TAhsokaSocket> : AhsokaEn
         return value.RequestType;
     }
 
-    void IAhsokaServiceEndpoint.ServiceDataReady()
+    protected override void OnReceiveMessage(AhsokaMessageHeader messageHeader, object message, ServiceMessageInfo info)
     {
-        // Recieve In Band Data
-        if (ReceiveMessage(out AhsokaMessageHeader responseHeader, out object returnObject, false))
+        // Handle Global Notification Registration
+        if (messageHeader.TransportId == CoreTransportIds.RegisterClient.EnumToInt())
         {
-            OnHandleReceive(responseHeader, returnObject);
+            ((IAhsokaServiceSocket)Socket)?.RegisterClient(message as ClientRegistration);
+            ((IAhsokaServiceEndpoint)this).ClientConnected();
+            return;
         }
+        else if (messageHeader.TransportId == CoreTransportIds.DeregisterClient.EnumToInt())
+        {
+            ((IAhsokaServiceSocket)Socket)?.DeregisterClient(message as ClientRegistration);
+            return;
+        }
+
+        // Validate Security
+        if (this.ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.SecurityEnabled) && info.RequiresSecurity)
+        {
+            if (messageHeader.ServiceToken == null || !TokenSource.Default.IsTokenValid(messageHeader.ServiceToken, messageHeader.ClientId))
+            {
+                // Send Invalid Transport Value
+                messageHeader.TransportId = CoreTransportIds.InvalidToken.EnumToInt();
+                SendMessageInternal(messageHeader, new InvalidResponseNotification());
+                return;
+            }
+        }
+        try
+        {
+            OnHandleReceive(messageHeader, message);
+        }
+        catch (Exception ex)
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High,$"An error occured while handling a service message in {this.ServiceConfig.ServiceName} \r\n {ex.ToString()}");
+        }
+
     }
 
-    internal KeyInfo UpdateDataServiceKey(string key, object value)
+    protected override void OnEndPointConnected()
     {
-        return DataService.DefaultDataService?.UpdateKeyValue(this.ServiceConfig.ServiceName, key, value, publisherId);
+        base.OnEndPointConnected();
+        IsServiceStarted = true;
+    }
+
+    protected override void OnEndPointDisconnected()
+    {
+        base.OnEndPointDisconnected();
+        IsServiceStarted = false;
+    }
+
+    void IAhsokaServiceEndpoint.ClientConnected()
+    {
+        OnClientConnected();
+    }
+
+    public int UpdateCacheValue(string key, object value)
+    {
+        if (IServiceCache.Default == null)
+            return -1;
+
+        return IServiceCache.Default.UpdateCacheValue(this.ServiceConfig.ServiceName, key, value, publisherId);
     }
 
     #endregion

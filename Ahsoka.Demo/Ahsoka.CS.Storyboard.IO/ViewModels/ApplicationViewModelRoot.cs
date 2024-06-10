@@ -16,11 +16,12 @@ using System.Text.RegularExpressions;
 using System.Collections.Generic;
 
 namespace Ahsoka.Application.Storyboard;
+
 internal class ApplicationViewModelRoot
 {
     #region fields
     SystemServiceClient systemClient;
-    IOServiceClient ioClient;
+    IOServiceClient ioClient = new();
 
     //View Models
     //Brightness
@@ -119,6 +120,8 @@ internal class ApplicationViewModelRoot
         Dispatcher.Default.RegisterCallback(HandleSystemMessage, SystemClient);
         Dispatcher.Default.RegisterCallback((o, e) => { }, bleClient);
         Dispatcher.Default.RegisterCallback((o, e) => { }, cygnusClient);
+        Dispatcher.Default.RegisterCallback((o, e) => { }, ioClient);
+
 
         // Register Model Dispatch for Storyboard, this will send events to us
         // when they are recieved from the Storyboard Client on our Main Thread
@@ -172,14 +175,14 @@ internal class ApplicationViewModelRoot
         // such as the Project, Arguements and Channel Names
         var sbConfig = new StartupConfiguration()
         {
-            StoryboardProjectPath = "StoryboardExport/Demo.gapp",
+            StoryboardProjectPath = "StoryboardExport/Demo-s70.gapp",
             StartupArguements = " ",
             StoryboardOutputChannel = "ToFrontend_channel",
             StoryboardInputChannel = "ToBackend_channel"
         };
 
         // Creates a Client Object to handle Messages Into and Out of Storyboard
-        ApplicationViewModelBase.StorybardClient = new StoryboardClient(sbConfig, dataClient: dataClient);
+        ApplicationViewModelBase.StorybardClient = new StoryboardClient(sbConfig, StoryboardMetadata.EventMetadata);
 
         // Start the UI and Channels
         ApplicationViewModelBase.StorybardClient.StartStoryboardUI();
@@ -219,7 +222,7 @@ internal class ApplicationViewModelRoot
     {
         if (args is StoryboardEventArgs sbArg)
         {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Receiving message {sbArg.Message.EventAttribute.EventName}");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Receiving message {sbArg.Message.Name}");
 
             // This Call Constructs a Model Object from a Storyboard message in order to 
             // update our model objects.   Typically these are in response to User Inputs such as 
@@ -233,12 +236,12 @@ internal class ApplicationViewModelRoot
                 }
                 else
                 {
-                    throw new ApplicationException($"No object for Event {sbArg.Message.EventAttribute.EventName}");
+                    throw new ApplicationException($"No object for Event {sbArg.Message.Name}");
                 }
             }
             catch (ApplicationException ex)
             {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Encountered Application Exception Parsing Message {sbArg.Message.EventAttribute.EventName}: {ex.Message}");
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Encountered Application Exception Parsing Message {sbArg.Message.Name}: {ex.Message}");
             }
             catch (Exception ex)
             {
@@ -260,19 +263,28 @@ internal class ApplicationViewModelRoot
 
     private void InitModels()
     {
+        var sbClient = ApplicationViewModelBase.StorybardClient;
+        
         //Brightness
-        BrightnessModel.DataClient = dataClient;
+        BrightnessModel.AddBehavior(new DataServiceViewModelListener(dataClient, "DisplayBrightness"));
         BrightnessModel.UpdateStoryboard();
 
         //Buzzer
-        BuzzerModel.DataClient = dataClient;
+        BuzzerModel.AddBehavior(new DataServiceViewModelListener(dataClient,"Buzzer"));
         BuzzerModel.UpdateStoryboard();
 
-        DigitalOutput1.DataClient = dataClient;
+        // IO's
+        DigitalOutput1.AddBehavior(new DataServiceViewModelListener(dataClient,"DigitalOutput1"));
         DigitalOutput1.UpdateStoryboard();
-        DigitalOutput2.DataClient = dataClient;
+        DigitalOutput2.AddBehavior(new DataServiceViewModelListener(dataClient, "DigitalOutput2"  ));
         DigitalOutput2.UpdateStoryboard();
 
+        // Initialize Storyboard Notification Behaviors (Notifies SB if DataService Has Changes to a Model)
+        dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEBrightnessRequest), "DisplayBrightness"));
+        dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEDigitalOutput1Request), "DigitalOutput1"));
+        dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEDigitalOutput2Request), "DigitalOutput2"));
+        dataClient.AddBehavior(new DataServiceListener(sbClient, typeof(FEEBuzzerRequest), "Buzzer"));
+       
         //System Info
         Default.TouchHardwareVersionModel?.UpdateStoryboard();
         Default.TouchFirmwareVersionModel?.UpdateStoryboard();
@@ -290,6 +302,7 @@ internal class ApplicationViewModelRoot
         DigitalOutput1Request.Init();
         FEEDigitalOutput2Request DigitalOutput2Request = new();
         DigitalOutput2Request.Init();
+
 
         cygnusClient.AddFile(new()
         {

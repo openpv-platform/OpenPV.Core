@@ -1,5 +1,4 @@
 ﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Can;
 using Ahsoka.Services.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
@@ -20,7 +19,7 @@ public static class SystemInfo
     static List<LicenseInfo> licenseInfos;
     static readonly object syncRoot = new();
     static HardwareInfo hardwareInformation;
-    static CanClientCalibration canClientCalibration;
+
     static readonly PlatformFamily currentPlatform;
 
     #endregion
@@ -39,19 +38,6 @@ public static class SystemInfo
 
                 return licenseInfos;
             }
-        }
-    }
-
-    /// <summary>
-    /// Contains Definitions for automaitcally includes CAN nodes and messages
-    /// </summary>
-    public static CanClientCalibration StandardCanMessages
-    {
-        get
-        {
-            lock (syncRoot)
-                canClientCalibration ??= LoadCanMessages();
-            return canClientCalibration;
         }
     }
 
@@ -203,9 +189,13 @@ public static class SystemInfo
         else if (OperatingSystem.IsLinux())
         {
             if (Environment.Is64BitProcess)
-                return PlatformFamily.Ubuntu64;
-            else if (RuntimeInformation.OSDescription.ToLower().Contains("raspbian"))
-                return PlatformFamily.RaspberryPiOS32;
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Determine Platform: " + RuntimeInformation.OSDescription);
+                if (RuntimeInformation.OSDescription.Contains("Ubuntu"))
+                    return PlatformFamily.Ubuntu64;
+                else
+                    return PlatformFamily.OpenViewLinuxPro;
+            }
             else
                 return PlatformFamily.OpenViewLinux;
         }
@@ -227,11 +217,6 @@ public static class SystemInfo
                 licenseInfo.Add(item);
 
         return licenseInfo;
-    }
-
-    private static CanClientCalibration LoadCanMessages()
-    {
-        return JsonUtility.Deserialize<CanClientCalibration>(Properties.Resources.StandardCanDefinitions);
     }
 
     #endregion
@@ -267,5 +252,40 @@ public class LicenseInfo
     /// </summary>
     public string Copyright { get; set; }
 }
+
+
+public partial class RuntimeConfiguration
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public StartOptions ServiceStartup { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public StartOptions ReleaseOption { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public List<string> Extensions { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public Int32 StartupDelay { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public string ServiceKey { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public ChallengeOptions RequireChallenge { get; set; }
+}
+
 
 

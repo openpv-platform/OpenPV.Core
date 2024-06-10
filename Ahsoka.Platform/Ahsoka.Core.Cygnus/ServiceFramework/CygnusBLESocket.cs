@@ -67,8 +67,13 @@ public sealed class CygnusBLEServiceSocket : CygnusSerialSocket
         BLEServiceReady = true;
     }
 
-    internal override void Connect()
+    /// <summary>
+    /// Connect the BLE Socket
+    /// </summary>
+    protected override void OnConnect(IAhsokaEndPoint endPoint)
     {
+        this.EndPoint = endPoint;
+
         //  TODO: BMG (Oct. 29, 2023) Ask Jake if this is how we should be handling this type of scenario.
         if (IsConnected)
         {
@@ -101,7 +106,10 @@ public sealed class CygnusBLEServiceSocket : CygnusSerialSocket
         IsConnected = true;
     }
 
-    internal override void Disconnect()
+    /// <summary>
+    /// Disconnect the BLE Socket
+    /// </summary>
+    protected override void OnDisconnect()
     {
         if (!IsConnected)
         {
@@ -131,12 +139,18 @@ public sealed class CygnusBLEServiceSocket : CygnusSerialSocket
             if (writeValue.Uuid == cyngusMainCommsCharacteristic.Uuid)
             {
                 lastReceiveValue = writeValue.Value;
-                ((IAhsokaServiceEndpoint)EndPoint).ServiceDataReady();
+                ((IAhsokaServiceEndpoint)EndPoint).ReceiveMessage(true);
             }
         }
     }
 
-    private protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId, int timeOutInMs = int.MaxValue)
+    /// <summary>
+    /// Recieve Data from Raw Transport
+    /// </summary>
+    /// <param name="packetData"></param>
+    /// <param name="clientId"></param>
+    /// <returns></returns>
+    protected override bool ReceiveOverInterface(out byte[] packetData, out byte[] clientId)
     {
         bool receiveValueReady = false;
         if (lastReceiveValue != null)
@@ -154,7 +168,13 @@ public sealed class CygnusBLEServiceSocket : CygnusSerialSocket
         return receiveValueReady;
     }
 
-    private protected override bool TransmitOverInterface(byte[] packetData, byte[] clientId)
+    /// <summary>
+    /// Transmit Data over Raw Transport
+    /// </summary>
+    /// <param name="packetData"></param>
+    /// <param name="clientId"></param>
+    /// <returns></returns>
+    protected override bool TransmitOverInterface(byte[] packetData, byte[] clientId)
     {
         bool returnSuccess = true;
 

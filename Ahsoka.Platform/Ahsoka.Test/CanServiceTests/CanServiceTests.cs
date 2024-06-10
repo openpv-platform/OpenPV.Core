@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using static Ahsoka.Services.Can.J1939Helper;
 using ValueType = Ahsoka.Services.Can.ValueType;
@@ -17,7 +18,7 @@ using ValueType = Ahsoka.Services.Can.ValueType;
 namespace Ahsoka.Test;
 
 [TestClass]
-public class CanServiceTests
+public class CanServiceTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
     readonly AutoResetEvent stateReceived = new(false);
@@ -49,6 +50,8 @@ public class CanServiceTests
 
         File.Delete(canDBCFile);
         File.Delete(canConfigFile);
+
+        AhsokaRuntime.ShutdownAll();
     }
 
     private static CanApplicationCalibration TestAppConfigFile(string canConfigFile)
@@ -63,7 +66,7 @@ public class CanServiceTests
         };
         config.Nodes.FirstOrDefault(x => x.Name == "IO").J1939Info = info;
         Assert.IsTrue(config.Nodes.FirstOrDefault(x => x.Name == "SENSOR") != null);
-        config.Nodes.Add(SystemInfo.StandardCanMessages.Nodes.First(x => x.Name == "ANY"));
+        config.Nodes.Add(CanSystemInfo.StandardCanMessages.Nodes.First(x => x.Name == "ANY"));
         File.WriteAllText(canConfigFile, JsonUtility.Serialize(config));
 
         CanApplicationCalibration appConfig = CanMetadataTools.GenerateApplicationConfig(SystemInfo.HardwareInfo, canConfigFile, false);
@@ -272,8 +275,30 @@ public class CanServiceTests
     private static void TestCanGeneration(string canConfigFile)
     {
         string canPackageInfoFile = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + "PackageInfo.json");
-        PackageInformation packageInformation = new();
-        packageInformation.CanCalibration = canConfigFile;
+        PackageInformation packageInformation = new()
+        {
+            ServiceInfo = new ServiceInfo()
+            {
+                RuntimeConfiguration = new RuntimeConfiguration()
+                {
+
+                }
+            }
+        };
+
+        var serviceConfiguration = ConfigurationLoader.GetServiceConfig("CanService");
+        packageInformation.ServiceInfo.RuntimeConfiguration.Services.Add(new ServiceConfiguration()
+        {
+            ServiceName = serviceConfiguration.ServiceName,
+            DataChannel = serviceConfiguration.DataChannel,
+            TcpConnectionAddress = serviceConfiguration.TcpConnectionAddress,
+            TcpListenAddress = serviceConfiguration.TcpListenAddress,
+            ConfigurationFile = canConfigFile
+        });
+
+        // Load Test Generator
+        Extensions.AddPrivateExtension(Assembly.GetExecutingAssembly());
+
         File.WriteAllText(canPackageInfoFile, JsonUtility.Serialize(packageInformation));
 
         string outputFileNameDotNet = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString() + ".generated.cs");
@@ -282,14 +307,30 @@ public class CanServiceTests
         CanMetadataTools.GenerateMessageClasses(canPackageInfoFile, outputFileNameDotNet, "TestNameSpace", null, Installer.ApplicationType.Dotnet);
         string classFileContent = File.ReadAllText(outputFileNameDotNet);
         Assert.IsTrue(classFileContent.Length > 0);
+        
+        Assert.IsTrue(classFileContent.Contains("/*ExtendHeader*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendConstructor*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendSetter*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendMethods*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendAfterClassOutput*/"));
 
         CanMetadataTools.GenerateMessageClasses(canPackageInfoFile, outputFileNameCPP, "TestNameSpace", null, Installer.ApplicationType.Cpp);
         classFileContent = File.ReadAllText(outputFileNameCPP);
         Assert.IsTrue(classFileContent.Length > 0);
 
+        Assert.IsTrue(classFileContent.Contains("/*ExtendHeader+Header*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendMethods+Header*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendAfterClassOutput*/"));
+
         string cppFile = Path.Combine(Path.GetDirectoryName(outputFileNameCPP),Path.GetFileNameWithoutExtension(outputFileNameCPP) + ".cpp");
         classFileContent = File.ReadAllText(cppFile);
         Assert.IsTrue(classFileContent.Length > 0);
+
+        Assert.IsTrue(classFileContent.Contains("/*ExtendHeader+Impl*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendConstructor*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendSetter*/"));
+        Assert.IsTrue(classFileContent.Contains("/*ExtendMethods+Impl*/"));
+       
 
         // Generate Class File.
         File.Delete(outputFileNameDotNet);
@@ -319,6 +360,11 @@ public class CanServiceTests
         var data = model.CreateCanMessageData();
         Assert.IsTrue(data.Id == 500);
         Assert.IsTrue(data.Dlc == 16);
+
+        CanPropertyInfo info = new CanPropertyInfo(0, 32, ByteOrder.LittleEndian, ValueType.Unsigned, 1000, 0, 0);
+
+        var candata = new byte[8] { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+        var result = info.GetValue<uint>(candata, true);
     }
 
     private static TestCanModel CreateTestViewModel()

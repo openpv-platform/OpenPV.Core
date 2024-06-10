@@ -21,6 +21,7 @@ namespace Ahsoka.ServiceFramework;
 public partial class AhsokaRuntime
 {
     #region Fields
+    private const int MillisecondsTimeout = 5000;
     bool isRunning = false;
     readonly AutoResetEvent shutDownEvent = new(false);
     #endregion
@@ -40,18 +41,34 @@ public partial class AhsokaRuntime
     /// </summary>
     public void RequestShutdown()
     {
+        try
+        {
+            lock (syncRoot)
+                if (isRunning)
+                {
+                    // Disconnect Blocks Until Threads End.
+                    foreach (var item in EndPoints)
+                    {
+                        try
+                        {
+                            item.Value.Disconnect();
+                        }
+                        catch { }
+                        finally
+                        {
+                            // Disconnect the Cache if this EndPoint is the Default Service Cache
+                            if (IServiceCache.Default == item.Value)
+                                IServiceCache.Default = null;
+                        }
+                    }
 
-        lock (syncRoot)
-            if (isRunning)
-            {
-                // Disconnect Blocks Until Threads End.
-                foreach (var item in EndPoints)
-                    item.Value.Disconnect();
-
-                isRunning = false;
-            }
-
-        shutDownEvent.Set();
+                    isRunning = false;
+                }
+        }
+        finally
+        {
+            shutDownEvent.Set();
+        }
     }
 
     /// <summary>

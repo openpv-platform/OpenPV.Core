@@ -11,7 +11,7 @@ namespace Ahsoka.Services.Cygnus;
 /// <summary>
 /// Client for accessing Ahsoka Bluetooth LE Service
 /// </summary>
-public class CygnusServiceClient : AhsokaTCPClientBase<CygnusMessageTypes.Ids>
+public class CygnusServiceClient : AhsokaClientBase<CygnusMessageTypes.Ids>
 {
     private const string CygnusDataServiceCommandDataSubscriberUUID = "f680069c-da9d-4342-80da-43dffc6af331";
 

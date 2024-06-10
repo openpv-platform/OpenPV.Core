@@ -1,7 +1,6 @@
 {
-  "version": "2.1.1.10029",
+  "version": "3.0.1.10056",
   "applicationType": "Dotnet",
-  "userInterfaceType": "Storyboard",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Storyboard",
   "packageName": "Ahsoka.CS.Storyboard",
@@ -11,8 +10,12 @@
   "packageOutputDirectory": "../PackageOutput",
   "startupLogoPath": "StoryboardProject/images/bg_wood.png",
   "includeInstallerUI": false,
-  "licenses": [],
-  "storyboardInfo": {},
+  "licenses": [
+    {
+      "licenseName": "Storyboard Runtime",
+      "licenseId": "2a676c49-e0d2-4578-ae5b-6ce14fc59dc6"
+    }
+  ],
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Storyboard.csproj",
     "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
@@ -20,20 +23,44 @@
   "cppInfo": {},
   "serviceInfo": {
     "runtimeConfiguration": {
-      "services": [],
-      "customServiceEnabled": "Disabled",
+      "services": [
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "NetworkService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5003,
+          "isExtension": false,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
+        }
+      ],
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
+      "extensions": [
+        "Storyboard Extension"
+      ],
       "startupDelay": 0
     },
     "environmentValues": []
   },
-  "canCalibrationFiles": {},
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinux",
   "platformQualifier": "S70",
   "securityMode": "None",
-  "applicationId": "dcab7071-7440-4aea-a9c1-f1f7e8ce895d",
+  "applicationId": "6e05ae42-c6be-40df-ae8f-d138273ba3f7",
   "components": []
 }

@@ -6,7 +6,6 @@ using System;
 
 namespace Ahsoka.Application.Storyboard;
 
-[DataServiceInfo("DisplayBrightness")]
 public partial class FEEBrightnessRequest
 {
     private static readonly byte BrightnessMin = 5;

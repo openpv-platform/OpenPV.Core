@@ -25,7 +25,11 @@ namespace AhsokaServiceFramework
 			static void ReleaseStartup();
 			void RequestShutdown();
 			void WaitForShutdown();
-	
+
+			zmq::context_t& GetZMQContext()
+			{
+				return context;
+			}
 		private:
 
 			class Details;
@@ -38,9 +42,6 @@ namespace AhsokaServiceFramework
 			void ExecuteRuntime(std::vector<AhsokaEndPoint*>, AhsokaRuntimeProcess*);
 
 			template <typename TTransportID> friend class AhsokaBaseEndPoint;
-			zmq::context_t& GetZMQContext()
-			{
-				return context;
-			}
+			
 	};
 }

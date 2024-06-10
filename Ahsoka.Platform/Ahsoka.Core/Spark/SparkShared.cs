@@ -19,11 +19,11 @@ public class SparkConnectionInfo
 
     internal void LoginToTeamClient()
     {
-        if (SparkTeamClient.SharedSparkClient.CurrentAuthorization == null)
+        if (SparkAccountClient.SharedSparkClient.CurrentAuthorization == null)
             if (this.CurrentAuthorization != null)
-                SparkTeamClient.SharedSparkClient.LoginWithRefreshToken(Url, this.CurrentAuthorization);
+                SparkAccountClient.SharedSparkClient.LoginWithRefreshToken(Url, this.CurrentAuthorization);
             else
-                CurrentAuthorization = SparkTeamClient.SharedSparkClient.LoginToSpark(Url, SparkEndPointType.Teams, SecurityGroopType.Account, Login, SecureLocalStrings.ToSecureString(Password), null);
+                CurrentAuthorization = SparkAccountClient.SharedSparkClient.LoginToSpark(Url, SparkEndPointType.Teams, SecurityGroopType.Account, Login, SecureLocalStrings.ToSecureString(Password), null);
     }
 
     internal void LoginToProvisioningClient()
@@ -51,3 +51,18 @@ public class ProvisionDisplayRequest : IProvisionDisplayRequest
     public List<ModuleLicense> Licenses { get; init; } = new();
 }
 
+public class ProvisionItem
+{
+    public System.PlatformFamily ProvisionPlatformFamily { get; init; }
+    public string ProvisionPartNumber { get; init; }
+    public string ProvisionSerialNumber { get; init; }
+    public string ProvisionDeviceId { get; init; }
+
+    public ProvisionItem(System.PlatformFamily provisionPlatformFamily, string provisionPartNumber, string provisionSerialNumber, string provisionDeviceId)
+    {
+        this.ProvisionPlatformFamily = provisionPlatformFamily;
+        this.ProvisionPartNumber = provisionPartNumber;
+        this.ProvisionSerialNumber = provisionSerialNumber;
+        this.ProvisionDeviceId = provisionDeviceId;
+    }
+}

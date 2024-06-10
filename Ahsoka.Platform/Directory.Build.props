@@ -2,8 +2,8 @@
 
 	<PropertyGroup>
 		<Copyright>Copyright © $([System.DateTime]::UtcNow.Year) Enovation Controls ($([System.DateTime]::UtcNow.ToString("s")))</Copyright>
-		<TargetFramework>net7.0</TargetFramework>
-		<NoWarn>CA2101;NU5100;AD0001;CA1822;SYSLIB1054;IDE0057;CA1822;IDE0060</NoWarn> 
+		<TargetFramework>net8.0</TargetFramework>
+		<NoWarn>CA2101;NU5100;AD0001;CA1822;SYSLIB1054;IDE0057;CA1822;IDE0060;CS1587;CS1570</NoWarn> 
 		<PackageOutputPath>../../LocalNugetFeed</PackageOutputPath>
 		<NoDefaultExcludes>true</NoDefaultExcludes>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>

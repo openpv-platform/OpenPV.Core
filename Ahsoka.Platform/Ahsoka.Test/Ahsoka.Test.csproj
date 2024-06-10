@@ -18,15 +18,17 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-		<PackageReference Include="MSTest.TestAdapter" Version="3.2.1" />
-		<PackageReference Include="MSTest.TestFramework" Version="3.2.1" />
+		<PackageReference Include="MSTest.TestAdapter" Version="3.3.1" />
+		<PackageReference Include="MSTest.TestFramework" Version="3.3.1" />
 		<DotNetCliToolReference Include="Microsoft.Extensions.SecretManager.Tools" Version="1.0.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Ahsoka.Core.Bluetooth\Ahsoka.Core.Bluetooth.csproj" />
+		<ProjectReference Include="..\Ahsoka.Core.CAN\Ahsoka.Core.Can.csproj" />
+		<ProjectReference Include="..\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
 		<ProjectReference Include="..\Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
-		<ProjectReference Include="..\Ahsoka.CustomerTools\Ahsoka.CustomerTools.csproj" />
+		<ProjectReference Include="..\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -41,6 +43,10 @@
 			<Link>AhsokaCAN\%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="..\Ahsoka.DownloadBSP\OpenView.upgradeinfo.json" Link="OpenView.upgradeinfo.json" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Installer.Components;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
@@ -63,18 +64,18 @@ internal class StartupInstallerPlugin : InstallerPlugin
         StringBuilder postScript = new();
 
         // Add Startup Configuration
-        string commandLineScriptName = AddCommandLineToOutputs(buildLocation, additionalFiles, info);
+        string commandLineScriptName = AddRuntimeConfigToOutputs(buildLocation, additionalFiles, info);
 
-        if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.BeforeApplicationStart && info.ServiceInfo.RuntimeConfiguration.CustomServiceEnabled == ServiceEnableDisable.Enabled)
+        if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.BeforeApplicationStart)
         {
+            additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
             preScript.Append($"\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} & ");
         }
-        else if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.AfterApplicationStart && info.ServiceInfo.RuntimeConfiguration.CustomServiceEnabled == ServiceEnableDisable.Enabled)
+        else if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.AfterApplicationStart)
         {
+            additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
             postScript.Append($"\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} &");
         }
-        else if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup != StartOptions.NoAutoStart)
-            throw new ApplicationException("Using Auto Start Requires a Custom Service Configuration");
 
         // Release if Option Enabled (With Sleep if After to Allow Apps to Start)
         if (info.ServiceInfo.RuntimeConfiguration.ReleaseOption == StartOptions.BeforeApplicationStart)
@@ -86,50 +87,29 @@ internal class StartupInstallerPlugin : InstallerPlugin
         startScriptFileContents = startScriptFileContents.Replace("${PostReleaseScript}", postScript.ToString());
     }
 
-    private string AddCommandLineToOutputs(string buildLocation, Dictionary<string, byte[]> additionalFiles, PackageInformation info)
+    private string AddRuntimeConfigToOutputs(string buildLocation, Dictionary<string, byte[]> additionalFiles, PackageInformation info)
     {
         // Create Path relative to Working Directory
         string pathRelativeToExecutable = $"CommandLine";
 
-        // Remove Existing Command Line if it exists...we will use ours.
-        string pathToCommandLine = Path.Combine(buildLocation, pathRelativeToExecutable);
-        if (Directory.Exists(pathToCommandLine))
-            Directory.Delete(pathToCommandLine, true);
-      
         // Create Target Path
         string targetCommandLinePath = HardwareInfo.GetHardwareInfo(info.PlatformFamily, info.PlatformQualifier).TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
         targetCommandLinePath = Path.Combine(targetCommandLinePath, pathRelativeToExecutable, "Ahsoka.CommandLine");
 
-        // Create Local Paths (Copy From / To)
-        string localCommandLineFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(info.PlatformFamily), "CommandLine");
-
-         // Copy Command Line
-        if (!Directory.Exists(localCommandLineFolder))
+        // Remove Existing Command Line if it exists...we will use theirs
+        string pathToCommandLine = Path.Combine(buildLocation, pathRelativeToExecutable);
+        if (Directory.Exists(pathToCommandLine))
         {
-           throw new ApplicationException($"Could not find target support for {info.PlatformFamily}.\n" +
-                $"Please download the necessary files from the PlugIns tab.");
-        }
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Removing Command Line, Package CommandLine will be used.");
+            Directory.Delete(pathToCommandLine,true);
 
-        // Add Command Line to the Output Folder
-        foreach(var item in Directory.EnumerateFiles(localCommandLineFolder,"*", SearchOption.AllDirectories))
-        {
-            string path = item.Replace(localCommandLineFolder, pathRelativeToExecutable).Replace("\\","/");
-            additionalFiles[path] = File.ReadAllBytes(item);
         }
-
+        
         // Add Configuration File Use Custom or Default Depending on Setup.
         var stream = new MemoryStream();
         byte[] jsonData = null;
-        if (info.ServiceInfo.RuntimeConfiguration.CustomServiceEnabled == ServiceEnableDisable.Enabled)
-        {
-            ProtoBuf.Serializer.Serialize(stream, info.ServiceInfo.RuntimeConfiguration);
-            jsonData = Encoding.UTF8.GetBytes( JsonUtility.Serialize(info.ServiceInfo.RuntimeConfiguration));
-        }
-        else
-        {
-            ProtoBuf.Serializer.Serialize(stream, ConfigurationLoader.CreateDefaultConfiguration());
-            jsonData = Encoding.UTF8.GetBytes(JsonUtility.Serialize(ConfigurationLoader.CreateDefaultConfiguration()));
-        }
+        ProtoBuf.Serializer.Serialize(stream, info.ServiceInfo.RuntimeConfiguration);
+        jsonData = Encoding.UTF8.GetBytes( JsonUtility.Serialize(info.ServiceInfo.RuntimeConfiguration));
 
         additionalFiles[pathRelativeToExecutable + $"/{AutoStartFileName}"] = stream.ToArray();
         additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/{AutoStartFileName}"] = stream.ToArray(); // Place Copy Here as Indicator that we are using Auto Start.

@@ -6,7 +6,7 @@ namespace Ahsoka.Services.Bluetooth.LE;
 /// <summary>
 /// Client for accessing Ahsoka Bluetooth LE Service
 /// </summary>
-public class BLEServiceClient : AhsokaTCPClientBase<BLEMessageTypes.Ids>
+public class BLEServiceClient : AhsokaClientBase<BLEMessageTypes.Ids>
 {
     internal const string Name = "BLEService";
 

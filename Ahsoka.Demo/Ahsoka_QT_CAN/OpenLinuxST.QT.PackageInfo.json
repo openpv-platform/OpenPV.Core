@@ -1,7 +1,6 @@
 {
-  "version": "2.7.1.10014",
+  "version": "3.0.1.20073",
   "applicationType": "Cpp",
-  "userInterfaceType": "Qt",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.QT.CAN",
   "packageName": "Ahsoka.QT.CAN",
@@ -10,40 +9,47 @@
   "packageApplicationFolder": "Outputs",
   "packageOutputDirectory": "..\\PackageOutput",
   "includeInstallerUI": false,
+  "includeFirmwareUpdate": false,
   "licenses": [],
   "cppInfo": {
     "projectPath": "."
   },
   "serviceInfo": {
     "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensions": [
+        "CAN Service Extension"
+      ],
+      "startupDelay": 3,
+      "requireChallenge": "NotRequired",
       "services": [
         {
+          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
-          "notificationChannel": 6001,
-          "dataKeyValues": []
+          "isExtension": false,
+          "behaviors": "AutoStart",
+          "configurationFile": ""
         },
         {
+          "socketType": "TcpSocket",
           "serviceName": "CanService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5007,
-          "notificationChannel": 6007,
-          "dataKeyValues": []
+          "isExtension": true,
+          "behaviors": "AutoStart",
+          "configurationFile": "STDemoPackage.1.cancalibration.json"
         }
-      ],
-      "customServiceEnabled": "Disabled",
-      "serviceStartup": "NoAutoStart",
-      "releaseOption": "NoAutoStart",
-      "startupDelay": 3
+      ]
     },
     "environmentValues": []
   },
-  "canCalibration": "STDemoPackage.1.cancalibration.json",
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinux",

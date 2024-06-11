@@ -37,8 +37,13 @@ stages:
     
     steps:
     - checkout: self
-      submodules: recursive
+      submodules: false
       persistCredentials: true
+    - powershell: |
+       $header = "AUTHORIZATION: bearer $(System.AccessToken)"
+       git -c http.extraheader="$header" submodule sync
+       git -c http.extraheader="$header" submodule update --init --force --depth=1 
+      displayName: Fetch Submodules
 
     - task: UseDotNet@2
       displayName: Load DotNet 7
@@ -75,14 +80,14 @@ stages:
 
     - task: InstallAppleCertificate@2
       inputs:
-        certSecureFile: 'AppleDistro.p12'
+        certSecureFile: 'AppleCert.p12'
         certPwd: '$(AppleCertPassword)'
         keychain: 'temp'
         setUpPartitionIdACLForPrivateKey: true
 
     - task: InstallAppleCertificate@2
       inputs:
-        certSecureFile: 'AppleCert.p12'
+        certSecureFile: 'AppleDistro.p12'
         certPwd: '$(AppleCertPassword)'
         keychain: 'temp'
         setUpPartitionIdACLForPrivateKey: true
@@ -135,6 +140,15 @@ stages:
     pool: 'OpenPV Pool'
    
     steps:
+    - checkout: self
+      submodules: false
+      persistCredentials: true
+    - powershell: |
+       $header = "AUTHORIZATION: bearer $(System.AccessToken)"
+       git -c http.extraheader="$header" submodule sync
+       git -c http.extraheader="$header" submodule update --init --force --depth=1
+       git submodule update --init --force --depth=1 --recursive
+      displayName: Fetch Submodules
 
     - task: gitversion/setup@0
       displayName: Install GitVersion

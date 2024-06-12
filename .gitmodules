@@ -1,10 +1,10 @@
 [submodule "Ahsoka.ThirdParty"]
 	path = Ahsoka.ThirdParty
-	url = https://enovation.visualstudio.com/OpenPV/_git/OpenPV.ThirdParty
+	url = ../OpenPV.ThirdParty
 	
 [submodule "Ahsoka.EspHosted"]
 	path = Ahsoka.Interop/ThirdParty/esp-hosted
-	url = https://enovation.visualstudio.com/OpenPV/_git/OpenPV.EspHosted
+	url = ../OpenPV.EspHosted
 	branch = release/v0.4-rcd-develop
 
 [submodule "Ahsoka.Interop/ThirdParty/tiny-process-library"]
@@ -13,10 +13,10 @@
 
 [submodule "Ahsoka.Extensions/Control"]
 	path = Ahsoka.Extensions/Control
-	url = https://enovation.visualstudio.com/OpenPV/_git/OpenPV.Extensions.Control
+	url = ../OpenPV.Extensions.Control
 [submodule "Ahsoka.Extensions/Cygnus"]
 	path = Ahsoka.Extensions/Cygnus
-	url = https://enovation.visualstudio.com/OpenPV/_git/OpenPV.Extensions.Cygnus
+	url = ../OpenPV.Extensions.Cygnus
 [submodule "Ahsoka.Extensions/Bluetooth"]
 	path = Ahsoka.Extensions/Bluetooth
-	url = https://enovation.visualstudio.com/OpenPV/_git/OpenPV.Extensions.Bluetooth
+	url = ../OpenPV.Extensions.Bluetooth

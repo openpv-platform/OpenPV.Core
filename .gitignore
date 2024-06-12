@@ -48,10 +48,10 @@ Ahsoka.Platform/Ahsoka.CustomerTools/.avalonia-build-tasks/*
 Ahsoka.Platform/Ahsoka.Test/.avalonia-build-tasks/*
 Ahsoka.Demo/Ahsoka.CS.CAN/Ahsoka.Client.Shared/**/*
 Ahsoka.Demo/*/Directory.Build.props
-Extensions/*
 SparkUpload/*
 PlatformSupport/*
 
 Ahsoka.Platform/FirmwareDownload/**/*
 Ahsoka.Containers/OpenViewPro_SDK/*.bin
 Ahsoka.Demo/Ahsoka_CPP_Services/Outputs/*
+Extensions/*

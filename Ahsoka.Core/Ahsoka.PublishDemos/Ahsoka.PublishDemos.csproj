@@ -1,0 +1,117 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<!--Disable Build Outputs-->
+	<Target Name="Build" />
+	<Target Name="Rebuild" />
+
+	<PropertyGroup>
+		<DemoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</DemoRoot>
+	</PropertyGroup>
+
+
+	<Target Name="CreateDemos" AfterTargets="PostBuildEvent">
+
+		<!-- Create Demo Packages -->
+		<ItemGroup>
+			<DEMO_Blank_Basic Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Blank.Basic\**" />
+			<DEMO_Blank_Advanced Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Blank.Advanced\**" />
+			<DEMO_Blank_Storyboard Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Blank.Storyboard\**" />
+
+			<DEMO_CAN Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.CAN\**" />
+			<DEMO_SERVICES Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Services\**" />
+			<DEMO_GTK Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.GTK\**" />
+			<DEMO_CAIRO Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Cairo\**" />
+			<DEMO_BLE Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.BLE\**" />
+
+			<DEMO_SBIO Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Storyboard\**" />
+			<DEMO_SBIO_IO Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Storyboard.IO\**" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(DEMO_Blank_Basic)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_Blank_Advanced)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_Blank_Storyboard)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\%(RecursiveDir)" />
+
+		<Copy SourceFiles="@(DEMO_GTK)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.GTK\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_CAN)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.CAN\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_SERVICES)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_CAIRO)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_BLE)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.BLE\%(RecursiveDir)" />
+
+		<Copy SourceFiles="@(DEMO_SBIO)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_SBIO_IO)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\%(RecursiveDir)" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Blank.Basic\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Blank.Basic.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Blank.Advanced\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Blank.Advanced.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Storyboard\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Blank.Storyboard\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Blank.Storyboard.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.BLE\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.BLE\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.BLE\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.BLE\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.BLE.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Cairo\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Cairo.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Services\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Services.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.GTK\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.GTK\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.GTK\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.GTK\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.GTK.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.CAN\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.CAN\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.CAN\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.CAN\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.CAN.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard\StoryboardExport\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Storyboard\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Storyboard.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\StoryboardExport\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Storyboard.IO\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Storyboard.IO\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Storyboard.IO.zip" />
+
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)Ahsoka.Demo\Ahsoka_QT_Demo" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka_QT_Demo.zip" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)Ahsoka.Demo\Ahsoka_QT_Blank" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka_QT_Blank.zip" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)Ahsoka.Demo\Ahsoka_QT_CAN" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka_QT_CAN.zip" />
+
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)Ahsoka.Demo\Ahsoka.Codesys.IO" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.Codesys.IO.zip" />
+
+		<!--Copy Spark Package Manifst to Output -->
+		<Copy SourceFiles="OpenPV Demos.release.json" DestinationFiles="$(DemoRoot)\SparkUpload\OpenPV Demos.release.json" />
+	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

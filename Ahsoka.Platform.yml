@@ -13,7 +13,8 @@ trigger:
 
 variables:
     solutionname: 'Ahsoka.Platform'
-    solution: 'Ahsoka.Platform/*.sln'
+    solutiondir:  $(Build.SourcesDirectory)
+    solution: '*.sln'
     buildPlatform: 'Any CPU'
     buildConfiguration: 'Release'
     system_accesstoken: $(System.AccessToken)
@@ -37,13 +38,8 @@ stages:
     
     steps:
     - checkout: self
-      submodules: false
+      submodules: recursive
       persistCredentials: true
-    - powershell: |
-       $header = "AUTHORIZATION: bearer $(System.AccessToken)"
-       git -c http.extraheader="$header" submodule sync
-       git -c http.extraheader="$header" submodule update --init --force --depth=1 
-      displayName: Fetch Submodules
 
     - task: UseDotNet@2
       displayName: Load DotNet 7
@@ -96,7 +92,7 @@ stages:
       displayName: Build Mac TargetSupport Packages
       inputs:
         command: 'build'
-        arguments: 'Ahsoka.Platform/Ahsoka.PublishMac/Ahsoka.PublishMac.csproj --configuration $(buildConfiguration)'
+        arguments: 'Ahsoka.Core/Ahsoka.PublishMac/Ahsoka.PublishMac.csproj --configuration $(buildConfiguration)'
 
     - task: CmdLine@2
       displayName: 'Notorize OpenPV Application'
@@ -141,14 +137,8 @@ stages:
    
     steps:
     - checkout: self
-      submodules: false
+      submodules: recursive
       persistCredentials: true
-    - powershell: |
-       $header = "AUTHORIZATION: bearer $(System.AccessToken)"
-       git -c http.extraheader="$header" submodule sync
-       git -c http.extraheader="$header" submodule update --init --force --depth=1
-       git submodule update --init --force --depth=1 --recursive
-      displayName: Fetch Submodules
 
     - task: gitversion/setup@0
       displayName: Install GitVersion
@@ -176,9 +166,9 @@ stages:
       displayName: Restore Platform
       inputs:
         command: 'restore'
-        restoreSolution: 'Ahsoka.Platform/Ahsoka.Platform.sln'
+        restoreSolution: 'Ahsoka.Platform.sln'
         feedsToUse: 'config'
-        nugetConfigPath: 'Ahsoka.Platform/nuget.config'
+        nugetConfigPath: 'Ahsoka.Core/nuget.config'
         externalFeedCredentials: 'Ahsoka.Nuget'
         noCache: true
 
@@ -186,9 +176,9 @@ stages:
       displayName: Restore Installer
       inputs:
         command: 'restore'
-        restoreSolution: 'Ahsoka.Platform/**/*.wixproj'
+        restoreSolution: 'Ahsoka.Core/**/*.wixproj'
         feedsToUse: 'config'
-        nugetConfigPath: 'Ahsoka.Platform/nuget.config'
+        nugetConfigPath: 'Ahsoka.Core/nuget.config'
         externalFeedCredentials: 'Ahsoka.Nuget'
         noCache: true
 
@@ -206,14 +196,14 @@ stages:
       displayName: 'Add User Secrets'
       inputs:
         script: |
-          dotnet user-secrets set "SparkUrl" $(SparkTestUrl) --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
-          dotnet user-secrets set "SparkLogin" $(SparkTestLogin) --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
-          dotnet user-secrets set "SparkPassword" $(SparkTestPassword) --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets set "SparkUrl" $(SparkTestUrl) --project Ahsoka.Core/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets set "SparkLogin" $(SparkTestLogin) --project Ahsoka.Core/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets set "SparkPassword" $(SparkTestPassword) --project Ahsoka.Core/Ahsoka.Test/Ahsoka.Test.csproj
 
     - task: VSBuild@1
       displayName: 'Build Pre-Requisites'
       inputs:
-        solution: 'Ahsoka.Platform/Ahsoka.BuildPreReqs/Ahsoka.BuildPreReqs.csproj'
+        solution: 'Ahsoka.Core/Ahsoka.BuildPreReqs/Ahsoka.BuildPreReqs.csproj'
         vsVersion: '17.0'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
@@ -223,7 +213,7 @@ stages:
     - task: VSBuild@1
       displayName: 'Build PublishOutputs'
       inputs:
-        solution: 'Ahsoka.Platform/Ahsoka.PublishOutputs/Ahsoka.PublishOutputs.csproj'
+        solution: 'Ahsoka.Core/Ahsoka.PublishOutputs/Ahsoka.PublishOutputs.csproj'
         vsVersion: '17.0'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
@@ -233,7 +223,7 @@ stages:
     - task: VSBuild@1
       displayName: 'Build Windows Installer'
       inputs:
-        solution: 'Ahsoka.Platform/Ahsoka.DeveloperTools.Installer/Ahsoka.DeveloperTools.Installer.wixproj'
+        solution: 'Ahsoka.Core/Ahsoka.DeveloperTools.Installer/Ahsoka.DeveloperTools.Installer.wixproj'
         vsVersion: '17.0'
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
@@ -244,15 +234,15 @@ stages:
       inputs:
         command: test
         projects: '**/*Ahsoka.Test/*.csproj'
-        arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --blame-hang --blame-hang-timeout 120s -m:1 --logger:"console;verbosity=detailed" --settings: Ahsoka.Platform/codecoverage.runsettings'
+        arguments: '--configuration $(buildConfiguration) --collect "Code coverage" --blame-hang --blame-hang-timeout 120s -m:1 --logger:"console;verbosity=detailed" --settings: Ahsoka.Core/codecoverage.runsettings'
 
     - task: CmdLine@2
       displayName: 'Remove User Secrets'
       inputs:
         script: |
-          dotnet user-secrets remove "SparkUrl"  --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
-          dotnet user-secrets remove "SparkLogin"  --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
-          dotnet user-secrets remove "SparkPassword" --project Ahsoka.Platform/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets remove "SparkUrl"  --project Ahsoka.Core/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets remove "SparkLogin"  --project Ahsoka.Core/Ahsoka.Test/Ahsoka.Test.csproj
+          dotnet user-secrets remove "SparkPassword" --project Ahsoka.Core/Ahsoka.Test/Ahsoka.Test.csproj
 
     - task: CopyFiles@2
       displayName: 'Moving Spark Artifacts to Upload Area'

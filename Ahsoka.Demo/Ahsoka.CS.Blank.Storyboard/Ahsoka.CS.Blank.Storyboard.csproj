@@ -54,5 +54,9 @@
 	  <None Remove="GeneratedObjects\**" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Ahsoka.CS.Blank.Advanced\Ahsoka.CS.Blank.Advanced.csproj" />
+	</ItemGroup>
+
 
 </Project>

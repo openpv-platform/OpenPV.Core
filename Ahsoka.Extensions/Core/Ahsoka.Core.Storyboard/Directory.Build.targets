@@ -1,0 +1,34 @@
+﻿<Project TreatAsLocalProperty="IGNORE_PREREQS">
+
+	<ItemGroup Label="Native Libraries for Storyboard" Condition="$(IGNORE_PREREQS) != 'YES'">
+		<Content Include="..\..\..\Ahsoka.ThirdParty\Storyboard\greio\windows-x86_64-swrender-obj\lib\libgreio_shared.dll">
+			<Link>AhsokaLib\Ahsoka.Storyboard.Windows.dll</Link>
+			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Storyboard.Windows.dll</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<IncludeInPackage>true</IncludeInPackage>
+			<Pack>true</Pack>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>true</Visible>
+		</Content>
+		
+		<Content Include="..\..\..\Ahsoka.ThirdParty\Storyboard\greio\linux-stmA5-armle-opengles_2.0-wayland-obj\lib\libgreio_shared.so">
+			<Link>AhsokaLib\Ahsoka.Storyboard.Linux.ST.so</Link>
+			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Storyboard.Linux.ST.so</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<IncludeInPackage>true</IncludeInPackage>
+			<Pack>true</Pack>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>true</Visible>
+		</Content>
+
+		<Content Include="../../../Ahsoka.ThirdParty/Storyboard/greio/macos-arm64-swrender-obj/lib/libgreio_shared.so">
+			<Link>AhsokaLib/Ahsoka.Storyboard.macOSArm64.so</Link>
+			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Storyboard.macOSArm64.so</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<IncludeInPackage>true</IncludeInPackage>
+			<Pack>true</Pack>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>true</Visible>
+		</Content>
+	</ItemGroup>
+</Project>

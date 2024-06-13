@@ -438,26 +438,12 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to syntax = &quot;proto3&quot;;
-        ///
-        ///package AhsokaServiceFramework;
-        ///option csharp_namespace = &quot;Ahsoka.ServiceFramework&quot;;
-        ///
-        /////----------------------------
-        ///// Service Routing Message Header
-        ///// This object represents the Layer 2 Message Format for OpenPV Service Messages.
-        /////----------------------------
-        ///message AhsokaMessageHeader
-        ///{
-        ///    // This ID defines the Type of Message being carried in the Envelop / Header
-        ///    // Note: Existing OpenPV / Ahsoka Message Architecture 
-        ///    int32 transport_id = 1;
-        ///
-        ///    // (Optional) This ID de [rest of string was truncated]&quot;;.
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static string Services {
+        internal static byte[] Services {
             get {
-                return ResourceManager.GetString("Services", resourceCulture);
+                object obj = ResourceManager.GetObject("Services", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

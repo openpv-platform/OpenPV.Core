@@ -9,7 +9,7 @@
       "buttons" : [
         {
           "action" : {
-            "script" : "echo 'Cleaning Repo'\ngit clean -dfx\n\necho 'Cleaning Repo Control'\ncd Ahsoka.Extensions/Control\ngit clean -dfx\ncd ..\ncd ..\n\necho 'Cleaning Repo Bluetooth'\ncd Ahsoka.Extensions/Bluetooth\ngit clean -dfx\ncd ..\ncd ..\n\necho 'Cleaning Repo Cygnus'\ncd Ahsoka.Extensions/Cygnus\ngit clean -dfx",
+            "script" : "echo 'Cleaning Repos'\ngit clean -dfx\ngit submodule foreach --recursive git clean -dfx",
             "showOutput" : true,
             "type" : "sh",
             "waitForExit" : true

@@ -197,9 +197,6 @@
   <data name="CPPClientCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
-  <data name="Configuration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\Configuration.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Functions" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\Ahsoka.Interop\Ahsoka.Proto\Functions.cmake;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -218,9 +215,6 @@
   <data name="SecurityService" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Proto\SecurityService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Services" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\Services.proto;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
   <data name="SparkService" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Proto\SparkService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -229,5 +223,11 @@
   </data>
   <data name="CMakeLists" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Proto\CMakeLists.txt;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Configuration" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Proto\Configuration.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Services" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\Ahsoka.Shared\Services.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

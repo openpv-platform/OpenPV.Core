@@ -14,11 +14,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "~OtherItems", "~OtherItems"
 		Ahsoka.Core\codecoverage.runsettings = Ahsoka.Core\codecoverage.runsettings
 		Demo.Build.props = Demo.Build.props
 		Ahsoka.Core\Directory.Build.props = Ahsoka.Core\Directory.Build.props
-		Extensions.Build.props = Extensions.Build.props
+		Ahsoka.Extensions\Extensions.Build.props = Ahsoka.Extensions\Extensions.Build.props
 		GitVersion.yml = GitVersion.yml
 		Ahsoka.Core\nuget.config = Ahsoka.Core\nuget.config
 		Ahsoka.Core\SignApp.sh = Ahsoka.Core\SignApp.sh
 		Ahsoka.Core\SignCLI.sh = Ahsoka.Core\SignCLI.sh
+		Ahsoka.Extensions\UX.Extensions.Build.props = Ahsoka.Extensions\UX.Extensions.Build.props
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{B68F5390-4032-4D7C-9FC6-E00A4AF4ADE2}"

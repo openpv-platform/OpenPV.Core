@@ -13,12 +13,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\..\Ahsoka.Interop\Ahsoka.Proto\Functions.cmake" Link="Proto\Functions.cmake" />
-		<None Include="..\..\Ahsoka.Interop\Ahsoka.Proto\CMakeLists.txt" Link="Proto\CMakeLists.txt" />
+		<None Include="..\..\Ahsoka.Shared\Functions.cmake" Link="Proto\Functions.cmake" />
+		<None Include="..\..\Ahsoka.Shared\CMakeLists.txt" Link="Proto\CMakeLists.txt" />
+		<None Include="..\..\Ahsoka.Shared\Services.proto" Link="Proto\Services.proto" />
 	</ItemGroup>
 	
 	<ItemGroup>
 		<AdditionalFiles Include="Proto\*.proto" />
+		<AdditionalFiles Include="..\..\Ahsoka.Shared\Services.proto" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -5,7 +5,7 @@
 		<SignAssembly>False</SignAssembly>
 		<UseRidGraph>true</UseRidGraph>
 		<TrimMode>copyused</TrimMode>
-		<AssemblyName>OpenPV.DeveloperToolkit.Core</AssemblyName>
+		<AssemblyName>Ahsoka.DeveloperTools.Core</AssemblyName>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 	</PropertyGroup>

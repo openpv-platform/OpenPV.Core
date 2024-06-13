@@ -5,7 +5,6 @@
 	</PropertyGroup>
 	
 	<ItemGroup Label="Development References" >
-		<ProjectReference Include="..\..\..\Ahsoka.Core\Ahsoka.Core\Ahsoka.Core.csproj" />
 		<ProjectReference Include="..\..\..\Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
 		<ProjectReference Include="..\..\..\Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
 	</ItemGroup>

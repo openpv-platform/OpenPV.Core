@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "~OtherItems", "~OtherItems"
 		Ahsoka.Platform.yml = Ahsoka.Platform.yml
 		CMakePresets.json = CMakePresets.json
 		Ahsoka.Core\codecoverage.runsettings = Ahsoka.Core\codecoverage.runsettings
+		Ahsoka.Extensions\Core.Build.props = Ahsoka.Extensions\Core.Build.props
 		Demo.Build.props = Demo.Build.props
 		Ahsoka.Core\Directory.Build.props = Ahsoka.Core\Directory.Build.props
 		Ahsoka.Extensions\Extensions.Build.props = Ahsoka.Extensions\Extensions.Build.props

@@ -15,7 +15,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="..\..\Ahsoka.Documentation\html\**">
+		<Content Include="..\..\BuildOutputs\Ahsoka.Documentation\html\**">
 			<Link>APIHelp\%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>true</Visible>

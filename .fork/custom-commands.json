@@ -1,27 +1,57 @@
 [
   {
-    "name": "Sync Dev and Main",
-    "target": "repository",
-    "ui": {
-      "title": "Execute Sync",
-      "description": "Pull Main and Dev?",
-      "buttons": [
+    "version" : 1
+  },
+  {
+    "name" : "Clean Repos",
+    "target" : "repository",
+    "ui" : {
+      "buttons" : [
         {
-          "title": "Execute",
-          "action": {
-            "type": "sh",
-            "script": "git fetch --update-head-ok origin main:main develop:develop",
-            "showOutput": false,
-            "waitForExit": true
-          }
+          "action" : {
+            "script" : "echo 'Cleaning Repo'\ngit clean -dfx\n\necho 'Cleaning Repo Control'\ncd Ahsoka.Extensions/Control\ngit clean -dfx\ncd ..\ncd ..\n\necho 'Cleaning Repo Bluetooth'\ncd Ahsoka.Extensions/Bluetooth\ngit clean -dfx\ncd ..\ncd ..\n\necho 'Cleaning Repo Cygnus'\ncd Ahsoka.Extensions/Cygnus\ngit clean -dfx",
+            "showOutput" : true,
+            "type" : "sh",
+            "waitForExit" : true
+          },
+          "title" : "OK"
         },
         {
-          "title": "Cancel",
-          "action": {
-            "type": "cancel"
-          }
+          "action" : {
+            "type" : "cancel"
+          },
+          "title" : "Cancel"
         }
-      ]
+      ],
+      "controls" : [],
+      "description" : "Are you sure you want to execute custom command?",
+      "title" : "Execute custom command"
+    }
+  },
+  {
+    "name" : "Sync Dev and Main",
+    "target" : "repository",
+    "ui" : {
+      "buttons" : [
+        {
+          "action" : {
+            "script" : "git fetch --update-head-ok origin main:main develop:develop",
+            "showOutput" : false,
+            "type" : "sh",
+            "waitForExit" : true
+          },
+          "title" : "Execute"
+        },
+        {
+          "action" : {
+            "type" : "cancel"
+          },
+          "title" : "Cancel"
+        }
+      ],
+      "controls" : [],
+      "description" : "Pull Main and Dev?",
+      "title" : "Execute Sync"
     }
   }
 ]

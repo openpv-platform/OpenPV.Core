@@ -10,3 +10,10 @@ CTestTestfile.cmake
 _deps
 .vs/*
 BuildOutputs/*
+
+out/*
+.cmake/*
+
+*.ninja
+BuildOutput/*
+Ahsoka.Client.Shared/ServiceFramework/ServiceConfiguration.hpp

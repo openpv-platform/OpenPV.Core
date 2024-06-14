@@ -3,10 +3,11 @@
 		<!--Prevent Queries when running our code generator-->
 		<EnableSourceControlManagerQueries>false</EnableSourceControlManagerQueries>
 	</PropertyGroup>
-	
-	<ItemGroup Label="Development References" >
-		<ProjectReference Include="..\..\..\Ahsoka.Core\Ahsoka.Core\Ahsoka.Core.csproj" />
-	</ItemGroup>
+
+	<PropertyGroup Label="Child Module Path Reference">
+		<AhsokaRootFolder>..\..\..\</AhsokaRootFolder>
+	</PropertyGroup>
+
 </Project>
 
 

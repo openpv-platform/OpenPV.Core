@@ -86,4 +86,19 @@ public static class PlatformSupportPathInfo
 
         return returnValue;
     }
+
+    /// <summary>
+    ///  Returns the path for the Customer Tools Support Folder (Desktops Only)
+    /// </summary>
+    /// <returns></returns>
+    public static string GetDeveloperToolPath()
+    {
+        if (OperatingSystem.IsMacOS())
+            return Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Library", "Application Support", "AhsokaData");
+        else if (Environment.OSVersion.Platform == PlatformID.Unix)
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), ".AhsokaData");
+        else
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AhsokaData");
+    }
+
 }

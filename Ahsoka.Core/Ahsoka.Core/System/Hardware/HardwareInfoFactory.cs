@@ -18,7 +18,11 @@ public partial class HardwareInfo
         LoadHardwareInfo();
     }
    
-    internal static void LoadHardwareInfo(string fallbackPath = null)
+    /// <summary>
+    ///  Load Hardware Definitions from the specified path (or default path if null)
+    /// </summary>
+    /// <param name="fallbackPath"></param>
+    public static void LoadHardwareInfo(string fallbackPath = null)
     {
         hardwareDefinitions = new Dictionary<string, HardwareInfo>();
 

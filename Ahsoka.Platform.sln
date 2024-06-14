@@ -148,6 +148,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Test.Can", "Ahsoka.E
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3C43049E-0D3B-4970-8F8D-6AABADC877CD}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Test.Bluetooth", "Ahsoka.Extensions\Bluetooth\Ahsoka.Test.Bluetooth\Ahsoka.Test.Bluetooth.csproj", "{ED8D430B-4968-4EE4-925A-149DEF731BE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -653,6 +655,18 @@ Global
 		{5577A4B5-C39C-41BA-BCE8-8428E638884D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5577A4B5-C39C-41BA-BCE8-8428E638884D}.Release|x64.ActiveCfg = Release|x64
 		{5577A4B5-C39C-41BA-BCE8-8428E638884D}.Release|x64.Build.0 = Release|x64
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Debug|x64.ActiveCfg = Debug|x64
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Debug|x64.Build.0 = Debug|x64
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Mac-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Mac-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Mac-Debug|x64.ActiveCfg = Debug|x64
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Mac-Debug|x64.Build.0 = Debug|x64
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Release|x64.ActiveCfg = Release|x64
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -692,6 +706,7 @@ Global
 		{48367E70-3349-4798-BB7C-BFA770FEAE8F} = {7DC19E9E-F466-4BA6-B790-2FC5DAD6C0E0}
 		{5A4DA296-18A5-4884-9F2A-AB8E5A399489} = {7DC19E9E-F466-4BA6-B790-2FC5DAD6C0E0}
 		{5577A4B5-C39C-41BA-BCE8-8428E638884D} = {3C43049E-0D3B-4970-8F8D-6AABADC877CD}
+		{ED8D430B-4968-4EE4-925A-149DEF731BE3} = {3C43049E-0D3B-4970-8F8D-6AABADC877CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {92A702AC-B84D-4A04-9D84-3817A9398F42}

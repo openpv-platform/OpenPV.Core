@@ -26,8 +26,8 @@
 		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
 		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard.Ux\Ahsoka.Core.Storyboard.Ux.csproj" /><!--Builds .Storyboard-->
 		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
+		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth\Ahsoka.Core.Bluetooth.csproj" />
 
-		
 		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Control\Ahsoka.Core.Can\Ahsoka.Core.Can.csproj /p:Version=$(GitVersion_FullSemVer)" />
 		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Control\Ahsoka.Core.Can.UX\Ahsoka.Core.Can.UX.csproj /p:Version=$(GitVersion_FullSemVer)" /> 
 		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Cygnus\Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj /p:Version=$(GitVersion_FullSemVer)" />
@@ -35,8 +35,8 @@
 		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj /p:Version=$(GitVersion_FullSemVer)" />
 		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj /p:Version=$(GitVersion_FullSemVer)" />
 		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard.UX\Ahsoka.Core.Storyboard.UX.csproj /p:Version=$(GitVersion_FullSemVer)" />
+		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth\Ahsoka.Core.Bluetooth.csproj /p:Version=$(GitVersion_FullSemVer)" />
 
-		
 		<!-- Create Extension Package Info.  System will use these nuget packages to download the libraries-->
 		<ItemGroup>
 			<EXTENSION_INFO Include="$(ExtensionRoot)\Extensions\**\*.extensioninfo.json" />

@@ -20,8 +20,8 @@
     "bluetoothAdapters": [
       {
         "index": "0",
-        "deviceInterfacePath": "org.bluez",
-        "stack": "BlueZ"
+        "deviceInterfacePath": "",
+        "stack": "Desktop"
       }
     ]
   },

@@ -47,22 +47,6 @@ public class BluetoothHardwareAdapter : ICanDeserializeBase
     /// </summary>
     public Stack Stack { get; set; }
 
-    /// <summary>
-    /// Default Timeout for Discovery Calls
-    /// </summary>
-    public int DiscoveryTimeout { get; set; } = 10000;
-
-    /// <summary>
-    /// Default Timeout for Pairing Requests
-    /// </summary>
-    public int PairingTimeout { get; set; } = 5000;
-
-    /// <summary>
-    /// Default Timeout for Connection Requests.
-    /// </summary>
-    public int ConnectionTimeout { get; set; } = 5000;
-
-
     internal override void SetProperty(string propertyName, string value)
     {
         if (propertyName == "index")
@@ -71,13 +55,6 @@ public class BluetoothHardwareAdapter : ICanDeserializeBase
             DeviceInterfacePath = value;
         else if (propertyName == "stack")
             Stack = Enum.Parse<Stack>(value, true);
-        else if (propertyName == "connectionTimeout")
-            ConnectionTimeout = Int32.Parse(value);
-        else if (propertyName == "pairingTimeout")
-            PairingTimeout = Int32.Parse(value);
-        else if (propertyName == "discoveryTimeout")
-            DiscoveryTimeout = Int32.Parse(value);
-
     }
 }
 
@@ -87,9 +64,9 @@ public class BluetoothHardwareAdapter : ICanDeserializeBase
 public enum Stack
 {
     /// <summary>
-    /// Built in Microsoft Bluetooth Stack for Windows
+    /// Simulated Bluetooth Stack for Desktop / Pipeline Testing
     /// </summary>
-    Windows,
+    Desktop,
 
     /// <summary>
     /// Bluez Stack using DBUS Interface.

@@ -3,10 +3,11 @@
 /// <summary>
 /// Gets the Tools Object for a given Platform.
 /// </summary>
-internal class RemoteTargetToolFactory
+public class RemoteTargetToolFactory
 {
-    public const string HardwareModelPrefix = "HardwareModel:";
-    public const string HardwareIdPrefix = "HardwareSerialNumber:";
+
+    internal const string HardwareModelPrefix = "HardwareModel:";
+    internal const string HardwareIdPrefix = "HardwareSerialNumber:";
 
     /// <summary>
     /// Factory Command to Get a TargetTools Object

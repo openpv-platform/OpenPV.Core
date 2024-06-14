@@ -11,7 +11,10 @@ using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.System;
 
-internal class Extensions
+/// <summary>
+/// Extension Manager for OpeNPV
+/// </summary>
+public class Extensions
 {
     internal const string LibFolder = "lib";
     internal const string ExtensionsFolder = "Extensions";
@@ -19,7 +22,8 @@ internal class Extensions
 
     private static List<Assembly> ExtensionLibraries { get; set; } = new(); 
 
-    public static List<ExtensionConfiguration> Configurations
+
+    internal static List<ExtensionConfiguration> Configurations
     {
         get; private set;
     } = new ();
@@ -29,7 +33,11 @@ internal class Extensions
         
     }
 
-    internal static void AddPrivateExtension(Assembly assembly)
+    /// <summary>
+    /// Add a Private Extension to the Extension Manager
+    /// </summary>
+    /// <param name="assembly"></param>
+    public static void AddPrivateExtension(Assembly assembly)
     {
         ExtensionLibraries.Add(assembly);
     }
@@ -71,7 +79,11 @@ internal class Extensions
         }
     }
 
-    internal static void LoadExtensions(string path = null)
+    /// <summary>
+    ///  Load Extensions from the specified path (or use default if null)
+    /// </summary>
+    /// <param name="path"></param>
+    public static void LoadExtensions(string path = null)
     {
         if (initComplete)
             return;
@@ -113,7 +125,7 @@ internal class Extensions
         initComplete = Configurations.Count() > 0;
     }
 
-    public static List<Assembly> GetExtensionLibraries(bool includeCoreLibrary = false)
+    internal static List<Assembly> GetExtensionLibraries(bool includeCoreLibrary = false)
     {
         // Always Load Ahsoka.Core Assembly
         var assemblies = ExtensionLibraries.ToList();
@@ -123,7 +135,7 @@ internal class Extensions
         return assemblies;
     }
 
-    public static List<T> GetExtensions<T>() where T:class
+    internal static List<T> GetExtensions<T>() where T:class
     {
         List<T> installers = new();
         var assemblies = GetExtensionLibraries();

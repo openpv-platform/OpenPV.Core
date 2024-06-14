@@ -93,52 +93,5 @@ namespace Ahsoka.Test.Properties {
                 return ResourceManager.GetString("OpenView_upgradeinfo", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to VERSION &quot;&quot;
-        ///
-        ///NS_ :
-        ///	BA_
-        ///	BA_DEF_
-        ///	BA_DEF_DEF_
-        ///	BA_DEF_DEF_REL_
-        ///	BA_DEF_REL_
-        ///	BA_DEF_SGTYPE_
-        ///	BA_REL_
-        ///	BA_SGTYPE_
-        ///	BO_TX_BU_
-        ///	BU_BO_REL_
-        ///	BU_EV_REL_
-        ///	BU_SG_REL_
-        ///	CAT_
-        ///	CAT_DEF_
-        ///	CM_
-        ///	ENVVAR_DATA_
-        ///	EV_DATA_
-        ///	FILTER
-        ///	NS_DESC_
-        ///	SGTYPE_
-        ///	SGTYPE_VAL_
-        ///	SG_MUL_VAL_
-        ///	SIGTYPE_VALTYPE_
-        ///	SIG_GROUP_
-        ///	SIG_TYPE_REF_
-        ///	SIG_VALTYPE_
-        ///	VAL_
-        ///	VAL_TABLE_
-        ///
-        ///BS_:
-        ///
-        ///BU_: DBG CONTROLLER IO MOTOR SENSOR
-        ///
-        ///
-        ///BO_ 100 DRIVER_HEARTBEAT: 1 CONTROLLER
-        /// SG_ DRIVER_HEARTBEAT_cmd : 0|8@1+ (1,0) [0|0] &quot;&quot; SENSOR [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string TestFile {
-            get {
-                return ResourceManager.GetString("TestFile", resourceCulture);
-            }
-        }
     }
 }

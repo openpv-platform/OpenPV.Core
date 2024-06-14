@@ -22,4 +22,4 @@
 	url = ../OpenPV.Extensions.Bluetooth
 [submodule "Ahsoka.Shared"]
 	path = Ahsoka.Shared
-	url = https://enovation.visualstudio.com/OpenPV/_git/OpenPV.Shared
+	url = ../OpenPV.Shared

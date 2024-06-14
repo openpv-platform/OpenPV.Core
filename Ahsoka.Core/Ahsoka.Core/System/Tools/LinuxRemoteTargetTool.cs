@@ -46,13 +46,6 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
     {
         this.progress = progress;
 
-        string installerPath = InstallerToolPaths.GetInstallerPackagePath(connectionInfo.PlatformFamily);
-        if (!Directory.Exists(installerPath))
-        {
-            progress.Report($"Path to Installer (Command Line) was not found {installerPath} in {Environment.CurrentDirectory}");
-            return false;
-        }
-
         // Fetch the Hardware Info
         HardwareInfo hardwareInfo = HardwareInfo.GetHardwareInfo(connectionInfo.PlatformFamily, connectionInfo.PlatformQualifier);
 
@@ -71,6 +64,15 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         IProgress<string> progress,
         ManufacturingInfo manufacturingInfo = null)
     {
+
+        string installerPath = InstallerToolPaths.GetInstallerPackagePath(connectionInfo.PlatformFamily);
+        if (!Directory.Exists(installerPath))
+        {
+            progress.Report($"Path to Installer (Command Line) was not found {installerPath} in {Environment.CurrentDirectory}");
+            return false;
+        }
+
+
         // Connect to Device.  Allow One Timeout in case we just rebooted and net wasn't ready.
         SshClient sshClient;
         try { sshClient = SshUtility.CreateSshClient(connectionInfo); }

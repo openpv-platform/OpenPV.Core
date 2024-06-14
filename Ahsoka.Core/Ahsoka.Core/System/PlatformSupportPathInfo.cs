@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.ServiceFramework;
+using Ahsoka.Utility;
 using System;
 using System.IO;
 using System.Reflection;
@@ -91,7 +92,7 @@ public static class PlatformSupportPathInfo
     ///  Returns the path for the Customer Tools Support Folder (Desktops Only)
     /// </summary>
     /// <returns></returns>
-    public static string GetDeveloperToolPath()
+    public static string GetDeveloperToolRootPath()
     {
         if (OperatingSystem.IsMacOS())
             return Path.Combine(Environment.GetEnvironmentVariable("HOME"), "Library", "Application Support", "AhsokaData");
@@ -101,4 +102,15 @@ public static class PlatformSupportPathInfo
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AhsokaData");
     }
 
+    public static string GetDeveloperToolSupportPath()
+    {
+        var settingsFolder = GetDeveloperToolRootPath();
+        var version = VersionUtility.GetAppVersion();
+        return Path.Combine(settingsFolder, $"{version.Major}.0", "PlatformSupport");
+    }
+
+    internal static string GetDeveloperPlatformSupportPath()
+    {
+        throw new NotImplementedException();
+    }
 }

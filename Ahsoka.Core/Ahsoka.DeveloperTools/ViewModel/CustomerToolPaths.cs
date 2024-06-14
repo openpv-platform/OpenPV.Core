@@ -12,10 +12,9 @@ internal static class CustomerToolPaths
 
     static CustomerToolPaths()
     {
-        settingsFolder = PlatformSupportPathInfo.GetDeveloperToolPath();
+        settingsFolder = PlatformSupportPathInfo.GetDeveloperToolRootPath();
 
-        var version = VersionUtility.GetAppVersion();
-        toolsPath = Path.Combine(settingsFolder, $"{version.Major}.0");
+        toolsPath = PlatformSupportPathInfo.GetDeveloperPlatformSupportPath();
 
         if (!Directory.Exists(settingsFolder))
             Directory.CreateDirectory(settingsFolder);

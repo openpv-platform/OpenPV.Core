@@ -24,6 +24,7 @@
 		<ProjectReference Include="..\..\Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
 		<ProjectReference Include="..\..\Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
 		<ProjectReference Include="..\..\Ahsoka.Extensions\Control\Ahsoka.Core.Can\Ahsoka.Core.Can.csproj" />
+		<ProjectReference Include="..\..\Ahsoka.Extensions\Control\Ahsoka.Core.IO\Ahsoka.Core.IO.csproj" />
 		<ProjectReference Include="..\..\Ahsoka.Extensions\Cygnus\Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
 		<ProjectReference Include="..\..\Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
 	</ItemGroup>

@@ -74,9 +74,6 @@ public class ServiceTests : LinearTestBase
 
         ServiceSelfTests.PrintServerMetrics(systemClient);
 
-        var buzzerConfig = systemClient.GetBuzzerConfig();
-        systemClient.SetBuzzerConfig(buzzerConfig);
-
         // Request Service Shutdown
         systemClient.RequestServiceShutdown();
 
@@ -98,18 +95,12 @@ public class ServiceTests : LinearTestBase
         // Run Sample Test Code
         ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
         ServiceSelfTests.PrintServerMetrics(systemClient);
-
-        var buzzerConfig = systemClient.GetBuzzerConfig();
-        systemClient.SetBuzzerConfig(buzzerConfig);
-
+      
         var brightness = systemClient.GetBrightness();
         systemClient.SetBrightness(brightness);
 
         var usb = systemClient.GetUsbInfo();
         systemClient.SetUsbInfo(usb);
-
-        var vbat = systemClient.GetVBat();
-        var pin = systemClient.GetIGNPin();
 
         // Request Service Shutdown
         systemClient.RequestServiceShutdown();
@@ -152,9 +143,6 @@ public class ServiceTests : LinearTestBase
         {
             ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
             ServiceSelfTests.PrintServerMetrics(systemClient);
-
-            var buzzerConfig = systemClient.GetBuzzerConfig();
-            systemClient.SetBuzzerConfig(buzzerConfig);
 
             // Request Service Shutdown
             systemClient.RequestServiceShutdown();

@@ -117,7 +117,7 @@ internal class ApplicationViewModelRoot
         // this will send notifications to us when they occur in the System Client (Ignition)
         // on the main thread.
         Dispatcher.Default.RegisterCallback((o, e) => { }, dataClient);
-        Dispatcher.Default.RegisterCallback(HandleSystemMessage, SystemClient);
+        Dispatcher.Default.RegisterCallback(HandleSystemMessage, ioClient);
         Dispatcher.Default.RegisterCallback((o, e) => { }, bleClient);
         Dispatcher.Default.RegisterCallback((o, e) => { }, cygnusClient);
         Dispatcher.Default.RegisterCallback((o, e) => { }, ioClient);
@@ -201,7 +201,7 @@ internal class ApplicationViewModelRoot
                 FrequencyInHz = 100,
                 VolumePct = 100
             };
-            Default.SystemClient.SetBuzzerConfig(buzzerRequest);
+            Default.IOClient.SetBuzzerConfig(buzzerRequest);
 
             //Turn off digital outputs
             //Digital Outputs
@@ -252,11 +252,11 @@ internal class ApplicationViewModelRoot
 
     public void HandleSystemMessage(object model, EventArgs args)
     {
-        if (args is SystemServiceClient.AhsokaNotificationArgs e)
+        if (args is IOServiceClient.AhsokaNotificationArgs e)
         {
-            if (e.TransportId == SystemMessageTypes.Ids.IgnitionOnNotification)
+            if (e.TransportId == IOMessageTypes.Ids.IgnitionOnNotification)
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition On");
-            else if (e.TransportId == SystemMessageTypes.Ids.IgnitionOffNotification)
+            else if (e.TransportId == IOMessageTypes.Ids.IgnitionOffNotification)
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition Off");
         }
     }

@@ -1,6 +1,7 @@
 ﻿using Ahsoka.Dispatch;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Can;
+using Ahsoka.Services.IO;
 using Ahsoka.Services.System;
 using Ahsoka.System;
 using System;
@@ -18,11 +19,12 @@ public class Program
         // Add App Service Clients We start a System Service mostly 
         // so we an talk to the app from our OpenPV Toolkit but also
         // so we can access things like brightness
-        SystemServiceClient client = new();
+        SystemServiceClient systemClient = new();
+        IOServiceClient client = new();
         CanServiceClient canClient = new();
 
         // Listen to System Clients Ignition Messages
-        Dispatcher.Default.RegisterCallback<SystemServiceClient.AhsokaNotificationArgs>(HandleIngition, client);
+        Dispatcher.Default.RegisterCallback<IOServiceClient.AhsokaNotificationArgs>(HandleIngition, client);
 
         // Listen to CAN Message Notifications (Recieve Messages) from the CanClient Dispatch Source
         Dispatcher.Default.RegisterCallback<CanServiceClient.AhsokaNotificationArgs>(RecieveCanData, canClient);
@@ -43,11 +45,11 @@ public class Program
         return;
     }
 
-    private static void HandleIngition(object sender, SystemServiceClient.AhsokaNotificationArgs args)
+    private static void HandleIngition(object sender, IOServiceClient.AhsokaNotificationArgs args)
     {
-        if (args.TransportId == SystemMessageTypes.Ids.IgnitionOnNotification)
+        if (args.TransportId == IOMessageTypes.Ids.IgnitionOnNotification)
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition On");
-        else if (args.TransportId == SystemMessageTypes.Ids.IgnitionOffNotification)
+        else if (args.TransportId == IOMessageTypes.Ids.IgnitionOffNotification)
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition Off");
     }
 

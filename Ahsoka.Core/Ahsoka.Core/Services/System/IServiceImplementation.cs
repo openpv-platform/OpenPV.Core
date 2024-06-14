@@ -12,10 +12,6 @@ internal interface IServiceImplementation
 
     void SetBrightness(int percent);
 
-    BuzzerConfig GetBuzzerConfig();
-
-    void SetBuzzerConfig(BuzzerConfig buzzerConfig);
-
     UsbInfo GetUsbInfo();
 
     void SetUsbInfo(UsbInfo usbInfo);
@@ -23,10 +19,6 @@ internal interface IServiceImplementation
     void SetRS485Config(Platform.SerialRS485 serial_rs485_config);
 
     void Reboot();
-
-    VoltageValue GetVBat();
-
-    IgnitionState GetIGNPin();
 
     TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen);
 

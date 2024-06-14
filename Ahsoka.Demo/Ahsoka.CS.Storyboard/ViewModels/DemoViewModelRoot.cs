@@ -50,11 +50,6 @@ internal class DemoViewModelRoot
         // when they are recieved from the Storyboard Client on our Main Thread
         Dispatcher.Default.RegisterCallback<StoryboardEventArgs>(HandleInputMessage, DemoViewModelBase.StorybardClient);
 
-        // Register Model Dispatch for Models
-        // this will send notifications to us when they occur in the System Client (Ignition)
-        // on the main thread.
-        Dispatcher.Default.RegisterCallback<SystemServiceClient.AhsokaNotificationArgs>(HandleDataMessage, SystemClient);
-
         // This call will Initialize our models as the first Dispatched Message
         // after the DispatchQueue is started.   This demonstrates how to run code after
         // the clients and services are started but BEFORE other messages are added
@@ -143,14 +138,7 @@ internal class DemoViewModelRoot
     }
 
 
-    public void HandleDataMessage(object model, SystemServiceClient.AhsokaNotificationArgs args)
-    {
-        if (args.TransportId == SystemMessageTypes.Ids.IgnitionOnNotification)
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition On");
-        else if (args.TransportId == SystemMessageTypes.Ids.IgnitionOffNotification)
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition Off");
-    }
-
+   
     void WifiConnectionStateChanged(object sender, WirelessConnectionState state)
     {
         ConnectionStatus status;

@@ -29,7 +29,8 @@
         "Storyboard Extension",
         "Data Service Extension",
         "Cygnus Service Extension",
-        "Bluetooth LE Extension"
+        "Bluetooth LE Extension",
+        "IO Service Extension"
       ],
       "startupDelay": 3,
       "requireChallenge": "NotRequired",

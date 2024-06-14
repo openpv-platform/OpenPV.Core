@@ -168,24 +168,6 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     }
 
     /// <summary>
-    /// Gets the current state of the Buzzer and its Configuration if the target is equipped with a buzzer.
-    /// </summary>
-    /// <returns></returns>
-    public BuzzerConfig GetBuzzerConfig()
-    {
-        return SendNotificationWithResponse<BuzzerConfig>(SystemMessageTypes.Ids.GetBuzzerConfig);
-    }
-
-    /// <summary>
-    /// Sets the State, Frequency and Volume of the Onboard Buzzer if equipped
-    /// </summary>
-    /// <param name="buzzerConfig">The buzzer information to update.</param>
-    public void SetBuzzerConfig(BuzzerConfig buzzerConfig)
-    {
-        SendNotificationWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetBuzzerConfig, buzzerConfig);
-    }
-
-    /// <summary>
     /// Returns the state of the Default USB Controller 
     /// </summary>
     /// <returns>Information about the current Mode (Device / Host) and the Mount Point</returns>
@@ -221,23 +203,6 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
         SendNotificationWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetSerialConfig, send_config);
     }
 
-    /// <summary>
-    ///  Returns the current value of the Battery Input (Power) in millivolts.
-    /// </summary>
-    /// <returns>Voltage Value</returns>
-    public VoltageValue GetVBat()
-    {
-        return SendNotificationWithResponse<VoltageValue>(SystemMessageTypes.Ids.GetBatteryVoltage);
-    }
-
-    /// <summary>
-    /// Returns the current value of the Ignition Input if equiped in millivolts.
-    /// </summary>
-    /// <returns>Voltage Value</returns>
-    public IgnitionState GetIGNPin()
-    {
-        return SendNotificationWithResponse<IgnitionState>(SystemMessageTypes.Ids.GetIgnitionPin);
-    }
 
     /// <summary>
     /// Updates the touchscreen firmware and configuration.

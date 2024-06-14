@@ -21,7 +21,8 @@
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
       "extensions": [
-        "Data Service Extension"
+        "Data Service Extension",
+        "IO Service Extension"
       ],
       "startupDelay": 0,
       "requireChallenge": "NotRequired",

@@ -1,6 +1,7 @@
 ﻿using Ahsoka.Dispatch;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System;
+using Ahsoka.Services.IO;
 using Gtk;
 using System;
 
@@ -11,9 +12,9 @@ internal class BuzzerController
     Scale buzzVolumeScale = null;
     Scale buzzFreqScale = null;
     private BuzzerConfig buzzConfig = new() { IsEnabled = false, VolumePct = 0, FrequencyInHz = 500 };
-    private readonly SystemServiceClient systemService;
+    private readonly IOServiceClient systemService;
 
-    public BuzzerController(SystemServiceClient systemService)
+    public BuzzerController(IOServiceClient systemService)
     {
         this.systemService = systemService;
     }

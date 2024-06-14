@@ -1,5 +1,4 @@
-﻿using Ahsoka.Services.IO;
-using Ahsoka.Services.Network.ESPWifi;
+﻿using Ahsoka.Services.Network.ESPWifi;
 using Ahsoka.Services.Network.Platform;
 using Ahsoka.Services.System.Platform;
 using Ahsoka.System;
@@ -28,10 +27,6 @@ internal static class TestCommands
                 NetworkTests.TestNetworkServiceAP();
             else if (args[0] == "SystemService")
                 SystemTests.TestSystemService();
-            else if (args[0] == "MonitorIgnitionNotification")
-                SystemTests.MonitorIgnitionNotification();
-            else if (args[0] == "IOService")
-                IOTests.TestIOService();
             else
                 Console.WriteLine($"Unrecognized test: {args[0]}");
     }

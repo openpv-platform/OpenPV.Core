@@ -107,7 +107,7 @@ public class MainWindow : Window
         };
         mainUI.PackStart(buzzer, true, true, 0);
 
-        var buzzerController = new BuzzerController(systemService);
+        var buzzerController = new BuzzerController(ioService);
         buzzerController.InitPanel(buzzer);
      
         Frame ioFrame = new("Discrete IO Current Values")

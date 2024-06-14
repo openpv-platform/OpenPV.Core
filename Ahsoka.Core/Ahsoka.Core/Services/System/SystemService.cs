@@ -25,11 +25,8 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
     readonly IServiceImplementation coreInterop;
     readonly SystemSettings settings;
-    readonly CancellationTokenSource cancelNotifications;
-    Dictionary<string, string> platformVersions = new();
-    static bool hardwareInteractionDisabled = false;
 
-    public static bool HardwareInteractionDisabled { get => hardwareInteractionDisabled;  }
+    Dictionary<string, string> platformVersions = new();
     private string currentAppPath;
     private string sdkVersion;
     private string applicationName;
@@ -46,10 +43,10 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
     {
         return SystemInfo.CurrentPlatform switch
         {
-            PlatformFamily.Windows64 => new WindowsServiceImplementation(),
-            PlatformFamily.Ubuntu64 => new UbuntuServiceImplementation(),
+            PlatformFamily.Windows64 => new DesktopServiceImplementation(),
+            PlatformFamily.Ubuntu64 => new DesktopServiceImplementation(),
             PlatformFamily.OpenViewLinux => new STServiceImplementation(),
-            PlatformFamily.MacosArm64 => new MacOSServiceImplementation(),
+            PlatformFamily.MacosArm64 => new DesktopServiceImplementation(),
             PlatformFamily.OpenViewLinuxPro => new TIServiceImplementation(),
             _ => throw new PlatformNotSupportedException(),
         };
@@ -81,72 +78,12 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
         InitValues();
 
-        // If Hardware Enabled Start Ignition Thread
-        if (!HardwareInteractionDisabled)
-        {
-            cancelNotifications = new CancellationTokenSource();
-
-            UpdateCacheValue(SystemServiceDataKeys.CurrentIgnitionState, IgnitionStates.Unknown.EnumToInt());
-
-            Task.Factory.StartNew(() =>
-            {
-                try
-                {
-                    IgnitionStates ignitionState = IgnitionStates.Unknown;  // Assume on at start-up
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Ignition Monitor Started");
-
-                    while (!cancelNotifications.IsCancellationRequested)
-                    {
-                        var response = coreInterop.GetIGNPin();
-                        if (ignitionState != response.State && response.State != IgnitionStates.Unknown)
-                        {
-                            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Ignition Monitor: IgnitionState is {response.State}");
-                            ignitionState = response.State;
-
-                            int transportID = SystemMessageTypes.Ids.IgnitionOnNotification.EnumToInt();
-                            if (ignitionState == IgnitionStates.Off)
-                                transportID = SystemMessageTypes.Ids.IgnitionOffNotification.EnumToInt();
-
-                            var header = new AhsokaMessageHeader()
-                            {
-                                TransportId = transportID
-                            };
-
-                            // Update Ignition in Data Service
-                            UpdateCacheValue(SystemServiceDataKeys.CurrentIgnitionState, ignitionState.EnumToInt());
-
-                            SendMessageInternal(header, new EmptyNotification(), true);
-                        }
-
-                        Task.Delay(1000, cancelNotifications.Token).Wait();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Ignition notifications terminated with exception: {ex.Message}");
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, ex.StackTrace);
-                }
-            });
-
-            stopwatch.StopTiming("Ignition Thread Started");
-        }
     }
 
     private void InitValues()
     {
        
         isInstaller = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.InstallerUIExecutablePath).EndsWith(applicationName);
-
-        // Check if Run Path is under App Directory
-        if (Environment.ProcessPath.ToLower().StartsWith(currentAppPath.ToLower()))
-        {
-            string appTypeFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationType);
-            if (File.Exists(appTypeFile) && File.ReadAllText(appTypeFile) == ApplicationType.CODESYS.ToString())
-            {
-                hardwareInteractionDisabled = true;
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Hardware Interaction is Disabled for CODESYS Targets");
-            }
-        }
 
         UpdateCacheValue(SystemServiceDataKeys.Available, true);
         UpdateCacheValue(SystemServiceDataKeys.CurrentApplicationName, applicationName);
@@ -208,11 +145,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             UpdateCacheValue(item.Key, item.Value);
     }
 
-    ~SystemService()
-    {
-        cancelNotifications?.Cancel();
-    }
-
     protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
     {
         switch (messageHeader.TransportId.IntToEnum<SystemMessageTypes.Ids>())
@@ -252,14 +184,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
                 HandleSetBrightness(messageHeader, message as BrightnessInfo);
                 break;
 
-            case SystemMessageTypes.Ids.GetBuzzerConfig:
-                HandleGetBuzzerConfig(messageHeader);
-                break;
-
-            case SystemMessageTypes.Ids.SetBuzzerConfig:
-                HandleSetBuzzerConfig(messageHeader, message as BuzzerConfig);
-                break;
-
             case SystemMessageTypes.Ids.GetUsbInfo:
                 HandleGetUsbInfo(messageHeader);
                 break;
@@ -270,14 +194,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
             case SystemMessageTypes.Ids.SetSerialConfig:
                 HandleSetRS485Config(messageHeader, (RS485ConfigNotification)message);
-                break;
-
-            case SystemMessageTypes.Ids.GetBatteryVoltage:
-                HandleGetVBat(messageHeader);
-                break;
-
-            case SystemMessageTypes.Ids.GetIgnitionPin:
-                HandleGetIGNPin(messageHeader);
                 break;
 
             case SystemMessageTypes.Ids.UpdateTouchTune:
@@ -433,17 +349,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         HandleGetBrightness(messageHeader);
     }
 
-    private void HandleGetBuzzerConfig(AhsokaMessageHeader messageHeader)
-    {
-        SendMessageInternal(messageHeader, coreInterop.GetBuzzerConfig());
-    }
-
-    private void HandleSetBuzzerConfig(AhsokaMessageHeader messageHeader, BuzzerConfig buzzerConfig)
-    {
-        coreInterop.SetBuzzerConfig(buzzerConfig);
-        SendMessageInternal(messageHeader);
-    }
-
     private void HandleGetUsbInfo(AhsokaMessageHeader messageHeader)
     {
         SendMessageInternal(messageHeader, coreInterop.GetUsbInfo());
@@ -551,29 +456,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         return file;
     }
 
-    private void HandleGetVBat(AhsokaMessageHeader messageHeader)
-    {
-        if (HardwareInteractionDisabled)
-        {
-            SendMessageInternal(messageHeader, new VoltageValue());
-            return;
-        }
-
-        var response = coreInterop.GetVBat();
-        SendMessageInternal(messageHeader, response);
-    }
-
-    private void HandleGetIGNPin(AhsokaMessageHeader messageHeader)
-    {
-        if (HardwareInteractionDisabled)
-        {
-            SendMessageInternal(messageHeader, new IgnitionState() { State = IgnitionStates.Unknown });
-            return;
-        }
-
-        var response = coreInterop.GetIGNPin();
-        SendMessageInternal(messageHeader, response);
-    }
 
     private void HandleUpdateTouchscreen(AhsokaMessageHeader messageHeader, TouchTuneInfo updateTouchscreen)
     {

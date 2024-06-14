@@ -69,9 +69,6 @@ public class Program
         // it will run first and start Adapter
         Dispatcher.Default.InvokeDispatcher(InitAdapter);
 
-        // Wireup System Service (Mostly to handle listening to the Desktop Tools
-        Dispatcher.Default.RegisterCallback(SystemServiceNofications, systemClient);
-
         // Start Dispatcher for System with Our Window Invoker
         Dispatcher.Default.StartAndRun(window.Invoke);
 
@@ -83,17 +80,6 @@ public class Program
         Shutdown();
 
         return;
-    }
-
-    private static void SystemServiceNofications(object sender, EventArgs args)
-    {
-        if (args is SystemServiceClient.AhsokaNotificationArgs e)
-        {
-            if (e.TransportId == SystemMessageTypes.Ids.IgnitionOnNotification)
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition On");
-            else if (e.TransportId == SystemMessageTypes.Ids.IgnitionOffNotification)
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition Off");
-        }
     }
 
     private static void PairRejected()

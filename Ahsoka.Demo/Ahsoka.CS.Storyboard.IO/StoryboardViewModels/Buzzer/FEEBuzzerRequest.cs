@@ -38,13 +38,13 @@ public partial class FEEBuzzerRequest
         bool enable = Convert.ToBoolean(Enable);
 
         //Make request to the model
-        BuzzerConfig buzzerRequest = new()
+        Services.IO.BuzzerConfig buzzerRequest = new()
         {
             IsEnabled = enable,
             FrequencyInHz = (int)frequencyRequest,
             VolumePct = volumeRequest
         };
-        ApplicationViewModelRoot.Default.SystemClient.SetBuzzerConfig(buzzerRequest);
+        ApplicationViewModelRoot.Default.IOClient.SetBuzzerConfig(buzzerRequest);
 
         //Update the UI
         ApplicationViewModelRoot.Default.BuzzerModel.UpdateStoryboard();

@@ -1,38 +1,40 @@
 ﻿using Ahsoka.System;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
 namespace Ahsoka.Services.System.Platform;
 
 [ExcludeFromCodeCoverage]
-internal class MacOSServiceImplementation : IServiceImplementation
+internal class DesktopServiceImplementation : IServiceImplementation
 {
-    #region Interface
-    string IServiceImplementation.GetHardwareModel()
+    public string GetHardwareSerialNumber()
     {
-        return "MacOSDevice";
+        return GetWMICValue("bios get serialnumber");
     }
 
-    string IServiceImplementation.GetHardwareSerialNumber()
+    public string GetHardwareModel()
     {
-        return "123456789";
+        return GetWMICValue("csproduct get name");
     }
 
-    void IServiceImplementation.SetBrightness(int percent)
+    public void SetBrightness(int percent)
     {
 
     }
 
-    int IServiceImplementation.GetBrightness()
+    public int GetBrightness()
     {
         return 100;
     }
 
     public UsbInfo GetUsbInfo()
     {
+        // Not Implemented
         UsbInfo usbInfo = new()
         {
+            Mode = UsbMode.Unknown,
             MountPoint = ""
         };
         return usbInfo;
@@ -40,30 +42,30 @@ internal class MacOSServiceImplementation : IServiceImplementation
 
     public void SetUsbInfo(UsbInfo usbInfo)
     {
-
-    }
-
-    public BuzzerConfig GetBuzzerConfig()
-    {
         // Not Implemented
-        return new BuzzerConfig()
-        {
-            IsEnabled = false,
-            FrequencyInHz = 1000,
-            VolumePct = 50
-        };
     }
 
-    public void SetBuzzerConfig(BuzzerConfig buzzerConfig)
+    private static string GetWMICValue(string args)
     {
+        var processStartInfo = new ProcessStartInfo
+        {
+            FileName = @"wmic",
+            Arguments = args,
+            RedirectStandardOutput = true,
+            UseShellExecute = false
+        };
+        var process = Process.Start(processStartInfo);
+        var output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
 
+        return output.Substring(output.IndexOf("\r\n")).Replace("\r", "").Replace("\n", "").Trim();
     }
 
     void IServiceImplementation.SetRS485Config(Platform.SerialRS485 serial_rs485_config) { }
 
     void IServiceImplementation.Reboot()
     {
-        LinuxSystemUtilities.Reboot();
+        // Not Impemented on Windows
     }
 
     void IServiceImplementation.ShutdownApplication(int shutDownCode)
@@ -71,38 +73,12 @@ internal class MacOSServiceImplementation : IServiceImplementation
         Environment.Exit(shutDownCode);
     }
 
-    public void SetRS485Config(SerialRS485 serial_rs485_config)
-    {
-
-    }
-
-    public VoltageValue GetVBat()
-    {
-        // *****Not Implemented*****
-        VoltageValue response = new()
-        {
-            MilliVolts = 0
-        };
-        return response;
-    }
-
-    public IgnitionState GetIGNPin()
-    {
-        // *****Not Implemented*****
-        IgnitionState response = new()
-        {
-            MilliVolts = 0,
-            State = IgnitionStates.On
-        };
-        return response;
-    }
-
     public TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen)
     {
         var response = new TouchTuneInfoReply()
         {
             ReplyStatus = MessageReplyStatus.Undetermined,
-            ReplyReason = "Not Implemented on Ubuntu"
+            ReplyReason = "Not Implemented on Windows"
         };
         return response;
     }
@@ -110,7 +86,7 @@ internal class MacOSServiceImplementation : IServiceImplementation
     public double GetCPUTemp()
     {
         // NOTE: This means that this is not implemented
-        return double.MinValue;
+        return 0.0;
     }
 
     public Dictionary<string, string> GetPlatformVersions()
@@ -122,5 +98,4 @@ internal class MacOSServiceImplementation : IServiceImplementation
     {
         // Not Impemented on Windows
     }
-    #endregion
 }

@@ -26,9 +26,6 @@ internal class SystemTests
         // Test Backlight
         BrightnessTest(client);
 
-        // Testing buzzer
-        BuzzerTest(client);
-
         // Test USB Role Swapping
         bool runUSBTest = false;
         if (runUSBTest)
@@ -36,7 +33,6 @@ internal class SystemTests
             USBTest(client);
         }
 
-        TestIGNPinAndVBat(client);
 
         // Test Update Touchscreen
         TestUpdateTouchscreen(client);
@@ -46,26 +42,7 @@ internal class SystemTests
         AhsokaRuntime.ShutdownAll();
     }
 
-    public static void MonitorIgnitionNotification()
-    {
-        // Start SystemService
-        Console.WriteLine($"Starting Runtimes for Ignition Notification Monitor");
-
-        // Start client for NetworkService
-        var client = new SystemServiceClient();
-        client.NotificationReceived += Client_NotificationReceived;
-        var clientRuntime = AhsokaRuntime.CreateBuilder()
-                    .AddClients(client)
-                    .StartWithInternalServices();
-
-        Console.WriteLine("Press any key to exit.");
-        Console.ReadKey();
-
-        // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
-    }
-
+  
     private static void USBTest(SystemServiceClient client)
     {
         Thread.Sleep(1000);
@@ -89,39 +66,6 @@ internal class SystemTests
         Thread.Sleep(100);
         client.GetUsbInfo();
         Console.WriteLine("Completed USB Role Swapping Test in SystemService");
-    }
-
-    private static void BuzzerTest(SystemServiceClient client)
-    {
-        Console.WriteLine("Starting Buzzer Test");
-        client.GetBuzzerConfig();
-        BuzzerConfig buzzerConfig = new()
-        {
-            IsEnabled = true,
-            FrequencyInHz = 2000,
-            VolumePct = 25
-        };
-        client.SetBuzzerConfig(buzzerConfig);
-        Thread.Sleep(1000);
-        client.GetBuzzerConfig();
-        buzzerConfig.FrequencyInHz = 1500;
-        buzzerConfig.VolumePct = 50;
-        client.SetBuzzerConfig(buzzerConfig);
-        Thread.Sleep(1000);
-        client.GetBuzzerConfig();
-        buzzerConfig.FrequencyInHz = 1000;
-        buzzerConfig.VolumePct = 75;
-        client.SetBuzzerConfig(buzzerConfig);
-        Thread.Sleep(1000);
-        client.GetBuzzerConfig();
-        buzzerConfig.FrequencyInHz = 500;
-        buzzerConfig.VolumePct = 100;
-        client.SetBuzzerConfig(buzzerConfig);
-        Thread.Sleep(1000);
-        client.GetBuzzerConfig();
-        buzzerConfig.IsEnabled = false;
-        client.SetBuzzerConfig(buzzerConfig); // buzzer is switched off
-        Console.WriteLine("Completed Buzzer Test");
     }
 
     private static void BrightnessTest(SystemServiceClient client)
@@ -153,24 +97,6 @@ internal class SystemTests
             var response = e.NotificationObject as UsbInfo;
             Console.WriteLine($"Current USB Mode is: {response.Mode}");
         }
-        else if (e.TransportId == SystemMessageTypes.Ids.IgnitionOffNotification)
-        {
-            Console.WriteLine($"Client: ignition is off");
-        }
-        else if (e.TransportId == SystemMessageTypes.Ids.IgnitionOnNotification)
-        {
-            Console.WriteLine($"Client: ignition is on");
-        }
-    }
-
-    private static void TestIGNPinAndVBat(SystemServiceClient client)
-    {
-        Console.WriteLine("[] Testing GetVBat and GetIGNPin function calls...");
-        VoltageValue vbat = client.GetVBat();
-        Console.WriteLine($"[+] VBAT (milli volts) -> {vbat.MilliVolts}");
-        IgnitionState ign = client.GetIGNPin();
-        Console.WriteLine($"[+] IGN Pin (milli volts) -> {ign.MilliVolts}");
-        Console.WriteLine("[] DONE Testing GetVBat and GetIGNPin function calls!");
     }
 
     private static void TestUpdateTouchscreen(SystemServiceClient client)

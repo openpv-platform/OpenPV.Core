@@ -12,7 +12,7 @@
 
 	<PropertyGroup>
 		<SecretPath>$(appdata)\Microsoft\UserSecrets\$(UserSecretsId)\secrets.json</SecretPath>
-		<OpenViewBSP>2.2024-02-27T105810.otatest.023e22e</OpenViewBSP>
+		<OpenViewBSP>2.2024-01-17T161009.kirkstone.172e986</OpenViewBSP>
 	</PropertyGroup>
 
 
@@ -43,7 +43,6 @@
 		<Message Importance="low" Text=" Value is $(SparkLogin) $(SparkPassword)" />
 		<Exec Command="dotnet tool update --global  EnovationCloud.CommandLine" />
 		<Copy SourceFiles="OpenView.upgradeinfo.json" DestinationFiles="$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\OpenView.upgradeinfo.json" />
-		<DownloadFile DestinationFolder="$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\" SourceUrl="https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/OpenView/BSPUpdate/V3.0/upgrade.$(OpenViewBSP).zip" />
 		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewBSP) image.$(OpenViewBSP).zip" />
 		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution Upgrade&quot; $(OpenViewBSP) ota.$(OpenViewBSP).zip" />
 	</Target>

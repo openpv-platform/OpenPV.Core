@@ -46,11 +46,6 @@ internal class ApplicationViewModelRoot
         // when they are recieved from the Storyboard Client on our Main Thread
         Dispatcher.Default.RegisterCallback(HandleStoryboardMessage, ApplicationViewModelBase.StorybardClient);
 
-        // Register Model Dispatch for Models
-        // this will send notifications to us when they occur in the System Client (Ignition)
-        // on the main thread.
-        Dispatcher.Default.RegisterCallback(HandleSystemMessage, SystemClient);
-
         // This call will Initialize our models as the first Dispatched Message
         // after the DispatchQueue is started.   This demonstrates how to run code after
         // the clients and services are started but BEFORE other messages are added
@@ -133,17 +128,6 @@ internal class ApplicationViewModelRoot
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Encountered Exception: {ex.Message}");
             }
 
-        }
-    }
-
-    public void HandleSystemMessage(object model, EventArgs args)
-    {
-        if (args is SystemServiceClient.AhsokaNotificationArgs e)
-        {
-            if (e.TransportId == SystemMessageTypes.Ids.IgnitionOnNotification)
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition On");
-            else if (e.TransportId == SystemMessageTypes.Ids.IgnitionOffNotification)
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ignition Off");
         }
     }
 

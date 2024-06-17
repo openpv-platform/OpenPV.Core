@@ -102,10 +102,15 @@ public static class PlatformSupportPathInfo
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AhsokaData");
     }
 
-    public static string GetDeveloperPlatformSupportPath()
+    public static string GetDeveloperVersionRootPath()
     {
         var settingsFolder = GetDeveloperToolRootPath();
         var version = VersionUtility.GetAppVersion();
-        return Path.Combine(settingsFolder, $"{version.Major}.0", "PlatformSupport");
+        return Path.Combine(settingsFolder, $"{version.Major}.0");
+    }
+
+    public static string GetDeveloperPlatformSupportPath()
+    {
+        return Path.Combine(GetDeveloperVersionRootPath(), "PlatformSupport");
     }
 }

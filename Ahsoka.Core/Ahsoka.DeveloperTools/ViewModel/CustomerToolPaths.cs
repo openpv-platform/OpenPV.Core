@@ -14,7 +14,7 @@ internal static class CustomerToolPaths
     {
         settingsFolder = PlatformSupportPathInfo.GetDeveloperToolRootPath();
 
-        toolsPath = PlatformSupportPathInfo.GetDeveloperPlatformSupportPath();
+        toolsPath = PlatformSupportPathInfo.GetDeveloperVersionRootPath();
 
         if (!Directory.Exists(settingsFolder))
             Directory.CreateDirectory(settingsFolder);

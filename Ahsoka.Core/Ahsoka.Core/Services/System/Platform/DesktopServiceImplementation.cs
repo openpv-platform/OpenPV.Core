@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 
 namespace Ahsoka.Services.System.Platform;
 
@@ -97,5 +98,8 @@ internal class DesktopServiceImplementation : IServiceImplementation
     void IServiceImplementation.SetBootLogo(string logoPath)
     {
         // Not Impemented on Windows
+        if (!File.Exists(logoPath))
+            throw new FileNotFoundException("Logo Path does not Exist");
     }
+                
 }

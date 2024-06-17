@@ -3,6 +3,7 @@ using Ahsoka.ServiceFramework;
 using Ahsoka.Services;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.System;
+using Ahsoka.Services.System.Platform;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -81,6 +82,40 @@ public class ServiceTests : LinearTestBase
         AhsokaRuntime.ShutdownAll();
     }
 
+
+    [TestMethod]
+    public void TestServiceErrors()
+    {
+        // Create Client Runtime and Add Services
+        SystemServiceClient systemClient = new();
+        systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
+        AhsokaRuntime.CreateBuilder()
+                     .AddClients(systemClient)
+                     .StartWithInternalServices();
+
+        // Request Service Shutdown
+        try
+        {
+            // Forced Error
+            systemClient.SetBootLogo(new BootLogoInfo()
+            {
+                Path = "/test/test/test"
+            });
+
+            Assert.Fail("Service Exception was not thrown as expected");
+        }
+        catch (Exception ex)
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, ex.Message);
+        }
+
+      
+        systemClient.RequestServiceShutdown();
+       
+
+        // Stop the Runtimes
+        AhsokaRuntime.ShutdownAll();
+    }
 
     [TestMethod]
     public void TestBaseServiceComponents()

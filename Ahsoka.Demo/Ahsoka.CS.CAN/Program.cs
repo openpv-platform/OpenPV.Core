@@ -23,6 +23,9 @@ public class Program
         IOServiceClient client = new();
         CanServiceClient canClient = new();
 
+        Dispatcher.Default.AddStartupItem(systemClient);
+
+
         // Listen to System Clients Ignition Messages
         Dispatcher.Default.RegisterCallback<IOServiceClient.AhsokaNotificationArgs>(HandleIngition, client);
 

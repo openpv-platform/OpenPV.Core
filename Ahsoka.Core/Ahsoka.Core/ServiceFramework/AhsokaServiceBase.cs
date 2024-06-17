@@ -90,6 +90,12 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
         catch (Exception ex)
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.High,$"An error occured while handling a service message in {this.ServiceConfig.ServiceName} \r\n {ex.ToString()}");
+            messageHeader.TransportId = CoreTransportIds.ServiceErrorThrown.EnumToInt();
+            SendMessageInternal(messageHeader, new ServiceErrorThrownResponse()
+            {
+                ServiceName = this.ServiceConfig.ServiceName,
+                ErrorInformation = ex.Message,
+            });
         }
 
     }

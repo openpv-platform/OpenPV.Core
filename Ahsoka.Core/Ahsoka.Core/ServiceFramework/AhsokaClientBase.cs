@@ -160,8 +160,10 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"No transport Info was found for Message with TransportID = {messageHeader.TransportId}. Message was passed through as a Notification");
             notificationMessages.TryAdd(new(messageHeader, message));
         }
-        else if (info.IsNotification && messageHeader.TransportId >= 0) //Error Notifications are < 0
-            notificationMessages.TryAdd(new(messageHeader, message));
+        else if (info.IsNotification && messageHeader.TransportId == CoreTransportIds.ServiceErrorThrown.EnumToInt())
+            incomingMessages.TryAdd(new(messageHeader, message)); // Unblock Wait Message
+        else if (info.IsNotification && messageHeader.TransportId >= 0)
+            notificationMessages.TryAdd(new(messageHeader, message)); // Error Notifications are < 0
         else
             incomingMessages.TryAdd(new(messageHeader, message));
     }
@@ -204,6 +206,12 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
                 if (responseHeader.TransportId == CoreTransportIds.InvalidToken.EnumToInt())
                     throw new SecurityException("The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked iwht a valid token");
+
+                if (responseHeader.TransportId == CoreTransportIds.ServiceErrorThrown.EnumToInt() &&
+                    returnObject is ServiceErrorThrownResponse errorMessage)
+                {
+                    throw new SecurityException($"The Service {errorMessage.ServiceName} returned an error. {errorMessage.ErrorInformation}");
+                }
             }
         }
 

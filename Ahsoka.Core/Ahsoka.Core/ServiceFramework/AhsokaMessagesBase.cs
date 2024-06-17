@@ -18,6 +18,9 @@ public abstract class AhsokaMessagesBase
         Info.Add(CoreTransportIds.InvalidToken.EnumToInt(), new ServiceMessageInfo() {TransportId = CoreTransportIds.InvalidToken, RequestType = typeof(InvalidResponseNotification), ReplyType = typeof (InvalidResponseNotification), IsNotification = true, HideInGeneratedClients = true });
         Info.Add(CoreTransportIds.RegisterClient.EnumToInt(), new ServiceMessageInfo() { TransportId = CoreTransportIds.RegisterClient, RequestType = typeof(ClientRegistration), ReplyType = typeof(ClientRegistration), IsNotification = true, HideInGeneratedClients = true });
         Info.Add(CoreTransportIds.DeregisterClient.EnumToInt(), new ServiceMessageInfo() { TransportId = CoreTransportIds.DeregisterClient, RequestType = typeof(ClientRegistration), ReplyType = typeof(ClientRegistration), IsNotification = true, HideInGeneratedClients = true });
+
+        // Returned if the service throws an error
+        Info.Add(CoreTransportIds.ServiceErrorThrown.EnumToInt(), new ServiceMessageInfo() { TransportId = CoreTransportIds.ServiceErrorThrown, RequestType = typeof(ServiceErrorThrownResponse), ReplyType = typeof(ServiceErrorThrownResponse), IsNotification = false, HideInGeneratedClients = true });
     }
 
     protected void RegisterServiceRequest(Enum transportId, Type requestType, Type replyType, bool generateImplementation = true, bool hideInGeneratedClients = false, bool requireSecurity = true)

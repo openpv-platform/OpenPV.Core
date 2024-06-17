@@ -1,4 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
+using Ahsoka.Services.System;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -410,6 +411,15 @@ public class Dispatcher
             if (!endpoints.Contains(autoStartClient))
                 endpoints.Add(client);
         }
+    }
+
+    /// <summary>
+    /// Add a Startup Item that does not directly have any Dispatcher Listeners or Timers.
+    /// </summary>
+    /// <param name="startupItem"></param>
+    public void AddStartupItem(IDispatchSource startupItem)
+    {
+        AddAutoStartInternal(startupItem);
     }
 
     #endregion

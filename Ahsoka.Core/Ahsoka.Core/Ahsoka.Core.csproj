@@ -49,8 +49,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="EnovationCloud.Core" Version="4.5.0" />
-		<PackageReference Include="IronSoftware.System.Drawing" Version="2024.4.1" />
+		<PackageReference Include="EnovationCloud.Core" Version="4.6.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
 		<PackageReference Include="NetMQ" Version="4.0.1.13" />
 		<PackageReference Include="protobuf-net" Version="3.2.30" />
@@ -58,9 +57,11 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.5.1" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
+		<PackageReference Include="System.Drawing.Common" Version="8.0.6" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
 		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
-		<PackageReference Include="MQTTnet" Version="4.3.3.952" />
+		<PackageReference Include="MQTTnet" Version="4.3.6.1152" />
 		<PackageReference Include="SSH.NET" Version="2024.0.0" />
 	</ItemGroup>
 
@@ -69,10 +70,8 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="SharpZipLib" Version="1.4.2" />
 		<PackageReference Include="SimpleWifi.netstandard" Version="2.0.0" />
-		<PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
-		<PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.0" />
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.1" />
 	</ItemGroup>
 
 

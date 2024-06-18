@@ -13,7 +13,7 @@
     <None Remove="publish\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="CairoSharp" Version="3.24.24.117-develop" />
+    <PackageReference Include="CairoSharp" Version="3.24.24.95" />
     <PackageReference Include="CairoSharp.Extensions" Version="1.0.0" />
   </ItemGroup>
   <ItemGroup Label="Reference to Ahsoka Nuget Packages" Condition="!Exists('../../Demo.Build.props')">

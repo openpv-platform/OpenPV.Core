@@ -1,7 +1,6 @@
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Network.ESPWifi;
 using Ahsoka.System;
-using SimpleWifi;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

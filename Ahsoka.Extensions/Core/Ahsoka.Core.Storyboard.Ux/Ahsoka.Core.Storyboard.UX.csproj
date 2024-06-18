@@ -27,10 +27,10 @@
 		<None Remove=".gitignore" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="Avalonia.Controls.DataGrid" Version="11.1.0-beta1" />
-		<PackageReference Include="Avalonia.Desktop" Version="11.1.0-beta1" />
-		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-beta1" />
-		<PackageReference Include="Packaging.Targets" Version="0.1.220-*">
+		<PackageReference Include="Avalonia.Controls.DataGrid" Version="11.1.0-rc1" />
+		<PackageReference Include="Avalonia.Desktop" Version="11.1.0-rc1" />
+		<PackageReference Include="Avalonia.Fonts.Inter" Version="11.1.0-rc1" />
+		<PackageReference Include="Packaging.Targets" Version="0.1.226">
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 	</ItemGroup>
@@ -48,7 +48,7 @@
 	  </EmbeddedResource>
 	</ItemGroup>
 
-	<ItemGroup  Condition="false">
+	<ItemGroup Condition="false">
 	  <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

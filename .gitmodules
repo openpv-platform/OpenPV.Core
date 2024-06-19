@@ -11,15 +11,6 @@
 	path = Ahsoka.Interop/ThirdParty/tiny-process-library
 	url = https://gitlab.com/eidheim/tiny-process-library.git
 
-[submodule "Ahsoka.Extensions/Control"]
-	path = Ahsoka.Extensions/Control
-	url = ../OpenPV.Extensions.Control
-[submodule "Ahsoka.Extensions/Cygnus"]
-	path = Ahsoka.Extensions/Cygnus
-	url = ../OpenPV.Extensions.Cygnus
-[submodule "Ahsoka.Extensions/Bluetooth"]
-	path = Ahsoka.Extensions/Bluetooth
-	url = ../OpenPV.Extensions.Bluetooth
 [submodule "Ahsoka.Shared"]
 	path = Ahsoka.Shared
 	url = ../OpenPV.Shared

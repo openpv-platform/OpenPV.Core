@@ -10,10 +10,10 @@
 	<Target Name="Rebuild" />
 
 	<Target Name="BuildPreReqs" BeforeTargets="PreBuildEvent">
-		<MSBuild Projects="../Ahsoka.DownloadBSP/Ahsoka.DownloadBSP.csproj;../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../../Ahsoka.Extensions/Control/Ahsoka.BuildCoProcessor/Ahsoka.BuildCoprocessor.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="true" />
+		<MSBuild Projects="../Ahsoka.DownloadBSP/Ahsoka.DownloadBSP.csproj;../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="true" />
 	</Target>
 	<Target Name="CleanPreReqs" AfterTargets="BeforeClean">
-		<MSBuild Projects="../Ahsoka.DownloadBSP/Ahsoka.DownloadBSP.csproj;../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../../Ahsoka.Extensions/Control/Ahsoka.BuildCoProcessor/Ahsoka.BuildCoprocessor.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" Targets="BeforeClean" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
+		<MSBuild Projects="../Ahsoka.DownloadBSP/Ahsoka.DownloadBSP.csproj;../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" Targets="BeforeClean" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
 	</Target>
 	
 </Project>

@@ -77,7 +77,7 @@ internal class ExtensionConfiguration
     /// <summary>
     /// Maximum Version that will be accepted 
     /// </summary>
-    public string MaximumVersion { get; set; }
+    public string MaxVersion { get; set; }
 
     /// <summary>
     /// Require Exact Match (for Core Modules) 

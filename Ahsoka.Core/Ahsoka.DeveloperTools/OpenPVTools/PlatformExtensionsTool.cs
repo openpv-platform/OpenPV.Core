@@ -8,6 +8,7 @@ using NuGet.Configuration;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -75,7 +76,7 @@ internal class PlatformExtensionsTool : SparkToolBase
                 if (!Directory.Exists(libDirectory))
                     Directory.CreateDirectory(libDirectory);
 
-                await DownloadPackage(toolVM, cancellationToken, info.PackageName, libDirectory, true);
+                await DownloadPackage(toolVM, cancellationToken, info, false,  libDirectory, true);
 
 
                 if (info.HasUx)
@@ -85,7 +86,7 @@ internal class PlatformExtensionsTool : SparkToolBase
                     if (!Directory.Exists(uxDirectory))
                         Directory.CreateDirectory(uxDirectory);
 
-                    await DownloadPackage(toolVM, cancellationToken, info.UxPackageName, uxDirectory, false);
+                    await DownloadPackage(toolVM, cancellationToken, info, true, uxDirectory, false);
                 }
             }
         }
@@ -97,8 +98,11 @@ internal class PlatformExtensionsTool : SparkToolBase
         File.WriteAllText(GetVersionFilePath(), Version);
     }
 
-    private async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string packageName, string directory, bool evaluateDeps)
+    private async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, ExtensionConfiguration configuration, bool ux, string directory, bool evaluateDeps)
     {
+        string packageName = ux ? configuration.UxPackageName : configuration.PackageName;
+
+
         var source = new PackageSource("https://api.nuget.org/v3/index.json");
         var providers = Repository.Provider.GetCoreV3();
         var repository = new SourceRepository(source, providers);
@@ -108,19 +112,37 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         var response = await search.Search($"packageid:{packageName}", filter, skip: 0, take: 20, NullLogger.Instance, CancellationToken.None);
         var versions = response.SelectMany(x => x["versions"]);
+      
+        var results = versions.Select(x => new NuGetVersion((string)x.SelectToken("version")));
         var nugetVersion = new NuGetVersion(this.Version);
 
-        var results = versions.Select(x => new NuGetVersion((string)x.SelectToken("version")));
-        var minVersion = new NuGetVersion(nugetVersion.Major, nugetVersion.Minor, 0);
+        // Determine if we are running a pre-release version. If not, we will only include pre-release versions
+        bool allowDevelop = nugetVersion.IsPrerelease;
 
+        NuGetVersionFloatBehavior behavior = nugetVersion.IsPrerelease ? NuGetVersionFloatBehavior.PrereleaseMinor : NuGetVersionFloatBehavior.Major;
+       
+        // Find the Best Version
         string thisVersion = null;
-        if (versions.Any(x => x.SelectToken("version").ToString() == nugetVersion.ToString()))
-            thisVersion = nugetVersion.ToFullString();
+
+        // For Internally Build Extensions, we require the matching version.
+        if (configuration.RequireExactVersion)
+        {
+            // Use The Version that Matchers this Tool otherwise, we can't download
+            if (versions.Any(x => x.SelectToken("version").ToString() == nugetVersion.ToString()))
+                thisVersion = nugetVersion.ToFullString(); 
+        }
         else
-           thisVersion = new VersionRange(minVersion, true, nugetVersion, true).FindBestMatch(results)?.ToFullString();
+        {
+            var minVersion = new NuGetVersion(configuration.MinVersion);
+            var maxVersion = new NuGetVersion(configuration.MaxVersion);
+            thisVersion = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(behavior, minVersion, "")).FindBestMatch(results)?.ToFullString();
+        }
+
+        Console.WriteLine($"Found {packageName} with version {thisVersion} for download");
 
         if (thisVersion != null)
-            await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, thisVersion, null, evaluateDeps);
+            await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, thisVersion, null, evaluateDeps); 
+
     }
 
     private static async Task DownloadNugetFiles(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string directory, string package, string version, List<string> previousDownloads, bool evaluateDeps)

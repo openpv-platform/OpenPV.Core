@@ -5,10 +5,26 @@
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<DebugType>portable</DebugType>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	</PropertyGroup>
-	
+
+
+	<PropertyGroup Label="Debugging Support">
+		<DebugSymbols>true</DebugSymbols>
+		<EmbedAllSources>true</EmbedAllSources>
+		<DebugType>portable</DebugType>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+	</PropertyGroup>
+
+	<ItemGroup Label="Debugging Source Support">
+		<PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="8.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+
 	<ItemGroup>
 		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
 		<None Include="README.md" Pack="true" PackagePath="\" />
@@ -31,8 +47,9 @@
 	</ItemGroup>
 
 	<!--To help Debugging since this is loaded dynamically-->
-	<Target Name="AfterCanBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'">
-		<Message Text="Copy CAN Extension..." Importance="high" />
+	<Target Name="AfterDataBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'">
+		<Message Text="Copy Data Extension..." Importance="high" />
+		<Copy SourceFiles="$(ProjectDir)..\..\Ahsoka.PublishExtensions\Ahsoka.Core.DataService.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\..\Extensions\Data Service Extension\Ahsoka.Core.DataService.extensioninfo.json" />
 		<Copy SourceFiles="$(ProjectDir)bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.DataService.dll" DestinationFiles="$(ProjectDir)..\..\..\Extensions\Data Service Extension\lib\Ahsoka.Core.DataService.dll" />
 	</Target>
 

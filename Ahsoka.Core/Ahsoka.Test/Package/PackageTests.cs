@@ -49,7 +49,7 @@ public class PackagingTests : LinearTestBase
     [TestMethod]
     public void TestPackagesInProc()
     {
-        RunPackageTest(true, "AhsokaCAN", "S70", PlatformFamily.OpenViewLinux);
+        RunPackageTest(true, "AhsokaCairo", "S70", PlatformFamily.OpenViewLinux);
     }
 
     [TestMethod]
@@ -129,7 +129,7 @@ public class PackagingTests : LinearTestBase
     }
 
 
-    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCAN")
+    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo")
     {
         string key = family.ToString() + qualifier + packageToTest;
 

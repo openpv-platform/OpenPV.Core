@@ -21,37 +21,22 @@
 
 	<Target Name="CreateExtensions" AfterTargets="PostBuildEvent">
 	
-		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Control\Ahsoka.Core.Can.Ux\Ahsoka.Core.Can.Ux.csproj" /> <!--Builds .Can-->
-		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Cygnus\Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
-		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
 		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard.Ux\Ahsoka.Core.Storyboard.Ux.csproj" /><!--Builds .Storyboard-->
 		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
-		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Control\Ahsoka.Core.IO\Ahsoka.Core.IO.csproj" />
-		<Exec Command="dotnet build -p:SolutionName=Ahsoka.Platform --configuration $(Configuration) $(ExtensionRoot)Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth\Ahsoka.Core.Bluetooth.csproj" />
+		
+		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
+		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj " />
+		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard.UX\Ahsoka.Core.Storyboard.UX.csproj" />
 
-
-		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Control\Ahsoka.Core.Can\Ahsoka.Core.Can.csproj /p:Version=$(GitVersion_FullSemVer)" />
-		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Control\Ahsoka.Core.Can.UX\Ahsoka.Core.Can.UX.csproj /p:Version=$(GitVersion_FullSemVer)" /> 
-		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Control\Ahsoka.Core.IO\Ahsoka.Core.IO.csproj /p:Version=$(GitVersion_FullSemVer)" />
-		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Cygnus\Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj /p:Version=$(GitVersion_FullSemVer)" />
-		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj /p:Version=$(GitVersion_FullSemVer)" />
-		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj /p:Version=$(GitVersion_FullSemVer)" />
-		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj /p:Version=$(GitVersion_FullSemVer)" />
-		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard.UX\Ahsoka.Core.Storyboard.UX.csproj /p:Version=$(GitVersion_FullSemVer)" />
-		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth\Ahsoka.Core.Bluetooth.csproj /p:Version=$(GitVersion_FullSemVer)" />
+		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg" />
+		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg" />
+		<Exec Command="dotnet pack $(ExtensionRoot)Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard.UX\Ahsoka.Core.Storyboard.UX.csproj -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg" />
 
 		<!-- Create Extension Package Info.  System will use these nuget packages to download the libraries-->
 		<ItemGroup>
 			<EXTENSION_INFO Include="$(ExtensionRoot)Ahsoka.Extensions\Ahsoka.PublishExtensions\*.extensioninfo.json" />
 		</ItemGroup>
 		
-		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Bluetooth.LE.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Bluetooth LE Service Extension\Ahsoka.Core.Bluetooth.LE.extensioninfo.json" />
-		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Storyboard.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Storyboard Extension\Ahsoka.Core.Storyboard.extensioninfo.json" />
-		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Can.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Can Service Extension\Ahsoka.Core.Can.extensioninfo.json" />
-		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Cygnus.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Cygnus Service Extension\Ahsoka.Core.Cygnus.extensioninfo.json" />
-		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.DataService.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Data Service Extension\Ahsoka.Core.DataService.extensioninfo.json" />
-		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.IO.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\IO Service Extension\Ahsoka.Core.IO.extensioninfo.json" />
-
 		<Copy SourceFiles="@(EXTENSION_INFO)" DestinationFolder="$(ExtensionRoot)\SparkUpload\ExtensionInfo" />
 
 		<ZipDirectory Overwrite="true" SourceDirectory="$(ExtensionRoot)\SparkUpload\ExtensionInfo\" DestinationFile="$(ExtensionRoot)\SparkUpload\OpenPV Extensions.zip" />

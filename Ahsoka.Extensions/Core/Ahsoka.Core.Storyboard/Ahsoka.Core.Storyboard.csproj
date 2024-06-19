@@ -10,6 +10,22 @@
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	</PropertyGroup>
 
+	<PropertyGroup Label="Debugging Support">
+		<DebugSymbols>true</DebugSymbols>
+		<EmbedAllSources>true</EmbedAllSources>
+		<DebugType>portable</DebugType>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+	</PropertyGroup>
+
+	<ItemGroup Label="Debugging Source Support">
+		<PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="8.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+
 	<ItemGroup>
 	  <None Remove="Storyboard\Proto\StartupConfiguration.proto" />
 	</ItemGroup>
@@ -38,8 +54,9 @@
 		<None Include="README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
-	<Target Name="AfterDrawingBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'">
+	<Target Name="AfterStoryboardBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'">
 		<Message Text="Copy Storyboard Extension..." Importance="high" />
+		<Copy SourceFiles="$(ProjectDir)..\..\Ahsoka.PublishExtensions\Ahsoka.Core.Storyboard.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\..\Extensions\Storyboard Extension\Ahsoka.Core.Storyboard.extensioninfo.json" />
 		<Copy SourceFiles="$(ProjectDir)bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Storyboard.dll" DestinationFiles="$(ProjectDir)..\..\..\Extensions\Storyboard Extension\lib\Ahsoka.Core.Storyboard.dll" />
 	</Target>
 

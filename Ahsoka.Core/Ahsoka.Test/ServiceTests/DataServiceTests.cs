@@ -1,13 +1,10 @@
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Data;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 using System.Threading;
-using Ahsoka.Services.IO;
-using ShimSkiaSharp;
 
 namespace Ahsoka.Test;
 
@@ -125,49 +122,6 @@ public class DataServiceTests : LinearTestBase
         AhsokaRuntime.ShutdownAll();
     }
 
-   // [TestMethod]
-    public void TestDataServiceIOValues()
-    {
-        // Start clients
-        var dataClient = new DataServiceClient();
-        var ioclient = new IOServiceClient();
-        AhsokaRuntime.CreateBuilder()
-                   .AddClients(dataClient, ioclient)
-                   .StartWithInternalServices();
-
-        // Get IO Key Values 
-        var keys = dataClient.SearchAvailableKeys(new AvailableKeySearchInfo() { OriginFilter = IOService.Name });
-        Assert.IsTrue(keys.Keys.Count >= 1);
-
-        // Ask Data Service for Known Values in the SystemService
-        var keyInfo = keys.GetKeyInfo(IOService.Name, SystemServiceDataKeys.Available);
-        Assert.IsTrue(keyInfo != null);
-
-        var keyValues = dataClient.GetKeyValues(keyInfo.ToKeyList());
-        Assert.IsTrue(keyValues.Values.First().BooleanValue == true);
-
-        // Subscriptions
-        var subscriptionList = new KeySubscriptionRequest();
-        //subscriptionList.SubscribeToKeys.AddRange(new KeyInfo[] { floatKI, intKI, stringKI, uintKI, dataKI });
-        //var subscriberInfo = dataClient.SubscribeToKeys(subscriptionList);
-
-        // Notify a Key and See if We Recieve Notification
-        AutoResetEvent resetEvent = new (false);
-        dataClient.NotificationReceived += (sender, notificationInfo) =>
-        {
-            KeyValueNotification notif = notificationInfo.NotificationObject as KeyValueNotification;
-           // if (notif.KeyValues.FirstOrDefault().KeyInfo.Key == floatKI.Key && notif.KeyValues.FirstOrDefault().FloatValue == 4321.0)
-           //     resetEvent.Set();
-        };
-
-       
-        // Wait for Notification to Arrive
-        resetEvent.WaitOne();
-
-        // Stop the Runtimes
-        AhsokaRuntime.ShutdownAll();
-
-    }
 }
 
   

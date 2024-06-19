@@ -1,4 +1,3 @@
-using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Security;
 using Ahsoka.Services.System;
@@ -8,8 +7,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
-using static Ahsoka.Services.Can.J1939Helper;
 
 namespace Ahsoka.Test;
 

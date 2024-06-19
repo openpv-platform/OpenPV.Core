@@ -25,11 +25,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Ahsoka.Extensions\Bluetooth\Ahsoka.Core.Bluetooth\Ahsoka.Core.Bluetooth.csproj" />
-		<ProjectReference Include="..\..\Ahsoka.Extensions\Control\Ahsoka.Core.IO\Ahsoka.Core.IO.csproj" />
-		<ProjectReference Include="..\..\Ahsoka.Extensions\Control\Ahsoka.Core.CAN\Ahsoka.Core.Can.csproj" />
+		<ProjectReference Include="..\..\Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
 		<ProjectReference Include="..\..\Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
-		<ProjectReference Include="..\..\Ahsoka.Extensions\Cygnus\Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
 		<ProjectReference Include="..\..\Ahsoka.Core\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj" />
 	</ItemGroup>
 
@@ -41,8 +38,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\..\Ahsoka.Demo\Ahsoka.CS.CAN\**\*.*" Exclude="..\..\Ahsoka.Demo\Ahsoka.CS.CAN\bin\**\*.*;..\..\Ahsoka.Demo\Ahsoka.CS.CAN\obj\**\*.*">
-			<Link>AhsokaCAN\%(RecursiveDir)%(Filename)%(Extension)</Link>
+		<None Include="..\..\Ahsoka.Demo\Ahsoka.CS.Cairo\**\*.*" Exclude="..\..\Ahsoka.Demo\Ahsoka.CS.Cairo\bin\**\*.*;..\..\Ahsoka.Demo\Ahsoka.CS.Cairo\obj\**\*.*">
+			<Link>AhsokaCairo\%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

@@ -252,9 +252,7 @@ stages:
     - task: CopyFiles@2
       displayName: 'Moving Nugets to Upload Area'
       inputs:
-        Contents: |
-          $(Build.SourcesDirectory)/**/*.nupkg
-          $(Build.SourcesDirectory)/**/*.snupkg
+        Contents: '$(Build.SourcesDirectory)/**/*.nupkg'
         TargetFolder: '$(Build.ArtifactStagingDirectory)/nuget'
         OverWrite: true
         flattenFolders: true

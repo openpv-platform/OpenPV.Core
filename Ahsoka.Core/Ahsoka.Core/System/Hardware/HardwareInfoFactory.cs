@@ -43,7 +43,7 @@ public partial class HardwareInfo
                             {
                                 string fileText = File.ReadAllText(hardwareDef);
                                 var hd = JsonUtility.Deserialize<HardwareInfo>(fileText);
-                                hardwareDefinitions.Add(hd.FactoryInfo.PlatformDescription, hd);
+                                AddHardwareInfo(hd);
                             }
                             catch { Console.WriteLine($"Failed to load HardwareConfiguration at {hardwareDef}"); }
                         }
@@ -53,6 +53,16 @@ public partial class HardwareInfo
             else { return; } // Running on a target...Don't Load Anything.
         }
 
+    }
+
+    /// <summary>
+    /// Adds a hardware definition to the Hardware Def List
+    /// </summary>
+    /// <param name="hd"></param>
+    public static void AddHardwareInfo(HardwareInfo hd)
+    {
+        if (!hardwareDefinitions.ContainsKey(hd.PlatformDescription))
+            hardwareDefinitions.Add(hd.FactoryInfo.PlatformDescription, hd);
     }
 
     /// <summary>

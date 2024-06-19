@@ -83,7 +83,7 @@ public static class PlatformSupportPathInfo
         }
 
         if (!Directory.Exists(returnValue))
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"The path to the Extensions folder could not be found relative to {AppContext.BaseDirectory}.   Extension Support Not Available");
+            AhsokaLogging.LogMessage( Environment.ProcessPath.Contains("Ahsoka.CommandLine") ? AhsokaVerbosity.High : AhsokaVerbosity.Low, $"The path to the Extensions folder could not be found relative to {AppContext.BaseDirectory}.   Extension Support Not Available");
 
         return returnValue;
     }

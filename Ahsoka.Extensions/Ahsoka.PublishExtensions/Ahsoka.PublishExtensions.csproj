@@ -16,7 +16,7 @@
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
 		<Message Text="Cleaning Windows BuildOutputs" Importance="high" />
 		<RemoveDir Directories="(ExtensionRoot)\Extensions\" />
-		<Delete Files="$(ExtensionRoot)\SparkUpload\OpenPV Extensions.zip"/>
+		<Delete Files="$(ExtensionRoot)\SparkUpload\OpenPV Extensions.zip" />
 	</Target>
 
 	<Target Name="CreateExtensions" AfterTargets="PostBuildEvent">
@@ -42,8 +42,15 @@
 
 		<!-- Create Extension Package Info.  System will use these nuget packages to download the libraries-->
 		<ItemGroup>
-			<EXTENSION_INFO Include="$(ExtensionRoot)\Extensions\**\*.extensioninfo.json" />
+			<EXTENSION_INFO Include="$(ExtensionRoot)Ahsoka.Extensions\Ahsoka.PublishExtensions\*.extensioninfo.json" />
 		</ItemGroup>
+		
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Bluetooth.LE.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Bluetooth LE Service Extension\Ahsoka.Core.Bluetooth.LE.extensioninfo.json" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Storyboard.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Storyboard Extension\Ahsoka.Core.Storyboard.extensioninfo.json" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Can.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Can Service Extension\Ahsoka.Core.Can.extensioninfo.json" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Cygnus.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Cygnus Service Extension\Ahsoka.Core.Cygnus.extensioninfo.json" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.DataService.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\Data Service Extension\Ahsoka.Core.DataService.extensioninfo.json" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.IO.extensioninfo.json" DestinationFiles="$(ExtensionRoot)\Extensions\IO Service Extension\Ahsoka.Core.IO.extensioninfo.json" />
 
 		<Copy SourceFiles="@(EXTENSION_INFO)" DestinationFolder="$(ExtensionRoot)\SparkUpload\ExtensionInfo" />
 

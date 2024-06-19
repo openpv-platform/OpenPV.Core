@@ -1,0 +1,38 @@
+﻿{
+  "extensionName": "Cygnus Service Extension",
+  "packageName": "Ahsoka.Core.Cygnus",
+  "serviceConfigurations": [
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "CygnusServerInterfaceService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+      "dataChannel": 5110,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "CygnusServerService",
+      "tcpListenAddress": "localhost",
+      "tcpConnectionAddress": "localhost",
+      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+      "dataChannel": 5111,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "CygnusService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+      "dataChannel": 5112,
+      "behaviors": "AutoStart"
+    }
+  ],
+  "hasCommands": "false",
+  "hasUx": "false",
+  "minVersion": "",
+  "maxVersion": "",
+  "requireExactVersion": "true"
+}

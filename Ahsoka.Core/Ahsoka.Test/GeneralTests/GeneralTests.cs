@@ -1,3 +1,4 @@
+using Ahsoka.DeveloperTools;
 using Ahsoka.DeveloperTools.OpenPVTools;
 using Ahsoka.DeveloperTools.Spark;
 using Ahsoka.Installer.Components;
@@ -5,14 +6,21 @@ using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
+using Microsoft.VisualBasic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using NuGet.Protocol.Core.Types;
+using NuGet.Protocol;
+using NuGet.Versioning;
 using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
+using static SkiaSharp.HarfBuzz.SKShaper;
+using NuGet.Configuration;
+using MQTTnet.Internal;
 
 namespace Ahsoka.Test;
 
@@ -28,6 +36,35 @@ public class GeneralTests : LinearTestBase
     public static void StopLogging()
     {
         AhsokaLogging.StopMemoryLog();
+    }
+
+    [TestMethod]
+    public void NugetFetchTest()
+    {
+        string packageName = "Ahsoka.Core";
+        string minVersionString = "3.0.0";
+        string maxVersionString = "4.0.0";
+
+        var source = new PackageSource("https://api.nuget.org/v3/index.json");
+        var providers = Repository.Provider.GetCoreV3();
+        var repository = new SourceRepository(source, providers);
+
+        var search =  repository.GetResourceAsync<RawSearchResourceV3>().GetAwaiter().GetResult();
+        var filter = new SearchFilter(true);
+
+        var response = search.Search($"packageid:{packageName}", filter, skip: 0, take: 100, NuGet.Common.NullLogger.Instance, CancellationToken.None).GetAwaiter().GetResult();
+        var versions = response.SelectMany(x => x["versions"]);
+
+        var results = versions.Select(x => new NuGetVersion((string)x.SelectToken("version")));
+        var minVersion = new NuGetVersion(minVersionString);
+        var maxVersion = new NuGetVersion(maxVersionString);
+
+
+        var thisVersion = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(NuGetVersionFloatBehavior.Major,minVersion,"")).FindBestMatch(results)?.ToFullString();
+        Console.WriteLine($"Minor Finds {thisVersion}");
+
+        thisVersion = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(NuGetVersionFloatBehavior.PrereleaseMinor, minVersion, "")).FindBestMatch(results)?.ToFullString();
+        Console.WriteLine($"PrereleaseMinor Finds {thisVersion}");
     }
 
     [TestMethod]
@@ -231,7 +268,7 @@ public class GeneralTests : LinearTestBase
     }
 
     [TestMethod]
-    public void EncryptionTest() 
+    public void EncryptionTest()
     {
         string testData = "TestData";
         string path = Path.GetTempFileName();
@@ -310,4 +347,7 @@ public class GeneralTests : LinearTestBase
             set { OnSetObject(ref myValueObject, value); }
         }
     }
+
+
+   
 }

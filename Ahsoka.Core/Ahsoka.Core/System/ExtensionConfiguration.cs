@@ -68,4 +68,20 @@ internal class ExtensionConfiguration
     /// FileName for User Interface Extension Library
     /// </summary>
     public string UXLibraryFilename { get { return UxPackageName + ".dll"; } }
+
+    /// <summary>
+    /// Minimum Version that will be accepted 
+    /// </summary>
+    public string MinVersion { get; set; }
+
+    /// <summary>
+    /// Maximum Version that will be accepted 
+    /// </summary>
+    public string MaximumVersion { get; set; }
+
+    /// <summary>
+    /// Require Exact Match (for Core Modules) 
+    /// </summary>
+    public bool RequireExactVersion { get; set; }
+
 }

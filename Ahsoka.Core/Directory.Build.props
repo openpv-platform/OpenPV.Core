@@ -8,8 +8,6 @@
 		<NoDefaultExcludes>true</NoDefaultExcludes>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-		<DebugType>portable</DebugType>
-		<DebugSymbols>true</DebugSymbols>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<Platforms>AnyCPU;x64</Platforms>
 	</PropertyGroup>

@@ -34,7 +34,6 @@
 	<Target Name="AfterCanBuild" AfterTargets="Build" Condition="$(SolutionName)=='Ahsoka.Platform'">
 		<Message Text="Copy CAN Extension..." Importance="high" />
 		<Copy SourceFiles="$(ProjectDir)bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.DataService.dll" DestinationFiles="$(ProjectDir)..\..\..\Extensions\Data Service Extension\lib\Ahsoka.Core.DataService.dll" />
-		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.DataService.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\..\Extensions\Data Service Extension\Ahsoka.Core.DataService.extensioninfo.json" />
 	</Target>
 
 	<ItemGroup  Condition="false">

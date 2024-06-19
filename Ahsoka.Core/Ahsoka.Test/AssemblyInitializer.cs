@@ -5,6 +5,7 @@ using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace Ahsoka.Test;
 
@@ -14,6 +15,11 @@ public class TestInitializer : LinearTestBase
    [AssemblyInitialize]
     public static void AssemblyInit(TestContext context)
     {
+        // Remove Any Existing Ahsoka Folders
+        string ahsokaFolder = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/Ahsoka";
+        if (Directory.Exists(ahsokaFolder)) 
+            Directory.Delete(ahsokaFolder, true);
+
         ProcessUtility.RunProcess("taskkill", "/im Ahsoka.CommandLine.exe /f",null, out string result, out string error);
 
         Extensions.LoadExtensions();

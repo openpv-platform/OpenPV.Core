@@ -1,0 +1,23 @@
+﻿{
+  "extensionName": "Data Service Extension",
+  "packageName": "Ahsoka.Core.DataService",
+  "uxpackageName": "",
+  "uxViewModelName": "",
+  "serviceConfigurations": [
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "DataService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+      "dataChannel": 5109,
+      "behaviors": "AutoStart"
+    }
+  ],
+  "hasCommands": "false",
+  "hasUx": "false",
+  "hasSdkGenerator": "false",
+  "minVersion": "",
+  "maxVersion": "",
+  "requireExactVersion": "true"
+}

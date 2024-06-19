@@ -23,6 +23,11 @@
 		<Exec Command="dotnet pack ../Ahsoka.Core.Drawing/Ahsoka.Core.Drawing.csproj" />
 		<Exec Command="dotnet pack ../Ahsoka.DeveloperTools.Core/Ahsoka.DeveloperTools.Core.csproj" />
 		
+		<Exec Command="dotnet pack ../Ahsoka.Core/Ahsoka.Core.csproj -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg" />
+		<Exec Command="dotnet pack ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg" />
+		<Exec Command="dotnet pack ../Ahsoka.Core.Drawing/Ahsoka.Core.Drawing.csproj -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg" />
+		<Exec Command="dotnet pack ../Ahsoka.DeveloperTools.Core/Ahsoka.DeveloperTools.Core.csproj -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg" />
+
 	</Target>
 
 

@@ -41,12 +41,6 @@ public class PackagingTests : LinearTestBase
     }
 
     [TestMethod]
-    public void TestPackagesStoryboard()
-    {
-        RunPackageTest(true, "AhsokaDemo");
-    }
-
-    [TestMethod]
     public void TestPackagesInProc()
     {
         RunPackageTest(true, "AhsokaCairo", "S70", PlatformFamily.OpenViewLinux);

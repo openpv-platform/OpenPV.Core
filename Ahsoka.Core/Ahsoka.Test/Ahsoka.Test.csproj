@@ -25,16 +25,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
-		<ProjectReference Include="..\..\Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
 		<ProjectReference Include="..\..\Ahsoka.Core\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="..\..\Ahsoka.Demo\Ahsoka.CS.Blank.Storyboard\**\*.*" Exclude="..\..\Ahsoka.Demo\Ahsoka.CS.Blank.Storyboard\bin\**\*.*;..\..\Ahsoka.Demo\Ahsoka.CS.Blank.Storyboard\obj\**\*.*">
-			<Link>AhsokaDemo\%(RecursiveDir)%(Filename)%(Extension)</Link>
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
 	</ItemGroup>
 
 	<ItemGroup>

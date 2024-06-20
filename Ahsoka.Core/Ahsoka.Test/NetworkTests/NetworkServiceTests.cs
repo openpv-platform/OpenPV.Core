@@ -1,5 +1,4 @@
 ﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Data;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.Network.Platform;
 using Ahsoka.System;
@@ -26,11 +25,10 @@ public class NetworkServiceTest : LinearTestBase
     public void TestNetworkService()
     {
         // Start client for NetworkService
-        var dataClient = new DataServiceClient(); 
         var client = new NetworkServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
         var clientRuntime = AhsokaRuntime.CreateBuilder()
-                     .AddClients(dataClient, client)
+                     .AddClients(client)
                      .StartWithInternalServices();
 
         string wifiAdapterId = null;
@@ -131,14 +129,6 @@ public class NetworkServiceTest : LinearTestBase
                 profiles = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = wifiAdapterId, UseOSProfiles = false });
                 Assert.IsTrue(profiles.NetworkProfiles.Count == 0);
             }
-        }
-
-        if (testEnabled)
-        {
-            var keys = dataClient.SearchAvailableKeys(new AvailableKeySearchInfo() { OriginFilter = NetworkService.Name, KeyFilter = NetworkServiceDataKeys.NetworkState });
-            var value = dataClient.GetKeyValues(keys.Keys.First().ToKeyList());
-            keys = dataClient.SearchAvailableKeys(new AvailableKeySearchInfo() { OriginFilter = NetworkService.Name, KeyFilter = NetworkServiceDataKeys.IPAddress });
-            value = dataClient.GetKeyValues(keys.Keys.First().ToKeyList());
         }
 
         if (wifiAdapterId != null)

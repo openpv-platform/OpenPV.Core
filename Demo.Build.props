@@ -21,7 +21,5 @@
 	<ItemGroup Label="Development References" >
 		<ProjectReference Include="..\..\Ahsoka.Core\Ahsoka.Core\Ahsoka.Core.csproj" />
 		<ProjectReference Include="..\..\Ahsoka.Core\Ahsoka.Core.Drawing\Ahsoka.Core.Drawing.csproj" />
-		<ProjectReference Include="..\..\Ahsoka.Extensions\Core\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
-		<ProjectReference Include="..\..\Ahsoka.Extensions\Core\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
 	</ItemGroup>
 </Project>

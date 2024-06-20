@@ -17,10 +17,8 @@
 		
 		<Message Text="Clean Platform Support Folders at $(PlatformSupportRoot)" Importance="high" />
 		<RemoveDir Directories="$(PlatformSupportRoot)PlatformSupport\" />
-		<RemoveDir Directories="$(PlatformSupportRoot)Extensions\" />
 		<RemoveDir Directories="$(PlatformSupportRoot)SparkUpload\" />
 		<MakeDir Directories="$(PlatformSupportRoot)PlatformSupport\" />
-		<MakeDir Directories="$(PlatformSupportRoot)Extensions\" />
 		<MakeDir Directories="$(PlatformSupportRoot)SparkUpload\" />
 		
 	</Target>
@@ -35,7 +33,7 @@
 
 	<Target Name="BuildDemosAndExtensions" AfterTargets="BuildSupportPackages">
 
-		<MSBuild Projects="../Ahsoka.PublishPowerVision/Ahsoka.PublishPowerVision.csproj;../Ahsoka.PublishNuget/Ahsoka.PublishNuget.csproj;../../Ahsoka.Extensions/Ahsoka.PublishExtensions/Ahsoka.PublishExtensions.csproj;../Ahsoka.PublishDemos/Ahsoka.PublishDemos.csproj" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="true" />
+		<MSBuild Projects="../Ahsoka.PublishPowerVision/Ahsoka.PublishPowerVision.csproj;../Ahsoka.PublishNuget/Ahsoka.PublishNuget.csproj;../Ahsoka.PublishExtensions/Ahsoka.PublishExtensions.csproj;../Ahsoka.PublishDemos/Ahsoka.PublishDemos.csproj" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="true" />
 	</Target>
 
 	<ItemGroup>

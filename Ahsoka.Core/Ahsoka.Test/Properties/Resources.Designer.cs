@@ -61,22 +61,6 @@ namespace Ahsoka.Test.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;
-        ///&lt;eventdefinitions&gt;
-        ///  &lt;event format=&quot;8u1 unsigned_int_64 8s1 signed_int_64 4f1 float 4u1 unsigned_int_32 4s1 signed_int_32 4f10 float_array 4u10 unsigned_int_array 4s10 signed_int_array 2u1 unsigned_int_16 2s1 signed_int_16 1u1 unsigned_int_8 1s1 signed_int_8 1s0 string&quot; name=&quot;generate_event_test&quot; type=&quot;0x40&quot;&gt;
-        ///    &lt;field name=&quot;float&quot;/&gt;
-        ///    &lt;field name=&quot;float_array&quot;/&gt;
-        ///    &lt;field name=&quot;signed_int_16&quot;/&gt;
-        ///    &lt;field name=&quot;signed_int_32&quot;/&gt;
-        ///    &lt;field na [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string EventFile {
-            get {
-                return ResourceManager.GetString("EventFile", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;UpgradeName&quot; : &quot;OpenView 3.0 BSP Upgrade&quot;,
         ///  &quot;PlatformFamily&quot;: &quot;OpenViewLinux&quot;,

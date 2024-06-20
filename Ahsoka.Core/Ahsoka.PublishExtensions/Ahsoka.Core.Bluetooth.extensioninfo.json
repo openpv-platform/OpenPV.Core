@@ -1,0 +1,28 @@
+﻿{
+  "extensionName": "Bluetooth Classic Extension",
+  "library": "Ahsoka.Core.Bluetooth",
+  "serviceConfigurations": [
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "BluetoothService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+      "dataChannel": 5104,
+      "notificationChannel": 6104,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "BluetoothDataService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+      "dataChannel": 5105,
+      "notificationChannel": 6104,
+      "behaviors": "AutoStart"
+    }
+  ],
+  "hasCommands": "false",
+  "hasUx": "true"
+}

@@ -10,10 +10,11 @@
 
 	<ItemGroup Label="Reference to Ahsoka Nuget Packages" Condition="!Exists('../../Demo.Build.props')">
 		<PackageReference Include="Ahsoka.Core" Version="(3.*,4.0)" />
-		<PackageReference Include="Ahsoka.Core.DataService" Version="(3.*,4.0)" />
 		<PackageReference Include="Ahsoka.Core.Drawing" Version="(3.*,4.0)" />
 	</ItemGroup>
+
 	<ItemGroup>
+		<PackageReference Include="Ahsoka.Core.DataService" Version="3.*-*" />
 		<PackageReference Include="Ahsoka.Core.IO" Version="3.3.2-zzz-develop.1" />
 	</ItemGroup>
 

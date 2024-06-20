@@ -1,0 +1,117 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<!--Disable Build Outputs-->
+	<Target Name="Build" />
+	<Target Name="Rebuild" />
+
+	<PropertyGroup>
+		<ExtensionRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</ExtensionRoot>
+	</PropertyGroup>
+
+	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
+		<Message Text="Cleaning BuildExtension BuildOutputs" Importance="high" />
+		<RemoveDir Directories="$(ExtensionRoot)\Extensions\" />
+		<MakeDir Directories="$(ExtensionRoot)\Extensions\" />
+		<Delete Files="$(ExtensionRoot)\SparkUpload\OpenPV Extensions.zip" />
+	</Target>
+
+	<Target Name="CreateExtensions" AfterTargets="PostBuildEvent">
+		<Message Text="Build with Extension Root $(ExtensionRoot)" Importance="high" />
+
+		<!-- Create Extension Package Info.  System will use these nuget packages to download the libraries-->
+		<ItemGroup>
+			<EXTENSION_INFO Include="$(ExtensionRoot)Ahsoka.Core\Ahsoka.PublishExtensions\*.extensioninfo.json" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(EXTENSION_INFO)" DestinationFolder="$(ExtensionRoot)\SparkUpload\ExtensionInfo" />
+
+		<ZipDirectory Overwrite="true" SourceDirectory="$(ExtensionRoot)\SparkUpload\ExtensionInfo\" DestinationFile="$(ExtensionRoot)\SparkUpload\OpenPV Extensions.zip" />
+
+		<!--Copy Spark Package Manifst to Output -->
+		<Copy SourceFiles="OpenPV Extensions.release.json" DestinationFiles="$(ExtensionRoot)\SparkUpload\OpenPV Extensions.release.json" />
+	</Target>
+
+	<PropertyGroup>
+		<CoreExtensionPath>$(ExtensionRoot)..\OpenPV.Extensions.Core</CoreExtensionPath>
+		<ControlPath>$(ExtensionRoot)..\OpenPV.Extensions.Control</ControlPath>
+		<CygnusPath>$(ExtensionRoot)..\OpenPV.Extensions.Cygnus</CygnusPath>
+		<BluetoothPath>$(ExtensionRoot)..\OpenPV.Extensions.Bluetooth</BluetoothPath>
+	</PropertyGroup>
+
+	<!--Builds Local Debug Extensions-->
+	<Target Name="CoreExtensionBuild" AfterTargets="CreateExtensions" Condition="Exists($(CoreExtensionPath))">
+		<Message Text="Build DataService Extension @ $(CoreExtensionPath)" Importance="high" />
+		<Exec Command="dotnet build --configuration $(Configuration) $(CoreExtensionPath)\Ahsoka.Core.DataService\Ahsoka.Core.DataService.csproj" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.DataService.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\Extensions\DataService Service Extension\Ahsoka.Core.DataService.extensioninfo.json" />
+		<Copy SourceFiles="$(CoreExtensionPath)\Ahsoka.Core.DataService\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.DataService.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\DataService Service Extension\lib\Ahsoka.Core.DataService.dll" />
+
+		<Message Text="Copy Storyboard Extension @ $(CoreExtensionPath)" Importance="high" />
+		<Exec Command="dotnet build --configuration $(Configuration) $(CoreExtensionPath)\Ahsoka.Core.Storyboard\Ahsoka.Core.Storyboard.csproj" />
+		<Exec Command="dotnet build --configuration $(Configuration) $(CoreExtensionPath)\Ahsoka.Core.Storyboard.Ux\Ahsoka.Core.Storyboard.Ux.csproj" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Storyboard.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\Extensions\Storyboard Service Extension\Ahsoka.Core.Storyboard.extensioninfo.json" />
+		<Copy SourceFiles="$(CoreExtensionPath)\Ahsoka.Core.Storyboard\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Storyboard.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Storyboard Service Extension\lib\Ahsoka.Core.Storyboard.dll" />
+		<Copy SourceFiles="$(CoreExtensionPath)\Ahsoka.Core.Storyboard.Ux\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Storyboard.Ux.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Storyboard Service Extension\ux\Ahsoka.Core.Storyboard.Ux.dll" />
+	</Target>
+	
+	
+	<!--Builds Local Debug Extensions-->
+	<Target Name="BluetoothBuild" AfterTargets="CoreExtensionBuild" Condition="Exists($(BluetoothPath))">
+		<Message Text="Build BLE Extension @ $(BluetoothPath)" Importance="high" />
+		<Exec Command="dotnet build --configuration $(Configuration) $(BluetoothPath)\Ahsoka.Core.Bluetooth.LE\Ahsoka.Core.Bluetooth.LE.csproj" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Bluetooth.LE.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\Extensions\Bluetooth LE Service Extension\Ahsoka.Core.Bluetooth.LE.extensioninfo.json" />
+		<Copy SourceFiles="$(BluetoothPath)\Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Bluetooth.LE.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Bluetooth LE Service Extension\lib\Ahsoka.Core.Bluetooth.LE.dll" />
+		<Copy SourceFiles="$(BluetoothPath)\Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Tmds.DBus.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Bluetooth LE Service Extension\lib\Tmds.DBus.dll" />
+
+		<Message Text="Copy BT Classic Extension @ $(BluetoothPath)" Importance="high" />
+		<Exec Command="dotnet build --configuration $(Configuration) $(BluetoothPath)\Ahsoka.Core.Bluetooth\Ahsoka.Core.Bluetooth.csproj" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Bluetooth.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\Extensions\Bluetooth Service Extension\Ahsoka.Core.Bluetooth.extensioninfo.json" />
+		<Copy SourceFiles="$(BluetoothPath)\Ahsoka.Core.Bluetooth\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Bluetooth.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Bluetooth Service Extension\lib\Ahsoka.Core.Bluetooth.dll" />
+		<Copy SourceFiles="$(BluetoothPath)\Ahsoka.Core.Bluetooth\bin\$(Configuration)\$(TargetFramework)\Tmds.DBus.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Bluetooth Service Extension\lib\Tmds.DBus.dll" />
+	</Target>
+
+
+	<Target Name="ControlBuild" AfterTargets="BluetoothBuild" Condition="Exists($(ControlPath))">
+
+		<Message Text="Build CAN Extension @ $(ControlPath)" Importance="high" />
+		<Exec Command="dotnet build --configuration $(Configuration) $(ControlPath)\Ahsoka.Core.Can\Ahsoka.Core.Can.csproj" />
+		<Exec Command="dotnet build --configuration $(Configuration) $(ControlPath)\Ahsoka.Core.Can.Ux\Ahsoka.Core.Can.Ux.csproj" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Can.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\Extensions\CAN Service Extension\Ahsoka.Core.Can.extensioninfo.json" />
+		<Copy SourceFiles="$(ControlPath)\Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Can.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\CAN Service Extension\lib\Ahsoka.Core.Can.dll" />
+		<Copy SourceFiles="$(ControlPath)\Ahsoka.Core.Can.UX\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Can.Ux.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\CAN Service Extension\ux\Ahsoka.Core.Can.Ux.dll" />
+		<Copy SourceFiles="$(ControlPath)\Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\SocketCANSharp.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\CAN Service Extension\lib\SocketCANSharp.dll" />
+		<Copy SourceFiles="$(ControlPath)\Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\ELFSharp.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\CAN Service Extension\lib\ELFSharp.dll" />
+		<Copy SourceFiles="$(ControlPath)\Ahsoka.Core.Can\bin\$(Configuration)\$(TargetFramework)\DbcParserLib.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Can Service Extension\lib\DbcParserLib.dll" />
+
+		<Message Text="Copy IO Extension @ $(ControlPath)" Importance="high" />
+		<Exec Command="dotnet build --configuration $(Configuration) $(ControlPath)\Ahsoka.Core.IO\Ahsoka.Core.IO.csproj" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.IO.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\Extensions\IO Service Extension\Ahsoka.Core.IO.extensioninfo.json" />
+		<Copy SourceFiles="$(ControlPath)\Ahsoka.Core.IO\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.IO.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\IO Service Extension\lib\Ahsoka.Core.IO.dll" />
+		<Copy SourceFiles="$(ControlPath)\Ahsoka.Core.IO\bin\$(Configuration)\$(TargetFramework)\System.Device.GPIO.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\IO Service Extension\lib\System.Device.GPIO.dll" />
+
+	</Target>
+
+	<Target Name="CygnusBuild" AfterTargets="ControlBuild" Condition="Exists($(CygnusPath))">
+
+		<Message Text="Build Cygnus Extension @ $(CygnusPath)" Importance="high" />
+		<Exec Command="dotnet build --configuration $(Configuration) $(CygnusPath)\Ahsoka.Core.Cygnus\Ahsoka.Core.Cygnus.csproj" />
+		<Copy SourceFiles="$(ProjectDir)Ahsoka.Core.Cygnus.extensioninfo.json" DestinationFiles="$(ProjectDir)..\..\Extensions\Cygnus Service Extension\Ahsoka.Core.Cygnus.extensioninfo.json" />
+		<Copy SourceFiles="$(CygnusPath)\Ahsoka.Core.Cygnus\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Cygnus.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Cygnus Service Extension\lib\Ahsoka.Core.Cygnus.dll" />
+		<Copy SourceFiles="$(CoreExtensionPath)\Ahsoka.Core.DataService\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.DataService.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Cygnus Service Extension\lib\Ahsoka.Core.DataService.dll" />
+		<Copy SourceFiles="$(BluetoothPath)\Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Core.Bluetooth.LE.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Cygnus Service Extension\lib\Ahsoka.Core.Bluetooth.LE.dll" />
+		<Copy SourceFiles="$(BluetoothPath)\Ahsoka.Core.Bluetooth.LE\bin\$(Configuration)\$(TargetFramework)\Tmds.DBus.dll" DestinationFiles="$(ProjectDir)..\..\Extensions\Cygnus Service Extension\\lib\Tmds.DBus.dll" />
+
+	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

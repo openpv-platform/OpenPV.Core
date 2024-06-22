@@ -12,6 +12,13 @@
     "password": ""
   },
   "networkInfo": {
-    "adapterInfoList": []
+    "adapterInfoList": [
+      {
+        "adapterId": "eth0",
+        "adapterType": "Ethernet",
+        "description": "Ethernet",
+        "macAddress": ""
+      }
+    ]
   }
 }

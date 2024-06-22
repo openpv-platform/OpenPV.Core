@@ -56,6 +56,12 @@
         "description": "Onboard AccessPoint",
         "macAddress": "",
         "module": "esp32"
+      },
+      {
+        "adapterId": "eth0",
+        "adapterType": "Ethernet",
+        "description": "Ethernet",
+        "macAddress": ""
       }
     ]
   },

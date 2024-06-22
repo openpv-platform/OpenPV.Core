@@ -27,29 +27,34 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
 
     protected override void OnEnableAdapter(AdapterInfo adapter, AdapterConfiguration config)
     {
-        //Set MAC, Bring UP
-        using var connection = interopList.AquireInterop(adapter.AdapterId);
-
-        if (connection != null)
+        // Don't create interop for Ethernet Devices
+        if (adapter.AdapterType == NetworkAdapterType.WifiClient || 
+            adapter.AdapterType == NetworkAdapterType.WifiAccessPoint)
         {
-            if (adapter.Module is ModuleType.Esp32 or
-                ModuleType.None) // Handle Old ST Units.
+            //Set MAC, Bring UP
+            using var connection = interopList.AquireInterop(adapter.AdapterId);
+
+            if (connection != null)
             {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Initializing ESP Firmware");
-                firmware = new ESPNetworkFirmware();
-                firmware.Init();
-            }
+                if (adapter.Module is ModuleType.Esp32 or
+                    ModuleType.None) // Handle Old ST Units.
+                {
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Initializing ESP Firmware");
+                    firmware = new ESPNetworkFirmware();
+                    firmware.Init();
+                }
 
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Booting ESP Module");
-            firmware?.Boot();
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Booting ESP Module");
+                firmware?.Boot();
 
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Configuring ESP Module");
-            ConfigureAdapter(connection, config);
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Configuring ESP Module");
+                ConfigureAdapter(connection, config);
 
-            if (config.AdapterMode == AdapterMode.Client)
-            {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Starting Network Adapter Client");
-                LinuxNetworkUtilities.StartAdapter(adapter.AdapterId);
+                if (config.AdapterMode == AdapterMode.Client)
+                {
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Starting Network Adapter Client");
+                    LinuxNetworkUtilities.StartAdapter(adapter.AdapterId);
+                }
             }
         }
 
@@ -59,14 +64,18 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
 
     protected override void OnDisableAdapter(AdapterInfo adapter)
     {
-        //Set MAC, Bring UP
-        using var connection = interopList.AquireInterop(adapter.AdapterId);
-
-        if (connection != null)
+        if (adapter.AdapterType == NetworkAdapterType.WifiClient ||
+            adapter.AdapterType == NetworkAdapterType.WifiAccessPoint)
         {
-            // Bring Down
-            LinuxNetworkUtilities.StopAdapter(adapter.AdapterId);
-            firmware?.Shutdown();
+            //Set MAC, Bring UP
+            using var connection = interopList.AquireInterop(adapter.AdapterId);
+
+            if (connection != null)
+            {
+                // Bring Down
+                LinuxNetworkUtilities.StopAdapter(adapter.AdapterId);
+                firmware?.Shutdown();
+            }
         }
 
         // Set Adapter State
@@ -75,6 +84,10 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
 
     protected override void OnCreateAdapterConfiguration(AdapterConfiguration config, AdapterInfo item)
     {
+        // Don't create interop for Ethernet Devices
+        if (config.AdapterMode == AdapterMode.NoMode)
+            return;
+
         interopList.Add(item);
 
         // Configure Adapter 

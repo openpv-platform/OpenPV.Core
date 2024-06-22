@@ -10,5 +10,15 @@
     "hostName": "OpenView",
     "userName": "root",
     "password": ""
+  },
+  "networkInfo": {
+    "adapterInfoList": [
+      {
+        "adapterId": "eth0",
+        "adapterType": "Ethernet",
+        "description": "Ethernet",
+        "macAddress": ""
+      }
+    ]
   }
 }

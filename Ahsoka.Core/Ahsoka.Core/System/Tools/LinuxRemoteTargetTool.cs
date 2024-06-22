@@ -87,7 +87,10 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
             if (IsCompatibleFirmware(hardwareInfo, sshClient, out isExactMatch, progress))
                 return PrepDisplayInternal(hardwareInfo, sshClient, scpClient, sparkInfo, manufacturingInfo);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            progress.Report("An Error Occured during Prep - " + ex.Message);
+        }
         finally
         {
             sshClient.Disconnect();

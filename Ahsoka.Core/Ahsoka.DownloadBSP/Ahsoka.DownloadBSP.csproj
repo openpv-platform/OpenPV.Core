@@ -12,7 +12,7 @@
 
 	<PropertyGroup>
 		<SecretPath>$(appdata)\Microsoft\UserSecrets\$(UserSecretsId)\secrets.json</SecretPath>
-		<OpenViewBSP>2.2024-01-17T161009.kirkstone.172e986</OpenViewBSP>
+		<OpenViewBSP>3.2024-06-21T202459.kirkstone.eb742dc</OpenViewBSP>
 	</PropertyGroup>
 
 

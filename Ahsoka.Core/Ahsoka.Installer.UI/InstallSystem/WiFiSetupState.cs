@@ -64,11 +64,10 @@ internal class WiFiSetupState : InstallerUIStateBase
             });
             return this;
         }
-        else if (action == "Disconnect")
+        else if (action == "Return")
         {
-            InstallerDrawingManager.Default.WiFiViewModel.Disconnect();
             isConnecting = false;
-            return this;
+            return new StartState();
         }
         else if (action == refreshAction)
             InstallerDrawingManager.Default.WiFiViewModel.DiscoverNetworks();
@@ -131,7 +130,7 @@ internal class WiFiSetupState : InstallerUIStateBase
         textInfo.TextSize = 18;
 
         var cancel = drawingApi.CreateImage("Assets/ArrowLeft.png");
-        InstallerDrawingManager.Default.AddAction("Disconnect", InstallerDrawingManager.Default.GetActionPosition(4, cancel.Width), cancel);
+        InstallerDrawingManager.Default.AddAction("Return", InstallerDrawingManager.Default.GetActionPosition(4, cancel.Width), cancel);
 
         drawingApi.DrawText($"Connected - Select Continue For Spark.", width / 2, height / 2 + 10, textInfo);
 

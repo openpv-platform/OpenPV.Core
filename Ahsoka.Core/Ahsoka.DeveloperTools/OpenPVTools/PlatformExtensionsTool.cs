@@ -23,7 +23,7 @@ internal class PlatformExtensionsTool : SparkToolBase
 {
     const string Folder = System.Extensions.ExtensionsFolder;
     readonly ReleaseDTO viewModel;
-    static List<string> frameworks = new List<string>() { "net8.0", "net6.0", "net5.0", "NETStandard2.1", "NETStandard2.0" };
+    readonly static List<string> frameworks = ["net8.0", "net6.0", "net5.0", "NETStandard2.1", "NETStandard2.0"];
 
     public static string GetExtensionsPath()
     {
@@ -147,8 +147,7 @@ internal class PlatformExtensionsTool : SparkToolBase
 
     private static async Task DownloadNugetFiles(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string directory, string package, string version, List<string> previousDownloads, bool evaluateDeps)
     {
-        if (previousDownloads == null)
-            previousDownloads = new List<string>();
+        previousDownloads ??= new List<string>();
 
         string nugetFile = Path.Combine(directory, $"{package}.{version}.nupkg");
         string nugetUrl = $"https://www.nuget.org/api/v2/package/{package}/{version}";
@@ -169,8 +168,8 @@ internal class PlatformExtensionsTool : SparkToolBase
             await nugetDL.StartDownload(cancellationToken);
         }
 
-        using (FileStream stream = new FileStream(nugetFile, FileMode.Open))
-        using (ZipArchive archive = new ZipArchive(stream))
+        using (var stream = new FileStream(nugetFile, FileMode.Open))
+        using (var archive = new ZipArchive(stream))
         {
             // ExtractLibrary
             var libEntries = archive.Entries.Where(x => x.Name.ToLower().EndsWith(libraryFile.ToLower())).ToList();
@@ -178,7 +177,7 @@ internal class PlatformExtensionsTool : SparkToolBase
 
             foreach (var framework in frameworks)
             {
-                libEntry = libEntries.FirstOrDefault(x => x.FullName.ToLower().Contains(framework.ToLower()));
+                libEntry = libEntries.FirstOrDefault(x => x.FullName.Contains(framework, StringComparison.CurrentCultureIgnoreCase));
                 if (libEntry != null)
                     break;
             }
@@ -228,7 +227,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         XElement foundElement = null;
         foreach (var fw in frameworks)
         {
-            foundElement = dependencyGroups.FirstOrDefault(x => x.Attribute("targetFramework").Value.ToLower().StartsWith(fw));
+            foundElement = dependencyGroups.FirstOrDefault(x => x.Attribute("targetFramework").Value.StartsWith(fw, StringComparison.CurrentCultureIgnoreCase));
             if (foundElement != null)
                 break;
         }

@@ -10,7 +10,7 @@
 	<Target Name="Rebuild" />
 
 	<PropertyGroup>
-		<PlatformSupportRoot>$(SolutionDir)</PlatformSupportRoot>
+		<PlatformSupportRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</PlatformSupportRoot>
 	</PropertyGroup>
 
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
@@ -23,7 +23,7 @@
 
 		<!-- Copy BSP from Download Area -->
 		<ItemGroup>
-			<DISTRO_FIRMWARE Include="$(SolutionDir)FirmwareDownload\OpenViewLinuxPro_TargetSupport\Firmware\**" />
+			<DISTRO_FIRMWARE Include="$(PlatformSupportRoot)FirmwareDownload\OpenViewLinuxPro_TargetSupport\Firmware\**" />
 		</ItemGroup>
 
 		<!--Copy Distro and Upgrade Files-->

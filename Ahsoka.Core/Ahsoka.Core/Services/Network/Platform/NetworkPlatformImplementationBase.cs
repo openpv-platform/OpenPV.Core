@@ -44,7 +44,8 @@ internal abstract class NetworkPlatformImplementationBase
         {
             AdapterId = item.AdapterId,
             Description = item.Description,
-            AdapterMode = item.AdapterType == NetworkAdapterType.WifiAccessPoint ? AdapterMode.AccessPoint : AdapterMode.Client,
+            AdapterMode = item.AdapterType == NetworkAdapterType.WifiAccessPoint ? AdapterMode.AccessPoint :
+                          item.AdapterType == NetworkAdapterType.WifiClient ? AdapterMode.Client : AdapterMode.NoMode, // Ethernet
         };
 
         OnCreateAdapterConfiguration(config, item);
@@ -94,7 +95,9 @@ internal abstract class NetworkPlatformImplementationBase
 
     internal WirelessNetworkInfoList Discover(string adapterId)
     {
-        if (!autoConnectInProgress)
+        var info = networkAdapters[adapterId];
+
+        if (!autoConnectInProgress && info.AdapterType == NetworkAdapterType.WifiClient)
             return OnGetDiscoveredNetworks(adapterId);
         else
             return new WirelessNetworkInfoList();
@@ -102,10 +105,10 @@ internal abstract class NetworkPlatformImplementationBase
 
     internal AdapterConfigurationResult UpdateConfiguration(AdapterConfiguration adapterConfiguration)
     {
-         bool enabled = networkAdapters[adapterConfiguration.AdapterId].CurrentState == AdapterState.Enabled;
+        bool enabled = networkAdapters[adapterConfiguration.AdapterId].CurrentState == AdapterState.Enabled;
         if (enabled)
             return new AdapterConfigurationResult() { AdapterId = adapterConfiguration.AdapterId, ConfigurationSuccessful = false, ErrorDescription = "Adapter can only be configured in a disabled state" };
-      
+
         var result = OnValidateConfiguration(adapterConfiguration);
 
         if (!result.ConfigurationSuccessful)
@@ -118,23 +121,31 @@ internal abstract class NetworkPlatformImplementationBase
 
     internal NetworkProfilesList GetProfiles(ProfileRequest adapterId)
     {
-        return OnGetProfiles(adapterId);
+        var info = networkAdapters[adapterId.AdapterId];
+        if (info.AdapterType == NetworkAdapterType.WifiClient)
+            return OnGetProfiles(adapterId);
+        else
+            return new NetworkProfilesList();
     }
 
     internal void SetProfiles(NetworkProfilesList profilesList)
     {
-        OnSetProfiles(profilesList);
+        var info = networkAdapters[profilesList.AdapterId];
+        if (info.AdapterType == NetworkAdapterType.WifiClient)
+            OnSetProfiles(profilesList);
     }
 
     internal void Connect(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest)
     {
-        if (!autoConnectInProgress)
+        var info = networkAdapters[connectionRequest.AdapterId];
+        if (!autoConnectInProgress && info.AdapterType == NetworkAdapterType.WifiClient)
             OnConnect(messageHeader, connectionRequest);
     }
 
     internal void Disconnect(AhsokaMessageHeader messageHeader, string adapterId)
     {
-        if (!autoConnectInProgress)
+        var info = networkAdapters[adapterId];
+        if (!autoConnectInProgress && info.AdapterType == NetworkAdapterType.WifiClient)
             OnDisconnect(messageHeader, adapterId);
     }
 
@@ -205,9 +216,10 @@ internal abstract class NetworkPlatformImplementationBase
 
     internal void AttemptAutoConnect(AhsokaMessageHeader messageHeader, AutoConnectRequest adapterRequest)
     {
-        if (autoConnectInProgress)
+        var info = networkAdapters[adapterRequest.AdapterId];
+        if (autoConnectInProgress || info.AdapterType == NetworkAdapterType.WifiClient)
             return;
-
+            
         if (networkAdapters.TryGetValue(adapterRequest.AdapterId, out var adapter))
         {
             if (adapter.CurrentState == AdapterState.Enabled)

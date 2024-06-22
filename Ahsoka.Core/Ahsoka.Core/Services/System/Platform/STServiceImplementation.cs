@@ -100,7 +100,7 @@ internal class STServiceImplementation : IServiceImplementation
     {
         UsbInfo usbInfo = new()
         {
-            MountPoint = ""
+            MountPoint = currentMountPoint,
         };
 
         string usbRole = File.ReadAllText(usbRoleDriverPath).Trim();
@@ -123,9 +123,15 @@ internal class STServiceImplementation : IServiceImplementation
             tokenSource = new CancellationTokenSource();
             task = Task.Run(() =>
             {
+                string blockCommand = "/sbin/blkid -l -t TYPE=\"{0}\" -o device";
+
                 while (!tokenSource.IsCancellationRequested)
                 {
-                    ProcessUtility.RunProcessScript("/sbin/blkid -l -t TYPE=\"vfat\" -o device", null, out string stdout, out string stderr);
+                    // Try fat and exfat
+                    ProcessUtility.RunProcessScript(string.Format(blockCommand, "vfat"), null, out string stdout, out string stderr);
+                    if (stdout == "")
+                        ProcessUtility.RunProcessScript(string.Format(blockCommand, "exfat"), null, out  stdout, out  stderr);
+
                     if (stdout != "")
                     {
                         string usbDevice = stdout.Trim();

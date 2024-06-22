@@ -103,7 +103,7 @@ public static class ClassLoader
                 {
                     var attr = curType.GetCustomAttribute<T>();
                     if (attr != null && !curType.IsAbstract && !curType.IsInterface)
-                        typeList.Add(attr, curType);
+                        typeList[attr] = curType;
                 }
             }
             catch (ReflectionTypeLoadException)

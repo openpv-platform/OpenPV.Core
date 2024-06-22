@@ -292,9 +292,8 @@ internal class SparkConnectionState : InstallerUIStateBase
             }
             else
             {
-                InstallerDrawingManager.Default.WiFiViewModel.Disconnect(); // Allow Refresh to Exit
                 StopClient();
-
+                return new WiFiSetupState();
             }
         }
         else if (action == downloadAction)

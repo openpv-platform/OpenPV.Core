@@ -10,20 +10,20 @@
 	<Target Name="Rebuild" />
 
 	<PropertyGroup>
-		<PlatformSupportRoot>$(SolutionDir)</PlatformSupportRoot>
+		<PlatformSupportRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</PlatformSupportRoot>
 	</PropertyGroup>
 
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
 		<Message Text="Cleaning OpenView BuildOutputs" Importance="high" />
 		<RemoveDir Directories="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\" />
-		<Delete Files="$(PlatformSupportRoot)\SparkUpload\OpenViewLinux_TargetSupport.zip"/>
+		<Delete Files="$(PlatformSupportRoot)\SparkUpload\OpenViewLinux_TargetSupport.zip" />
 	</Target>
 
 	<Target Name="CreateOpenViewPublishOutputs" AfterTargets="PostBuildEvent" Condition="!Exists('$(PlatformSupportRoot)\SparkUpload\OpenViewLinux_TargetSupport.zip')">
 
 		<!-- Copy BSP from Download Area -->
 		<ItemGroup>
-			<DISTRO_FIRMWARE Include="$(SolutionDir)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\**" />
+			<DISTRO_FIRMWARE Include="$(PlatformSupportRoot)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\**" />
 		</ItemGroup>
 
 		<!--Copy Distro and Upgrade Files-->

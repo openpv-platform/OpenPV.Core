@@ -101,7 +101,8 @@ internal class PlatformExtensionsTool : SparkToolBase
     private async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, ExtensionConfiguration configuration, bool ux, string directory, bool evaluateDeps)
     {
         string packageName = ux ? configuration.UxPackageName : configuration.PackageName;
-
+        if (string.IsNullOrEmpty(packageName))
+            return;
 
         var source = new PackageSource("https://api.nuget.org/v3/index.json");
         var providers = Repository.Provider.GetCoreV3();
@@ -182,6 +183,20 @@ internal class PlatformExtensionsTool : SparkToolBase
                     break;
             }
 
+            if (package.StartsWith("Ahsoka"))
+            {
+                var demos = archive.Entries.Where(x => x.FullName.StartsWith("demo") && x.FullName.EndsWith(".zip"));
+                foreach (var demo in demos)
+                {
+                    // Up One and Over 
+                    string pathToDemos = Path.Combine(Path.GetDirectoryName(directory), "demos");
+                    if (!Directory.Exists(pathToDemos))
+                        Directory.CreateDirectory(pathToDemos);
+
+                   demo.ExtractToFile(Path.Combine(pathToDemos, demo.Name));
+                }
+            }
+        
             if (libEntry != null)
             {
                 libEntry.ExtractToFile(Path.Combine(directory, libraryFile), true);

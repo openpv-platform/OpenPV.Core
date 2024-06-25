@@ -6,6 +6,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
+using static NuGet.Packaging.PackagingConstants;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -80,6 +81,29 @@ internal class NewPackageViewModel : ViewModelBase
                         }
                 }
                 catch { }
+            }
+
+        // Load Extension Demos
+        string extensionFolder =  CustomerToolPaths.GetToolPath(System.Extensions.ExtensionsFolder);
+
+        if (!Design.IsDesignMode && Directory.Exists(extensionFolder))
+            foreach (var file in Directory.GetFiles(extensionFolder, "*.zip", SearchOption.AllDirectories))
+            {
+                if (file.Contains("demos", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    try
+                    {
+                        using ZipArchive zip = ZipFile.Open(file, ZipArchiveMode.Read);
+                        foreach (ZipArchiveEntry entry in zip.Entries)
+                            if (entry.Name.ToLower().EndsWith(PackageViewModel.packageInfoExtension.ToLower()))
+                            {
+                                var data = new StreamReader(entry.Open());
+                                var demoProject = JsonUtility.Deserialize<PackageInformation>(data.ReadToEnd());
+                                Demos.Add(new CustomerDemoInfoViewModel(demoProject) { FileName = file });
+                            }
+                    }
+                    catch { }
+                }
             }
 
         ShowNoProjects = Demos.Count == 0;

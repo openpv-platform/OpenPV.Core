@@ -70,7 +70,7 @@ public class Extensions
 
         foreach (var file in Directory.GetFiles(pathToExtensionCache,"*", SearchOption.AllDirectories)) 
         {
-            if (!file.Contains("\\ux\\"))
+            if (!file.Contains("\\ux\\") && !file.Contains("\\demos"))
             {
                 string fileNameFromExtensions = file.Replace(pathToExtensionCache, "");
                 string fileName = $"Extensions/{extensionName}/{fileNameFromExtensions.Replace("\\", "/").TrimStart('/')}";

@@ -355,22 +355,6 @@ internal class MainViewModel : ViewModelBase
     public string GetCommandLinePath()
     {
         string pathToCommand = string.Empty;
-        if (Debugger.IsAttached)
-        {
-            try
-            {
-                // Run Publish Outputs found in code base
-                string pathToKit = PlatformSupportPathInfo.GetPlatformSupportPath(SystemInfo.CurrentPlatform);
-                pathToCommand = Path.Combine(pathToKit, "CommandLine", "Ahsoka.CommandLine");
-
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                    pathToCommand += ".exe";
-            }
-            catch { }
-
-            if (File.Exists(pathToCommand))
-                return pathToCommand;
-        }
 
         // Run Machine / Tools Downloads
         string pathToKits = CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName);

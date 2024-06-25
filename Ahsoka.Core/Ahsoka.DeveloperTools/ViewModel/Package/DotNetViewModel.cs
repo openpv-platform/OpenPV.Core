@@ -183,6 +183,8 @@ internal class DotNetViewModel : ViewModelBase
                 parentViewModel.Console.AddConsoleLine(info);
             });
 
+            UpdateNuget();
+
 
             //needs method for determining platforms to load
             List<System.PlatformFamily> platformsToSupport = new() { packageInfo.PlatformFamily };
@@ -276,6 +278,31 @@ internal class DotNetViewModel : ViewModelBase
         return "Command Line Install Complete";
     }
 
+    private void UpdateNuget()
+    {
+        string currentPath = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ProjectPath);
+        if (File.Exists(currentPath))
+        {
+            string projectFile = File.ReadAllText(currentPath);
+            XDocument doc = XDocument.Parse(projectFile);
+
+            // Update Nuget to Match This Tool If we are not Debugging
+            string nugetVersion = GitVersionInformation.FullSemVer;
+            foreach (var item in doc.Descendants("PackageReference"))
+            {
+                if (item.Attribute("Include").Value.StartsWith("Ahsoka.Core"))
+                {
+                    // If Release Version, Change Pre-Release to Release Versions.
+                    if (!new NuGet.Versioning.NuGetVersion(nugetVersion).IsPrerelease)
+                        item.Attribute("Version").Value = item.Attribute("Version").Value.Replace("*-*", "*");
+                }
+            }
+
+            doc.Save(currentPath);
+
+        }
+
+    }
 
     internal void DeleteCLI()
     {

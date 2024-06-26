@@ -286,6 +286,27 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Unit]
+        ///Description=SSH Per-Connection Server
+        ///Wants=dropbearkey.service
+        ///After=syslog.target dropbearkey.service
+        ///
+        ///[Service]
+        ///Environment=&quot;DROPBEAR_RSAKEY_DIR=/etc/dropbear&quot;
+        ///EnvironmentFile=-/etc/default/dropbear
+        ///ExecStart=-/usr/sbin/dropbear -i -r ${DROPBEAR_RSAKEY_DIR}/dropbear_ecdsa_host_key -r ${DROPBEAR_RSAKEY_DIR}/dropbear_ed25519_host_key $DROPBEAR_EXTRA_ARGS
+        ///ExecReload=/bin/kill -HUP $MAINPID
+        ///StandardInput=socket
+        ///KillMode=process
+        ///.
+        /// </summary>
+        internal static string dropbear {
+            get {
+                return ResourceManager.GetString("dropbear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] Functions {
@@ -348,7 +369,7 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;flamencist@mail.ru&quot;],&quot;Description&quot;:&quot;Doxygen.exe for build documentation.&quot;,&quot;LicenseUrl&quot;:&quot;&quot;,&quot;LicenseType&quot;:&quot;&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;EnovationCloud.Core&quot;,&quot;PackageVersion&quot;:&quot;4.5.0&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;EnovationCloud.Core&quot;],&quot;Description&quot;:&quot;Package Description&quot;,&quot;LicenseUrl&quot;:&quot;https://www.nuget.org/packages/EnovationCloud.Core/4.5.0/License&quot;,&quot;LicenseType&quot;:&quot;LICEN [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;flamencist@mail.ru&quot;],&quot;Description&quot;:&quot;Doxygen.exe for build documentation.&quot;,&quot;LicenseUrl&quot;:&quot;&quot;,&quot;LicenseType&quot;:&quot;&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;EnovationCloud.Core&quot;,&quot;PackageVersion&quot;:&quot;4.6.0&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;EnovationCloud.Core&quot;],&quot;Description&quot;:&quot;Package Description&quot;,&quot;LicenseUrl&quot;:&quot;https://www.nuget.org/packages/EnovationCloud.Core/4.6.0/License&quot;,&quot;LicenseType&quot;:&quot;LICEN [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Licenses {
             get {

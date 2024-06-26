@@ -5,6 +5,7 @@ using Ahsoka.Utility;
 using Renci.SshNet;
 using Renci.SshNet.Common;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -200,16 +201,32 @@ internal class SshUtility
         if (!File.Exists(keyFiles.PublicKeyPath))
         {
             // Generate Key Pair
-            var keygen = new SshKeyGenerator(2048);
+            var keygen = Create(keyName);
 
             if (!Directory.Exists(Path.GetDirectoryName(keyFiles.PrivateKeyPath)))
                 Directory.CreateDirectory(Path.GetDirectoryName(keyFiles.PrivateKeyPath));
 
-            File.WriteAllText(keyFiles.PrivateKeyPath, keygen.ToPrivateKey());
-            File.WriteAllText(keyFiles.PublicKeyPath, keygen.ToRfcPublicKey());
+            File.WriteAllText(keyFiles.PrivateKeyPath, keygen.Key);
+            File.WriteAllText(keyFiles.PublicKeyPath, keygen.Value);
         }
 
         return keyFiles;
+    }
+
+    static KeyValuePair<string, string> Create(string keyName)
+    {
+        string pathToKey = Path.GetTempFileName().Replace(".tmp", "");
+        ProcessUtility.RunProcess("ssh-keygen", $"-t ecdsa -b 256 -f {Path.GetFileNameWithoutExtension(pathToKey)} -m pem -q -N \"\"", Path.GetDirectoryName(pathToKey), out string result, out string error, 1000);
+
+        string pathToKeyPub = Path.Combine(pathToKey + ".pub");
+
+        // Create service provider instance with key length and return the private and public keys
+        var retVal = new KeyValuePair<string, string>(File.ReadAllText(pathToKey), File.ReadAllText(pathToKeyPub));
+
+        File.Delete(pathToKey);
+        File.Delete(pathToKeyPub);
+
+        return retVal;
     }
 
     public static KeyFileInfo GetKeyFileNames(string keyName)

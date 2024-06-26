@@ -119,71 +119,71 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="ahsoka-early" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ahsoka-early.target;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\Resources\ahsoka-early.target;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Ahsoka.Application" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\ahsoka.application.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\resources\ahsoka.application.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Ahsoka.Application.Start" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\ahsoka.application.start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\resources\ahsoka.application.start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Ahsoka.Installer" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\ahsoka.installer.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\resources\ahsoka.installer.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Ahsoka.Installer.Start" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\ahsoka.installer.start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\resources\ahsoka.installer.start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="InProcConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\inprocconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\resources\inprocconfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="JournalOverride" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\journaloverride.sh;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Licenses" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\licenses.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\resources\licenses.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="LinuxAppProfile" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\linuxappprofile.sh;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SSHConfigFile" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\sshconfigfile;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\resources\sshconfigfile;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="StaticLicenses" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\staticlicenses.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\resources\staticlicenses.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="OPVServicesConfiguration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\OPVServicesConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\resources\OPVServicesConfiguration.json;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="WirelessClientDHCP" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\linuxnetworkunits\wirelessclientdhcp.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\resources\linuxnetworkunits\wirelessclientdhcp.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="WirelessClientStatic" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\linuxnetworkunits\wirelessclientstatic.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\resources\linuxnetworkunits\wirelessclientstatic.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="CPPClientHeader" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ClientTemplates\CPPClientHeader.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\Resources\ClientTemplates\CPPClientHeader.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="UntrustedPrivateKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\UntrustedPrivateKeyPEM.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\Resources\UntrustedPrivateKeyPEM.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="UntrustedPublicKey" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\untrustedpublickey.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\resources\untrustedpublickey.xml;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="UntrustedPublicKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\UntrustedPublicKeyPEM.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+    <value>..\Resources\UntrustedPublicKeyPEM.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="CODESYS_PreStart" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CODESYS_PreStart.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\Resources\CODESYS_PreStart.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
     <comment>Codesys PreStart Script</comment>
   </data>
   <data name="ModuleLicensePublicKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\modulelicensepublickeypem.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\resources\modulelicensepublickeypem.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="WirelessAP" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\LinuxNetworkUnits\WirelessAP.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\Resources\LinuxNetworkUnits\WirelessAP.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="WirelessAPNoDHCP" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\LinuxNetworkUnits\WirelessAPNoDHCP.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\Resources\LinuxNetworkUnits\WirelessAPNoDHCP.network;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="SystemServiceClientExtensionsCXX" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SystemServiceClientExtensions.cxx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -192,10 +192,10 @@
     <value>..\Resources\SystemServiceClientExtensions.h;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="CPPClientMessages" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ClientTemplates\CPPClientMessages.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\Resources\ClientTemplates\CPPClientMessages.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="CPPClientCode" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+    <value>..\Resources\ClientTemplates\CPPClientCode.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Functions" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\Ahsoka.Interop\Ahsoka.Proto\Functions.cmake;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -226,5 +226,8 @@
   </data>
   <data name="Services" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\Ahsoka.Shared\Services.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="dropbear" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\dropbear.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
 </root>

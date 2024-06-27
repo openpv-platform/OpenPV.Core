@@ -51,7 +51,8 @@ internal abstract class SparkToolBase : OpenPVToolBase
                 {
                     download.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) =>
                     {
-                        toolVM.DownloadPercent = (int)progressPercentage;
+                        if (toolVM != null)
+                            toolVM.DownloadPercent = (int)progressPercentage;
                     };
 
                     await download.StartDownload(cancellationToken);

@@ -277,7 +277,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
 
     internal async void SecureDevice()
     {
-        var continueWork = await ParentViewModel.Dialog.ShowDialog("Lock Target", "Locking the device will Disable Password Based Logins.  In addition, it will install ssh keys and application keys (if selected).  Are you sure you wish to Lock this device?", "Yes", "Cancel");
+        var continueWork = await ParentViewModel.Dialog.ShowDialog("Lock Target", "Locking the device will Disable Password Based Logins.  In addition, it will install device and application keys (if selected).  Are you sure you wish to Lock this device?", "Yes", "Cancel");
 
         if (!continueWork)
             return;
@@ -320,7 +320,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             SaveConnectionInfo();
 
             // Add To the SSH Configuration
-            SshUtility.AddToSshConfiguration(keyFileInfo, keyName, this.EditConfigurationInfo.HostName, this.editInfo.UserName);
+            SshUtility.AddToSshConfiguration(keyFileInfo, this.EditConfigurationInfo.Description, this.EditConfigurationInfo.HostName, this.editInfo.UserName);
 
             // Add Key To Display
             var result = SshUtility.AddSshPublicKey(this.EditConfigurationInfo, keyFileInfo);
@@ -335,7 +335,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             }
 
 
-            return $"Keys Loaded. The target is now available to connect to using ssh with the address \"{this.EditConfigurationInfo.UserName}@{keyFileInfo.Name}\"";
+            return $"Keys Loaded. The target is now available to connect to using ssh with the address \"{this.EditConfigurationInfo.UserName}@{this.EditConfigurationInfo.Description}\"";
 
         }).ContinueWith(result =>
         {

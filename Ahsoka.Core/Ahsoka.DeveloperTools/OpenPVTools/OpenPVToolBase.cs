@@ -79,7 +79,7 @@ internal class OpenPVToolBase : ViewModelBase
         OnPropertyChanged(nameof(IsDownloaded));
     }
 
-    public virtual string GetInfo() { return string.Empty; }
+    public virtual string GetInfo(IToolViewModel vm) { return string.Empty; }
     
     protected virtual bool GetIsDownloaded()
     {

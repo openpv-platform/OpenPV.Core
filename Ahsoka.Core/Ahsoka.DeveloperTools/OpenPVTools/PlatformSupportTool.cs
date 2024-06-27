@@ -77,7 +77,7 @@ internal class PlatformSupportTool : SparkToolBase
         
     }
 
-    public override string GetInfo()
+    public override string GetInfo(IToolViewModel vm)
     {
         // Look for "Default Plaform Support folder first (may be in the Repo instead of AppData).
         string localPath = string.Empty;

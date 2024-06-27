@@ -156,7 +156,7 @@ internal class SshUtility
         return $"Device UnLocked";
     }
 
-    public static KeyFileInfo AddToSshConfiguration(KeyFileInfo keyFiles, string keyDescription, string hostName, string userName)
+    public static KeyFileInfo AddToSshConfiguration(KeyFileInfo keyFiles, string keyName, string hostName, string userName)
     {
         // Read Config File
         var configFile = new StringBuilder();
@@ -165,7 +165,7 @@ internal class SshUtility
         if (File.Exists(keyFiles.ConfigPath))
         {
             var data = File.ReadAllText(keyFiles.ConfigPath);
-            shouldAddNameConfig = !data.Contains($"Host {keyDescription}");
+            shouldAddNameConfig = !data.Contains($"Host {keyName}");
             shouldAddHostNameConfig = !data.Contains($"Host {hostName}");
 
             configFile.Append(data);
@@ -175,12 +175,12 @@ internal class SshUtility
         if (shouldAddNameConfig)
         {
             string configSnippet = Properties.Resources.SSHConfigFile;
-            configSnippet = configSnippet.Replace("KEYNAME", keyDescription).Replace("HOSTNAME", hostName).Replace("KEYFILEPATH", keyFiles.PrivateKeyPath).Replace("USERNAME", userName);
+            configSnippet = configSnippet.Replace("KEYNAME", keyName).Replace("HOSTNAME", hostName).Replace("KEYFILEPATH", keyFiles.PrivateKeyPath).Replace("USERNAME", userName);
             configFile.Insert(0, configSnippet);
         }
 
         // Add a Second Config for Login with HostName
-        if (shouldAddHostNameConfig && hostName != keyDescription)
+        if (shouldAddHostNameConfig && hostName != keyName)
         {
             string configSnippet = Properties.Resources.SSHConfigFile;
             configSnippet = configSnippet.Replace("KEYNAME", hostName).Replace("HOSTNAME", hostName).Replace("KEYFILEPATH", keyFiles.PrivateKeyPath).Replace("USERNAME", userName);

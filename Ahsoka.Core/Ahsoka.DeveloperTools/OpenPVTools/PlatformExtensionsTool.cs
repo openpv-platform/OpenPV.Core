@@ -3,16 +3,21 @@ using Ahsoka.System;
 using Ahsoka.Utility;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Utilities;
+using Microsoft.Extensions.Configuration;
 using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.ServiceModel.Channels;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -24,7 +29,7 @@ internal class PlatformExtensionsTool : SparkToolBase
     const string Folder = System.Extensions.ExtensionsFolder;
     readonly ReleaseDTO viewModel;
     readonly static List<string> frameworks = ["net8.0", "net6.0", "net5.0", "NETStandard2.1", "NETStandard2.0"];
-
+    string currentVersionString = string.Empty;
     public static string GetExtensionsPath()
     {
         return CustomerToolPaths.GetToolPath(Folder);
@@ -39,6 +44,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         this.Description = viewModel.ChannelName;
         this.Name = viewModel.ChannelName;
         this.Version = viewModel.ContainerVersion;
+        this.HasInfo = true;
 
         this.IncludedProfiles = PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
         this.LocalPath = GetExtensionsPath();
@@ -98,12 +104,70 @@ internal class PlatformExtensionsTool : SparkToolBase
         File.WriteAllText(GetVersionFilePath(), Version);
     }
 
+    public override string GetInfo(IToolViewModel toolVM)
+    {
+        if (currentVersionString != string.Empty)
+            return currentVersionString;
+        else
+            currentVersionString = "Fetching List";
+      
+        var task =  Task.Run(async () =>
+        {
+            StringBuilder builder = new StringBuilder();
+
+            CancellationTokenSource source = new();
+            var download = viewModel.Contents.First();
+            string tempFile = Path.Combine(Path.GetTempPath(), download.Path);
+
+            await ExecuteDownloadInternal(toolVM, tempFile, source);
+
+            var archive = new ZipArchive(new MemoryStream(File.ReadAllBytes(tempFile)));
+
+            // Process the Nuget Files
+            foreach (var item in archive.Entries)
+            {
+                var extensionInfoText = new StreamReader(item.Open()).ReadToEnd();
+                var info = JsonUtility.Deserialize<ExtensionConfiguration>(extensionInfoText);
+                if (info != null)
+                    AddVersionInfo(builder, info);
+            }
+
+            currentVersionString = builder.ToString();
+        }).ContinueWith((result)=> 
+        {
+            if (toolVM is PluginsViewModel changed)
+                changed.UpdateShowInfo();
+        });
+        
+        return currentVersionString;
+    }
+
+    private void AddVersionInfo(StringBuilder builder, ExtensionConfiguration configuration)
+    {
+        if (!string.IsNullOrEmpty(configuration.PackageName))
+        {
+            string version = GetVersionToDownload(configuration, configuration.PackageName).GetAwaiter().GetResult();
+            builder.AppendLine($" - {configuration.PackageName} ({version})");
+        }
+    }
+
     private async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, ExtensionConfiguration configuration, bool ux, string directory, bool evaluateDeps)
     {
         string packageName = ux ? configuration.UxPackageName : configuration.PackageName;
         if (string.IsNullOrEmpty(packageName))
             return;
 
+        string thisVersion = await GetVersionToDownload(configuration, packageName);
+
+        Console.WriteLine($"Found {packageName} with version {thisVersion} for download");
+
+        if (thisVersion != null)
+            await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, thisVersion, null, evaluateDeps);
+
+    }
+
+    private async Task<string> GetVersionToDownload(ExtensionConfiguration configuration, string packageName)
+    {
         var source = new PackageSource("https://api.nuget.org/v3/index.json");
         var providers = Repository.Provider.GetCoreV3();
         var repository = new SourceRepository(source, providers);
@@ -113,7 +177,7 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         var response = await search.Search($"packageid:{packageName}", filter, skip: 0, take: 20, NullLogger.Instance, CancellationToken.None);
         var versions = response.SelectMany(x => x["versions"]);
-      
+
         var results = versions.Select(x => new NuGetVersion((string)x.SelectToken("version")));
         var nugetVersion = new NuGetVersion(this.Version);
 
@@ -121,7 +185,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         bool allowDevelop = nugetVersion.IsPrerelease;
 
         NuGetVersionFloatBehavior behavior = nugetVersion.IsPrerelease ? NuGetVersionFloatBehavior.PrereleaseMinor : NuGetVersionFloatBehavior.Major;
-       
+
         // Find the Best Version
         string thisVersion = null;
 
@@ -130,7 +194,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         {
             // Use The Version that Matchers this Tool otherwise, we can't download
             if (versions.Any(x => x.SelectToken("version").ToString() == nugetVersion.ToString()))
-                thisVersion = nugetVersion.ToFullString(); 
+                thisVersion = nugetVersion.ToFullString();
         }
         else
         {
@@ -139,11 +203,7 @@ internal class PlatformExtensionsTool : SparkToolBase
             thisVersion = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(behavior, minVersion, "")).FindBestMatch(results)?.ToFullString();
         }
 
-        Console.WriteLine($"Found {packageName} with version {thisVersion} for download");
-
-        if (thisVersion != null)
-            await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, thisVersion, null, evaluateDeps); 
-
+        return thisVersion;
     }
 
     private static async Task DownloadNugetFiles(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string directory, string package, string version, List<string> previousDownloads, bool evaluateDeps)

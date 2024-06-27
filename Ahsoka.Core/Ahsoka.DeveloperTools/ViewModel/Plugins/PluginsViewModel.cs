@@ -94,7 +94,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
     public bool ShowInfoVisible { get { return showInfoVisible; } set { showInfoVisible = value; OnPropertyChanged(); } }
     
-    public string ShowInfoText { get { return SelectedTool?.GetInfo(); } set {} }
+    public string ShowInfoText { get { return SelectedTool?.GetInfo(this); } set {} }
 
     internal ObservableCollection<OpenPVToolBase> SelectedDownloads { get => tools; set => tools = value; }
 
@@ -535,6 +535,11 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         SelectedProfile.CanLaunch = SelectedDownloads.Any(x => x.CanLaunch);
 
 
+    }
+
+    internal void UpdateShowInfo()
+    {
+        OnPropertyChanged(nameof(ShowInfoText));
     }
     #endregion
 }

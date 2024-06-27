@@ -157,7 +157,7 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
         {
             Hint = "Key will be created and shared with the team as well as added to the .ssh folder.",
             Label = "Key Name:",
-            Title = "Create Device SSH Key",
+            Title = "Create Device Key",
             ItemAccepted = CreateAccepted,
             ItemCancelled = Cancel,
             Tag = KeyTypes.DeviceKey

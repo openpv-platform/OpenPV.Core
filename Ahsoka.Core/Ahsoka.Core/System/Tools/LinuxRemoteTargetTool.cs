@@ -1,6 +1,7 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.Installer;
 using Ahsoka.Installer.InstallEngine;
+using Ahsoka.Services.Network.ESPWifi;
 using Ahsoka.Services.Spark;
 using Ahsoka.Services.System;
 using Ahsoka.Spark;
@@ -18,6 +19,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.System;
 
@@ -37,6 +39,7 @@ public class KeyFileInfo
 
 internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
 {
+    string bspVersion = null;
     const string ReleaseName = "System Updates";
     protected IProgress<string> progress;
     protected readonly CancellationTokenSource tokenSource = new();
@@ -621,7 +624,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         commandResult = sshClient.RunCommand($"/usr/sbin/dropbearkey -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key");
         if (!commandResult.Result.Contains("Fingerprint:"))
             throw new Exception(commandResult.Result);
-        
+
         progress.Report($"Securing SSH Communication");
         string unitFile = $"/lib/systemd/system/dropbear@.service";
         using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(Properties.Resources.dropbear)))
@@ -695,12 +698,196 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         return commandResult.Error == string.Empty;
     }
 
+    public bool EnableRDP(HardwareInfo hardwareInfo, IConnectionInfo info, int rdpPort, IProgress<string> progressString)
+    {    
+        var sshClient = SshUtility.CreateSshClient(info);
+        var scpClient = SshUtility.CreateScpClient(info);
+
+        var prereqs = FirmwarePreRequisites.GetBSPInfo(hardwareInfo.PlatformFamily);
+
+        var commandResult = sshClient.RunCommand("bsp-info -v");
+        bspVersion = commandResult.Result.Remove(0, "BSP Version:".Length).Trim();
+
+        if (bspVersion.CompareTo("3.2024-06-28") >= 0)
+        {
+            progressString.Report($"Add RDP Support");
+        }
+        else
+        {
+            progressString.Report($"Skipping RDP Install Due to Older BSP");
+            return true;
+        }
+
+        // Temp Logic...Will Install known cert in the future.
+        progressString.Report($"Generating Certificate for Device");
+        commandResult = sshClient.RunCommand($"rmdir -r /etc/freerdp");
+        commandResult = sshClient.RunCommand($"mkdir /etc/freerdp");
+        commandResult = sshClient.RunCommand($"mkdir /etc/freerdp/keys");
+        commandResult = sshClient.RunCommand($"winpr-makecert -path /etc/freerdp/keys");
+        if (!commandResult.Result.Contains("Certificate:"))
+            throw new Exception(commandResult.Result);
+        
+        progressString.Report(commandResult.Result);
+
+        progressString.Report("Modifying Display Configuration");
+
+        string iniFilePath = $"/etc/xdg/weston/weston.ini";
+        using (var memoryStream = new MemoryStream())
+        {
+            scpClient.Download(iniFilePath, memoryStream);
+            string westonText = Encoding.UTF8.GetString(memoryStream.ToArray());
+
+            var lines = westonText.Split(new char[] { '\n' }).ToList();
+            string currentSection = string.Empty;
+            string lastSection = string.Empty;
+            bool moduleFound = false;
+            bool screenFound = false;
+            bool commandFound = false;
+
+            string module = "modules=screen-share.so\n\n";
+            string command = $"command=/usr/bin/weston --backend=rdp-backend.so --rdp-tls-cert=/etc/freerdp/keys/openview.crt --rdp-tls-key=/etc/freerdp/keys/openview.key --shell=fullscreen-shell.so --port={IRemoteTargetTool.DefaultRdpPort} --address=127.0.0.1 --no-clients-resize\nstart-on-startup=true\n";
+
+            List<int> linesToDelete = new List<int>();
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string line = lines[i];
+
+                if (currentSection.StartsWith("[core]"))
+                {
+                    if (line.StartsWith("module"))
+                        moduleFound = true;
+                    else if ((line.StartsWith("[") || i == lines.Count - 1) && !moduleFound)
+                    {
+                        lines[i] = module + line; // Add to End of Section if not found.
+                        if (lines[i - 1] == "")
+                            linesToDelete.Add(i - 1);
+                    }
+                }
+
+                if (currentSection.StartsWith("[screen-share]"))
+                {
+                    screenFound = true;
+
+                    if (line.StartsWith("command"))
+                        commandFound = true;
+                    else if ((line.StartsWith("[") || i == lines.Count - 1) && !commandFound)
+                    {
+                        lines[i] = command + line; // Add to End of Section if not found.
+                        if (lines[i - 1] == "")
+                            linesToDelete.Add(i - 1);
+                    }
+                }
+                if (line.StartsWith("["))
+                    currentSection = line;
+            }
+
+            // Remove Orphaned spaces
+            foreach (var lineToDelete in linesToDelete.ToArray().Reverse()) 
+                lines.RemoveAt(lineToDelete);
+
+            if (!screenFound)
+                lines.Add("[screen-share]\n" + command);
+
+            westonText = string.Join('\n' ,lines);
+
+            using (var uploadStream = new MemoryStream(Encoding.UTF8.GetBytes(westonText)))
+                scpClient.Upload(uploadStream, iniFilePath);
+        }
+
+        progressString.Report("Rebooting Display");
+        Thread.Sleep(2000);
+        commandResult = sshClient.RunCommand("(sleep 5;/sbin/reboot)&");
+
+        return true;
+    }
+
+    public void RunRDPSession(IConnectionInfo info, uint tunnelPort, Task<bool> waitForTask)
+    {
+        // Start Porwarding at 
+        var session = SshUtility.CreateSshClient(info);
+        var port = new ForwardedPortLocal("127.0.0.1", tunnelPort, "127.0.0.1", tunnelPort);
+        session.AddForwardedPort(port);
+        port.Start();
+
+        // Open Remote Desktop
+        var rcdTask = Task.Run(() =>
+        {
+            if (OperatingSystem.IsWindows())
+                ProcessUtility.RunProcess("mstsc", $"/v:127.0.0.1:{tunnelPort}", null, out string result, out string error);
+        });
+
+        Task.WaitAny(rcdTask, waitForTask);
+
+        port.Stop();
+
+        session.Disconnect();
+    }
+
+    public bool DisableRDP(HardwareInfo hardwareInfo, IConnectionInfo info, IProgress<string> progressString)
+    {
+        var sshClient = SshUtility.CreateSshClient(info);
+        var scpClient = SshUtility.CreateScpClient(info);
+
+        // Temp Logic...Will Install known cert in the future.
+        progressString.Report($"Removing Device Certificate");
+        var commandResult = sshClient.RunCommand($"rmdir -r /etc/freerdp");
+        
+        progressString.Report("Modifying Display Configuration");
+
+        string iniFilePath = $"/etc/xdg/weston/weston.ini";
+        using (var memoryStream = new MemoryStream())
+        {
+            scpClient.Download(iniFilePath, memoryStream);
+            string westonText = Encoding.UTF8.GetString(memoryStream.ToArray());
+
+            var lines = westonText.Split(new char[] { '\n' }).ToList();
+            string currentSection = string.Empty;
+
+           
+            List<int> linesToDelete = new List<int>();
+            for (int i = 0; i < lines.Count; i++)
+            {
+                string line = lines[i];
+
+                if (currentSection.StartsWith("[core]"))
+                {
+                    if (line.StartsWith("module"))
+                        linesToDelete.Add(i);
+                }
+
+                if (currentSection.StartsWith("[screen-share]"))
+                {
+                    if (line.StartsWith("command") || line.StartsWith("start-on-startup"))
+                        linesToDelete.Add(i);
+                }
+                if (line.StartsWith("["))
+                    currentSection = line;
+            }
+
+            // Remove Orphaned spaces
+            foreach (var lineToDelete in linesToDelete.ToArray().Reverse())
+                lines.RemoveAt(lineToDelete);
+
+            westonText = string.Join('\n', lines);
+
+            using (var uploadStream = new MemoryStream(Encoding.UTF8.GetBytes(westonText)))
+                scpClient.Upload(uploadStream, iniFilePath);
+        }
+
+        progressString.Report("Rebooting Display");
+        commandResult = sshClient.RunCommand("(sleep 5;/sbin/reboot)&");
+        Thread.Sleep(2000);
+         
+        return true;
+    }
+
+
     protected virtual bool IsCompatibleFirmware(HardwareInfo info, SshClient client, out bool isExactMatch, IProgress<string> progress)
     {
         var prereqs = FirmwarePreRequisites.GetBSPInfo(info.PlatformFamily);
 
         var commandResult = client.RunCommand("bsp-info -v");
-        string bspVersion = commandResult.Result.Remove(0, "BSP Version:".Length).Trim();
+        bspVersion = commandResult.Result.Remove(0, "BSP Version:".Length).Trim();
 
         commandResult = client.RunCommand("bsp-info -a");
         string bspInfo = commandResult.Result;

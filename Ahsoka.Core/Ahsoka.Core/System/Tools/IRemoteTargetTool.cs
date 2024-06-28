@@ -4,6 +4,7 @@ using Ahsoka.System.Hardware;
 using Renci.SshNet;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.System;
 
@@ -12,6 +13,11 @@ namespace Ahsoka.System;
 /// </summary>
 public interface IRemoteTargetTool
 {
+    /// <summary>
+    /// Default value for RDP Ports Forwarding.
+    /// </summary>
+    const int DefaultRdpPort = 5999;
+
     /// <summary>
     /// Cancel the currently running process
     /// </summary>
@@ -23,7 +29,7 @@ public interface IRemoteTargetTool
     /// <param name="info"></param>
     /// <returns></returns>
     string ClearJournal(IConnectionInfo info);
-
+  
     /// <summary>
     ///  Get the Journal / Log for any Customer Application
     /// </summary>
@@ -80,4 +86,31 @@ public interface IRemoteTargetTool
     /// <param name="isInstaller"></param>
     /// <returns></returns>
     string StopApplication(IConnectionInfo info, bool isInstaller);
+
+    /// <summary>
+    /// Enable Remote Desktop Services
+    /// </summary>
+    /// <param name="hardwareInfo"></param>
+    /// <param name="info"></param>
+    /// <param name="rdpPort"></param>
+    /// <param name="progressString"></param>
+    /// <returns></returns>
+    bool EnableRDP(HardwareInfo hardwareInfo, IConnectionInfo info, int rdpPort, IProgress<string> progressString);
+    
+    /// <summary>
+    /// Disable Remote Desktop Services on this target.
+    /// </summary>
+    /// <param name="hardwareInfo"></param>
+    /// <param name="info"></param>
+    /// <param name="progressString"></param>
+    /// <returns></returns>
+    bool DisableRDP(HardwareInfo hardwareInfo, IConnectionInfo info, IProgress<string> progressString);
+
+    /// <summary>
+    /// Starts a Tunnel over SSH and Launches RDP.  If a task is passed in the process will wait for it to end and end the session when complete
+    /// </summary>
+    /// <param name="info"></param>
+    /// <param name="rdpPort"></param>
+    /// <param name="waitForTask"></param>
+    void RunRDPSession(IConnectionInfo info, uint rdpPort, Task<bool> waitForTask);
 }

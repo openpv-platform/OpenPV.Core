@@ -100,6 +100,38 @@
 						</Button>
 
 						<Button Margin="3,13,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							Command="{Binding EnableRDP}" >
+								<StackPanel Orientation="Horizontal">
+									<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="RemoteDesktop"></material:MaterialIcon>
+									<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Enable RDP..."/>
+								</StackPanel>
+						</Button>
+
+						<Button Margin="3,3,5,3"
+							HorizontalAlignment="Stretch"
+							Height="38"
+							VerticalContentAlignment="Center"
+							Command="{Binding StartSession}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Computer"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Start Session..."/>
+							</StackPanel>
+						</Button>
+						
+						<Button Margin="3,3,5,3"
+						HorizontalAlignment="Stretch"
+						Height="38"
+						VerticalContentAlignment="Center"
+						Command="{Binding DisableRDP}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="DesktopClassic"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Disable RDP..."/>
+							</StackPanel>
+						</Button>
+						<Button Margin="3,13,5,3"
 								HorizontalAlignment="Stretch"
 								Height="38"
 								VerticalContentAlignment="Center"
@@ -121,6 +153,7 @@
 							<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Load Application..."/>
 						</StackPanel>
 					</Button>
+
 
 				</StackPanel>
 			</Border>

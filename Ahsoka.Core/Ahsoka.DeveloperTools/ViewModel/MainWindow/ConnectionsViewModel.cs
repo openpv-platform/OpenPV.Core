@@ -15,6 +15,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -741,6 +742,95 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             ParentViewModel.FinishProcess(status, result.Status == TaskStatus.RanToCompletion);
         });
     }
+
+    internal async void EnableRDP()
+    {
+        var continueEnableRDP = await ParentViewModel.Dialog.ShowDialog("Enable Remote Desktop", "This process will enable the RDP Service on the Target.   Once enabled you can connect with a standard Remote Desktop Client. Are you sure you want to Enable Remote Desktop on this Target?", "Yes", "Cancel");
+
+        if (!continueEnableRDP)
+            return;
+
+        ParentViewModel.Console.ClearConsole();
+        ParentViewModel.Console.AddConsoleLine("Enabling Remote Desktop...");
+
+        var progress = new Progress<string>(info =>
+        {
+            ParentViewModel.Console.AddConsoleLine(info);
+        });
+
+        // Reset Token Source
+        tokenSource = new();
+
+        ParentViewModel.StartProcess(this);
+        await Task.Run(() =>
+        {
+            var prepItem = RemoteTargetToolFactory.GetToolsForPlatform(this.EditConfigurationInfo.PlatformFamily);
+            var info = HardwareInfo.GetHardwareInfo(this.EditConfigurationInfo.PlatformFamily, this.EditConfigurationInfo.PlatformQualifier);
+            prepItem.EnableRDP(info, this.EditConfigurationInfo, IRemoteTargetTool.DefaultRdpPort, progress);
+
+        }).ContinueWith(result =>
+        {
+            string status = string.Empty;
+            if (result.Status != TaskStatus.RanToCompletion)
+                status = "Process was cancelled or an error occured";
+
+            ParentViewModel.FinishProcess(status, result.Status == TaskStatus.RanToCompletion && !tokenSource.IsCancellationRequested);
+        });
+    }
+
+    internal async void StartSession()
+    {
+        var result = await ParentViewModel.Dialog.ShowDialog("Start RDP Session", "This process will start a secure tunnel to the device and open a remote desktop session. Note that the first time you use this feature, you may be prompted to allow this action.   OK?", "Yes", "No");
+        if (!result)
+            return;
+
+        var task = ParentViewModel.Dialog.ShowDialog("Session Started", "Session Should begin in a moment.  Click Finish Session or Close Remote Desktop to end the session?", "Finish Session");
+
+        await Task.Run(() =>
+        {
+            var prepItem = RemoteTargetToolFactory.GetToolsForPlatform(this.EditConfigurationInfo.PlatformFamily);
+            prepItem.RunRDPSession(this.EditConfigurationInfo, IRemoteTargetTool.DefaultRdpPort, task);
+
+        });
+    }
+
+  
+
+    internal async void DisableRDP()
+    {
+        var continueEnableRDP = await ParentViewModel.Dialog.ShowDialog("Disable Remote Desktop", "Are you sure you want to Disable Remote Desktop on this Target?", "Yes", "Cancel");
+
+        if (!continueEnableRDP)
+            return;
+
+        ParentViewModel.Console.ClearConsole();
+        ParentViewModel.Console.AddConsoleLine("Disable Remote Desktop...");
+
+        var progress = new Progress<string>(info =>
+        {
+            ParentViewModel.Console.AddConsoleLine(info);
+        });
+
+        // Reset Token Source
+        tokenSource = new();
+
+        ParentViewModel.StartProcess(this);
+        await Task.Run(() =>
+        {
+            var prepItem = RemoteTargetToolFactory.GetToolsForPlatform(this.EditConfigurationInfo.PlatformFamily);
+            var info = HardwareInfo.GetHardwareInfo(this.EditConfigurationInfo.PlatformFamily, this.EditConfigurationInfo.PlatformQualifier);
+            prepItem.DisableRDP(info, this.EditConfigurationInfo, progress);
+
+        }).ContinueWith(result =>
+        {
+            string status = string.Empty;
+            if (result.Status != TaskStatus.RanToCompletion)
+                status = "Process was cancelled or an error occured";
+
+            ParentViewModel.FinishProcess(status, result.Status == TaskStatus.RanToCompletion && !tokenSource.IsCancellationRequested);
+        });
+    }
+
 
     #endregion
 }

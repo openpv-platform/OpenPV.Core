@@ -55,6 +55,10 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
 
                 System.Extensions.LoadExtensions(path);
+
+                if (ParentViewModel.ServiceConfiguration.Extensions == null)
+                    ParentViewModel.ServiceConfiguration.Extensions = new();
+
                 foreach (var item in System.Extensions.Configurations)
                 {
                     var extension = new ExtensionViewModel(this, item)

@@ -16,7 +16,7 @@ find_package(Protobuf REQUIRED)
 message(STATUS "Using Protocol Buffers ${Protobuf_VERSION}")
 
 
-set(PROTOBUF_DEFINITION_FILES "${CMAKE_SOURCE_DIR}/Ahsoka.Core/Ahsoka.Core/Proto/Configuration.proto;${CMAKE_SOURCE_DIR}/Ahsoka.Core/Ahsoka.Core/Proto/Services.proto" ) # Note that protobuf_generate_cpp does not support subdirectories
+set(PROTOBUF_DEFINITION_FILES "${CMAKE_SOURCE_DIR}/Ahsoka.Shared/Configuration.proto;${CMAKE_SOURCE_DIR}/Ahsoka.Shared/Services.proto" ) # Note that protobuf_generate_cpp does not support subdirectories
 message(PROTOBUF_DEFINITION_FILES  ${PROTOBUF_DEFINITION_FILES})
 
 foreach(PROTO_FILE ${PROTOBUF_DEFINITION_FILES})

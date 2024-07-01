@@ -17,16 +17,26 @@
 extern "C" {
 #endif
 
+#define MAX_SEATS 10
+#define CAIRO_DEBUG 0
+
+typedef struct 
+{
+	uint32_t seat_name;
+	struct wl_seat *seat;
+	struct wl_pointer *pointer;
+	struct wl_touch *touch;
+	struct wl_keyboard *keyboard;
+
+} OpenPvSeat;
+
 struct OpenPvWindow;
 typedef struct {
 	struct wl_display *display;
 	struct wl_registry *registry;
 	struct wl_compositor *compositor;
 	struct xdg_wm_base *wm_base;
-	struct wl_seat *seat;
-	struct wl_pointer *pointer;
-	struct wl_touch *touch;
-	struct wl_keyboard *keyboard;
+	OpenPvSeat seats[MAX_SEATS];
 	struct wl_shm *shm;
 	struct wl_cursor_theme *cursor_theme;
 	struct wl_cursor *default_cursor;

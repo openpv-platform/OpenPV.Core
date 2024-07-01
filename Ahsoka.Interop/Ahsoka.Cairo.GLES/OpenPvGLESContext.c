@@ -52,6 +52,14 @@ int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
 	display.initialized = false;
 	window.initialized = false;
 
+	for (size_t i = 0; i < MAX_SEATS; i++)
+	{
+		display.seats[i].pointer = 0;
+		display.seats[i].keyboard = 0;
+		display.seats[i].touch = 0;
+	}
+		
+
 	if (fullScreen)
 		window.fullscreen = 1;
 	window.req_width = w;
@@ -86,13 +94,13 @@ int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
 
 	display.initialized = true;
 	window.initialized = true;
-	printf("[] Done with window interop INIT...\n\r");
+	if (CAIRO_DEBUG) printf("-- Done with window interop INIT...\r\n");
 
 	ret = pthread_create(&dispatch_thread, NULL, &wayland_dispatch_thread, NULL);
 	if (ret != 0)
 		return -1;
 
-	printf("[] Dispatch thread created successfully...\n\r");
+	if (CAIRO_DEBUG) printf("-- Dispatch thread created successfully...\r\n");
 	return 0;
 }
 
@@ -163,17 +171,23 @@ void DestoryWindowContext()
 	if (display.shm)
 		wl_shm_destroy(display.shm);
 
-	if (display.pointer)
-		wl_pointer_destroy(display.pointer);
+	for (size_t i = 0; i < MAX_SEATS; i++)
+	{
+		if (display.seats[i].seat != 0)
+		{
+			if (display.seats[i].pointer)
+				wl_pointer_destroy(display.seats[i].pointer);
 
-	if (display.keyboard)
-		wl_keyboard_destroy(display.keyboard);
+			if (display.seats[i].keyboard)
+				wl_keyboard_destroy(display.seats[i].keyboard);
 
-	if (display.touch)
-		wl_touch_destroy(display.touch);
+			if (display.seats[i].touch)
+				wl_touch_destroy(display.seats[i].touch);
 
-	if (display.seat)
-		wl_seat_destroy(display.seat);
+			if (display.seats[i].seat)
+				wl_seat_destroy(display.seats[i].seat);
+		}
+	}
 
 	if (display.wm_base)
 		xdg_wm_base_destroy(display.wm_base);

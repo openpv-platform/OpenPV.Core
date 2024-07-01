@@ -16,7 +16,6 @@ void createXdgTouchQueue() {
     pthread_mutex_init(&xdg_mtx, NULL);
     sem_init(&xdg_sem, 0, 0);
     TAILQ_INIT(&head);
-    printf("[] Done creating XDG Touch input queue\n\r");
 }
 
 

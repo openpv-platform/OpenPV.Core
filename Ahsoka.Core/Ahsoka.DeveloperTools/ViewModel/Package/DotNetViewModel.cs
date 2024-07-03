@@ -234,7 +234,7 @@ internal class DotNetViewModel : ViewModelBase
         }
     }
 
-    public static void RunSdkCommands(string projectPath,MainViewModel mainViewModel, Progress<CommandLineProgressInfo> progress)
+    public static void RunSdkCommands(string projectPath, MainViewModel mainViewModel, Progress<CommandLineProgressInfo> progress)
     {
         foreach (var extensionName in mainViewModel.SelectedPackage.ServiceConfiguration.Extensions)
         {

@@ -184,7 +184,7 @@ internal class NewPackageViewModel : ViewModelBase
             if (File.Exists(launchFile))
             {
                 parentViewModel.SelectedPackage = new PackageViewModel(parentViewModel, launchFile);
-                parentViewModel.Dialog.ShowDialog("Project Created", $"Your project is now ready for development at \r\n\r\n{Path.GetDirectoryName(launchFile)}", "Ok");
+                parentViewModel.Dialog.ShowDialog("Project Created", $"Your project is now ready for development at... \r\n\r\n{Path.GetDirectoryName(launchFile)}", "Ok");
             }
 
         }

@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Installer;
+using Avalonia.Controls.Documents;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Utilities;
@@ -34,7 +35,7 @@ internal abstract class SparkToolBase : OpenPVToolBase
         return false;
     }
 
-    protected async Task ExecuteDownloadInternal(IToolViewModel toolVM, string path, CancellationTokenSource cancellationToken)
+    protected async Task ExecuteDownloadInternal(IToolViewModel toolVM, string path, CancellationTokenSource cancellationToken, bool writeVersion = true)
     {
         await Task.Run(async () =>
         {
@@ -69,7 +70,8 @@ internal abstract class SparkToolBase : OpenPVToolBase
                         Directory.Delete(LocalPath, true);
                 }
 
-                File.WriteAllText(GetVersionFilePath(), Version);
+                if (writeVersion)
+                    File.WriteAllText(GetVersionFilePath(), Version);
 
                 return "";
             }

@@ -34,6 +34,7 @@ internal class PlatformExtensionsTool : SparkToolBase
     {
         return CustomerToolPaths.GetToolPath(Folder);
     }
+    Task versionTask;
 
     public PlatformExtensionsTool(ReleaseDTO viewModel) :
         base(viewModel, false)
@@ -48,17 +49,23 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         this.IncludedProfiles = PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
         this.LocalPath = GetExtensionsPath();
+
+        GetInfo(null);
+        versionTask.Wait();
     }
 
     protected override async Task ExecuteDownload(IToolViewModel toolVM, CancellationTokenSource cancellationToken)
     {
+        currentVersionString = string.Empty;
+        GetInfo(toolVM);
+
         if (Directory.Exists(this.LocalPath))
             Directory.Delete(this.LocalPath, true);
 
         var download = viewModel.Contents.First();
         string downloadFile = Path.Combine(LocalPath, download.Path);
         toolVM.PercentStatus = $"Downloading {download.Path.Replace(".zip", "")}...";
-        await ExecuteDownloadInternal(toolVM, downloadFile, cancellationToken);
+        await ExecuteDownloadInternal(toolVM, downloadFile, cancellationToken, false);
 
 
         var archive = new ZipArchive(new MemoryStream(File.ReadAllBytes(downloadFile)));
@@ -101,7 +108,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         File.Delete(downloadFile);
 
         // Write Version
-        File.WriteAllText(GetVersionFilePath(), Version);
+        File.WriteAllText(GetVersionFilePath(), currentVersionString);
     }
 
     public override string GetInfo(IToolViewModel toolVM)
@@ -110,8 +117,8 @@ internal class PlatformExtensionsTool : SparkToolBase
             return currentVersionString;
         else
             currentVersionString = "Fetching List";
-      
-        var task =  Task.Run(async () =>
+
+        versionTask =  Task.Run(async () =>
         {
             StringBuilder builder = new StringBuilder();
 
@@ -119,7 +126,7 @@ internal class PlatformExtensionsTool : SparkToolBase
             var download = viewModel.Contents.First();
             string tempFile = Path.Combine(Path.GetTempPath(), download.Path);
 
-            await ExecuteDownloadInternal(toolVM, tempFile, source);
+            await ExecuteDownloadInternal(toolVM, tempFile, source, false);
 
             var archive = new ZipArchive(new MemoryStream(File.ReadAllBytes(tempFile)));
 
@@ -137,6 +144,8 @@ internal class PlatformExtensionsTool : SparkToolBase
         {
             if (toolVM is PluginsViewModel changed)
                 changed.UpdateShowInfo();
+
+            versionTask = null;
         });
         
         return currentVersionString;
@@ -325,11 +334,10 @@ internal class PlatformExtensionsTool : SparkToolBase
         if (isDownloaded)
         {
             string fileVersion = File.ReadAllText(GetVersionFilePath());
-            return fileVersion == Version;
+            return fileVersion == currentVersionString;
         }
 
-        return isDownloaded;
-
+        return false;
     }
 
     public override async Task InstallTool(IToolViewModel toolVM)

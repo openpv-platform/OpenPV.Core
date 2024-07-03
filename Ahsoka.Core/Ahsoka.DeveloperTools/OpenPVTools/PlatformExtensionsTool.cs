@@ -193,7 +193,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         // Determine if we are running a pre-release version. If not, we will only include pre-release versions
         bool allowDevelop = nugetVersion.IsPrerelease;
 
-        NuGetVersionFloatBehavior behavior = nugetVersion.IsPrerelease ? NuGetVersionFloatBehavior.PrereleaseMinor : NuGetVersionFloatBehavior.Major;
+        NuGetVersionFloatBehavior behavior = nugetVersion.IsPrerelease ? NuGetVersionFloatBehavior.PrereleaseMinor : NuGetVersionFloatBehavior.PrereleaseMinor; // TODO: Fix this.
 
         // Find the Best Version
         string thisVersion = null;

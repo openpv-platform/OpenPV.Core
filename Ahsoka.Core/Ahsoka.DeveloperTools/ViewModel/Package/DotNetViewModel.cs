@@ -293,8 +293,8 @@ internal class DotNetViewModel : ViewModelBase
                 if (item.Attribute("Include").Value.StartsWith("Ahsoka.Core"))
                 {
                     // If Release Version, Change Pre-Release to Release Versions.
-                    if (!new NuGet.Versioning.NuGetVersion(nugetVersion).IsPrerelease)
-                        item.Attribute("Version").Value = item.Attribute("Version").Value.Replace("*-*", "*");
+                    // if (!new NuGet.Versioning.NuGetVersion(nugetVersion).IsPrerelease) // TODO Decide how to handle this better.
+                    //   item.Attribute("Version").Value = item.Attribute("Version").Value.Replace("*-*", "*");
                 }
             }
 

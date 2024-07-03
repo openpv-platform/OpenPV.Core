@@ -61,6 +61,15 @@ namespace Ahsoka.Test.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OpenViewLinux, ZT-78700714, 45000052233, 0b3cfb2c.
+        /// </summary>
+        internal static string DeviceList {
+            get {
+                return ResourceManager.GetString("DeviceList", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;UpgradeName&quot; : &quot;OpenView 3.0 BSP Upgrade&quot;,
         ///  &quot;PlatformFamily&quot;: &quot;OpenViewLinux&quot;,

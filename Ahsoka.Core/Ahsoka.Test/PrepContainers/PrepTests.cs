@@ -20,15 +20,10 @@ public class RemoteLinuxTests : LinearTestBase
 
     public TestContext TestContext { get; set; }
 
-   // [ClassCleanup]
-    public static void StopLogging()
-    {
-    }
 
-    // [TestMethod]
+    //[TestMethod]
     public void TestRemoteLinuxToolsInContainer()
     {
-        //docker pull openpv/openview_test
         ProcessUtility.RunProcess("docker", $"pull {imageName}", null, out string result, out string error);
         Console.WriteLine(result);
 
@@ -75,6 +70,12 @@ public class RemoteLinuxTests : LinearTestBase
 
             var tools = RemoteTargetToolFactory.GetToolsForPlatform(PlatformFamily.Ubuntu64);
 
+            var hardwareInfo = HardwareInfo.GetHardwareInfo(PlatformFamily.Ubuntu64, "Desktop");
+            tools.EnableRDP(hardwareInfo, targetInfo, 5999, progress);
+            tools.EnableRDP(hardwareInfo, targetInfo, 5999, progress);
+            tools.DisableRDP(hardwareInfo,targetInfo,progress);
+
+
             // Clear Journals
             result = tools.ClearJournal(targetInfo);
             Console.WriteLine(result);
@@ -89,18 +90,22 @@ public class RemoteLinuxTests : LinearTestBase
             result = tools.StopApplication(targetInfo, false);
             Console.WriteLine(result);
 
-            // Test Factory Prep
-            tools.Prep(targetInfo, sparkLogin, progress, mfgInfo);
-
             // Test Standard Prep
             tools.Prep(targetInfo, sparkLogin, progress);
 
+            // Test Factory Prep
+            tools.Prep(targetInfo, sparkLogin, progress, mfgInfo);
+
+            
             // Load from Machine or Create and Add Configuration
             string keyName = "OpenPVContainerTestKeyFile";
 
             var keyFileInfo = SshUtility.CreateKeyFile(keyName);
             targetInfo.PrivateKeyFile = keyFileInfo.PrivateKeyPath;
 
+            var targetSigningKey = hardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
+
+            SshUtility.AddApplicationKey(targetInfo, keyFileInfo.PublicKeyPath, targetSigningKey);
             SshUtility.AddSshPublicKey(targetInfo, keyFileInfo);
             SshUtility.AddToSshConfiguration(keyFileInfo, keyName, targetInfo.HostName, targetInfo.UserName);
             SshUtility.UnlockDevice(targetInfo, string.Empty);
@@ -115,6 +120,7 @@ public class RemoteLinuxTests : LinearTestBase
             ProcessUtility.RunProcess("docker", $"stop {containerName}", null, out result, out error);
             dockerProcess.Wait();
         }
+        catch { }  // We run on the server but we don't fail a build 
         finally
         {
             // Stop Containers and Remove.

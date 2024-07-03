@@ -4,11 +4,13 @@ using Ahsoka.Services.Spark;
 using Ahsoka.Spark;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
+using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Security;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -68,6 +70,8 @@ public class SparkTeamsTests : LinearTestBase
         // Provision a "Fake" Display (use Local Service)
         ProvisionDisplayForContainer(team, container);
 
+        TestPreProvision(team);
+
         // Delete Container
         DeleteContainer(team, container);
 
@@ -84,6 +88,81 @@ public class SparkTeamsTests : LinearTestBase
         // Wait For Logout
         loginEvent.WaitOne(TimeSpan.FromSeconds(10));
 
+    }
+
+    private DeviceFactoryInfoDTO TestPreProvision(TeamDTO team)
+    {
+        SparkTestsHelpers.GetSparkLogin(out string identity, out string password, out string url);
+
+        SparkProvisioningClient.SharedSparkClient.LoginToSpark(url, SparkEndPointType.Provisioning, SecurityGroopType.Provisioning, identity, SecureLocalStrings.ToSecureString(password), null);
+
+        Guid deviceId = Guid.Parse("734df717-700d-9374-25a5-dfc258215d9f");
+
+        var newFactoryInfo = new DeviceFactoryInfoDTO()
+        {
+            DeviceID = deviceId,
+            DeviceHardwareID = "004100273431511230393938",
+            MacAddress = "",
+            PartNumber = "78700725",
+            SerialNumber = "45000544424",
+            PlatformFamily = PlatformFamily.OpenViewLinux.ToString(),
+            PlatformQualifier = "S70",
+            FactoryInfo = JsonUtility.Serialize(HardwareInfo.GetHardwareInfo(PlatformFamily.OpenViewLinux, "S70")),
+            DevicePublicKey = string.Empty,
+        };
+
+        var factoryResultVerification = SparkProvisioningClient.SharedSparkClient.CreateFactoryInfo(newFactoryInfo);
+
+        bool isSaved = newFactoryInfo.SerialNumber == factoryResultVerification.SerialNumber &&
+                      newFactoryInfo.PartNumber == factoryResultVerification.PartNumber &&
+                      newFactoryInfo.MacAddress == factoryResultVerification.MacAddress &&
+                      newFactoryInfo.DeviceHardwareID == factoryResultVerification.DeviceHardwareID &&
+                      newFactoryInfo.DeviceID == factoryResultVerification.DeviceID &&
+                      newFactoryInfo.DevicePublicKey == factoryResultVerification.DevicePublicKey;
+
+
+        var progress = new Progress<string>(info =>
+        {
+            Console.WriteLine(info);
+        });
+
+        // Test Decode
+        var items = new List<ProvisionItem>();
+        string tempFile = Path.GetTempFileName();
+        File.WriteAllText(tempFile, Properties.Resources.DeviceList);
+        var results = SparkCustomerTools.DecodeDeviceCSV(items, tempFile, progress);
+        Assert.IsTrue(items.Count == 1);
+        File.Delete(tempFile);
+
+        items.Clear();
+        var subInfo = new ProvisionDisplayRequest()
+        {
+            ApplicationId = team.TeamID,
+            PackageName = "TestPackage"
+        };
+
+        //SparkOTA Module Info
+        var module = SparkAccountClient.SharedSparkClient.GetModules().FirstOrDefault(x => x.Name.Contains("OTA"));
+        subInfo.Licenses.Add(new ModuleLicense() { LicenseId = module.ID, LicenseName = module.Name });
+
+
+        items.Add(new ProvisionItem(Enum.Parse<PlatformFamily>(newFactoryInfo.PlatformFamily),
+                                    newFactoryInfo.PartNumber,
+                                    newFactoryInfo.SerialNumber,
+                                    newFactoryInfo.DeviceID.ToString()));
+
+        var sparkLogin = new SparkConnectionInfo() { CurrentAuthorization = SparkAccountClient.SharedSparkClient.CurrentAuthorization, Url = SparkTests.DefaultTestSparkServer };
+
+        try
+        {
+            SparkCustomerTools.PreProvisionDevices(null, sparkLogin, subInfo, progress, items);
+            var device = SparkAccountClient.SharedSparkClient.GetTeamDevices(team.TeamID.ToString(), null).Devices.FirstOrDefault(x => x.DeviceID == newFactoryInfo.DeviceID) ;
+
+            SparkAccountClient.SharedSparkClient.DeleteTeamDevice(device,team);
+        }
+        catch { }
+
+        return factoryResultVerification;
     }
 
     private void ProvisionDisplayForContainer(TeamDTO team, ReleaseDTO container)

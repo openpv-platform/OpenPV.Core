@@ -28,8 +28,8 @@
 		<Copy SourceFiles="UbuntuHardwareConfiguration.json" DestinationFiles="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\Hardware\UbuntuHardwareConfiguration.json" />
 
 		<!--DISABLED - Create Installer UI  -->
-		<Exec Condition="false" Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=UbuntuOutputs" />
-		<WriteLinesToFile Condition="false" File="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\InstallerUI\InstallerVersion.txt" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
+		<Exec Condition="true" Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=UbuntuOutputs" />
+		<WriteLinesToFile Condition="true" File="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\InstallerUI\InstallerVersion.txt" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
 
 		<!-- Create Ubuntu Development Support Package (For Running Tools and Compiling C++)  DISABLED-->
 		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=UbuntuOutputs" />

@@ -8,6 +8,10 @@ RUN apt update && apt install  openssh-server sudo -y
 
 RUN apt-get install -y python3
 RUN apt-get install -y unzip
+RUN apt-get install -y winpr-utils 
+RUN apt-get install -y freerdp2-x11
+RUN apt-get install -y dropbear
+
 COPY systemctl3.py /usr/bin/systemctl
 
 RUN echo "root:$(mkpasswd -s </dev/null)" | chpasswd -e
@@ -22,6 +26,7 @@ ADD resize-helper.service /etc/systemd/system/resize-helper.service
 ADD bsp-info /usr/bin
 ADD bsp-version /usr/share/bsp-info/bsp-version
 ADD bsp-description /usr/share/bsp-info/bsp-description
+ADD weston.ini /etc/xdg/weston/weston.ini
 
 # Start SSH service
 RUN service ssh start

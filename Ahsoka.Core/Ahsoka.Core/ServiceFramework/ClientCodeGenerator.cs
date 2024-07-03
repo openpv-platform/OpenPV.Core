@@ -207,7 +207,11 @@ public class ClientCodeGenerator
             .Replace("DefaultServiceMessages", name + "Messages")
             .Replace("%REGISTER_SERVICE_MESSAGES%", messageItems.ToString());
 
-        string pathToFile = Path.Combine(pathToOutput, "inc","services", $"{name}Messages.hpp");
+        string pathToFile = Path.Combine(pathToOutput, "inc", "services");
+        if (!Directory.Exists(pathToFile))
+           Directory.CreateDirectory(pathToFile);
+        
+        pathToFile = Path.Combine(pathToFile, $"{name}Messages.hpp");
         File.WriteAllText(pathToFile, fileToWrite.ReplaceLineEndings("\n"));
     }
 

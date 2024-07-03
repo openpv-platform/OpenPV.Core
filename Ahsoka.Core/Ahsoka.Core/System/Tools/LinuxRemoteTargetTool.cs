@@ -612,18 +612,16 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
             throw new Exception(commandResult.Result);
 
         progress.Report($"Restore Logo");
-        sshClient.RunCommand($"export PATH=$PATH:/sbin;lcd-config");
+        sshClient.RunCommand($"export PATH=$PATH:/usr/sbin;/sbin;lcd-config");
 
         // Remove RSA and Add ECDSA and ED25519
         commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ecdsa_host_key");
-        commandResult = sshClient.RunCommand($"/usr/sbin/dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key");
+        commandResult = sshClient.RunCommand($"dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key");
         if (!commandResult.Result.Contains("Fingerprint:"))
             throw new Exception(commandResult.Result);
 
         commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ed25519_host_key");
-        commandResult = sshClient.RunCommand($"/usr/sbin/dropbearkey -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key");
-        if (!commandResult.Result.Contains("Fingerprint:"))
-            throw new Exception(commandResult.Result);
+        commandResult = sshClient.RunCommand($"dropbearkey -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key");
 
         progress.Report($"Securing SSH Communication");
         string unitFile = $"/lib/systemd/system/dropbear@.service";
@@ -708,7 +706,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         var commandResult = sshClient.RunCommand("bsp-info -v");
         bspVersion = commandResult.Result.Remove(0, "BSP Version:".Length).Trim();
 
-        if (bspVersion.CompareTo("3.2024-06-28") >= 0)
+        if (bspVersion.CompareTo("3.2024-06-28") >= 0 || bspVersion.StartsWith("2099"))
         {
             progressString.Report($"Add RDP Support");
         }

@@ -12,12 +12,18 @@ internal class DesktopServiceImplementation : IServiceImplementation
 {
     public string GetHardwareSerialNumber()
     {
-        return GetWMICValue("bios get serialnumber");
+        if (OperatingSystem.IsWindows())
+            return GetWMICValue("bios get serialnumber");
+        else
+            return "12345678";
     }
 
     public string GetHardwareModel()
     {
-        return GetWMICValue("csproduct get name");
+        if (OperatingSystem.IsWindows())
+            return GetWMICValue("csproduct get name");
+        else
+            return "Generic Desktop";
     }
 
     public void SetBrightness(int percent)

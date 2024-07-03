@@ -5,6 +5,7 @@ using Ahsoka.Services.Install;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NetMQ.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -44,6 +45,13 @@ public class PackagingTests : LinearTestBase
     public void TestPackagesInProc()
     {
         RunPackageTest(true, "AhsokaCairo", "S70", PlatformFamily.OpenViewLinux);
+    }
+
+    [TestMethod]
+    public void TestCodesysPackage()
+    {
+        PackageInformation package = PackagingTests.CreatePackage(out string fileName, asCodesys:true);
+        File.Delete(fileName);
     }
 
     [TestMethod]
@@ -122,16 +130,17 @@ public class PackagingTests : LinearTestBase
         }
     }
 
-
-    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo")
+    static Orientation nextOrientation = Orientation.DefaultOrientation;
+    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo", bool asCodesys = false)
     {
         string key = family.ToString() + qualifier + packageToTest;
 
-        if (packageInfo.TryGetValue(key, out PackageInformation info))
-        {
-            path = info.GetOutputFullPath();
-            return info;
-        }
+        if (!asCodesys)
+            if (packageInfo.TryGetValue(key, out PackageInformation info))
+            {
+                path = info.GetOutputFullPath();
+                return info;
+            }
 
         Environment.CurrentDirectory = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
 
@@ -148,6 +157,22 @@ public class PackagingTests : LinearTestBase
 
         string packagefile = Path.Combine(appOutputs, "OpenLinuxST.PackageInfo.json");
         PackageInformation package = JsonUtility.Deserialize<PackageInformation>(File.ReadAllText(packagefile));
+        
+        if (asCodesys)
+        {
+            package.ApplicationType = ApplicationType.CODESYS;
+            Directory.CreateDirectory(appOutputs + "\\publish");
+            string appname = Path.Combine(appOutputs, "publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".app");
+            string crc = Path.Combine(appOutputs, "publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".crc");
+            File.WriteAllText(appname, string.Empty);
+            File.WriteAllText(crc, string.Empty);
+        }
+
+        package.SystemOrientation = nextOrientation;
+
+        nextOrientation = nextOrientation + 1;
+        if (nextOrientation > Orientation.Rotate270)
+            nextOrientation = Orientation.DefaultOrientation;
 
         package.SecurityMode = SecurityModes.None;
         package.SecurityModelNumber = "MyModelNumber";
@@ -172,7 +197,8 @@ public class PackagingTests : LinearTestBase
         package = PackageInformation.LoadPackageInformation(packagefile);
 
         // Capture the values to our cache.
-        packageInfo.Add(key, package);
+        if (!asCodesys)
+            packageInfo.Add(key, package);
 
         // Get an Engine and Create the Package File
         InstallEngineBase createPackageEngine = InstallEngineBase.GetPackagingEngine(package);
@@ -180,7 +206,7 @@ public class PackagingTests : LinearTestBase
         {
             Console.WriteLine(info.Message);
         }));
-
+        
         return package;
     }
 

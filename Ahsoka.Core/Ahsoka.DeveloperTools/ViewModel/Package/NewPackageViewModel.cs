@@ -180,11 +180,12 @@ internal class NewPackageViewModel : ViewModelBase
                 }
             }
 
-            ProcessUtility.RunProcessInWindow("explorer.exe", projectFolder);
-
             parentViewModel.Popup.DismissPopup();
             if (File.Exists(launchFile))
+            {
                 parentViewModel.SelectedPackage = new PackageViewModel(parentViewModel, launchFile);
+                parentViewModel.Dialog.ShowDialog("Project Created", $"Your project is now ready for development at \r\n\r\n{Path.GetDirectoryName(launchFile)}", "Ok");
+            }
 
         }
         catch (Exception ex)
@@ -234,7 +235,6 @@ public class CustomerDemoInfoViewModel : ViewModelBase
     public string Language { get { return Model.ApplicationType == ApplicationType.Dotnet ? "C#" : "C++"; } set { Model.PackageName = value; OnPropertyChanged(); } }
 
     public bool IsLocal { get { return File.Exists(Model.GetPackageInfoPath()); } set { } }
-
 
     public CustomerDemoInfoViewModel(PackageInformation vm)
     {

@@ -21,4 +21,4 @@ PULSE_SERVER_TCP_ENV="-e PULSE_SERVER=tcp:172.17.0.1:4713"
 # like qtcreator connect to the host xorg server.
 # The current user home directory is also mounted directly into the
 # container.
-docker run -it --privileged -v /tmp/.X11-unix:/tmp/.X11-unix -v /home/`id -nu`:/home/`id -nu` -v /mnt/c/Projects:/projects -e DISPLAY=unix$DISPLAY $PULSE_SERVER_TCP_ENV  --name Ahsoka.QTCreator openpv/openview_qt_creator_2_0 ./entrypoint.sh
+docker run -it --privileged -v /tmp/.X11-unix:/tmp/.X11-unix -v /home/`id -nu`:/home/`id -nu` -v /mnt/c/Projects:/projects -e DISPLAY=unix$DISPLAY $PULSE_SERVER_TCP_ENV  --name Ahsoka.QTCreator openpv/openview_qt_creator_3_0 ./entrypoint.sh

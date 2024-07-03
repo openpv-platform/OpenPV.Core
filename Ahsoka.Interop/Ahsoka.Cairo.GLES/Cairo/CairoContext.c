@@ -26,7 +26,7 @@ int InitCairoFW(OpenPvCairoContext *context)
     if (context->cairo_surface == NULL)
         return -1;
 
-    printf("[] Cairo Surface Creation: Success\n\r");
+    if (CAIRO_DEBUG) printf("-- Cairo Surface Creation: Success\r\n");
     context->cr = cairo_create(context->cairo_surface);
     if (cairo_status(context->cr) != CAIRO_STATUS_SUCCESS)
         return -1;

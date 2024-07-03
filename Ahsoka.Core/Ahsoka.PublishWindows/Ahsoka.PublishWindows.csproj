@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<!--Disable Build Outputs-->
+	<Target Name="Build" />
+	<Target Name="Rebuild" />
+
+	<PropertyGroup>
+		<PlatformSupportRoot>$(SolutionDir)</PlatformSupportRoot>
+	</PropertyGroup>
+
+	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
+		<Message Text="Cleaning Windows BuildOutputs" Importance="high" />
+		<RemoveDir Directories="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\" />
+		<Delete Files="$(PlatformSupportRoot)\SparkUpload\Windows64_TargetSupport.zip"/>
+	</Target>
+
+	<Target Name="CreateWindowsPublishOutputs" AfterTargets="PostBuildEvent" Condition="!Exists('$(PlatformSupportRoot)\SparkUpload\Windows64_TargetSupport.zip')">
+
+		<!-- Copy Installer Json Files...assumes they were built to this folder -->
+		<Copy SourceFiles="OpenPV for Windows.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV for Windows.release.json" />
+		<Copy SourceFiles="WindowsHardwareConfiguration.json" DestinationFiles="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\Hardware\WindowsHardwareConfiguration.json" />
+
+		<!-- Prep SDK Folder -->
+		<Delete Files="$(PlatformSupportRoot)\BuildOutputs\SDK\Windows64\bin\Ahsoka.Client.Test.pdb" />
+		<Delete Files="$(PlatformSupportRoot)\BuildOutputs\SDK\Windows64\bin\Ahsoka.Client.Test.ilk" />
+		<ItemGroup>
+			<OV_SDK Include="$(PlatformSupportRoot)\BuildOutputs\SDK\**" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(OV_SDK)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\%(RecursiveDir)" OverwriteReadOnlyFiles="true" SkipUnchangedFiles="false" />
+
+		<!-- Create Windows Development Support Package (For Running Tools and Compiling C++)-->
+		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=WindowsOutput" />
+		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\Windows64_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Windows64_TargetSupport.zip" />
+
+	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

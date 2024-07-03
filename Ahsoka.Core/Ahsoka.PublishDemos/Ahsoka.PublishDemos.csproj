@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<!--Disable Build Outputs-->
+	<Target Name="Build" />
+	<Target Name="Rebuild" />
+
+	<PropertyGroup>
+		<DemoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</DemoRoot>
+	</PropertyGroup>
+
+
+	<Target Name="CreateDemos" AfterTargets="PostBuildEvent">
+
+		<!-- Create Demo Packages -->
+		<ItemGroup>
+			<DEMO_Blank_Basic Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Blank.Basic\**" />
+			<DEMO_Blank_Advanced Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Blank.Advanced\**" />
+			<DEMO_SERVICES Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Services\**" />
+			<DEMO_CAIRO Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Cairo\**" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(DEMO_Blank_Basic)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_Blank_Advanced)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\%(RecursiveDir)" />
+
+		<Copy SourceFiles="@(DEMO_SERVICES)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_CAIRO)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\%(RecursiveDir)" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Blank.Basic\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Blank.Basic.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Blank.Advanced\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Blank.Advanced.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Cairo\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Cairo.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Services\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Services.zip" />
+
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)Ahsoka.Demo\Ahsoka_QT_Demo" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka_QT_Demo.zip" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)Ahsoka.Demo\Ahsoka_QT_Blank" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka_QT_Blank.zip" />
+		
+		<!--Copy Spark Package Manifst to Output -->
+		<Copy SourceFiles="OpenPV Demos.release.json" DestinationFiles="$(DemoRoot)\SparkUpload\OpenPV Demos.release.json" />
+	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

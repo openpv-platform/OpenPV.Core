@@ -1,0 +1,14 @@
+﻿{
+  "extensionName": "Storyboard Extension",
+  "packageName": "Ahsoka.Core.Storyboard",
+  "uxpackageName": "Ahsoka.Core.Storyboard.Ux",
+  "uxViewModelName": "StoryboardViewModel",
+  "sdkGeneratorName": "StoryboardCodeGenerator",
+  "serviceConfigurations": [],
+  "hasCommands": "true",
+  "hasUx": "true",
+  "hasSdkGenerator": "true",
+  "minVersion": "3.3.0",
+  "maxVersion": "4.0.0",
+  "requireExactVersion": "false"
+}

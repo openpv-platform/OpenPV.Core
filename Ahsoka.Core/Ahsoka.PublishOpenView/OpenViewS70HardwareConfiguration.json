@@ -1,0 +1,74 @@
+{
+  "factoryInfo": {
+    "rootPath": "/usr/local/Ahsoka",
+    "platformFamily": "OpenViewLinux",
+    "platformQualifier": "S70",
+    "partNumber": "11111111",
+    "serialNumber": "22222222",
+    "hardwareId": "0",
+    "securityModelNumber": "",
+    "hostName": "OpenView",
+    "userName": "root",
+    "password": ""
+  },
+  "screenInfo": {
+    "screenWidth": "1024",
+    "screenHeight": "600",
+    "screenDpi": "96"
+  },
+  "bluetoothInfo": {
+    "bluetoothAdapters": [
+      {
+        "index": "0",
+        "deviceInterfacePath": "/org/bluez/hci0",
+        "stack": "BlueZ"
+      }
+    ]
+  },
+  "canInfo": {
+    "canPorts": [
+      {
+        "port": "0",
+        "coprocessorSerialPath": "/dev/ttyRPMSG0",
+        "socketCanInterfacePath": "can0",
+        "coprocessorFirmwarePath": "/lib/firmware/rproc-m4-fw"
+      },
+      {
+        "port": "1",
+        "coprocessorSerialPath": "/dev/ttyRPMSG0",
+        "socketCanInterfacePath": "can1",
+        "coprocessorFirmwarePath": "/lib/firmware/rproc-m4-fw"
+      }
+    ]
+  },
+  "networkInfo": {
+    "adapterInfoList": [
+      {
+        "adapterId": "ethsta0",
+        "adapterType": "WiFiClient",
+        "description": "Onboard Wireless Client",
+        "macAddress": "",
+        "module": "esp32"
+      },
+      {
+        "adapterId": "ethap0",
+        "adapterType": "WifiAccessPoint",
+        "description": "Onboard AccessPoint",
+        "macAddress": "",
+        "module": "esp32"
+      },
+      {
+        "adapterId": "eth0",
+        "adapterType": "Ethernet",
+        "description": "Ethernet",
+        "macAddress": ""
+      }
+    ]
+  },
+  "ioInfo": {
+    "analogInputs": [ 1, 2 ],
+    "analogOutputs": [],
+    "digitalInputs": [ 1, 2 ],
+    "digitalOutputs": [ 1, 2 ]
+  }
+}

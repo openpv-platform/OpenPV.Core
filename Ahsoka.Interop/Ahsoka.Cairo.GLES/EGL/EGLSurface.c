@@ -34,17 +34,17 @@ int InitEGL(OpenPvDisplay *display, OpenPvWindow *window)
     if (display->egl.dpy == EGL_NO_DISPLAY)
         return -1;
     
-    printf("[] EGL Display Successfully connected\n\r");
+    if (CAIRO_DEBUG) printf("-- EGL Display Successfully connected\r\n");
 
     if (eglInitialize(display->egl.dpy, &major, &minor) != EGL_TRUE)
         return -1;
     
-    printf("[] Succesfully initlized EGL Display -> EGL major: %d, minor %d\n", major, minor);
+    if (CAIRO_DEBUG) printf("-- Succesfully initlized EGL Display -> EGL major: %d, minor %d\r\n", major, minor);
 
     if (!eglBindAPI(EGL_OPENGL_ES_API))
         return -1;
     
-    printf("[] EGL API BIND Success...\n\r");
+    if (CAIRO_DEBUG) printf("-- EGL API BIND Success...\r\n");
     if (!eglGetConfigs(display->egl.dpy, NULL, 0, &count) || count < 1)
 		return -1;
 
@@ -72,7 +72,7 @@ int InitEGL(OpenPvDisplay *display, OpenPvWindow *window)
 	if (display->egl.ctx == NULL)
         return -1;
     
-    printf("[] EGL context creation success...\n\r");
+    if (CAIRO_DEBUG)  printf("-- EGL context creation success...\r\n");
     return 0;
 }
 

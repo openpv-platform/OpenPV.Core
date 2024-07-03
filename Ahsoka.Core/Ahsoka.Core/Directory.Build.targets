@@ -1,0 +1,48 @@
+﻿<Project TreatAsLocalProperty="IGNORE_PREREQS">
+	
+	<Target Name="CheckPreReqs" BeforeTargets="PreBuildEvent"
+		 Condition="(!Exists('..\..\BuildOutputs\Firmware\OpenViewLinux_TargetSupport\ESPFirmware.zip')
+				  OR !Exists('..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Services.ST.so'))
+				  AND '$(OS)' != 'Unix'">
+		<Error Text="Pre-Requisites appear to be missing - Please  build Ahsoka.BuildPreReqs before building Ahsoka.Core or set 'IGNORE_PREREQS' = YES Currently Set to '$(IGNORE_PREREQS)'" Condition="$(IGNORE_PREREQS) != 'YES'"/>
+	</Target>
+
+	<Target Name="InstallLicenseTool" BeforeTargets="PreBuildEvent"
+			Condition="false">
+		
+		<Message Text="Install License Generator" Importance="High" />
+		<Exec ContinueOnError="true" Command="dotnet tool uninstall --global dotnet-project-licenses" />
+		<Exec ContinueOnError="true" Command="dotnet tool install --global dotnet-project-licenses --version 2.4.*" />
+	</Target>
+	
+	<!--Note that this will only run once.  To generate licenses again, you must delete the file.-->
+	<Target Name="GenerateLicenseFile" BeforeTargets="PreBuildEvent"
+			Condition="!Exists('..\Ahsoka.Core\Resources\Licenses.json') ">
+		
+		<Message Text="Generate License File" Importance="High" />
+		<Exec Command="dotnet project-licenses -i . -o --outfile ../Ahsoka.Core/Resources/Licenses.json -j -p false" />
+		<Exec Condition="'$(OS)' != 'Unix'" Command="..\..\Ahsoka.ThirdParty\Doxygen\doxygen.exe .\Docs\Doxyfile"  />
+	</Target>
+
+	<ItemGroup Label="Native Libraries For Core" Condition="$(IGNORE_PREREQS) != 'YES' and '$(OS)' != 'Unix'" >
+		<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Services.ST.so">
+			<Link>AhsokaLib\Ahsoka.Services.ST.so</Link>
+			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Services.ST.so</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<IncludeInPackage>true</IncludeInPackage>
+			<Pack>true</Pack>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>true</Visible>
+		</Content>
+		
+		<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Wifi.ST.so">
+			<Link>AhsokaLib\Ahsoka.Wifi.ST.so</Link>
+			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Wifi.ST.so</PackagePath>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
+			<IncludeInPackage>true</IncludeInPackage>
+			<Pack>true</Pack>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Visible>true</Visible>
+		</Content>
+	</ItemGroup>
+</Project>

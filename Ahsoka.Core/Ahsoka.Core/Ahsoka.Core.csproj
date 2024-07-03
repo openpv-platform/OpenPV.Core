@@ -1,0 +1,111 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>Ahsoka</RootNamespace>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>		
+	</PropertyGroup>
+
+
+	<PropertyGroup Label="Debugging Support">
+		<DebugSymbols>true</DebugSymbols>
+		<EmbedAllSources>true</EmbedAllSources>
+		<DebugType>portable</DebugType>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+	</PropertyGroup>
+
+	<ItemGroup Label="Debugging Source Support">
+		<PackageReference Include="Microsoft.SourceLink.AzureRepos.Git" Version="8.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<Compile Remove="Properties\**" />
+		<EmbeddedResource Remove="Properties\**" />
+		<None Remove="Properties\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\..\Ahsoka.Shared\Functions.cmake" Link="Proto\Functions.cmake" />
+		<None Include="..\..\Ahsoka.Shared\CMakeLists.txt" Link="Proto\CMakeLists.txt" />
+		<None Include="..\..\Ahsoka.Shared\Services.proto" Link="Proto\Services.proto" />
+	</ItemGroup>
+	
+	<ItemGroup>
+		<AdditionalFiles Include="Proto\*.proto" />
+		<AdditionalFiles Include="..\..\Ahsoka.Shared\Services.proto" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Spark\SparkUploadTool.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
+		<None Include="README.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Compile Include="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
+
+
+
+	<ItemGroup>
+		<EmbeddedResource Include="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="EnovationCloud.Core" Version="4.6.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
+		<PackageReference Include="NetMQ" Version="4.0.1.13" />
+		<PackageReference Include="protobuf-net" Version="3.2.30" />
+		<PackageReference Include="protobuf-net.BuildTools" Version="3.2.33">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
+		<PackageReference Include="System.Drawing.Common" Version="8.0.6" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
+		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
+		<PackageReference Include="MQTTnet" Version="4.3.6.1152" />
+		<PackageReference Include="SSH.NET" Version="2024.0.0" />
+	</ItemGroup>
+
+	<ItemGroup Label="Windows Only Modules - If Only I could Figure Out how to Exclude Them???">
+		<PackageReference Include="Doxygen" Version="1.8.14">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="SimpleWifi.netstandard" Version="2.0.0" />
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.1" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<None Update="Ahsoka.Core.props">
+			<PackagePath>build</PackagePath>
+			<Pack>true</Pack>
+		</None>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <AdditionalFiles Update="..\..\Ahsoka.Interop\Ahsoka.Proto\Configuration.proto" Link="Configuration.proto" />
+	</ItemGroup>
+</Project>

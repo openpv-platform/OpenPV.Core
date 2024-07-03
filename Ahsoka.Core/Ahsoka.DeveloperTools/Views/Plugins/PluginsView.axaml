@@ -1,0 +1,137 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="1024"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+			 xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+             x:Class="Ahsoka.DeveloperTools.Views.PluginsView" Background="#33555555">
+
+	<Border Margin="20" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="220"/>
+			</Grid.ColumnDefinitions>
+			<Border BorderBrush="Gainsboro" BorderThickness="1,0,0,0" Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"  Background="WhiteSmoke" VerticalAlignment="Stretch" Margin="0,0,0,0">
+
+			</Border>
+			<TextBlock FontSize="18"
+					   VerticalAlignment="Top"
+					   HorizontalAlignment="Center"
+					   Margin="12,34,12,12"
+					   Foreground="DimGray"
+					   Text="Actions"
+					   Grid.Column="1"/>
+
+			<TabControl Grid.ColumnSpan="2" Margin="10,5,0,0"  DockPanel.Dock="Top" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="0">
+				<TabItem VerticalAlignment="Stretch">
+					<TabItem.Header>
+						<TextBlock FontSize="18" Text="Downloads by Profile"/>
+					</TabItem.Header>
+						<DockPanel HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+							<CustomerTools:PluginProfileView/>
+						</DockPanel>
+				</TabItem>
+				<TabItem VerticalAlignment="Stretch">
+					<TabItem.Header>
+						<TextBlock FontSize="18" Text="All Downloads"/>
+					</TabItem.Header>
+					<Grid>
+						<DockPanel Grid.ColumnSpan="2" Margin="0,0,0,55">
+							<DockPanel Margin="10,10,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True">
+								<CustomerTools:PluginDownloadView/>
+							</DockPanel>
+						</DockPanel>
+						
+					</Grid>
+				</TabItem>
+			</TabControl>
+			
+			<Button Margin="4" Grid.Column="2" Grid.Row="0" Width="24" Height="24"
+				HorizontalAlignment="Right"
+				VerticalAlignment="Top"
+				Command="{Binding ClosePopup}"
+				Background="Transparent">
+				<material:MaterialIcon Padding="5"  Background="Transparent"
+									   Foreground="SteelBlue" Kind="Close"/>
+			</Button>
+	
+			<Border IsVisible="{Binding DownloadInProgress, FallbackValue=false}" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="#44888888" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+				<Border  BoxShadow="5 5 10 2 DarkGray" Height="120" Width="600" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="White" BorderThickness="1">
+					<Grid VerticalAlignment="Center">
+						<TextBlock Foreground="SteelBlue" FontSize="16" 
+								   VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,45"
+								   Padding="10" Text="{Binding PercentStatus, FallbackValue=Downloading...}"/>
+						
+						<ProgressBar MinHeight="1" Height="5" Width="450"
+									 BorderThickness="0"  CornerRadius="0" VerticalAlignment="Center" HorizontalAlignment="Center" Value="{Binding DownloadPercent}"
+								     Minimum="0" Maximum="100"
+								     IsEnabled="True" />
+
+						<Button Grid.Column="2" Grid.Row="0" 
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center" Margin="0,55,0,0"
+									Command="{Binding Cancel}" FontSize="10"
+									Background="Transparent" Content="Cancel"/>
+					</Grid>
+				</Border>
+			</Border>
+		
+			<Border IsVisible="{Binding !ToolListDownloaded, FallbackValue=false}" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+				<Border  BoxShadow="5 5 10 2 DarkGray" Height="100" Width="400" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="White" BorderThickness="1">
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+						
+						<progRing:ProgressRing Width="30"  Height="30" IsActive="True"   Foreground="SteelBlue" />
+						<TextBlock  Foreground="SteelBlue" FontSize="16"
+									   VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,5"
+									   Padding="10" Text="Downloading Plugin List..."/>
+
+					</StackPanel>
+				</Border>
+			</Border>
+		
+			<Border IsVisible="{Binding NewInstallVisible, FallbackValue=false}"  Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="Transparent" BorderThickness="0" Margin="0,0,0,0" >
+				<Border.Styles>
+					<Style Selector="Border">
+						<Setter Property="Opacity" Value="0"/>
+					</Style>
+					<Style Selector="Border[IsVisible=true]">
+						<Setter Property="Opacity" Value="1"/>
+					</Style>
+				</Border.Styles>
+				<Border.Transitions>
+					<Transitions>
+						<DoubleTransition Property="Opacity" Duration="0:0:1"/>
+					</Transitions>
+				</Border.Transitions>
+				<CustomerTools:WelcomeView/>
+			</Border>
+			<Border IsVisible="{Binding ShowInfoVisible}" Grid.ColumnSpan="2"  BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+				<Border  BoxShadow="5 5 10 2 DarkGray" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="White" BorderThickness="1">
+					<StackPanel VerticalAlignment="Center">
+						<TextBlock Margin="0,25,0,0" Width="600" Foreground="SteelBlue" FontSize="16" TextWrapping="Wrap" TextAlignment="Center"
+								   VerticalAlignment="Center" HorizontalAlignment="Left"
+								   Padding="10" Text="{Binding SelectedTool.Name,StringFormat=' {0} includes the following...'  FallbackValue='Platform Support for None which includes the following...'}"/>
+						<TextBlock Margin="25,1,25,0" Width="450" Foreground="SteelBlue"
+								   FontSize="14" TextWrapping="Wrap" TextAlignment="Left" LineHeight="25"
+														   VerticalAlignment="Center" HorizontalAlignment="Center"
+														   Padding="10" 
+								   Text="{Binding ShowInfoText, FallbackValue=Item Info...}"/>
+
+						<StackPanel Margin="25" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
+							<Button Grid.Column="2" Grid.Row="0"
+										HorizontalAlignment="Center"
+										VerticalAlignment="Center"
+										Command="{Binding ShowInfo}" FontSize="14"
+										Background="Transparent" Content="Ok"/>
+						</StackPanel>
+
+
+					</StackPanel>
+				</Border>
+			</Border>
+		</Grid>
+	</Border>
+</UserControl>

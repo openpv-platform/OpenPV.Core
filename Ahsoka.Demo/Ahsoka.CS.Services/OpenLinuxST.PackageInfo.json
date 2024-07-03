@@ -1,7 +1,6 @@
 {
-  "version": "3.0.1.10015",
+  "version": "3.1.1.20025",
   "applicationType": "Dotnet",
-  "userInterfaceType": "None",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Services",
   "packageName": "Ahsoka.CS.Services",
@@ -10,6 +9,7 @@
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
   "includeInstallerUI": false,
+  "includeFirmwareUpdate": false,
   "licenses": [],
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Services.csproj",
@@ -17,23 +17,24 @@
   },
   "serviceInfo": {
     "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensions": [],
+      "startupDelay": 3,
+      "requireChallenge": "NotRequired",
       "services": [
         {
+          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "isExtension": false,
-          "dataKeyValues": [],
+          "behaviors": "AutoStart",
           "configurationFile": ""
         }
-      ],
-      "customServiceEnabled": "Enabled",
-      "serviceStartup": "NoAutoStart",
-      "releaseOption": "NoAutoStart",
-      "extensions": [],
-      "startupDelay": 3
+      ]
     },
     "environmentValues": []
   },

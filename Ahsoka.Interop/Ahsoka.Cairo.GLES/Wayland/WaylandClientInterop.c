@@ -1,14 +1,23 @@
 #include "WaylandClientInterop.h"
 
 #include <EGL/eglext.h>
+#include <limits.h>
 
 #include "weston-egl-ext.h"
 #include "weston-platform.h"
 #include "wayland-util.h"
 
 
+#define BTN_RIGHT		0x111
+#define BTN_LEFT		0x110
+
+static bool mouse_down = 0;
+
 static int touch_xi = 0;
 static int touch_yi = 0;
+
+static int mouse_xi = 0;
+static int mouse_yi = 0;
 
 static void touch_handle_down(void *data, struct wl_touch *wl_touch,
 		  uint32_t serial, uint32_t time, struct wl_surface *surface,
@@ -16,6 +25,7 @@ static void touch_handle_down(void *data, struct wl_touch *wl_touch,
 {
 	int xi = wl_fixed_to_int(x_w);
 	int yi = wl_fixed_to_int(y_w);
+
 	TouchEvent t = {
 		.type = touch_down,
 		.x  = xi,
@@ -26,9 +36,8 @@ static void touch_handle_down(void *data, struct wl_touch *wl_touch,
 	touch_xi = xi;
 	touch_yi = yi;
 
-	// printf("Touch Down: X[%i] Y[%i] ID[%i]\n\r", xi, yi, id);
+	if (CAIRO_DEBUG)  printf("Touch Down: X[%i] Y[%i] ID[%i]\r\n", xi, yi, id);
 	enqueue(&t);
-	
 	// popup windows that can be dragged and dropped need to use xdg move below
 	// xdg_toplevel_move(w->xdg_toplevel, d->seat, serial);
 }
@@ -44,7 +53,7 @@ static void touch_handle_up(void *data, struct wl_touch *wl_touch,
 	};
 
 	enqueue(&t);
-	// printf("Touch UP: X[%i] Y[%i] ID[%i]\n\r", touch_xi, touch_yi, id);
+	if (CAIRO_DEBUG) printf("Touch UP: X[%i] Y[%i] ID[%i]\r\n", touch_xi, touch_yi, id);
 
 	// reset touch_xi & yi values to make sure we don't 'double' touch
 	touch_xi = 0;
@@ -83,23 +92,121 @@ static const struct wl_touch_listener touch_listener = {
 	touch_handle_cancel,
 };
 
+static void pointer_handle_motion(void *data, struct wl_pointer *wl_pointer, uint32_t time,
+               wl_fixed_t surface_x, wl_fixed_t surface_y)
+{
+	mouse_xi = wl_fixed_to_int(surface_x);
+	mouse_yi = wl_fixed_to_int(surface_y);
 
+	if (mouse_down)
+	{
+		TouchEvent t = {
+			.type = touch_continue,
+			.x  = mouse_xi,
+			.y =  mouse_yi,
+			.id = INT_MAX
+		};
+		enqueue(&t);
+			
+		if (CAIRO_DEBUG) printf("MOUSE MOVED: X[%i] Y[%i] \r\n", mouse_xi, mouse_yi);
+	}
+}
+
+
+static void pointer_handle_button(void *data, struct wl_pointer *pointer,
+		uint32_t serial, uint32_t time, uint32_t button, uint32_t state) 
+{
+	struct wl_seat *seat = data;
+	
+	// If the user presses the left pointer button, start an interactive move
+	// of the toplevel
+	if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_PRESSED) 
+	{
+		if (CAIRO_DEBUG) printf("-- WL_POINTER_BUTTON_STATE_PRESSED X[%i] Y[%i] \r\n", mouse_xi, mouse_yi);
+
+		mouse_down = true;
+
+		TouchEvent t = {
+			.type = touch_down,
+			.x  = mouse_xi,
+			.y =  mouse_yi,
+			.id = INT_MAX
+		};
+		enqueue(&t);
+	}
+	if (button == BTN_LEFT && state == WL_POINTER_BUTTON_STATE_RELEASED) 
+	{
+		if (CAIRO_DEBUG) printf("-- WL_POINTER_BUTTON_STATE_RELEASED X[%i] Y[%i] \r\n", mouse_xi, mouse_yi);
+	
+		mouse_down = false;
+
+		TouchEvent t = {
+			.type = touch_up,
+			.x  = mouse_xi,
+			.y =  mouse_yi,
+			.id = INT_MAX
+		};
+		enqueue(&t);
+	}
+}
+
+static void noop() 
+{
+	// This space intentionally left blank
+}
+
+static const struct wl_pointer_listener pointer_listener = 
+{
+	.enter = noop,
+	.leave = noop,
+	.motion = pointer_handle_motion,
+	.button = pointer_handle_button,
+	.axis = noop,
+};
+
+
+static int get_seat(OpenPvDisplay *d, struct wl_seat *seat)
+{
+	// Evaluate Seats and Available Seats
+	int seatIndex = -1;
+	for (size_t i = 0; i < MAX_SEATS; i++)
+		if (d->seats[i].seat == seat)
+			seatIndex = i;
+
+	return seatIndex;
+}
 
 static void seat_handle_capabilities(void *data, struct wl_seat *seat,
 			 enum wl_seat_capability caps)
 {
-	OpenPvDisplay *d = (OpenPvDisplay *) data;
+	if (CAIRO_DEBUG) printf("-- Handling Seat Capabilities  CAP:[%i]\r\n", caps);
+	if (CAIRO_DEBUG) printf("                              SEAT:[%i]\r\n", seat);
 
-	if ((caps & WL_SEAT_CAPABILITY_TOUCH) && !d->touch)
+	OpenPvDisplay *d = (OpenPvDisplay *) data;
+	
+	int seatIndex = get_seat(d, seat);
+	if (seatIndex < 0)
+		return;
+	
+	if ((caps & WL_SEAT_CAPABILITY_TOUCH) && !d->seats[seatIndex].touch)
 	{
-		d->touch = wl_seat_get_touch(seat);
-		wl_touch_set_user_data(d->touch, d);
-		wl_touch_add_listener(d->touch, &touch_listener, d);
+		if (CAIRO_DEBUG) printf("-- CREATE TOUCH\r\n");
+		d->seats[seatIndex].touch = wl_seat_get_touch(seat);
+		wl_touch_set_user_data(d->seats[seatIndex].touch, d);
+		wl_touch_add_listener(d->seats[seatIndex].touch, &touch_listener, d);
 	}
-	else if (!(caps & WL_SEAT_CAPABILITY_TOUCH) && d->touch)
+	else if (!(caps & WL_SEAT_CAPABILITY_TOUCH) && d->seats[seatIndex].touch)
 	{
-		wl_touch_destroy(d->touch);
-		d->touch = NULL;
+		if (CAIRO_DEBUG) printf("-- REMOVE TOUCH\r\n");
+		wl_touch_destroy(d->seats[seatIndex].touch);
+		d->seats[seatIndex].touch = NULL;
+	}
+
+	if (caps & WL_SEAT_CAPABILITY_POINTER) 
+	{
+	 	if (CAIRO_DEBUG) printf("-- ADDING POINTER\r\n");
+		struct wl_pointer *pointer = wl_seat_get_pointer(seat);
+		wl_pointer_add_listener(pointer, &pointer_listener, seat);
 	}
 }
 
@@ -120,10 +227,12 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 		       uint32_t name, const char *interface, uint32_t version)
 {
 	OpenPvDisplay *d = (OpenPvDisplay *) data;
-	// const struct wl_interface *interface -> static_cast<const wl_interface *>
+	
+	if (CAIRO_DEBUG > 1) printf("-- %s [%i]\r\n", interface, name );
+	
+	
 	if (strcmp(interface, "wl_compositor") == 0)
 		d->compositor = wl_registry_bind(registry, name, (&wl_compositor_interface), 1);
-	
 	else if (strcmp(interface, "xdg_wm_base") == 0)
 	{
 		d->wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
@@ -131,8 +240,25 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 	}
     else if (strcmp(interface, "wl_seat") == 0)
     {
-		d->seat = wl_registry_bind(registry, name, &wl_seat_interface, 1);
-		wl_seat_add_listener(d->seat, &seat_listener, d);
+		// Find a Seat Slot
+		int availableSeat = -1;
+		for (size_t i = 0; i < MAX_SEATS; i++)
+			if (d->seats[i].seat == 0)
+				availableSeat = i;
+		
+		// If Available Add our Seat
+		if (availableSeat >=0)
+		{
+			d->seats[availableSeat].seat_name = name;
+			d->seats[availableSeat].seat = wl_registry_bind(registry, name, &wl_seat_interface, 1);
+			wl_seat_add_listener(d->seats[availableSeat].seat, &seat_listener, d);
+
+			if (CAIRO_DEBUG) printf("-- ADDING SEAT[%i] @ [%i] and [%i]\r\n", d->seats[availableSeat].seat, availableSeat, name );
+		}
+		else
+		{
+			printf("-- NO SEAT SLOTS AVAILABLE\r\n");
+		}
 	}
     else if (strcmp(interface, "wl_shm") == 0)
 	    d->shm = wl_registry_bind(registry, name, &wl_shm_interface, 1);
@@ -141,14 +267,39 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 static void registry_handle_global_remove(void *data, struct wl_registry *registry,
 			      uint32_t name)
 {
+	OpenPvDisplay *d = (OpenPvDisplay *) data;
+	
+	for (size_t i = 0; i < MAX_SEATS; i++)
+		if (d->seats[i].seat_name == name)
+		{
+			if (CAIRO_DEBUG) printf("-- REMOVING SEAT [%i]\r\n",name);
+			
+			if (d->seats[i].pointer)
+				wl_pointer_destroy(d->seats[i].pointer);
+
+			if (d->seats[i].keyboard)
+				wl_keyboard_destroy(d->seats[i].keyboard);
+
+			if (d->seats[i].touch)
+				wl_touch_destroy(d->seats[i].touch);
+
+			if (d->seats[i].seat)
+				wl_seat_destroy(d->seats[i].seat);
+	
+			d->seats[i].pointer = 0;
+			d->seats[i].keyboard = 0;
+			d->seats[i].touch = 0;
+			d->seats[i].seat = 0;
+			d->seats[i].seat_name = -1;
+
+			if (CAIRO_DEBUG) printf("-- SEAT REMOVED\r\n");
+		}
 }
 
 static const struct wl_registry_listener registry_listener = {
 	registry_handle_global,
 	registry_handle_global_remove
 };
-
-
 
 int InitWaylandClient(OpenPvDisplay *display, OpenPvWindow *window)
 {

@@ -17,25 +17,25 @@ int main()
 	ret = InitWindowInterop(0, 0, 300, 400, false);
 	if (ret != 0)
 	{
-		printf("Error Initializing Wayland Client! Exiting Test...\n\r");
+		printf("-- Error Initializing Wayland Client! Exiting Test...\r\n");
 		exit(-1);
 	}
 
 	cairo_t *ctx = Test_CairoContext();
 	if (!ctx)
 	{
-		printf("Error getting Cairo Context! Exiting Test...\n\r");
+		printf("-- Error getting Cairo Context! Exiting Test...\r\n");
 		exit(-1);
 	}
 
 	cairo_surface_t *surf = Test_CairoSurface();
 	if (!surf)
 	{
-		printf("Error getting Cairo Surface! Exiting Test...\n\r");
+		printf("-- Error getting Cairo Surface! Exiting Test...\r\n");
 		exit(-1);
 	}
 
-	printf("Initial Software Tests Passed, Drawing on screen for physical inspection...\n\r");
+	printf("-- Initial Software Tests Passed, Drawing on screen for physical inspection...\r\n");
 
 	// Visual Tests moved to Ahsoka.Demo.Cairo project
     return 0;

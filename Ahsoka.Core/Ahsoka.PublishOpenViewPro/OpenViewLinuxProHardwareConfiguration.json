@@ -1,0 +1,24 @@
+{
+  "factoryInfo": {
+    "rootPath": "/usr/local/Ahsoka",
+    "platformFamily": "OpenViewLinuxPro",
+    "platformQualifier": "PXX",
+    "partNumber": "11111111",
+    "serialNumber": "22222222",
+    "hardwareId": "0",
+    "securityModelNumber": "",
+    "hostName": "OpenViewPro",
+    "userName": "root",
+    "password": ""
+  },
+  "networkInfo": {
+    "adapterInfoList": [
+      {
+        "adapterId": "eth0",
+        "adapterType": "Ethernet",
+        "description": "Ethernet",
+        "macAddress": ""
+      }
+    ]
+  }
+}

@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<!--Disable Build Outputs-->
+	<Target Name="Build" />
+	<Target Name="Rebuild" />
+
+	<PropertyGroup>
+		<PlatformSupportRoot>$(SolutionDir)</PlatformSupportRoot>
+	</PropertyGroup>
+
+	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
+		<Message Text="Cleaning OpenView BuildOutputs" Importance="high" />
+		<RemoveDir Directories="$(PlatformSupportRoot)\PlatformSupport\PowerVision_TargetSupport\" />
+		<Delete Files="$(PlatformSupportRoot)\SparkUpload\PowerVision_TargetSupport.zip"/>
+	</Target>
+
+	<Target Name="CreatePowerVisionnPublishOutputs" AfterTargets="PostBuildEvent" Condition="!Exists('$(PlatformSupportRoot)\SparkUpload\PowerVision_TargetSupport.zip')">
+		
+		<!-- Dependencies for PowerVision -->
+		<ItemGroup>
+			<OV_HardwareDefs Include="*HardwareConfiguration.json" />
+		</ItemGroup>
+		<Copy SourceFiles="@(OV_HardwareDefs)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\PowerVision_TargetSupport\Hardware\%(RecursiveDir)" />
+
+		<!-- Create OpenView "Select" Package -->
+		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\PowerVision_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\PowerVision_TargetSupport.zip" />
+
+	</Target>
+
+	<ItemGroup>
+		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+</Project>

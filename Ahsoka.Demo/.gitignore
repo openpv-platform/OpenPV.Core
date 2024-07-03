@@ -387,10 +387,8 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 
-*/BuildOutputs/
-*.project
-*/StoryboardExport/
+*/StoryboardExport/*
 *.buildpath
-Ahsoka.OpenPV.Installer\Components.wxs
 *.opv
 */Ahsoka.Client.Shared/*
+*/Outputs/*

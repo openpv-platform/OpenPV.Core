@@ -6,8 +6,8 @@ UBUNTU_BUILD_TYPE="Debug"
 OPENST_BUILD_TYPE="Release"
 
 # Clean Build Outputs
-AHSOKA_BUILD_ROOT="/workspaces/Ahsoka.Platform/Build"
-AHSOKA_BUILD_OUTPUT_ROOT="/workspaces/Ahsoka.Platform/BuildOutputs/SDK"
+AHSOKA_BUILD_ROOT="/workspaces/Ahsoka.Core/Build"
+AHSOKA_BUILD_OUTPUT_ROOT="/workspaces/Ahsoka.Core/BuildOutputs/SDK"
 mkdir -p $AHSOKA_BUILD_ROOT
 mkdir -p $AHSOKA_BUILD_OUTPUT_ROOT
 
@@ -31,6 +31,6 @@ fi
 # Create new Build Folder
 mkdir -p $AHSOKA_BUILD
 
-/usr/bin/cmake -DCMAKE_BUILD_TYPE=$OPENST_BUILD_TYPE -DAHSOKA_BUILD_OUTPUTS=$AHSOKA_BUILD_OUTPUT -DCMAKE_TOOLCHAIN_FILE=/root/sdk/sysroots/x86_64-arago-linux/usr/share/cmake/OEToolchainConfig.cmake -S/workspaces/Ahsoka.Platform -B$AHSOKA_BUILD -G Ninja
+/usr/bin/cmake -DCMAKE_BUILD_TYPE=$OPENST_BUILD_TYPE -DAHSOKA_BUILD_OUTPUTS=$AHSOKA_BUILD_OUTPUT -DCMAKE_TOOLCHAIN_FILE=/root/sdk/sysroots/x86_64-arago-linux/usr/share/cmake/OEToolchainConfig.cmake -S/workspaces/Ahsoka.Core -B$AHSOKA_BUILD -G Ninja
 /usr/bin/cmake --build $AHSOKA_BUILD
 

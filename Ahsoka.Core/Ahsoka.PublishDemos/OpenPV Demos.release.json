@@ -1,0 +1,54 @@
+{
+  "ReleaseID": "00000000-0000-0000-0000-000000000000",
+  "ChannelName": "OpenPV Demos",
+  "AvailableToVersion": null,
+  "ContainerType": 0,
+  "TrackType": 0,
+  "ReleaseName": "OpenPV Demos",
+  "ContainerName": "OpenPV",
+  "ContainerVersion": "1.0.0",
+  "ReleaseNotes": null,
+  "InstallCommand": null,
+  "UnInstallCommand": null,
+  "SizeInBytes": 0,
+  "OriginalFileSizeInBytes": 0,
+  "Contents": [
+    {
+      "Path": "Ahsoka.CS.Blank.Basic.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.Blank.Advanced.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.Services.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka.CS.Cairo.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka_QT_Blank.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka_QT_Demo.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    }
+  ],
+  "Dependencies": null
+}

@@ -611,17 +611,15 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         if (commandResult.Result != string.Empty)
             throw new Exception(commandResult.Result);
 
-        progress.Report($"Restore Logo");
-        sshClient.RunCommand($"export PATH=$PATH:/usr/sbin;/sbin;lcd-config");
-
-        // Remove RSA and Add ECDSA and ED25519
         commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ecdsa_host_key");
-        commandResult = sshClient.RunCommand($"dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key");
+        commandResult = sshClient.RunCommand($"/usr/sbin/dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key");
         if (!commandResult.Result.Contains("Fingerprint:"))
             throw new Exception(commandResult.Result);
 
         commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ed25519_host_key");
-        commandResult = sshClient.RunCommand($"dropbearkey -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key");
+        commandResult = sshClient.RunCommand($"/usr/sbin/dropbearkey -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key");
+        if (!commandResult.Result.Contains("Fingerprint:"))
+            throw new Exception(commandResult.Result);
 
         progress.Report($"Securing SSH Communication");
         string unitFile = $"/lib/systemd/system/dropbear@.service";

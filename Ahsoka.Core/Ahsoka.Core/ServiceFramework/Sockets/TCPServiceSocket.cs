@@ -2,6 +2,7 @@
 using NetMQ.Sockets;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -14,7 +15,7 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
     IAhsokaEndPoint endPoint;
     object socketSyncRoot = new(); // Protects Socket Send/Receive
     NetMQPoller socketPoller = new();
-    List<Guid> validClientIds = new ();
+    List<byte[]> validClientIds = new ();
     
     public bool IsConnected { get; private set; }
 
@@ -68,12 +69,15 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 
     void IAhsokaServiceSocket.RegisterClient(ClientRegistration registration)
     {
-        validClientIds.Add(new Guid(registration.ClientId));
+        validClientIds.Add(registration.ClientId);
     }
 
     void IAhsokaServiceSocket.DeregisterClient(ClientRegistration registration)
     {
-        validClientIds.Remove(new Guid( registration.ClientId));
+        var indexToRemove = validClientIds.FindIndex(a => a.SequenceEqual(registration.ClientId));
+        if (indexToRemove >= 0)
+            validClientIds.RemoveAt(indexToRemove);
+        
     }
 
     void IAhsokaSocket.SendMessage(byte[] header, byte[] data, byte[] clientId, bool sendAsNotification)
@@ -83,15 +87,15 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
         if (clientId == null && !sendAsNotification)
             throw new ApplicationException("Services must include client id when sending messages");
 
-        IEnumerable<Guid> clients = sendAsNotification ? 
+        IEnumerable<byte[]> clients = sendAsNotification ? 
                                     validClientIds : 
-                                    new List<Guid>() { new Guid(clientId) };
+                                    new List<byte[]>() { clientId };
 
         NetMQMessage message = new();
 
         foreach (var client in clients)
         {
-            message.Append(client.ToByteArray());
+            message.Append(client);
             message.Append(header);
             message.Append(data);
 

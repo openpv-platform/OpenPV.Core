@@ -148,7 +148,8 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             foreach (var extension in extensionList)
             {
                 if (extension.TryGetTarget(out var asm))
-                    if (Path.GetFileName(asm.Location) == item.ExtensionConfiguration.UXLibraryFilename)
+                {
+                    if (asm.GetName().Name.Equals(Path.GetFileNameWithoutExtension(item.ExtensionConfiguration.UXLibraryFilename),StringComparison.OrdinalIgnoreCase))
                         foreach (var defType in asm.DefinedTypes)
                         {
                             if (defType.IsSubclassOf(typeof(ExtensionViewModelBase)) && !defType.IsAbstract &&
@@ -158,6 +159,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
                                 extensionUXExtensions[item.ExtensionName] = vm;
                             }
                         }
+                }
 
             }
         }
@@ -206,9 +208,9 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         var selectedExtension = selectedAvailableExtension;
         CancellationTokenSource source = new CancellationTokenSource();
         IsWorking = true;
-        await Task.Run(() =>
+        await Task.Run(async () =>
         {
-            selectedExtension.DownloadExtension(PreRelease, source);
+            await selectedExtension.DownloadExtension(PreRelease, source);
             selectedExtension.IsInstalled = true;
 
         }).ContinueWith((t) =>
@@ -230,11 +232,13 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
                 }
             }
 
-           
             ParentViewModel.NeedsSDKUpdate();
             SelectedExtensions.Add(selectedExtension);
+          
+            ReloadExtensions();
+           
             AllExtensions.Remove(selectedExtension);
-
+         
             AddExtensionsShown = false;
             IsWorking = false;
         });
@@ -279,7 +283,6 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         }
     }
 
-  
     public void ShowUx(string extensionName)
     {
         InitExtension(extensionName);
@@ -379,16 +382,6 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         ParentViewModel.ParentViewModel.Popup.DismissPopup(popupControl);
     }
 
-    [Obsolete]
-    public string GetConfigurationPath(string extensionName)
-    {
-        string returnValue = ParentViewModel.ServiceConfiguration.ExtensionInfo.FirstOrDefault(x => x.ExtensionName == this.selectedExtension.ExtensionName).ConfigurationFile;
-        if (!String.IsNullOrEmpty(returnValue))
-            return returnValue;
-
-       return ParentViewModel.ServiceViewModel.Services.FirstOrDefault(x => x.ServiceName == extensionName)?.CurrentServiceConfiguration.ConfigurationFile;
-    }
-
     internal bool HasChanges()
     {
         foreach (var item in extensionUXExtensions)
@@ -450,9 +443,9 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
         var token = new CancellationTokenSource();
         
         ParentViewModel.IsWorking = true;
-        Task.Run(() =>
+        Task.Run(async () =>
         {
-            DownloadExtension(ParentViewModel.PreRelease, token);
+            await DownloadExtension(ParentViewModel.PreRelease, token);
             this.IsInstalled = true;
        
         }).ContinueWith((t) =>
@@ -461,7 +454,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
         });
     }
 
-    public async void DownloadExtension(bool preRelease, CancellationTokenSource token)
+    public async Task DownloadExtension(bool preRelease, CancellationTokenSource token)
     {
         string directory = GetExtensionDirectory();
         if (Directory.Exists(directory))

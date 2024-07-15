@@ -199,7 +199,7 @@ internal class CppViewModel : ViewModelBase
             await Task.Run(() =>
             {
                 var progress = new Progress<CommandLineProgressInfo>(info =>
-                {
+                { 
                     if (info.IsWriteLine)
                         parentViewModel.Console.AddConsoleLine(info.Message);
                     else

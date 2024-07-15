@@ -14,9 +14,6 @@ public abstract class ExtensionViewModelBase : ViewModelBase
         CustomerToolViewModel = vmParent;
 
         OnInitExtension(hardwareInfo, projectFolder, configFile);
-
-        // Called for Back Compatibility
-        OnInitExtension(hardwareInfo, projectFolder);
     }
 
     public UserControl GetView()
@@ -39,10 +36,7 @@ public abstract class ExtensionViewModelBase : ViewModelBase
         return OnSave(packageInfoFolder);
     }
 
-    [Obsolete]
-    protected abstract void OnInitExtension(HardwareInfo hardwareInfo, string projectFolder);
-
-    protected virtual void OnInitExtension(HardwareInfo hardwareInfo, string projectFolder, string configurationPath) { }
+    protected abstract void OnInitExtension(HardwareInfo hardwareInfo, string projectFolder, string configurationPath);
 
     protected abstract string OnSave(string packageInfoFolder);
 

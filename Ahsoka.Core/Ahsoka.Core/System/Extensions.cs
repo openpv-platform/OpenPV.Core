@@ -177,14 +177,24 @@ public class Extensions
         {
             try
             {
-                // Don't Reload Files
+                // Don't Reload Files 
                 var currentList = currentLoadContext.Assemblies.FirstOrDefault(x => x.GetName().Name == Path.GetFileNameWithoutExtension(item));
                 if (currentList == null)
                 {
-                   var  asm = currentLoadContext.LoadFromAssemblyPath(item);
+                    Assembly asm = null;
+                    if (OperatingSystem.IsWindows())
+                    {
+                        using var fs = new FileStream(item, FileMode.Open);
+                        asm = currentLoadContext.LoadFromStream(fs);
+                    }
+                    else
+                    {
+                        asm = currentLoadContext.LoadFromAssemblyPath(item);
+                    }
 
                     ExtensionLibraries.Insert(0, new WeakReference<Assembly>(asm));
                     ClassLoader.AddAssembly(asm);
+
                 }
             }
             catch
@@ -207,7 +217,7 @@ public class Extensions
                 {
                     if (item.TryGetTarget(out Assembly assembly))
                     {
-                        if (Path.GetFileName(assembly.Location) == config.LibraryFilename)
+                        if (assembly.GetName().Name.Equals(Path.GetFileNameWithoutExtension(config.LibraryFilename), StringComparison.OrdinalIgnoreCase))
                             foreach (var defType in assembly.DefinedTypes)
                             {
                                 if (typeof(IExtensionGenerator).IsAssignableFrom(defType) && !defType.IsAbstract &&

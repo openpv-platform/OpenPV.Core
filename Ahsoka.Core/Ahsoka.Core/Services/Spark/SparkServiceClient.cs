@@ -82,6 +82,24 @@ public class SparkServiceClient : AhsokaClientBase<SparkMessageTypes.Ids>
     {
         SendNotificationWithResponse<EmptyNotification>(SparkMessageTypes.Ids.UpdateLicenseInfo, licenseInfo);
     }
+
+    /// <summary>
+    /// Subscribes to updates for changes to application.
+    /// </summary>
+    /// <returns></returns>
+    public void SubscribeToAppChanges()
+    {
+        SendNotificationWithResponse<EmptyNotification>(SparkMessageTypes.Ids.SubscribeToAppChange, new EmptyNotification());
+    }
+
+    /// <summary>
+    /// Unsubscribes to updates for changes to application.
+    /// </summary>
+    /// <returns></returns>
+    public void UnubscribeToAppChanges()
+    {
+        SendNotificationWithResponse<EmptyNotification>(SparkMessageTypes.Ids.UnsubscribeToAppChange, new EmptyNotification());
+    }
 }
 
 /// <summary>

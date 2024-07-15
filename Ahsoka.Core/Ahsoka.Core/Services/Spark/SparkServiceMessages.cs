@@ -15,6 +15,9 @@ internal class SparkServiceMessages : AhsokaMessagesBase
         this.RegisterServiceRequest(SparkMessageTypes.Ids.GetRelease, typeof(SparkReleaseDownloadRequest), typeof(SparkReleaseDownloadCompleted));
         this.RegisterServiceNotification(SparkMessageTypes.Ids.GetReleaseNotification, typeof(SparkReleaseDownloadNotification));
         this.RegisterServiceRequest(SparkMessageTypes.Ids.UpdateLicenseInfo, typeof(ModuleLicenseInfo), typeof(EmptyNotification), false, true);
+        this.RegisterServiceRequest(SparkMessageTypes.Ids.SubscribeToAppChange, typeof(EmptyNotification), typeof(EmptyNotification));
+        this.RegisterServiceRequest(SparkMessageTypes.Ids.UnsubscribeToAppChange, typeof(EmptyNotification), typeof(EmptyNotification));
+        this.RegisterServiceNotification(SparkMessageTypes.Ids.AppChangeNotification, typeof(AppChangeInfo));
     }
 
     public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)

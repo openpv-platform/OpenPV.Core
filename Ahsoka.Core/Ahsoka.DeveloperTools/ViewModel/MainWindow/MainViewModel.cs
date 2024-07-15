@@ -270,7 +270,8 @@ internal class MainViewModel : ViewModelBase
         if (UseInternalCommandLine)
         {
             var currentDirectory = Environment.CurrentDirectory;
-            Environment.CurrentDirectory = workingDirectory;
+            if (workingDirectory != null)
+                Environment.CurrentDirectory = workingDirectory;
 
             using var localConsole = new LocalConsoleWriter();
             EventHandler<LocalConsoleWriterEventArgs> handler = (sender, e) =>
@@ -294,7 +295,8 @@ internal class MainViewModel : ViewModelBase
 
             localConsole.WriteLineEvent -= handler;
             localConsole.WriteEvent += handler;
-            Environment.CurrentDirectory = currentDirectory;
+            if (workingDirectory != null)
+                Environment.CurrentDirectory = currentDirectory;
         }
         else
         {

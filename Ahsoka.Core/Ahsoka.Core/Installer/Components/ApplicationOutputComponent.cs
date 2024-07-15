@@ -102,6 +102,10 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         foreach (var plugin in installerPlugins)
             plugin.AddAdditionalApplicationFiles(buildLocation, attributes, additionalFiles, info, progress);
 
+        // Add Extensions to App Folder
+        foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
+            Extensions.InstallExtension(additionalFiles, item.ExtensionName);
+
         // Add Component Attributes
         var componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
         if (componentData != null)

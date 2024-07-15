@@ -45,7 +45,10 @@ internal class AboutViewModel : ChildViewModelBase<MainViewModel>
         }
     }
 
-
+    internal void ToggleDebugCLI()
+    {
+        parentViewModel.DebugCommandLine = !parentViewModel.DebugCommandLine;
+    }
     internal void ToggleInternalCLI()
     {
         parentViewModel.UseInternalCommandLine = !parentViewModel.UseInternalCommandLine;

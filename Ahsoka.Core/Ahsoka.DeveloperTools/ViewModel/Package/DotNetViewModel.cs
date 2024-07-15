@@ -1,7 +1,10 @@
 ﻿using Ahsoka.DeveloperTools.Core;
+using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Ahsoka.System;
+using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
+using ShimSkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -124,7 +127,7 @@ internal class DotNetViewModel : ViewModelBase
 
     private string GetFrameworkInfoPath()
     {
-        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), "obj/Ahsoka.Client.Shared//AhsokaFrameworkInfo.json");
+        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), $"obj/{PlatformSupportPathInfo.PlatformSupportRootFolderName_App}/AhsokaFrameworkInfo.json");
     }
 
     public DotNetViewModel(MainViewModel parentViewModel, PackageInformation packageInfo)
@@ -185,7 +188,6 @@ internal class DotNetViewModel : ViewModelBase
 
             UpdateNuget();
 
-
             //needs method for determining platforms to load
             List<System.PlatformFamily> platformsToSupport = new() { packageInfo.PlatformFamily };
 
@@ -236,12 +238,12 @@ internal class DotNetViewModel : ViewModelBase
 
     public static void RunSdkCommands(string projectPath, MainViewModel mainViewModel, Progress<CommandLineProgressInfo> progress)
     {
-        foreach (var extensionName in mainViewModel.SelectedPackage.ServiceConfiguration.Extensions)
+        foreach (var info in mainViewModel.SelectedPackage.ServiceConfiguration.ExtensionInfo)
         {
-            var list = Extensions.GetCommands(mainViewModel.SelectedPackage.PackageInfo, extensionName, CommandTypes.SdkGenerator | CommandTypes.ModelGenerators);
+            var list = Extensions.GetCommands(mainViewModel.SelectedPackage.PackageInfo, info.ExtensionName, CommandTypes.SdkGenerator | CommandTypes.ModelGenerators);
             foreach (var command in list)
                 if (command.Value == GeneratorCommandType.AhsokaCommandLine)
-                    mainViewModel.RunCommandLineProcess(command.Key, projectPath, progress, CancellationToken.None);
+                    mainViewModel.RunCommandLineProcess(command.Key, projectPath, progress, CancellationToken.None, mainViewModel.SelectedPackage.GetCommandLinePath());
                 else
                     mainViewModel.RunShellProcess(command.Key, projectPath, progress, CancellationToken.None);
         }
@@ -250,6 +252,7 @@ internal class DotNetViewModel : ViewModelBase
     internal static string InstallCommandLine(string directory, PlatformFamily platform, MainViewModel mainViewModel, IProgress<string> progressString)
     {
         string pathToCommandLine = Path.Combine(mainViewModel.GetPlatformPath(platform), "CommandLine");
+        string pathToHardware = Path.Combine(mainViewModel.GetPlatformPath(platform), "Hardware");
 
         // Copy Command Line
         if (!Directory.Exists(pathToCommandLine))
@@ -262,15 +265,17 @@ internal class DotNetViewModel : ViewModelBase
         Stopwatch stopwatch = Stopwatch.StartNew();
 
         // Copy Command Line
-        string pathToCLIOutput = Path.Combine(directory, platform.ToString(), "CommandLine");
+        string pathToCLIOutput = Path.Combine(directory, platform.ToString() + "_TargetSupport", "CommandLine");
+        string pathToHWOutput = Path.Combine(directory, platform.ToString() + "_TargetSupport", "Hardware");
         progressString.Report($" ");
         progressString.Report($"Installing Ahsoka Services Application to {pathToCLIOutput}");
         progressString.Report($" ");
         FileUtilities.CopyDirectory(pathToCommandLine, pathToCLIOutput, true, progressString);
 
-        foreach (var extensionName in mainViewModel.SelectedPackage.ServiceConfiguration.Extensions)
-            Extensions.InstallExtension(pathToCLIOutput, extensionName, progressString);
-     
+        if (Directory.Exists(pathToHardware))
+            FileUtilities.CopyDirectory(pathToHardware, pathToHWOutput, true, progressString);
+
+
         progressString.Report($" ");
 
         stopwatch.Stop();

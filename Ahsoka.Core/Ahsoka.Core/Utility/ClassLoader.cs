@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.Utility;
 
@@ -10,7 +11,7 @@ namespace Ahsoka.Utility;
 /// </summary>
 public static class ClassLoader
 {
-    private static readonly List<Assembly> assemblies;
+    private static readonly List<WeakReference<Assembly>> assemblies = new();
     private static readonly object syncRoot = new();
 
     #region Methods
@@ -18,10 +19,13 @@ public static class ClassLoader
     {
         lock (syncRoot)
         {
-            assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.StartsWith("Ahsoka.")).ToList();
+            var tempList = AppDomain.CurrentDomain.GetAssemblies().Where(x => x.FullName.StartsWith("Ahsoka."));
+            foreach (var item in tempList)
+                assemblies.Add(new WeakReference<Assembly>(item));
+
             var asm = Assembly.GetEntryAssembly();
-            if (!assemblies.Contains(asm))
-                assemblies.Add(asm);
+            if (!tempList.Contains(asm))
+                assemblies.Add(new WeakReference<Assembly>(asm));
         }
     }
 
@@ -32,11 +36,22 @@ public static class ClassLoader
     public static void AddAssembly(Assembly assembly)
     {
         lock (syncRoot)
-            if (!assemblies.Contains(assembly))
-                assemblies.Add(assembly);
+            assemblies.Add(new WeakReference<Assembly>(assembly));
     }
 
-    internal static IReadOnlyList<Assembly> GetSystemAssemblies()
+    /// <summary>
+    /// Add an Assembly to the Search List
+    /// </summary>
+    /// <param name="assembly"></param>
+    public static void RemoveAssembly(Assembly assembly)
+    {
+        lock (syncRoot)
+            foreach (var item in assemblies.ToArray())
+                if (item.TryGetTarget(out var asm) && asm == assembly)
+                    assemblies.Remove(item);
+    }
+
+    internal static IReadOnlyList<WeakReference<Assembly>> GetSystemAssemblies()
     {
         lock (syncRoot)
             return assemblies.ToArray();
@@ -45,15 +60,16 @@ public static class ClassLoader
     internal static Type[] GetSubclasses(Type item)
     {
         List<Type> typeList = new();
-        foreach (Assembly assm in GetSystemAssemblies())
+        foreach (var asmwf in GetSystemAssemblies())
         {
             try
             {
-                foreach (Type curType in assm.GetTypes())
-                {
-                    if (curType.IsSubclassOf(item))
-                        typeList.Add(curType);
-                }
+                if (asmwf.TryGetTarget(out Assembly asm))
+                    foreach (Type curType in asm.GetTypes())
+                    {
+                        if (curType.IsSubclassOf(item))
+                            typeList.Add(curType);
+                    }
             }
             catch (ReflectionTypeLoadException)
             {
@@ -68,15 +84,16 @@ public static class ClassLoader
         List<Type> typeList = new();
         if (item != null)
         {
-            foreach (Assembly assm in GetSystemAssemblies())
+            foreach (var asmwf in GetSystemAssemblies())
             {
                 try
                 {
-                    foreach (Type curType in assm.GetTypes())
-                    {
-                        if (item.IsAssignableFrom(curType) && !curType.IsAbstract && !curType.IsInterface)
-                            typeList.Add(curType);
-                    }
+                    if (asmwf.TryGetTarget(out Assembly asm))
+                        foreach (Type curType in asm.GetTypes())
+                        {
+                            if (item.IsAssignableFrom(curType) && !curType.IsAbstract && !curType.IsInterface)
+                                typeList.Add(curType);
+                        }
                 }
                 catch (ReflectionTypeLoadException)
                 {
@@ -95,16 +112,17 @@ public static class ClassLoader
     public static Dictionary<T, Type> GetItemsWithAttribute<T>() where T : Attribute
     {
         Dictionary<T, Type> typeList = new();
-        foreach (Assembly assm in GetSystemAssemblies())
+        foreach (var asmwf in GetSystemAssemblies())
         {
             try
             {
-                foreach (Type curType in assm.GetTypes())
-                {
-                    var attr = curType.GetCustomAttribute<T>();
-                    if (attr != null && !curType.IsAbstract && !curType.IsInterface)
-                        typeList[attr] = curType;
-                }
+                if (asmwf.TryGetTarget(out Assembly asm))
+                    foreach (Type curType in asm.GetTypes())
+                    {
+                        var attr = curType.GetCustomAttribute<T>();
+                        if (attr != null && !curType.IsAbstract && !curType.IsInterface)
+                            typeList[attr] = curType;
+                    }
             }
             catch (ReflectionTypeLoadException)
             {

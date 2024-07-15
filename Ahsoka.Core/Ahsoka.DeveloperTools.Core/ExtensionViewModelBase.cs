@@ -9,9 +9,13 @@ public abstract class ExtensionViewModelBase : ViewModelBase
 {
     protected ICustomerToolViewModel CustomerToolViewModel { get; set; }
 
-    public void InitExtension(ICustomerToolViewModel vmParent, HardwareInfo hardwareInfo, string projectFolder)
+    public void InitExtension(ICustomerToolViewModel vmParent, HardwareInfo hardwareInfo, string projectFolder, string configFile)
     {
         CustomerToolViewModel = vmParent;
+
+        OnInitExtension(hardwareInfo, projectFolder, configFile);
+
+        // Called for Back Compatibility
         OnInitExtension(hardwareInfo, projectFolder);
     }
 
@@ -35,7 +39,10 @@ public abstract class ExtensionViewModelBase : ViewModelBase
         return OnSave(packageInfoFolder);
     }
 
+    [Obsolete]
     protected abstract void OnInitExtension(HardwareInfo hardwareInfo, string projectFolder);
+
+    protected virtual void OnInitExtension(HardwareInfo hardwareInfo, string projectFolder, string configurationPath) { }
 
     protected abstract string OnSave(string packageInfoFolder);
 

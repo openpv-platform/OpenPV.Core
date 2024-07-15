@@ -28,7 +28,7 @@ public class AssemblyResolver
         foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
         {
             var name = item.GetName();
-            if (!string.IsNullOrEmpty(name.Name))
+            if (!string.IsNullOrEmpty(name.Name) && !item.IsCollectible)
             {
                 if (name.Name == requestedName)
                 {

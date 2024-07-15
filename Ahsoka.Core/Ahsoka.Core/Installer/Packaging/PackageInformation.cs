@@ -29,6 +29,7 @@ public class PackageInformation : PackageHeader
     public string PackageSigningCertFile { get; set; }
 
     public bool IncludeInstallerUI { get; set; } = false;
+    
     public bool IncludeFirmwareUpdate { get; set; } = false;
 
     public List<ModuleLicense> Licenses { get; set; } = new();
@@ -116,6 +117,15 @@ public class PackageInformation : PackageHeader
             "AhsokaData",
             "AhsokaCerts", 
             (type == KeyTypes.PackageSigningKey ? keyName + ".appcert" : keyName + ".servicecert"));
+    }
+
+    internal string GetPackageExtentionFolder()
+    {
+        if (ApplicationType == Installer.ApplicationType.Dotnet)
+            return Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()),"obj", Extensions.ExtensionsFolder);
+        else
+            return Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), Extensions.ExtensionsFolder);
+
     }
 }
 

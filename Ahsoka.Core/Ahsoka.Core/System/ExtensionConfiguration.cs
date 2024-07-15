@@ -1,5 +1,6 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace Ahsoka.System;
@@ -58,7 +59,6 @@ internal class ExtensionConfiguration
     /// </summary>
     public string SdkGeneratorName { get; set; }
 
-
     /// <summary>
     /// FileName for the Primary Extension Library
     /// </summary>
@@ -83,5 +83,16 @@ internal class ExtensionConfiguration
     /// Require Exact Match (for Core Modules) 
     /// </summary>
     public bool RequireExactVersion { get; set; }
+
+    /// <summary>
+    /// Maximum Version that will be accepted 
+    /// </summary>
+    public string InstalledVersion { get; set; }
+
+    /// <summary>
+    /// Maximum Version that will be accepted 
+    /// </summary>
+    [JsonIgnore]
+    public string AvailableVersion { get; set; }
 
 }

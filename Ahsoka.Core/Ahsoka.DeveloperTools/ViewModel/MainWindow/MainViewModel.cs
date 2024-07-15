@@ -8,6 +8,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,6 +20,8 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using static NetMQ.NetMQSelector;
+using static NuGet.Packaging.PackagingConstants;
 using SystemConsole = System.Console;
 
 namespace Ahsoka.DeveloperTools;
@@ -55,6 +58,13 @@ internal class MainViewModel : ViewModelBase
         get { return true; }
         set { }
     }
+
+
+    public ObservableCollection<ExtensionConfiguration> AvailableExtensions
+    {
+        get;
+        init;
+    } = new();
 
     public RecentItem SelectedProject { get; set; }
 
@@ -230,6 +240,18 @@ internal class MainViewModel : ViewModelBase
         }
     }
 
+    public bool DebugCommandLine
+    {
+        get { return Settings.WaitForDebuggerInCLI; }
+        set
+        {
+            Settings.WaitForDebuggerInCLI = value;
+            SaveSettings();
+            OnPropertyChanged();
+        }
+    }
+
+
     #endregion
 
     #region Progress Management
@@ -263,9 +285,10 @@ internal class MainViewModel : ViewModelBase
         this.cancelObject?.Cancel();
     }
 
-    internal void RunCommandLineProcess(string processArgs, string workingDirectory, IProgress<CommandLineProgressInfo> progressString, CancellationToken token)
+    internal void RunCommandLineProcess(string processArgs, string workingDirectory, IProgress<CommandLineProgressInfo> progressString, CancellationToken token, string pathToCommand = null)
     {
-        string pathToCommand = GetCommandLinePath();
+        if (pathToCommand == null)
+            pathToCommand = GetCommandLinePath(); // Will not have extensions
 
         if (UseInternalCommandLine)
         {
@@ -478,6 +501,7 @@ internal class MainViewModel : ViewModelBase
             InitUI();
     }
 
+    
     private bool IsSparkAvailable()
     {
         try
@@ -846,6 +870,7 @@ public class Settings
     public List<RecentItem> RecentItems { get; set; } = new List<RecentItem>();
     public List<String> FavoriteTeams { get; set; } = new List<String>();
     public bool UseInternalCLI { get; set; }
+    public bool WaitForDebuggerInCLI { get; set; }
     public List<OffLineData> OfflineData { get; set; } = new List<OffLineData>();
     public bool HideOpenViewPro { get; set; }
     public bool HideOpenView { get; set; }

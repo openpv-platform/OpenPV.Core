@@ -18,6 +18,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Path = System.IO.Path;
 using Ahsoka.DeveloperTools.Core;
+using Ahsoka.DeveloperTools.ViewModel;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -807,7 +808,11 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             if (File.Exists(output))
                 File.Delete(output);
 
-            ParentViewModel.RunCommandLineProcess($"--Package \"{workingDirectory}\" \"{packageInfoPath}\"", workingDirectory, progress, source.Token);
+            string prefix = "";
+            if (ParentViewModel.Settings.WaitForDebuggerInCLI)
+                prefix = "--WaitForDebugger ";
+
+            ParentViewModel.RunCommandLineProcess($"{prefix}--Package \"{workingDirectory}\" \"{packageInfoPath}\"", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
 
             output = itemToGenerate.PackageInfo.GetOutputFullPath();
             if (File.Exists(output))
@@ -924,6 +929,22 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             dotNetModel.SdkNeedsUpdate = true;
     }
 
+    internal string GetCommandLinePath()
+    {
+        string pathToCommand = string.Empty;
+
+        // Run Machine / Tools Downloads
+        string pathToKits = Path.GetDirectoryName(PackageInfo.GetPackageInfoPath());
+        if (ApplicationType == ApplicationType.Dotnet)
+            pathToKits = Path.Combine(pathToKits, "obj");
+
+        pathToCommand = Path.Combine(pathToKits, PlatformSupportPathInfo.PlatformSupportRootFolderName_App, PlatformSupportPathInfo.GetPlatformFolderName(SystemInfo.CurrentPlatform), "CommandLine", "Ahsoka.CommandLine");
+
+        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            pathToCommand += ".exe";
+
+        return pathToCommand;
+    }
     #endregion
 }
 

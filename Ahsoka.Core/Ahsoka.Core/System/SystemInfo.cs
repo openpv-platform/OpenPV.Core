@@ -269,7 +269,7 @@ public partial class RuntimeConfiguration
     /// <summary>
     /// 
     /// </summary>
-    public List<string> Extensions { get; set; }
+    public List<ExtensionInfo> ExtensionInfo { get; set; }
 
     /// <summary>
     /// 
@@ -288,4 +288,23 @@ public partial class RuntimeConfiguration
 }
 
 
+/// <summary>
+/// Extension Information
+/// </summary>
+public partial class ExtensionInfo
+{
+    /// <summary>
+    /// Extension Name
+    /// </summary>
+    public string ExtensionName { get; set; }
 
+    /// <summary>
+    /// Specific Version
+    /// </summary>
+    public string SpecificVersion { get; set; }
+    
+    /// <summary>
+    /// Specific Version
+    /// </summary>
+    public string ConfigurationFile { get; set; }
+}

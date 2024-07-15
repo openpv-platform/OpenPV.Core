@@ -190,9 +190,9 @@ public class InstallEngineBase
         // Execute Commands 
         progress.Report(new PackageProgressInfo() { Message = "Running Code Generators..." });
 
-        foreach (var extensionName in PackageInformation.ServiceInfo.RuntimeConfiguration.Extensions)
+        foreach (var info in PackageInformation.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
         {
-            var list = Extensions.GetCommands(PackageInformation, extensionName, CommandTypes.ModelGenerators | CommandTypes.BuildCommands);
+            var list = Extensions.GetCommands(PackageInformation, info.ExtensionName, CommandTypes.ModelGenerators | CommandTypes.BuildCommands);
             foreach (var command in list)
                 if (command.Value == GeneratorCommandType.AhsokaCommandLine)
                 {
@@ -557,16 +557,17 @@ public class InstallEngineBase
         List<Type> candidateInstallers = new();
 
         // Load Message Objects
-        foreach (var assembly in ClassLoader.GetSystemAssemblies())
-            foreach (var type in assembly.GetTypes())
-            {
-                var attr = type.GetCustomAttribute<PlatformFamilyAttribute>();
-                if (attr != null)
+        foreach (var assmwf in ClassLoader.GetSystemAssemblies())
+            if (assmwf.TryGetTarget(out var assembly))
+                foreach (var type in assembly.GetTypes())
                 {
-                    if (attr.PlatformFamily.HasFlag(family) || attr.PlatformFamily == PlatformFamily.Any)
-                        candidateInstallers.Add(type);
+                    var attr = type.GetCustomAttribute<PlatformFamilyAttribute>();
+                    if (attr != null)
+                    {
+                        if (attr.PlatformFamily.HasFlag(family) || attr.PlatformFamily == PlatformFamily.Any)
+                            candidateInstallers.Add(type);
+                    }
                 }
-            }
 
         if (candidateInstallers.Count == 1)
             return candidateInstallers[0];

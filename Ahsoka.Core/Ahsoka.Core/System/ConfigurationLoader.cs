@@ -178,6 +178,12 @@ public partial class ServiceConfiguration : ICanDeserializeBase
             this.Behaviors = Enum.Parse<EndPointBehaviors>(value, true);
     }
 
+    [Obsolete("Use Extension Info.Configuration Path Instead")]
+    internal string ConfigurationFile
+    {
+        get;set;
+    }
+
     /// <summary>
     /// Produces the TCP URI for the data communication channel that is typically used by sockets utilizing ZMQ as the
     /// backing transport.

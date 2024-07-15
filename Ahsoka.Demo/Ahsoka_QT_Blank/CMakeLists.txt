@@ -28,7 +28,7 @@ FILE(GLOB Forms *.ui)
 FILE(GLOB Resources *.qrc)
 
 #Add Ahsoka Library Subdirectory
-add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
+add_subdirectory (".platform_support/$ENV{AhsokaPlatform}_TargetSupport/SDK")
 
 add_executable(Ahsoka.QT.Blank
     ${Sources}

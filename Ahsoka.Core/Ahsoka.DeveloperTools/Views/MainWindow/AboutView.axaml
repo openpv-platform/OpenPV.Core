@@ -39,6 +39,21 @@
 							   Text="Use Internal CLI"/>
 				</StackPanel>
 			</Button>
+
+			<Button Margin="3,3,5,3"
+					HorizontalAlignment="Stretch"
+					Height="38"
+					VerticalContentAlignment="Center"
+					Command="{Binding ToggleDebugCLI}" >
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Bug"></material:MaterialIcon>
+					<TextBlock IsVisible="{Binding ParentViewModel.DebugCommandLine}" Margin="6,0" VerticalAlignment="Center" FontSize="13"
+							   Text="Disable CLI Debug"/>
+					<TextBlock IsVisible="{Binding !ParentViewModel.DebugCommandLine, FallbackValue=false}"
+							   Margin="6,0" VerticalAlignment="Center" FontSize="13"
+							   Text="Enable CLI Debug "/>
+				</StackPanel>
+			</Button>
 		</StackPanel>
 
 		<DockPanel Margin="10,20,10,30" LastChildFill="True" VerticalAlignment="Stretch"  Grid.Row="0">
@@ -57,11 +72,15 @@
 
 					<TextBlock FontSize="12" Text="Copyright:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center" Margin="20,5,5,5"/>
 					<TextBlock FontSize="12" HorizontalAlignment="Left" Text="{Binding Copyright, FallbackValue='CopyrightText'}" Grid.Row="4" Grid.Column="1" Margin="20,5,5,5"/>
-					
+
 					<TextBlock FontSize="12" Text="Use Internal CLI:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center" Margin="20,5,5,5"/>
 					<TextBlock FontSize="12" HorizontalAlignment="Left"
 							   ToolTip.Tip="This debugging feature will enable the internal command line instead of the one included in the installed Target Package"
 							   Text="{Binding ParentViewModel.UseInternalCommandLine, FallbackValue='true'}" Grid.Row="6" Grid.Column="1" Margin="20,5,5,5"/>
+				
+					<TextBlock FontSize="12" Text="CLI Debugging Enabled:" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center" Margin="20,5,5,5"/>
+					<TextBlock FontSize="12" HorizontalAlignment="Left"
+							   Text="{Binding ParentViewModel.DebugCommandLine, FallbackValue='true'}" Grid.Row="7" Grid.Column="1" Margin="20,5,5,5"/>
 				</Grid>
 			</Border>
 

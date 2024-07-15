@@ -51,8 +51,6 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
         }
     }
 
-
-
     public KeyArtifactViewModel SelectedCert
     {
         get
@@ -74,7 +72,6 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
         set;
     } = new ObservableCollection<KeyArtifactViewModel>();
 
-
     public ObservableCollection<PackageModuleViewModel> AvailableModules
     {
         get;
@@ -91,7 +88,6 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
         {
         }
     }
-
 
     public ObservableCollection<SparkProjectViewModel> OTATeamsList
     {

@@ -24,7 +24,7 @@
     }
   ],
   "hasCommands": "false",
-  "hasUx": "true",
+  "hasUx": "false",
   "minVersion": "3.3.0",
   "maxVersion": "4.0.0",
   "requireExactVersion": "false"

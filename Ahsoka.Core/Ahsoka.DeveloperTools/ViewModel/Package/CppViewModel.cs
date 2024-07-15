@@ -114,7 +114,7 @@ internal class CppViewModel : ViewModelBase
 
     private string GetFrameworkInfoPath()
     {
-        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), "Ahsoka.Client.Shared//AhsokaFrameworkInfo.json");
+        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ".platform_support//AhsokaFrameworkInfo.json");
     }
 
     public CppViewModel(MainViewModel parentViewModel, PackageInformation packageInfo)
@@ -184,7 +184,7 @@ internal class CppViewModel : ViewModelBase
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
                     // Copy SDK to Output
-                    string pathToSDKOutput = Path.Combine(directoryForFramework, platform.ToString(), "SDK");
+                    string pathToSDKOutput = Path.Combine(directoryForFramework, platform.ToString()+ "_TargetSupport", "SDK");
                     parentViewModel.Console.AddConsoleLine($"Installing Ahsoka Services Application to {pathToSDKOutput}");
                     FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, progressString);          
 

@@ -78,9 +78,10 @@ public class Extensions
         {
             string path = AppContext.BaseDirectory;
             extPath = PlatformSupportPathInfo.FindPlatformSupportPath(path, ExtensionsFolder);
-            Console.WriteLine(extPath);
         }
 
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Extension Path is " + extPath);
+       
         // Unload any Libraries in the Load Context.
         if (currentLoadContext != null)
         {

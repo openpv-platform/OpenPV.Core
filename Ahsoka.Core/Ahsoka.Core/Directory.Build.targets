@@ -7,6 +7,12 @@
 		<Error Text="Pre-Requisites appear to be missing - Please  build Ahsoka.BuildPreReqs before building Ahsoka.Core or set 'IGNORE_PREREQS' = YES Currently Set to '$(IGNORE_PREREQS)'" Condition="$(IGNORE_PREREQS) != 'YES'"/>
 	</Target>
 
+	<Target Name="BeforeBuild" BeforeTargets="PreBuildEvent">
+		<Message Text="Updating Configuration Proto" Importance="high"/>
+		<Delete Files="..\..\Ahsoka.Shared\Configuration.proto" />
+		<Copy SourceFiles="Proto\Configuration.proto" DestinationFolder="..\..\Ahsoka.Shared" OverwriteReadOnlyFiles="true"  />
+	</Target>
+
 	<Target Name="InstallLicenseTool" BeforeTargets="PreBuildEvent"
 			Condition="false">
 		

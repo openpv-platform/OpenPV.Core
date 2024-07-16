@@ -165,14 +165,22 @@ internal class CppViewModel : ViewModelBase
                 parentViewModel.Console.AddConsoleLine(info);
             });
 
+            var notInstalled = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => x.IsInstalled == false);
+            if (notInstalled)
+            {
+                parentViewModel.Console.AddConsoleLine($"Please install all extensions before adding the SDK.");
+                return;
+            }
+
+
             //needs method for determining platforms to load
-            System.PlatformFamily[] platformsToSupport = { System.PlatformFamily.OpenViewLinux, System.PlatformFamily.Ubuntu64 };
+            System.PlatformFamily[] platformsToSupport = { System.PlatformFamily.OpenViewLinux, System.PlatformFamily.Ubuntu64, PlatformFamily.Windows64 };
             foreach (var platform in platformsToSupport)
             {
                 string pathToSdk = Path.Combine(parentViewModel.GetPlatformPath(platform), "SDK");
 
                 // Copy Command Line
-                if ( !Directory.Exists(pathToSdk))
+                if ( !Directory.Exists(pathToSdk) && platform != PlatformFamily.Windows64) // We use Windows CLI to Build on Windows
                 {
                     parentViewModel.Console.AddConsoleLine($"Could not find target support for {platform}.\n" +
                         $"Please download the necessary files from the PlugIns tab.");
@@ -184,13 +192,16 @@ internal class CppViewModel : ViewModelBase
                     Stopwatch stopwatch = Stopwatch.StartNew();
 
                     // Copy SDK to Output
-                    string pathToSDKOutput = Path.Combine(directoryForFramework, platform.ToString()+ "_TargetSupport", "SDK");
-                    parentViewModel.Console.AddConsoleLine($"Installing Ahsoka Services Application to {pathToSDKOutput}");
-                    FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, progressString);          
+                    if (platform != PlatformFamily.Windows64)
+                    {
+                        string pathToSDKOutput = Path.Combine(directoryForFramework, platform.ToString() + "_TargetSupport", "SDK");
+                        parentViewModel.Console.AddConsoleLine($"Installing Ahsoka Services Application to {pathToSDKOutput}");
+                        FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, progressString);
 
-                    ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput));
+                        ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput));
 
-                    AddRuntimeConfig(Path.Combine(directoryForFramework, ApplicationOutputComponent.AppInfoFolder));
+                        AddRuntimeConfig(Path.Combine(directoryForFramework, ApplicationOutputComponent.AppInfoFolder));
+                    }
 
                     return DotNetViewModel.InstallCommandLine(directoryForFramework, platform, parentViewModel, progressString);
                 });

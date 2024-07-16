@@ -173,13 +173,14 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         {
             var taskItem = PlatformExtensionsTool.GetVersionToDownload(item.ExtensionConfiguration,
                     item.ExtensionConfiguration.PackageName,
-                    this.preRelease).ContinueWith((s) =>
-                    {
-                        if (s != null)
-                        {
-                            item.AvailableVersion = s.Result;
-                        }
-                    });
+                    this.preRelease)
+            .ContinueWith((s) =>
+            {
+                if (s != null)
+                {
+                    item.AvailableVersion = s.Result;
+                }
+            });
 
 
             tasks.Add(taskItem);
@@ -472,7 +473,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
         if (!Directory.Exists(libDirectory))
             Directory.CreateDirectory(libDirectory);
 
-        await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.PackageName, this.InstalledVersion, false, libDirectory, true);
+        await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.PackageName, this.InstalledVersion, false, libDirectory, true, false);
 
         if (ExtensionConfiguration.HasUx)
         {
@@ -481,7 +482,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
             if (!Directory.Exists(uxDirectory))
                 Directory.CreateDirectory(uxDirectory);
 
-            await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.UxPackageName, this.InstalledVersion, true, uxDirectory, false);
+            await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.UxPackageName, this.InstalledVersion, true, uxDirectory, false, false);
         }
 
         ParentViewModel.ReloadExtensions();

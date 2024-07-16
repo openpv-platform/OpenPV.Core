@@ -84,7 +84,7 @@ internal class NewPackageViewModel : ViewModelBase
             }
 
         // Load Extension Demos
-        string extensionFolder =  CustomerToolPaths.GetToolPath(System.Extensions.ExtensionsFolder);
+        string extensionFolder = CustomerToolPaths.GetToolPath(PlatformExtensionsTool.Folder);
 
         if (!Design.IsDesignMode && Directory.Exists(extensionFolder))
             foreach (var file in Directory.GetFiles(extensionFolder, "*.zip", SearchOption.AllDirectories))

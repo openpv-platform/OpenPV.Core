@@ -30,7 +30,6 @@ internal class PlatformExtensionsTool : SparkToolBase
     public const string Folder =  "ExtensionInfo";
     readonly ReleaseDTO viewModel;
     readonly static List<string> frameworks = ["net8.0", "net6.0", "net5.0", "NETStandard2.1", "NETStandard2.0"];
-    string currentVersionString = string.Empty;
 
     private static string GetExtensionsPath()
     {
@@ -53,7 +52,6 @@ internal class PlatformExtensionsTool : SparkToolBase
 
     protected override async Task ExecuteDownload(IToolViewModel toolVM, CancellationTokenSource cancellationToken)
     {
-        currentVersionString = string.Empty;
         GetInfo(toolVM);
 
         if (Directory.Exists(this.LocalPath))
@@ -79,6 +77,8 @@ internal class PlatformExtensionsTool : SparkToolBase
                 toolVM.MainViewModel.AvailableExtensions.Add(info);
                 toolVM.PercentStatus = $"Fetching {info.ExtensionName}...";
                 File.WriteAllText(Path.Combine(LocalPath, item.Name), extensionInfoText);
+
+                await DownloadDemos(toolVM, info, cancellationToken);
             }
         }
 
@@ -86,8 +86,23 @@ internal class PlatformExtensionsTool : SparkToolBase
         File.Delete(downloadFile);
 
         // Write Version
-        File.WriteAllText(GetVersionFilePath(), currentVersionString);
+        File.WriteAllText(GetVersionFilePath(), Version);
     }
+
+    private async Task DownloadDemos(IToolViewModel toolVM, ExtensionConfiguration config, CancellationTokenSource cancellationToken)
+    {
+        string demoPath = Path.Combine(LocalPath, config.ExtensionName,"demos");
+
+        if (Directory.Exists(demoPath))
+            Directory.CreateDirectory(demoPath);
+
+        var nugetVersion = new NuGetVersion(this.Version);
+
+        string version = await GetVersionToDownload(config, config.PackageName, nugetVersion.IsPrerelease);
+
+        await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version, false, demoPath, false, true);
+    }
+
  
     protected override string GetVersionFilePath()
     {
@@ -100,7 +115,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         if (isDownloaded)
         {
             string fileVersion = File.ReadAllText(GetVersionFilePath());
-            return fileVersion == currentVersionString;
+            return fileVersion == this.Version;
         }
 
         return false;
@@ -158,15 +173,15 @@ internal class PlatformExtensionsTool : SparkToolBase
         return thisVersion;
     }
 
-    internal static async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string packageName, string version, bool ux, string directory, bool evaluateDeps)
+    internal static async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string packageName, string version, bool ux, string directory, bool evaluateDeps, bool demoOnly)
     {
         Console.WriteLine($"Fetching {packageName} with version {version} for download");
 
         if (version != null)
-            await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, version, null, evaluateDeps);
+            await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, version, null, evaluateDeps, demoOnly);
     }
 
-    private static async Task DownloadNugetFiles(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string directory, string package, string version, List<string> previousDownloads, bool evaluateDeps)
+    private static async Task DownloadNugetFiles(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string directory, string package, string version, List<string> previousDownloads, bool evaluateDeps, bool demoOnly)
     {
         previousDownloads ??= new List<string>();
 
@@ -195,7 +210,7 @@ internal class PlatformExtensionsTool : SparkToolBase
             // ExtractLibrary
             var libEntries = archive.Entries.Where(x => x.Name.ToLower().EndsWith(libraryFile.ToLower())).ToList();
             ZipArchiveEntry libEntry = null;
-
+            
             foreach (var framework in frameworks)
             {
                 libEntry = libEntries.FirstOrDefault(x => x.FullName.Contains(framework, StringComparison.CurrentCultureIgnoreCase));
@@ -203,7 +218,7 @@ internal class PlatformExtensionsTool : SparkToolBase
                     break;
             }
 
-            if (package.StartsWith("Ahsoka"))
+            if (package.StartsWith("Ahsoka") && demoOnly)
             {
                 var demos = archive.Entries.Where(x => x.FullName.StartsWith("demo") && x.FullName.EndsWith(".zip"));
                 foreach (var demo in demos)
@@ -217,14 +232,13 @@ internal class PlatformExtensionsTool : SparkToolBase
                 }
             }
 
-            if (libEntry != null)
+            if (libEntry != null && !demoOnly)
             {
                 libEntry.ExtractToFile(Path.Combine(directory, libraryFile), true);
 
                 // TODO: Extract Any Include Files.
                 if (evaluateDeps)
                 {
-
                     var specEntry = archive.Entries.FirstOrDefault(x => x.Name.EndsWith("nuspec"));
                     string specFile = Path.Combine(directory, specEntry.Name);
                     specEntry.ExtractToFile(specFile, true);
@@ -243,7 +257,7 @@ internal class PlatformExtensionsTool : SparkToolBase
                         string depVersion = item.Attribute("version").Value;
 
                         // Recurse and Download Files
-                        await DownloadNugetFiles(toolVM, cancellationToken, directory, depId, depVersion, previousDownloads, evaluateDeps);
+                        await DownloadNugetFiles(toolVM, cancellationToken, directory, depId, depVersion, previousDownloads, evaluateDeps, false);
                     }
 
                     File.Delete(specFile);

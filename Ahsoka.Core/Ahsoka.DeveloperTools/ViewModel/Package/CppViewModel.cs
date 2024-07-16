@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using Ahsoka.Installer.Components;
 using Ahsoka.Installer.InstallEngine;
+using Newtonsoft.Json.Linq;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -138,9 +139,11 @@ internal class CppViewModel : ViewModelBase
         if (!isGenerating)
             parentViewModel.StartProcess(null);
 
-        string result = "Process Ended";
+        string result = "SDK Not Updated";
+        bool finishedInstall = false;
         try
         {
+          
             string projectPath = Path.GetDirectoryName(packageInfo.GetPackageInfoPath());
             if (!Directory.Exists(Path.Combine(projectPath, ProjectPath)))
             {
@@ -172,9 +175,11 @@ internal class CppViewModel : ViewModelBase
                 return;
             }
 
+           
+            System.PlatformFamily[] platformsToSupport = { System.PlatformFamily.OpenViewLinux, System.PlatformFamily.Ubuntu64, PlatformFamily.Windows64 };
+            parentViewModel.SelectedPackage.Deps.CheckDependencies(SystemInfo.CurrentPlatform, platformsToSupport);
 
             //needs method for determining platforms to load
-            System.PlatformFamily[] platformsToSupport = { System.PlatformFamily.OpenViewLinux, System.PlatformFamily.Ubuntu64, PlatformFamily.Windows64 };
             foreach (var platform in platformsToSupport)
             {
                 string pathToSdk = Path.Combine(parentViewModel.GetPlatformPath(platform), "SDK");
@@ -184,9 +189,12 @@ internal class CppViewModel : ViewModelBase
                 {
                     parentViewModel.Console.AddConsoleLine($"Could not find target support for {platform}.\n" +
                         $"Please download the necessary files from the PlugIns tab.");
+
                     return;
                 }
 
+                parentViewModel.Console.AddConsoleLine($"");
+                      
                 result = await Task.Run(() =>
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
@@ -195,19 +203,22 @@ internal class CppViewModel : ViewModelBase
                     if (platform != PlatformFamily.Windows64)
                     {
                         string pathToSDKOutput = Path.Combine(directoryForFramework, platform.ToString() + "_TargetSupport", "SDK");
-                        parentViewModel.Console.AddConsoleLine($"Installing Ahsoka Services Application to {pathToSDKOutput}");
-                        FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, progressString);
+                        parentViewModel.Console.AddConsoleLine($"Installing SDK to {pathToSDKOutput}");
+                        FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, null);
 
                         ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput));
 
                         AddRuntimeConfig(Path.Combine(directoryForFramework, ApplicationOutputComponent.AppInfoFolder));
                     }
 
-                    return DotNetViewModel.InstallCommandLine(directoryForFramework, platform, parentViewModel, progressString);
+                    return DotNetViewModel.InstallCommandLine(directoryForFramework, platform, parentViewModel, null);
                 });
             }
 
-            await Task.Run(() =>
+            parentViewModel.Console.AddConsoleLine($"Running Extension Generators and Commands");
+            parentViewModel.Console.AddConsoleLine($"");
+
+            bool sdkCompleted = await Task.Run(() =>
             {
                 var progress = new Progress<CommandLineProgressInfo>(info =>
                 { 
@@ -217,7 +228,16 @@ internal class CppViewModel : ViewModelBase
                         parentViewModel.Console.AddConsoleText(info.Message);
                 });
 
-                DotNetViewModel.RunSdkCommands(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), parentViewModel, progress);
+                try
+                {
+                    DotNetViewModel.RunSdkCommands(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), parentViewModel, progress);
+                    return true;
+                }
+                catch (Exception ex) 
+                {
+                    parentViewModel.Console.AddConsoleLine(ex.Message);
+                    return false;
+                }
             });
 
             parentViewModel.Console.AddConsoleLine($" ");
@@ -226,11 +246,19 @@ internal class CppViewModel : ViewModelBase
             File.WriteAllText(GetFrameworkInfoPath(), fileInfo);
             OnPropertyChanged(nameof(InstalledFramework));
             OnPropertyChanged(nameof(FrameworkButtonText));
+
+            parentViewModel.Console.AddConsoleLine($" ");
+
+            if (sdkCompleted)
+            {
+                result = "SDK's Updated Successfully";
+                finishedInstall = true;
+            }
         }
         finally
         {
             if (!isGenerating)
-                parentViewModel.FinishProcess("SDK Updated", true);
+                parentViewModel.FinishProcess(result, finishedInstall);
         }
     }
 

@@ -257,7 +257,7 @@ internal class DotNetViewModel : ViewModelBase
         // Copy Command Line
         if (!Directory.Exists(pathToCommandLine))
         {
-            progressString.Report($"Could not find target support for {platform}.\n" +
+            progressString?.Report($"Could not find target support for {platform}.\n" +
                 $"Please download the necessary files from the PlugIns tab.");
             return "No Target Found";
         }
@@ -267,16 +267,16 @@ internal class DotNetViewModel : ViewModelBase
         // Copy Command Line
         string pathToCLIOutput = Path.Combine(directory, platform.ToString() + "_TargetSupport", "CommandLine");
         string pathToHWOutput = Path.Combine(directory, platform.ToString() + "_TargetSupport", "Hardware");
-        progressString.Report($" ");
-        progressString.Report($"Installing Ahsoka Services Application to {pathToCLIOutput}");
-        progressString.Report($" ");
+        progressString?.Report($" ");
+        progressString?.Report($"Installing Ahsoka Services Application to {pathToCLIOutput}");
+        progressString?.Report($" ");
         FileUtilities.CopyDirectory(pathToCommandLine, pathToCLIOutput, true, progressString);
 
         if (Directory.Exists(pathToHardware))
             FileUtilities.CopyDirectory(pathToHardware, pathToHWOutput, true, progressString);
 
 
-        progressString.Report($" ");
+        progressString?.Report($" ");
 
         stopwatch.Stop();
 

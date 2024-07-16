@@ -212,31 +212,24 @@ public class Extensions
         var config = Configurations.FirstOrDefault(x => x.ExtensionName == extensionName);
         if (config != null)
         {
-            try
+
+            foreach (var item in ExtensionLibraries)
             {
-                foreach (var item in ExtensionLibraries)
+                if (item.TryGetTarget(out Assembly assembly))
                 {
-                    if (item.TryGetTarget(out Assembly assembly))
-                    {
-                        if (assembly.GetName().Name.Equals(Path.GetFileNameWithoutExtension(config.LibraryFilename), StringComparison.OrdinalIgnoreCase))
-                            foreach (var defType in assembly.DefinedTypes)
+                    if (assembly.GetName().Name.Equals(Path.GetFileNameWithoutExtension(config.LibraryFilename), StringComparison.OrdinalIgnoreCase))
+                        foreach (var defType in assembly.DefinedTypes)
+                        {
+                            if (typeof(IExtensionGenerator).IsAssignableFrom(defType) && !defType.IsAbstract &&
+                                defType.Name == config.SdkGeneratorName)
                             {
-                                if (typeof(IExtensionGenerator).IsAssignableFrom(defType) && !defType.IsAbstract &&
-                                    defType.Name == config.SdkGeneratorName)
-                                {
-                                    // Execute Generator
-                                    IExtensionGenerator generator = ClassLoader.CreateType(defType, null) as IExtensionGenerator;
-                                    generator.GetCommands(packageInfo, commands, commandTypes);
-                                }
+                                // Execute Generator
+                                IExtensionGenerator generator = ClassLoader.CreateType(defType, null) as IExtensionGenerator;
+                                generator.GetCommands(packageInfo, commands, commandTypes);
                             }
-                    }
+                        }
                 }
             }
-            catch
-            {
-                // TODO Notify User of Bad Extension
-            }
-
         }
 
         return commands;

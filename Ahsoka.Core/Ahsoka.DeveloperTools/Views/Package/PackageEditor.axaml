@@ -85,6 +85,14 @@
 
 		
 		</TabControl>
+
+
+
+		<CustomerTools:DependenciesView Grid.Column="0" 
+			Grid.ColumnSpan="3" 
+			DataContext="{Binding SelectedPackage.Deps}"/>
+
+		
 	</Grid>
 </UserControl>
 

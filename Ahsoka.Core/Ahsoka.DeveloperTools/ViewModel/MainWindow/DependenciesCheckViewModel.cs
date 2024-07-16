@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Path = System.IO.Path;
 
@@ -50,7 +51,7 @@ internal class DependenciesCheckViewModel : ChildViewModelBase<MainViewModel>
 
     }
 
-    public void CheckDependencies(PlatformFamily currentPlatform, PlatformFamily platformFamily)
+    public void CheckDependencies(PlatformFamily currentPlatform, params PlatformFamily[] platformFamily)
     {
         var thisVersion = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 
@@ -58,7 +59,7 @@ internal class DependenciesCheckViewModel : ChildViewModelBase<MainViewModel>
 
         if (currentPlatform == PlatformFamily.Any)
             MissingDependenciesText.Add($"- {currentPlatform} Is Not valid. Please check the Platform Family Drop Down.");
-        if (platformFamily == PlatformFamily.Any)
+        if (platformFamily.Any(x=>x == PlatformFamily.Any))
             MissingDependenciesText.Add($"- {platformFamily} Is Not a valid Platform. Please check the Platform Family Drop Down.");
 
         if (MissingDependenciesText.Count > 0)
@@ -84,20 +85,23 @@ internal class DependenciesCheckViewModel : ChildViewModelBase<MainViewModel>
             MissingDependenciesText.Add($"- {currentPlatform} Platform Support Package.");
 
 
-        if (platformFamily != PlatformFamily.PowerVision) // PowerVision Is Not Directly Supported
+        if (!platformFamily.Any(x=>x == PlatformFamily.PowerVision)) // PowerVision Is Not Directly Supported
         {
-            string targetDependencyPath = ParentViewModel.GetPlatformPath(platformFamily);
-            string targetDependencyVersionFile = Path.Combine(targetDependencyPath, Path.GetFileNameWithoutExtension(targetDependencyPath) + ".zip.customertools.version");
-            if (File.Exists(targetDependencyVersionFile))
+            foreach (var item in platformFamily)
             {
-                string versionInfo = File.ReadAllText(targetDependencyVersionFile);
-                var clientToolsVersion = versionInfo.Split(".");
-                if (thisVersion.FileMajorPart != int.Parse(clientToolsVersion[0]) ||
-                    thisVersion.FileMinorPart != int.Parse(clientToolsVersion[1]))
-                    MissingDependenciesText.Add($"- {platformFamily} Platform Support Package (Wrong Version).");
+                string targetDependencyPath = ParentViewModel.GetPlatformPath(item);
+                string targetDependencyVersionFile = Path.Combine(targetDependencyPath, Path.GetFileNameWithoutExtension(targetDependencyPath) + ".zip.customertools.version");
+                if (File.Exists(targetDependencyVersionFile))
+                {
+                    string versionInfo = File.ReadAllText(targetDependencyVersionFile);
+                    var clientToolsVersion = versionInfo.Split(".");
+                    if (thisVersion.FileMajorPart != int.Parse(clientToolsVersion[0]) ||
+                        thisVersion.FileMinorPart != int.Parse(clientToolsVersion[1]))
+                        MissingDependenciesText.Add($"- {item} Platform Support Package (Wrong Version).");
+                }
+                else
+                    MissingDependenciesText.Add($"- {item} Platform Support Package.");
             }
-            else
-                MissingDependenciesText.Add($"- {platformFamily} Platform Support Package.");
         }
 
 

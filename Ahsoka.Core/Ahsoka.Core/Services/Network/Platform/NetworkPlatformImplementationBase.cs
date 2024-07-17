@@ -178,7 +178,7 @@ internal abstract class NetworkPlatformImplementationBase
         }
 
         // Update IPAddress 
-        this.NetworkService.UpdateCacheValue(NetworkServiceParameters.IPAddress, ipInfo.IPAddress);
+        this.NetworkService.UpdateCacheValue(NetworkServiceMessages.IPAddress, ipInfo.IPAddress);
 
         return ipInfo;
     }

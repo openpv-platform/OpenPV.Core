@@ -12,67 +12,6 @@ namespace Ahsoka.ServiceFramework;
 /// </summary>
 public abstract class ServiceParametersBase
 {
-    /// <summary>
-    /// Fetch all known values in the Loaded Extensions and Core
-    /// </summary>
-    /// <returns></returns>
-    public static Dictionary<string, ServiceParameterData> GetAllValues(PackageInformation info = null)
-    {
-        Dictionary<string, ServiceParameterData> allValues = new ();
-
-        foreach (var value in ClassLoader.GetSubclasses(typeof(AhsokaMessagesBase)))
-        {
-            AhsokaMessagesBase service = ClassLoader.CreateType(value,null) as AhsokaMessagesBase;
-            var values = service.GetServiceParameters();
-            if (values != null)
-            {
-                var parms = values.GetParameters(info);
-                allValues.Add(parms.Service, parms);
-            }
-        }
-
-        return allValues;
-    }
-
-    /// <summary>
-    /// Gets a list of Parameters Available to the System
-    /// </summary>
-    /// <returns></returns>
-    internal ServiceParameterData GetParameters(PackageInformation info)
-    {
-        var values = new ServiceParameterData();
-       
-        OnGetParameters(out string service, values, info);
-        AssignKeys(service, values);
-
-        return values;
-    }
-
-    private void AssignKeys(string service, ServiceParameterData values)
-    {
-        values.Service = service;
-
-        foreach (var parameter in values)
-        {
-            if (parameter.SystemUniqueID == 0)
-            {
-                // Generate Key (32bit Hash
-                int value = HashCode32.GetHashCode32(service +  parameter.Name);
-                while (values.Any(x => x.SystemUniqueID == value))
-                    value++;
-                parameter.SystemUniqueID = value;
-            }
-        }
-    }
-
-    /// <summary>
-    /// Pupulate the Parameters Availabe in the System
-    /// </summary>
-    /// <param name="service"></param>
-    /// <param name="values"></param>
-    /// <param name="packageInfo"></param>
-    protected abstract void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo);
-
 }
 
 /// <summary>

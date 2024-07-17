@@ -1,5 +1,6 @@
 ﻿using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Install;
 using System.Collections.Generic;
 
 namespace Ahsoka.Services.Security;
@@ -15,10 +16,15 @@ internal class SecurityServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(SecurityMessageTypes.Ids.AuthorizationComplete, typeof(Token));
     }
 
-    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
-        var result = base.GetAdditionalClientResources(type);
+        var result = base.OnGetAdditionalClientResources(type);
         result.Add("Ahsoka.Proto\\SecurityService.proto", Properties.Resources.SecurityService);
         return result;
+    }
+
+    protected override void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo)
+    {
+        service = SecurityService.Name;
     }
 }

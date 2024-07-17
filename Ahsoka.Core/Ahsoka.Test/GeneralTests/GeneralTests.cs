@@ -40,7 +40,7 @@ public class GeneralTests : LinearTestBase
     [TestMethod]
     public void GetParametersTests()
     {
-        var knownValues = ServiceParametersBase.GetAllValues();
+        var knownValues = AhsokaMessagesBase.GetAllServiceParameters();
 
         Assert.IsTrue(knownValues.Any(x => x.Key == SystemService.Name));
 

@@ -1,11 +1,35 @@
 ﻿using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Utility;
 using System.Collections.Generic;
 
 namespace Ahsoka.Services.Network;
 
 internal class NetworkServiceMessages : AhsokaMessagesBase
 {
+
+    /// <summary>
+    /// Is the Service Available
+    /// </summary>
+    public const string Available = "Available";
+
+    /// <summary>
+    /// CurrentState of the WiFi Network
+    /// </summary>
+    public const string NetworkState = "NetworkState";
+
+    /// <summary>
+    /// Conneced Network Name
+    /// </summary>
+    public const string ClientNetworkName = "ClientNetworkName";
+
+    /// <summary>
+    /// Conneced Network Name
+    /// </summary>
+    public const string IPAddress = "IPAddress";
+
+   
+
     public NetworkServiceMessages()
     {
         this.RegisterServiceRequest(NetworkMessageTypes.Ids.GetAdapters, typeof(EmptyNotification), typeof(AvailableAdapters));
@@ -26,16 +50,22 @@ internal class NetworkServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(NetworkMessageTypes.Ids.WirelessSignalChanged, typeof(WirelessNetworkInfo));
     }
 
-    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
-        var result = base.GetAdditionalClientResources(type);
+        var result = base.OnGetAdditionalClientResources(type);
         result.Add("Ahsoka.Proto\\NetworkService.proto", Properties.Resources.NetworkService);
         return result;
     }
 
-    public override ServiceParametersBase GetServiceParameters()
+    /// <InheritDoc/>
+    protected override void OnGetParameters(out string group, List<ParameterData> values, PackageInformation info)
     {
-        return new NetworkServiceParameters();
+        group = NetworkService.Name;
+
+        values.Add(new() { Name = Available, DefaultValue = false, ValueType = ParameterValueTypes.Boolean });
+        values.Add(new() { Name = NetworkState, DefaultValue = (int)WirelessConnectionState.ClientReady, ValueType = ParameterValueTypes.UnsignedInteger, Enumerations = EnumExtensions.EnumToDictionary<WirelessConnectionState>() });
+        values.Add(new() { Name = IPAddress, DefaultValue = "0.0.0.0", ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = ClientNetworkName, ValueType = ParameterValueTypes.String });
     }
 }
 

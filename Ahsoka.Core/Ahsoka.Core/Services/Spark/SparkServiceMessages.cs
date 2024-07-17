@@ -20,11 +20,16 @@ internal class SparkServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(SparkMessageTypes.Ids.AppChangeNotification, typeof(AppChangeInfo));
     }
 
-    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
-        var result = base.GetAdditionalClientResources(type);
+        var result = base.OnGetAdditionalClientResources(type);
         result.Add("Ahsoka.Proto\\SparkService.proto", Properties.Resources.SparkService);
         return result;
+    }
+
+    protected override void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo)
+    {
+        service = SparkService.Name;
     }
 }
 

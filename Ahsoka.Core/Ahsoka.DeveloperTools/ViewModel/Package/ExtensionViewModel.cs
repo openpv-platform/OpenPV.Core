@@ -321,8 +321,11 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             {
                 if (extensionUXExtensions.TryGetValue(item.ExtensionName, out var extension))
                 {
-                    string newFileName = extension.Save(packageInfoFolder);
-                    info.ConfigurationFile = newFileName;
+                    if (extension != null)
+                    {
+                        string newFileName = extension.Save(packageInfoFolder);
+                        info.ConfigurationFile = newFileName;
+                    }
                 }
             }
         }

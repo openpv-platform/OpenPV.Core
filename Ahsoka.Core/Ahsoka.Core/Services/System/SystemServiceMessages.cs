@@ -44,9 +44,9 @@ internal class SystemServiceMessages : AhsokaMessagesBase
         return result;
     }
 
-    public override KnownDataKeys GetKnownValues()
+    public override ServiceParametersBase GetServiceParameters()
     {
-        return new SystemServiceDataKeys();
+        return new SystemServiceParameters();
     }
 }
 

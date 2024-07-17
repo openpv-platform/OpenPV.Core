@@ -1,11 +1,13 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
+using System.Collections.Generic;
 
 namespace Ahsoka.Services.System;
 
 /// <summary>
 /// List of Key Values Available in this Service
 /// </summary>
-public class SystemServiceDataKeys : KnownDataKeys
+public class SystemServiceParameters : ServiceParametersBase
 {
     /// <summary>
     /// The name of the current Application thats running
@@ -72,8 +74,23 @@ public class SystemServiceDataKeys : KnownDataKeys
     /// </summary>
     public const string InstallerVersionFactory = "InstallerVersionFactory";
 
-    /// <summary>
-    /// Touch Factory Installer Version
-    /// </summary>
-    public const string CurrentIgnitionState = "IgnitionState";
+
+    /// <InheritDoc/>
+    protected override void OnGetParameters(out string group, List<ParameterData> values, PackageInformation info)
+    {
+        group = SystemService.Name;
+
+        values.Add(new() { Name = Available, DefaultValue = false, ValueType = ParameterValueTypes.Boolean });
+        values.Add(new() { Name = CurrentApplicationName, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = ApplicationVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = ApplicationDescription, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = SDKVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = InstallerVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = BSPVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchProductID, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchVendorID, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchConfigCRC, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchHardwareVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchFirmwareVersion, ValueType = ParameterValueTypes.String });
+    }
 }

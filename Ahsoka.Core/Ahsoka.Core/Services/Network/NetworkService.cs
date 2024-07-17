@@ -47,7 +47,7 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
         networkInterface.Init(this);
         stopwatch.StopTiming("Network Init Completed");
 
-        UpdateCacheValue(NetworkServiceDataKeys.Available, true);
+        UpdateCacheValue(NetworkServiceParameters.Available, true);
     }
 
     protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
@@ -222,14 +222,14 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
             SendMessageInternal(messageHeader, new WirelessConnectionResponse() { AdapterId = adapterId, Ssid = ssid, State = connectionResult });
 
         //Notify Data Service of State
-        UpdateCacheValue(NetworkServiceDataKeys.NetworkState, connectionResult.ToString());
+        UpdateCacheValue(NetworkServiceParameters.NetworkState, connectionResult.ToString());
 
         if (connectionResult is WirelessConnectionState.ClientConnected)
-            UpdateCacheValue(NetworkServiceDataKeys.ClientNetworkName, ssid);
+            UpdateCacheValue(NetworkServiceParameters.ClientNetworkName, ssid);
         else if (connectionResult is WirelessConnectionState.ClientConnectionFailed or WirelessConnectionState.ClientDisconnected)
         {
-            UpdateCacheValue(NetworkServiceDataKeys.ClientNetworkName, string.Empty);
-            UpdateCacheValue(NetworkServiceDataKeys.IPAddress, string.Empty);
+            UpdateCacheValue(NetworkServiceParameters.ClientNetworkName, string.Empty);
+            UpdateCacheValue(NetworkServiceParameters.IPAddress, string.Empty);
         }
 
     }

@@ -85,8 +85,8 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
        
         isInstaller = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.InstallerUIExecutablePath).EndsWith(applicationName);
 
-        UpdateCacheValue(SystemServiceDataKeys.Available, true);
-        UpdateCacheValue(SystemServiceDataKeys.CurrentApplicationName, applicationName);
+        UpdateCacheValue(SystemServiceParameters.Available, true);
+        UpdateCacheValue(SystemServiceParameters.CurrentApplicationName, applicationName);
     }
 
     internal static string GetSystemInfo(out string applicationName, out string applicationDescription, out string applicationVersion, out string sdkVersion )
@@ -120,25 +120,25 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         platformVersions = coreInterop.GetPlatformVersions();
 
         if (applicationVersion != null)
-            platformVersions[SystemServiceDataKeys.ApplicationVersion] = applicationVersion;
+            platformVersions[SystemServiceParameters.ApplicationVersion] = applicationVersion;
 
         if (applicationDescription != null)
-            platformVersions[SystemServiceDataKeys.ApplicationDescription] = applicationDescription;
+            platformVersions[SystemServiceParameters.ApplicationDescription] = applicationDescription;
 
-        platformVersions[SystemServiceDataKeys.SDKVersion] = sdkVersion;
+        platformVersions[SystemServiceParameters.SDKVersion] = sdkVersion;
 
         string installerPathFactory = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.InstallerVersion);
         string installerPathField = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.InstallerVersion, false);
 
         // Set InstallerVersion to Field version if exists, Factory version if does not exist
         if (File.Exists(installerPathField))
-            platformVersions[SystemServiceDataKeys.InstallerVersion] = File.ReadAllText(installerPathField);
+            platformVersions[SystemServiceParameters.InstallerVersion] = File.ReadAllText(installerPathField);
         else if (File.Exists(installerPathFactory))
-            platformVersions[SystemServiceDataKeys.InstallerVersion] = File.ReadAllText(installerPathFactory);
+            platformVersions[SystemServiceParameters.InstallerVersion] = File.ReadAllText(installerPathFactory);
 
         // Always set InstallerVersionFactory to Factory version
         if (File.Exists(installerPathFactory))
-            platformVersions[SystemServiceDataKeys.InstallerVersionFactory] = File.ReadAllText(installerPathFactory);
+            platformVersions[SystemServiceParameters.InstallerVersionFactory] = File.ReadAllText(installerPathFactory);
 
         // Add Keys to Data Service
         foreach(var item in platformVersions)

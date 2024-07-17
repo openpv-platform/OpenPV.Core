@@ -33,9 +33,9 @@ internal class NetworkServiceMessages : AhsokaMessagesBase
         return result;
     }
 
-    public override KnownDataKeys GetKnownValues()
+    public override ServiceParametersBase GetServiceParameters()
     {
-        return new NetworkServiceDataKeys();
+        return new NetworkServiceParameters();
     }
 }
 

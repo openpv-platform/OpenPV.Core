@@ -127,7 +127,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
                 {
                     service.IsExtension = true;
 
-                    var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, service, null, extension);
+                    var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, service, extension);
                     ParentViewModel.ServiceViewModel.Services.Add(viewModel);
                 }
             }
@@ -226,7 +226,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
                     if (!ParentViewModel.ServiceViewModel.Services.Any(x => x.ServiceName == serviceConfig.ServiceName))
                     {
                         serviceConfig.IsExtension = true;
-                        var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, serviceConfig, null, selectedExtension);
+                        var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, serviceConfig, selectedExtension);
                         ParentViewModel.ServiceViewModel.Services.Add(viewModel);
                         viewModel.IsIncluded = true;
                     }

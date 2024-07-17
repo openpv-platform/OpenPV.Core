@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 
 namespace Ahsoka.Utility;
@@ -42,6 +44,22 @@ public static class EnumExtensions
         //If we have no description attribute, just return the ToString of the enum
         return enumerationValue.ToString();
     }
+
+    /// <summary>
+    /// Gets an Enumeration of Values from an Enum
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public static Dictionary<int, string> EnumToDictionary<T>()
+    {
+        if (!typeof(T).IsEnum)
+            throw new ArgumentException("Type must be an enum");
+        return Enum.GetValues(typeof(T))
+            .Cast<T>()
+            .ToDictionary(t => (int)(object)t, t => t.ToString());
+    }
+
 
     /// <summary>
     /// Convert an Emum to the Equivelent Integer Value

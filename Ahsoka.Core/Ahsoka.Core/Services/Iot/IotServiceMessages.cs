@@ -24,10 +24,5 @@ internal class IotServiceMessages : AhsokaMessagesBase
         result.Add("Ahsoka.Proto\\IotService.proto", Properties.Resources.IotService);
         return result;
     }
-
-    protected override void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo)
-    {
-        service = IotService.Name;
-    }
 }
 

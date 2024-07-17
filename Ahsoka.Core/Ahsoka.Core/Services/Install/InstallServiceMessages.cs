@@ -20,8 +20,4 @@ internal class InstallServiceMessages : AhsokaMessagesBase
         return result;
     }
 
-    protected override void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo)
-    {
-        service = InstallService.Name;
-    }
 }

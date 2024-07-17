@@ -87,7 +87,7 @@ public abstract class AhsokaMessagesBase
         {
             AhsokaMessagesBase service = ClassLoader.CreateType(value, null) as AhsokaMessagesBase;
             var values = service.GetParameters(info);
-            if (values != null)
+            if (values != null && values.Count > 0)
                 allValues[values.Service] = values;
         }
 
@@ -103,7 +103,8 @@ public abstract class AhsokaMessagesBase
         var values = new ServiceParameterData();
 
         OnGetParameters(out string service, values, info);
-        AssignKeys(service, values);
+        if(service != string.Empty)
+            AssignKeys(service, values);
 
         return values;
     }
@@ -131,7 +132,10 @@ public abstract class AhsokaMessagesBase
     /// <param name="service"></param>
     /// <param name="values"></param>
     /// <param name="packageInfo"></param>
-    protected abstract void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo);
+    protected virtual void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo)
+    {
+        service = string.Empty;
+    }
     #endregion  
 }
 

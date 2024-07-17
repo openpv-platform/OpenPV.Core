@@ -22,9 +22,4 @@ internal class SecurityServiceMessages : AhsokaMessagesBase
         result.Add("Ahsoka.Proto\\SecurityService.proto", Properties.Resources.SecurityService);
         return result;
     }
-
-    protected override void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo)
-    {
-        service = SecurityService.Name;
-    }
 }

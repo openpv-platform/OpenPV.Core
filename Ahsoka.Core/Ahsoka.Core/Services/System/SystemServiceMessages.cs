@@ -77,7 +77,7 @@ public class SystemServiceMessages : AhsokaMessagesBase
     /// </summary>
     public const string InstallerVersionFactory = "InstallerVersionFactory";
 
-
+    /// <InheritDoc/>
     public SystemServiceMessages()
     {
         this.RegisterServiceRequest(SystemMessageTypes.Ids.Echo, typeof(EchoValue), typeof(EchoValue));
@@ -119,6 +119,7 @@ public class SystemServiceMessages : AhsokaMessagesBase
         values.Add(new() { Name = TouchFirmwareVersion, ValueType = ParameterValueTypes.String });
     }
 
+    /// <InheritDoc/>
     protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
         var result = base.OnGetAdditionalClientResources(type);

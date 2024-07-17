@@ -8,13 +8,6 @@ using System.Reflection;
 namespace Ahsoka.ServiceFramework;
 
 /// <summary>
-///  List of Known Data Service Keys
-/// </summary>
-public abstract class ServiceParametersBase
-{
-}
-
-/// <summary>
 /// Collection of Known Parameter Info for a Service
 /// </summary>
 public class ServiceParameterData : List<ParameterData>

@@ -31,10 +31,8 @@ public class NetworkServiceMessages : AhsokaMessagesBase
     /// </summary>
     public const string IPAddress = "IPAddress";
 
-   
-    /// <summary>
-    /// Constructor
-    /// </summary>
+
+    /// <InheritDoc/>
     public NetworkServiceMessages()
     {
         this.RegisterServiceRequest(NetworkMessageTypes.Ids.GetAdapters, typeof(EmptyNotification), typeof(AvailableAdapters));

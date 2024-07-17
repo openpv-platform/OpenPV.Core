@@ -26,10 +26,5 @@ internal class SparkServiceMessages : AhsokaMessagesBase
         result.Add("Ahsoka.Proto\\SparkService.proto", Properties.Resources.SparkService);
         return result;
     }
-
-    protected override void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo)
-    {
-        service = SparkService.Name;
-    }
 }
 

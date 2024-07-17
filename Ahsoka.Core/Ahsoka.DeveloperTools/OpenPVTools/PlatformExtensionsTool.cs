@@ -98,11 +98,10 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         var nugetVersion = new NuGetVersion(this.Version);
 
-        string version = await GetVersionToDownload(config, config.PackageName, nugetVersion.IsPrerelease);
+        var version = await GetVersionToDownload(config, config.PackageName, nugetVersion.IsPrerelease);
 
-        await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version, false, demoPath, false, true);
+        await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version.FirstOrDefault(), false, demoPath, false, true);
     }
-
  
     protected override string GetVersionFilePath()
     {
@@ -146,7 +145,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         }
     }
 
-    internal static async Task<string> GetVersionToDownload(ExtensionConfiguration configuration, string packageName, bool pullPreRelease)
+    internal static async Task<List<string>> GetVersionToDownload(ExtensionConfiguration configuration, string packageName, bool pullPreRelease)
     {
         var source = new PackageSource("https://api.nuget.org/v3/index.json");
         var providers = Repository.Provider.GetCoreV3();
@@ -160,7 +159,6 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         var results = versions.Select(x => new NuGetVersion((string)x.SelectToken("version")));
 
-
         NuGetVersionFloatBehavior behavior = pullPreRelease ? NuGetVersionFloatBehavior.PrereleaseMinor : NuGetVersionFloatBehavior.Minor;
 
         // Find the Best Version
@@ -168,9 +166,12 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         var minVersion = new NuGetVersion(configuration.MinVersion);
         var maxVersion = new NuGetVersion(configuration.MaxVersion);
-        thisVersion = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(behavior, minVersion, "")).FindBestMatch(results)?.ToFullString();
+        var availableList = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(behavior, minVersion, "")); 
+       
+        thisVersion = availableList.FindBestMatch(results)?.ToFullString();
 
-        return thisVersion;
+        var listOfResults = results.OrderDescending().Where(x => availableList.Satisfies(x) && (x.IsPrerelease != true || x.IsPrerelease == pullPreRelease)).Select(x=>x.ToString()).ToList();
+        return listOfResults;
     }
 
     internal static async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string packageName, string version, bool ux, string directory, bool evaluateDeps, bool demoOnly)

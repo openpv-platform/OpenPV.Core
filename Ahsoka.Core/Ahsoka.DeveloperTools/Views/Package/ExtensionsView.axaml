@@ -93,34 +93,51 @@
 					<Border VerticalAlignment="Stretch"
 							Grid.Column="0" Grid.Row="1" BorderBrush="Gainsboro" BorderThickness="1"
 							Margin="20,20,20,20" Padding="5">
-						<ListBox SelectedItem="{Binding SelectedExtension}"  ItemsSource="{Binding SelectedExtensions}" Background="Transparent" >
+						
+						<ListBox IsEnabled="{Binding !IsWorking}" SelectedItem="{Binding SelectedExtension}"  ItemsSource="{Binding SelectedExtensions}" Background="Transparent" >
 							<ListBox.ItemTemplate>
 								<DataTemplate>
-									<Grid ColumnDefinitions="30,*,auto,auto,auto,auto" Margin="-5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+									<Grid Margin="-12" Background="#AAFFFFFF"  ClipToBounds="True">
+										<Grid Margin="12,8,12,8" ColumnDefinitions="30,*,auto,auto,auto,auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-										<Grid Margin="0,3,0,0"
-											  HorizontalAlignment="Left"
-											  Height="24" >
-											<material:MaterialIcon IsVisible="{Binding IsInstalled}" Width="20" Height="20" Foreground="SteelBlue" Kind="Check"></material:MaterialIcon>
-											<material:MaterialIcon IsVisible="{Binding !IsInstalled}" Width="20" Height="20" Foreground="Gray" Kind="CloudOutline"></material:MaterialIcon>
-										</Grid>
-										<TextBlock Text="{Binding ExtensionName}" Margin="0,3,0,0"  HorizontalAlignment="Stretch" FontSize="14" Grid.Column="1" TextWrapping="1" />
-										<StackPanel Grid.Column="2" Orientation="Vertical" >
-											<TextBlock Text="{Binding InstalledVersion, StringFormat='Installed ({0})'}"  Margin="0,3,13,0"  HorizontalAlignment="Right" FontSize="11" TextWrapping="1" />
-											<TextBlock Text="{Binding AvailableVersion, StringFormat='Available ({0})'}"  Margin="0,3,13,0"  HorizontalAlignment="Right" FontSize="11" Grid.Column="3" TextWrapping="1" />
-										</StackPanel>
-										<Button Margin="0,3,0,0" Grid.Column="4"
-											HorizontalAlignment="Left" Height="28"
-											IsEnabled="{Binding !IsInstalled}"
-											VerticalContentAlignment="Center"
-											ToolTip.Tip="Check to add or exclude Optional Extensions from your Application."
-											Command="{Binding UpdateExtension}">
-											<Grid>
-												<TextBlock Text="Installed"  IsVisible="{Binding IsInstalled}" Margin="0,0,0,0"  HorizontalAlignment="Stretch" FontSize="11" Grid.Column="1" TextWrapping="1" />
-												<TextBlock Text="Update Extension" IsVisible="{Binding !IsInstalled}" Margin="0,0,0,0"  HorizontalAlignment="Stretch" FontSize="11" Grid.Column="1" TextWrapping="1" />
+											<Grid Margin="0,3,0,0"
+												  HorizontalAlignment="Left"
+												  Height="24" >
+												<material:MaterialIcon IsVisible="{Binding IsInstalled}" Width="20" Height="20" Foreground="SteelBlue" Kind="Check"></material:MaterialIcon>
+												<material:MaterialIcon IsVisible="{Binding !IsInstalled}" Width="20" Height="20" Foreground="Gray" Kind="CloudOutline"></material:MaterialIcon>
 											</Grid>
-										</Button>
+											<TextBlock Text="{Binding ExtensionName}" Margin="0,3,0,0"  HorizontalAlignment="Stretch" FontSize="14" Grid.Column="1" TextWrapping="1" />
 
+											<Grid Margin="0,3,0,0" Grid.Column="2" RowDefinitions="auto,auto" ColumnDefinitions="85,250,100"
+												  HorizontalAlignment="Right" >
+
+												<TextBlock Text="Installed:"  Margin="0,3,13,0" VerticalAlignment="Center"  HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+												<Border Height="32" Margin="3" Padding="3" BorderBrush="Gray" 
+														Background="WhiteSmoke" BorderThickness="1" Grid.Column="1">
+													<TextBlock Margin="5,0,0,0" Text="{Binding InstalledVersion}" VerticalAlignment="Center"  HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+												</Border>
+
+												<TextBlock Text="Available:"  Margin="0,3,13,0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+												<ComboBox Height="28" Grid.Row="1" Grid.Column="1" FontSize="12"
+													  SelectedItem="{Binding AvailableVersion}" ItemsSource="{Binding AvailableVersions}"
+												  HorizontalAlignment="Stretch" Margin="3"
+													  HorizontalContentAlignment="Left" CornerRadius="0"
+													  VerticalAlignment="Stretch" BorderBrush="Gray"/>
+
+
+												<Button Margin="5" Grid.Row="1" Grid.Column="3"
+													HorizontalAlignment="Center" Height="32"
+													IsEnabled="{Binding !IsInstalled}"
+													VerticalContentAlignment="Center"
+													ToolTip.Tip="Check to add or exclude Optional Extensions from your Application."
+													Command="{Binding UpdateExtension}">
+													<Grid>
+														<TextBlock Text="Installed"  IsVisible="{Binding IsInstalled}" Margin="0,0,0,0"  HorizontalAlignment="Stretch" FontSize="13" Grid.Column="1" TextWrapping="1" />
+														<TextBlock Text="Update Extension" IsVisible="{Binding !IsInstalled}" Margin="0,0,0,0"  HorizontalAlignment="Stretch" FontSize="13" Grid.Column="1" TextWrapping="1" />
+													</Grid>
+												</Button>
+											</Grid>
+										</Grid>
 									</Grid>
 								</DataTemplate>
 							</ListBox.ItemTemplate>

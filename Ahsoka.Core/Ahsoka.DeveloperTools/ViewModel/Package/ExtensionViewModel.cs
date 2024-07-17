@@ -4,6 +4,7 @@ using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Avalonia.Controls;
+using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -178,7 +179,9 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             {
                 if (s != null)
                 {
-                    item.AvailableVersion = s.Result;
+                    item.AvailableVersions.Clear();
+                    item.AvailableVersions.AddRange(s.Result);
+                    item.AvailableVersion = s.Result.FirstOrDefault();
                 }
             });
 
@@ -420,7 +423,13 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
             OnPropertyChanged(nameof(IsInstalled)); 
         } 
     }
-    
+
+    public ObservableCollection<string> AvailableVersions
+    {
+        get;
+        set;
+    } = new();
+
     public bool HasUx { get { return configuration.HasUx; } }
 
     public bool IsInstalled { get { return installed; } set { installed = value; OnPropertyChanged(); }}

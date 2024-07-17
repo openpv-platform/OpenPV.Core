@@ -44,6 +44,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             OnPropertyChanged();
         }
     }
+   
     public ExtensionViewModel SelectedExtension
     {
         get { return selectedExtension; }
@@ -258,7 +259,6 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             SelectedExtensions.Remove(extension);
 
             string packageExtensionFolder = extension.GetExtensionDirectory();
-            packageExtensionFolder = Path.Combine(packageExtensionFolder, extension.ExtensionName);
             extension.InstalledVersion = "0.0";
             if (Directory.Exists(packageExtensionFolder))
                 Directory.Delete(packageExtensionFolder, true);
@@ -283,7 +283,8 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
             var info = ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.ExtensionInfo.FirstOrDefault(x => x.ExtensionName == extensionName);
 
-            extVM.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath), info.ConfigurationFile);
+            if (!extVM.InitComplete)
+                extVM.InitExtension(this, hw, Path.GetDirectoryName(ParentViewModel.PackageInfoPath), info.ConfigurationFile);
         }
     }
 
@@ -304,7 +305,12 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     internal void CloseAndDiscardChanges()
     {
         foreach (var item in extensionUXExtensions)
+        {
+            if (!item.Value.InitComplete)
+                InitExtension(item.Key);
+
             item.Value.Close();
+        }
 
         ParentViewModel.ParentViewModel.Popup.DismissPopup(currentPopup);
     }
@@ -326,6 +332,9 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
                 {
                     if (extension != null)
                     {
+                        if (!extension.InitComplete)
+                            InitExtension(item.ExtensionName);
+
                         string newFileName = extension.Save(packageInfoFolder);
                         info.ConfigurationFile = newFileName;
                     }

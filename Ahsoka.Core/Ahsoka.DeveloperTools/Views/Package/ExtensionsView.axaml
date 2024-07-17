@@ -98,7 +98,7 @@
 							<ListBox.ItemTemplate>
 								<DataTemplate>
 									<Grid Margin="-12" Background="#AAFFFFFF"  ClipToBounds="True">
-										<Grid Margin="12,8,12,8" ColumnDefinitions="30,*,auto,auto,auto,auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+										<Grid Margin="12,7,12,6" ColumnDefinitions="30,*,auto,auto,auto,auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
 											<Grid Margin="0,3,0,0"
 												  HorizontalAlignment="Left"

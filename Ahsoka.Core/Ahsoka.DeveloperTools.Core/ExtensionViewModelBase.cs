@@ -9,11 +9,15 @@ public abstract class ExtensionViewModelBase : ViewModelBase
 {
     protected ICustomerToolViewModel CustomerToolViewModel { get; set; }
 
+    public bool InitComplete { get; private set; }
+
     public void InitExtension(ICustomerToolViewModel vmParent, HardwareInfo hardwareInfo, string projectFolder, string configFile)
     {
         CustomerToolViewModel = vmParent;
 
         OnInitExtension(hardwareInfo, projectFolder, configFile);
+
+        InitComplete = true;
     }
 
     public UserControl GetView()

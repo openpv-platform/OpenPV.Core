@@ -5,7 +5,10 @@ using System.Collections.Generic;
 
 namespace Ahsoka.Services.Network;
 
-internal class NetworkServiceMessages : AhsokaMessagesBase
+/// <summary>
+/// Metadata Class for Network Service
+/// </summary>
+public class NetworkServiceMessages : AhsokaMessagesBase
 {
 
     /// <summary>
@@ -29,7 +32,9 @@ internal class NetworkServiceMessages : AhsokaMessagesBase
     public const string IPAddress = "IPAddress";
 
    
-
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public NetworkServiceMessages()
     {
         this.RegisterServiceRequest(NetworkMessageTypes.Ids.GetAdapters, typeof(EmptyNotification), typeof(AvailableAdapters));
@@ -50,6 +55,7 @@ internal class NetworkServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(NetworkMessageTypes.Ids.WirelessSignalChanged, typeof(WirelessNetworkInfo));
     }
 
+    /// <InheritDoc/>
     protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
         var result = base.OnGetAdditionalClientResources(type);

@@ -7,7 +7,10 @@ using System.Text;
 
 namespace Ahsoka.Services.System;
 
-internal class SystemServiceMessages : AhsokaMessagesBase
+/// <summary>
+///  System Service Metadata Class
+/// </summary>
+public class SystemServiceMessages : AhsokaMessagesBase
 {
     /// <summary>
     /// The name of the current Application thats running

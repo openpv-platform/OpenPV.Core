@@ -59,6 +59,8 @@ public partial class AhsokaRuntime
                             // Disconnect the Cache if this EndPoint is the Default Service Cache
                             if (IServiceCache.Default == item.Value)
                                 IServiceCache.Default = null;
+                            if (IServiceEvent.Default == item.Value)
+                                IServiceEvent.Default = null;
                         }
                     }
 

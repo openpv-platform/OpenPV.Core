@@ -336,13 +336,24 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
                             InitExtension(item.ExtensionName);
 
                         string newFileName = extension.Save(packageInfoFolder);
-                        info.ConfigurationFile = newFileName;
+                        if (newFileName != null)
+                            info.ConfigurationFile = Path.GetRelativePath(packageInfoFolder, newFileName);
                     }
                 }
             }
         }
     }
 
+    internal static async Task DownloadMissingExtensions(MainViewModel mainViewModel, IProgress<string> progressString)
+    {
+        CancellationTokenSource source = new CancellationTokenSource();
+        foreach (var item in mainViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions)
+            if (!item.IsInstalled)
+            {
+                progressString?.Report($"Downloading Extension {item.ExtensionName}");
+                await item.DownloadExtension(mainViewModel.SelectedPackage.ExtensionsViewModel.PreRelease, source);
+            }
+    }
     #endregion
 
     #region Main ViewModel Interface

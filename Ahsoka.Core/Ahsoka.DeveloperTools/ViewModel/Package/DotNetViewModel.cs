@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -22,6 +23,7 @@ internal class DotNetViewModel : ViewModelBase
 {
     private readonly MainViewModel parentViewModel;
     private readonly PackageInformation packageInfo;
+   
     public bool SdkNeedsUpdate
     { 
         get; 
@@ -37,8 +39,11 @@ internal class DotNetViewModel : ViewModelBase
     {
         if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Dotnet || SdkNeedsUpdate)
         {
+            var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
+            var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x=>!x.IsInstalled);
+
             var frameworkInfo = GetFrameworkInfo();
-            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate)
+            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate || !cliExists || !extensionsUpToDate)
             {
                 var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
@@ -66,6 +71,7 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
+   
     public string ProjectPath
     {
         get { return packageInfo.DotNetInfo.ProjectPath; }
@@ -75,6 +81,7 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
+    
     public string PublishProfile
     {
         get { return packageInfo.DotNetInfo.PublishProfile; }
@@ -176,6 +183,7 @@ internal class DotNetViewModel : ViewModelBase
             parentViewModel.Console.ClearConsole();
             parentViewModel.Console.AddConsoleLine($"Beginning SDK Install to Project Path {directoryForFramework}");
 
+            
             if (Directory.Exists(directoryForFramework))
                 Directory.Delete(directoryForFramework, true);
 
@@ -186,7 +194,7 @@ internal class DotNetViewModel : ViewModelBase
                 parentViewModel.Console.AddConsoleLine(info);
             });
 
-            UpdateNuget();
+            await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
 
             //needs method for determining platforms to load
             List<System.PlatformFamily> platformsToSupport = new() { packageInfo.PlatformFamily };
@@ -281,32 +289,6 @@ internal class DotNetViewModel : ViewModelBase
         stopwatch.Stop();
 
         return "Command Line Install Complete";
-    }
-
-    private void UpdateNuget()
-    {
-        string currentPath = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ProjectPath);
-        if (File.Exists(currentPath))
-        {
-            string projectFile = File.ReadAllText(currentPath);
-            XDocument doc = XDocument.Parse(projectFile);
-
-            // Update Nuget to Match This Tool If we are not Debugging
-            string nugetVersion = GitVersionInformation.FullSemVer;
-            foreach (var item in doc.Descendants("PackageReference"))
-            {
-                if (item.Attribute("Include").Value.StartsWith("Ahsoka.Core"))
-                {
-                    // If Release Version, Change Pre-Release to Release Versions.
-                    // if (!new NuGet.Versioning.NuGetVersion(nugetVersion).IsPrerelease) // TODO Decide how to handle this better.
-                    //   item.Attribute("Version").Value = item.Attribute("Version").Value.Replace("*-*", "*");
-                }
-            }
-
-            doc.Save(currentPath);
-
-        }
-
     }
 
     internal void DeleteCLI()

@@ -30,8 +30,11 @@ internal class CppViewModel : ViewModelBase
     {
         if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Cpp || SdkNeedsUpdate)
         {
+            var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
+            var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => !x.IsInstalled);
+
             var frameworkInfo = GetFrameworkInfo();
-            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate)
+            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate || !cliExists || !extensionsUpToDate)
             {
                 var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
@@ -168,14 +171,8 @@ internal class CppViewModel : ViewModelBase
                 parentViewModel.Console.AddConsoleLine(info);
             });
 
-            var notInstalled = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => x.IsInstalled == false);
-            if (notInstalled)
-            {
-                parentViewModel.Console.AddConsoleLine($"Please install all extensions before adding the SDK.");
-                return;
-            }
+            await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
 
-           
             System.PlatformFamily[] platformsToSupport = { System.PlatformFamily.OpenViewLinux, System.PlatformFamily.Ubuntu64, PlatformFamily.Windows64 };
             parentViewModel.SelectedPackage.Deps.CheckDependencies(SystemInfo.CurrentPlatform, platformsToSupport);
 

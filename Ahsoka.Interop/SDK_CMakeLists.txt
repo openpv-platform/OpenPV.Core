@@ -47,9 +47,9 @@ function(add_ahsoka target_name)
             POST_BUILD
             COMMAND echo Create Command Line Folder
             COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/CommandLine ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
-            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/.appinfo ${CMAKE_SOURCE_DIR}/Outputs/.appinfo
-            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK/lib/libAhsoka.Client.Shared.so ${CMAKE_SOURCE_DIR}/Outputs/libAhsoka.Client.Shared.so
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/.platform_support/$ENV{AhsokaPlatform}_TargetSupport/CommandLine ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/.platform_support/.appinfo ${CMAKE_SOURCE_DIR}/Outputs/.appinfo
+            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/.platform_support/$ENV{AhsokaPlatform}_TargetSupport/SDK/lib/libAhsoka.Client.Shared.so ${CMAKE_SOURCE_DIR}/Outputs/libAhsoka.Client.Shared.so
     )
 
 endfunction()

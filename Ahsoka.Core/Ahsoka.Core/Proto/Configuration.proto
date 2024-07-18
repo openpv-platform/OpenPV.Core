@@ -35,7 +35,6 @@ message ServiceConfiguration
     int32 data_channel = 6;
     bool is_extension = 8;
     EndPointBehaviors behaviors = 10; 
-    string configuration_file = 11; 
 }
 
 enum MessageReplyStatus

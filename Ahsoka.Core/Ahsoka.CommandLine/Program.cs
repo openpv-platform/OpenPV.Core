@@ -22,6 +22,12 @@ class Program
             mutableArgs.RemoveAt(0);
         }
 
+        if (mutableArgs.Count > 0 && mutableArgs[0] == "--Verbose")
+        {
+            AhsokaLogging.LoggingVerbosity = AhsokaVerbosity.Low | AhsokaVerbosity.Performance;
+            mutableArgs.RemoveAt(0);
+        }
+
         CommandLine.Execute(mutableArgs.ToArray());
     }
 }

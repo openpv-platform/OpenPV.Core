@@ -21,8 +21,6 @@ public interface ICustomerToolViewModel
     void ShowPopup(UserControl popupControl);
     void DismissPopup(UserControl popupControl = null);
 
-    string GetConfigurationPath(string serviceName);
-
     void SdkNeedsUpdate();
 
     void RunCommandLineProcess(string processArgs, string workingDirectory, IProgress<CommandLineProgressInfo> progressString, CancellationToken token);

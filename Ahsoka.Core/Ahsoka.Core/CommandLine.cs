@@ -20,7 +20,7 @@ public static class CommandLine
         string pathToExecutable = Environment.ProcessPath;
 
         Console.WriteLine($"Loading Extensions ...");
-        System.Extensions.LoadExtensions(Path.GetDirectoryName(pathToExecutable));
+        System.Extensions.LoadExtensions(null, false,"CommandLine");
 
         string version = VersionUtility.GetAppVersionString();
 
@@ -91,24 +91,25 @@ public static class CommandLine
 
         var assemblies = System.Extensions.GetExtensionLibraries(true);
 
-        foreach (Assembly assembly in assemblies)
+        foreach (var asmwf in assemblies)
         {
-            foreach (var item in assembly.DefinedTypes)
-            {
-                var attr = item.GetCustomAttribute<CommandLinePlugin>();
-                if (attr != null)
-                    foreach (var method in item.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
-                    {
-                        var commandAttr = method.GetCustomAttribute<CommandLineMethod>();
-                        if (commandAttr != null)
-                            methods.Add(method.Name, new CommandInfo()
-                            {
-                                MethodAttribute = commandAttr,
-                                Method = method,
-                                Plugin = $"{item.Name} ({assembly.GetName().Name})"
-                            });
-                    }
-            }
+            if (asmwf.TryGetTarget(out Assembly assembly))
+                foreach (var item in assembly.DefinedTypes)
+                {
+                    var attr = item.GetCustomAttribute<CommandLinePlugin>();
+                    if (attr != null)
+                        foreach (var method in item.GetMethods(BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public))
+                        {
+                            var commandAttr = method.GetCustomAttribute<CommandLineMethod>();
+                            if (commandAttr != null)
+                                methods.Add(method.Name, new CommandInfo()
+                                {
+                                    MethodAttribute = commandAttr,
+                                    Method = method,
+                                    Plugin = $"{item.Name} ({assembly.GetName().Name})"
+                                });
+                        }
+                }
         }
         return methods;
     }

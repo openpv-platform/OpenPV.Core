@@ -1,4 +1,6 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
+using System.Collections.Generic;
 
 namespace Ahsoka.Services.Demo;
 
@@ -20,6 +22,11 @@ internal class TimeServiceMessages : AhsokaMessagesBase
 
         // Here we define a notification (Service -> Client) to let the client application know that the Time was Set and the result.
         this.RegisterServiceNotification(TimeServiceMessageTypes.Ids.SetTimeCompleteNotification, typeof(SetTimeResult));
+    }
+
+    protected override void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo)
+    {
+        service = "TimeService";
     }
 }
 

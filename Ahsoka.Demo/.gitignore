@@ -390,5 +390,5 @@ FodyWeavers.xsd
 */StoryboardExport/*
 *.buildpath
 *.opv
-*/Ahsoka.Client.Shared/*
+*/.platform_support/*
 */Outputs/*

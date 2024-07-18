@@ -189,7 +189,7 @@ internal class TIServiceImplementation : IServiceImplementation
 
         Dictionary<string, string> results = new()
         {
-            { SystemServiceDataKeys.BSPVersion, stdout.Replace("BSP Version:","").Trim() }
+            { SystemServiceMessages.BSPVersion, stdout.Replace("BSP Version:","").Trim() }
         };
 
         foreach (KeyValuePair<string, string> pair in GetScreenInfo())

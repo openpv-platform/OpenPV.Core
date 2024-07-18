@@ -1,3 +1,4 @@
+using Ahsoka.ServiceFramework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,17 +29,15 @@ public class AssemblyResolver
         foreach (var item in AppDomain.CurrentDomain.GetAssemblies())
         {
             var name = item.GetName();
-            if (!string.IsNullOrEmpty(name.Name))
+            if (!string.IsNullOrEmpty(name.Name) && !item.IsCollectible)
             {
                 if (name.Name == requestedName)
                 {
                     bool returnValue = name.Version.Major == requestorName.Version.Major && name.Version.Minor == requestorName.Version.Minor;
-                    if (returnValue)
-                    {
-                        Console.WriteLine($"Resolved Assembly Lookup of {args.Name}");
-                        Console.WriteLine($"                       with {name.FullName} ");
-                        Console.WriteLine("");
-                    }
+                    if (returnValue )
+                        AhsokaLogging.LogMessage( AhsokaVerbosity.Low, $"Resolved Assembly Lookup of {args.Name} with {name.FullName} ");
+                    else
+                        AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Could not Resolve Lookup of {args.Name} with any loaded assembly ");
 
                     return item;
                 }

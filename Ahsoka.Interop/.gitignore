@@ -16,4 +16,4 @@ out/*
 
 *.ninja
 BuildOutput/*
-Ahsoka.Client.Shared/ServiceFramework/ServiceConfiguration.hpp
+.platform_support/ServiceFramework/ServiceConfiguration.hpp

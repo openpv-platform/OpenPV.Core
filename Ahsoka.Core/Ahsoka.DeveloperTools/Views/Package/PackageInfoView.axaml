@@ -215,10 +215,6 @@
 			
 			</StackPanel>
 		</ScrollViewer>
-		<CustomerTools:DependenciesView Grid.Column="0" IsVisible="{Binding True, FallbackValue=False}"
-					Grid.ColumnSpan="3" 
-					DataContext="{Binding SelectedPackage.Deps}"/>
-		
 
 	</Grid>
 </UserControl>

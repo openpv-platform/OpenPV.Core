@@ -45,6 +45,7 @@ internal class PlatformDemoTool : SparkToolBase
             await ExecuteDownloadInternal(toolVM, Path.Combine(LocalPath, item.Path), cancellationToken);
         }
 
+
         File.WriteAllText(GetVersionFilePath(), Version);
 
     }

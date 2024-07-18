@@ -51,8 +51,6 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
         }
     }
 
-
-
     public KeyArtifactViewModel SelectedCert
     {
         get
@@ -74,7 +72,6 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
         set;
     } = new ObservableCollection<KeyArtifactViewModel>();
 
-
     public ObservableCollection<PackageModuleViewModel> AvailableModules
     {
         get;
@@ -91,7 +88,6 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
         {
         }
     }
-
 
     public ObservableCollection<SparkProjectViewModel> OTATeamsList
     {
@@ -198,7 +194,7 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
             ParentViewModel.Console.AddConsoleLine("Target is not connected.  Please connect to provision display in Spark");
             return;
         }
-        string versionString = ParentViewModel.ActiveConnection.ConnectedHardwareInfo.VersionInfoes[SystemServiceDataKeys.SDKVersion];
+        string versionString = ParentViewModel.ActiveConnection.ConnectedHardwareInfo.VersionInfoes[SystemServiceMessages.SDKVersion];
         
         Version.TryParse(versionString, out Version version);
         var versionCompat = new Version("2.1");

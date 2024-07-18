@@ -43,6 +43,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     #endregion
 
     #region Properties
+
     public string VersionString { get { return $"Welcome to OpenPV Developer Toolkit Version {ParentViewModel.GetVersion()}"; } }
 
     MainViewModel IToolViewModel.MainViewModel { get { return parentViewModel; } }
@@ -212,6 +213,9 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
                 ProfileTag = profilePV,
                 ProfileDescription = "Support OTA and Loading for PowerVision based Displays enabling you to purchase Module Package, Maintain Device Lists as well as Upload Applications (*.opvPackage) to Spark."
             });
+
+        PlatformExtensionsTool.LoadExtensionList(this);
+
     }
 
     internal void OpenPopup() { OpenPopup(false); }

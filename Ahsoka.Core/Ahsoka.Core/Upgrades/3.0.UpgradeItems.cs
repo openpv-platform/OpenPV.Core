@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using Ahsoka.System.Hardware;
+using SimpleWifi.Win32;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.Json.Nodes;
+using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.Utility;
 
@@ -86,4 +89,42 @@ internal class UpgradeItemsPackage_3_1 : UpgradeMethod
     }
 
     
+}
+
+
+internal class UpgradeItemsPackage_3_3 : UpgradeMethod
+{
+    public UpgradeItemsPackage_3_3() : base(packageUpgradeExtension, "3.4.0") 
+    { 
+    }
+
+    public override void UpgradeData(JsonNode document, Dictionary<string, object> context)
+    {
+        var serviceInfo = document["serviceInfo"];
+        if (serviceInfo == null)
+            serviceInfo = document["serviceInfo"] = new JsonObject();
+
+        var runtimeConfig = serviceInfo["runtimeConfiguration"];
+        if (runtimeConfig == null)
+            runtimeConfig = document["runtimeConfiguration"] = new JsonObject();
+
+
+        var info = runtimeConfig["extensionInfo"] as JsonArray;
+        if (info == null)
+        {
+            runtimeConfig["extensionInfo"] = info = new JsonArray();
+
+            var services = runtimeConfig["extensions"];
+
+            if (services != null)
+                foreach (var item in services.AsArray())
+                {
+                    var serviceItem = new JsonObject();
+                    info.Add(serviceItem); 
+                    serviceItem.Add("extensionName", item.AsValue().ToString());
+                }
+        }
+    }
+
+
 }

@@ -7,8 +7,77 @@ using System.Text;
 
 namespace Ahsoka.Services.System;
 
-internal class SystemServiceMessages : AhsokaMessagesBase
+/// <summary>
+///  System Service Metadata Class
+/// </summary>
+public class SystemServiceMessages : AhsokaMessagesBase
 {
+    /// <summary>
+    /// The name of the current Application thats running
+    /// </summary>
+    public const string CurrentApplicationName = "ApplicationName";
+
+    /// <summary>
+    /// Is the Service Available
+    /// </summary>
+    public const string Available = "Available";
+
+    /// <summary>
+    /// Application Version
+    /// </summary>
+    public const string ApplicationVersion = "ApplicationVersion";
+
+    /// <summary>
+    /// Application Version
+    /// </summary>
+    public const string ApplicationDescription = "ApplicationDescription";
+
+    /// <summary>
+    /// SDK Version
+    /// </summary>
+    public const string SDKVersion = "SDKVersion";
+
+    /// <summary>
+    /// Installer Version
+    /// </summary>
+    public const string InstallerVersion = "InstallerVersion";
+
+    /// <summary>
+    /// BSP Version
+    /// </summary>
+    public const string BSPVersion = "BSPVersion";
+
+    /// <summary>
+    /// Touch Produce ID For Touch Screen Displays
+    /// </summary>
+    public const string TouchProductID = "TouchProductID";
+
+    /// <summary>
+    /// Touch Vender ID For Touch Screen Displays
+    /// </summary>
+    public const string TouchVendorID = "TouchVendorID";
+
+    /// <summary>
+    /// Touch CRC For Touch Screen Displays
+    /// </summary>
+    public const string TouchConfigCRC = "TouchConfigCRC";
+
+    /// <summary>
+    /// Touch Harware Version For Touch Screen Displays
+    /// </summary>
+    public const string TouchHardwareVersion = "TouchHardwareVersion";
+
+    /// <summary>
+    /// Touch Firmware Version For Touch Screen Displays
+    /// </summary>
+    public const string TouchFirmwareVersion = "TouchFirmwareVersion";
+
+    /// <summary>
+    /// Touch Factory Installer Version
+    /// </summary>
+    public const string InstallerVersionFactory = "InstallerVersionFactory";
+
+    /// <InheritDoc/>
     public SystemServiceMessages()
     {
         this.RegisterServiceRequest(SystemMessageTypes.Ids.Echo, typeof(EchoValue), typeof(EchoValue));
@@ -31,9 +100,29 @@ internal class SystemServiceMessages : AhsokaMessagesBase
         this.RegisterServiceRequest(SystemMessageTypes.Ids.RequestShutdown, typeof(ShutdownInformation), typeof(EmptyNotification));
     }
 
-    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    /// <InheritDoc/>
+    protected override void OnGetParameters(out string group, List<ParameterData> values, PackageInformation info)
     {
-        var result = base.GetAdditionalClientResources(type);
+        group = SystemService.Name;
+
+        values.Add(new() { Name = Available, DefaultValue = false, ValueType = ParameterValueTypes.Boolean });
+        values.Add(new() { Name = CurrentApplicationName, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = ApplicationVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = ApplicationDescription, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = SDKVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = InstallerVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = BSPVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchProductID, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchVendorID, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchConfigCRC, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchHardwareVersion, ValueType = ParameterValueTypes.String });
+        values.Add(new() { Name = TouchFirmwareVersion, ValueType = ParameterValueTypes.String });
+    }
+
+    /// <InheritDoc/>
+    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    {
+        var result = base.OnGetAdditionalClientResources(type);
         result.Add("inc\\services\\SystemServiceClientExtensions.h", Properties.Resources.SystemServiceClientExtensionsH);
 
         result.Add("Ahsoka.Proto\\SystemService.proto", Properties.Resources.SystemService);
@@ -43,57 +132,5 @@ internal class SystemServiceMessages : AhsokaMessagesBase
 
         return result;
     }
-
-    public override KnownDataKeys GetKnownValues()
-    {
-        return new SystemServiceDataKeys();
-    }
-}
-
-/// <summary>
-/// Message used for loading an application.
-/// </summary>
-public partial class LoadApplication : IFileTransmit
-{
-
-}
-
-/// <summary>
-/// Message Response for Load Applications
-/// </summary>
-public partial class LoadApplicationReply : IFileTransmitReply
-{
-
-}
-
-/// <summary>
-/// Message for Carrying Data for an Application Load.
-/// </summary>
-public partial class LoadApplicationData : IFileTransmitData
-{
-
-}
-
-/// <summary>
-/// Message Reply for Application Data Messages
-/// </summary>
-public partial class LoadApplicationDataReply : IFileTransmitDataReply
-{
-
-}
-
-/// <summary>
-///  Message sent to Cancel an Application Load
-/// </summary>
-public partial class LoadApplicationCancelled : IFileTransmitCancelled
-{
-
-}
-
-/// <summary>
-/// Event Args raised when an Application Load is Cancelled.
-/// </summary>
-public partial class LoadApplicationCompleteEventArgs : EventArgs
-{
 
 }

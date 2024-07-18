@@ -68,7 +68,51 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 
                 HandleUpdateLicenseFile(messageHeader, message as ModuleLicenseInfo);
                 break;
+
+            case SparkMessageTypes.Ids.SubscribeToAppChange:
+                HandleSubscribeToAppChange(messageHeader);
+                break;
+
+            case SparkMessageTypes.Ids.UnsubscribeToAppChange:
+                HandleUnsubscribeToAppChange(messageHeader);
+                break;
         }
+    }
+
+    private void HandleSubscribeToAppChange(AhsokaMessageHeader messageHeader) 
+    {
+        SparkSubscriptionInfo info = GetSparkSubscription();
+
+        var privateKey = SystemInfo.HardwareInfo.GetDeviceSigningKey(false);
+
+        Console.WriteLine("Getting Auth Token");
+        var auth = GetDeviceAuthorizationToken(info.SubscriptionUrl, Guid.Parse(info.DeviceId), privateKey);
+        if (auth == null)
+            throw new ApplicationException("No authorization found");
+
+        //SparkDisplayClient.SharedSparkClient.ReceiveAppChanges = new Action<AppChangesDTO>((changesDto) =>
+        //{
+        //    var reply = CreateReplyMessageHeader(messageHeader, SparkMessageTypes.Ids.AppChangeNotification);
+        //    var info = new AppChangeInfo()
+        //    {
+        //        ChannelName = changesDto.ChannelName,
+        //        ReleaseName = changesDto.ReleaseName,
+        //        AppEvent = (AppChangesEnum)changesDto.AppEvent,
+        //        Message = changesDto.Message,
+        //    };
+        //    SendMessageInternal(reply, info);
+        //});
+
+        //SparkDisplayClient.SharedSparkClient.SubscribeToAppChanges();
+
+        SendMessageInternal(messageHeader);
+    }
+
+    private void HandleUnsubscribeToAppChange(AhsokaMessageHeader messageHeader) 
+    { 
+        //SparkDisplayClient.SharedSparkClient.UnsubscribeToAppChanges();
+
+        SendMessageInternal(messageHeader);
     }
 
     private void HandleUpdateLicenseFile(AhsokaMessageHeader messageHeader, ModuleLicenseInfo licenseInfo)

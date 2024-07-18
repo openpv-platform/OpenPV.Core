@@ -264,11 +264,11 @@ internal class STServiceImplementation : IServiceImplementation
 
         Dictionary<string, string> results = new()
         {
-            { SystemServiceDataKeys.TouchVendorID, VendorId },
-            { SystemServiceDataKeys.TouchProductID, ProductId },
-            { SystemServiceDataKeys.TouchHardwareVersion, HardwareVersion },
-            { SystemServiceDataKeys.TouchFirmwareVersion, FirmwareVersion },
-            { SystemServiceDataKeys.TouchConfigCRC, ConfigCrc }
+            { SystemServiceMessages.TouchVendorID, VendorId },
+            { SystemServiceMessages.TouchProductID, ProductId },
+            { SystemServiceMessages.TouchHardwareVersion, HardwareVersion },
+            { SystemServiceMessages.TouchFirmwareVersion, FirmwareVersion },
+            { SystemServiceMessages.TouchConfigCRC, ConfigCrc }
         };
 
         return results;
@@ -292,7 +292,7 @@ internal class STServiceImplementation : IServiceImplementation
 
         Dictionary<string, string> results = new()
         {
-            { SystemServiceDataKeys.BSPVersion, stdout.Replace("BSP Version:","").Trim() }
+            { SystemServiceMessages.BSPVersion, stdout.Replace("BSP Version:","").Trim() }
         };
 
         foreach (KeyValuePair<string, string> pair in GetScreenInfo())

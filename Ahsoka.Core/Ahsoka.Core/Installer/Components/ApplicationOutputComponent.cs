@@ -170,7 +170,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             InstallerPlugin appPlugin = InstallerPlugin.GetApplicationPlugin(projectType);
             appPlugin?.ModifyTargetInstall(workingDirectory, appCommand);
 
-            AddInstaller(context, item);
+            AddCommandLine(context, item);
 
             // Enable the Services for Application Startup.
             output = Process.Start("systemctl", "disable Ahsoka.Installer.service -q");
@@ -189,7 +189,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         }
 
 
-        void AddInstaller(InstallContext context, PackageComponent item)
+        void AddCommandLine(InstallContext context, PackageComponent item)
         {
             string workingDirectory = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot),"CommandLine");
 
@@ -204,6 +204,11 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
             // Extract Zip to Output Area
             PackagingUtility.ExtractPackage(tempFile, workingDirectory, context.Progress, context.Log);
+
+            string cliExtFolder = Path.Combine(workingDirectory, Extensions.ExtensionsFolder);
+            string extFolder = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot), Extensions.ExtensionsFolder);
+            if (Directory.Exists(cliExtFolder))
+                Directory.Move(cliExtFolder, extFolder);
 
             // Remove Temp File
             File.Delete(tempFile);

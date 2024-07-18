@@ -129,20 +129,9 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
 
         foreach (var config in ConfigurationLoader.CreateDefaultConfiguration(false).Services) // Don't load extensions they get loaded later
         {
-            var serviceInfo = items.FirstOrDefault(x => x.Name.Contains(config.ServiceName));
-
-            KnownDataKeys keyValues = null;
-            if (serviceInfo != null)
-            {
-                var messages = ClassLoader.CreateType(serviceInfo, null) as AhsokaMessagesBase;
-                keyValues = messages.GetKnownValues();
-            }
-
-            var viewModel = new ServiceConfigurationViewModel(this, config, keyValues);
+            var viewModel = new ServiceConfigurationViewModel(this, config);
             Services.Add(viewModel);
         }
-
-        
 
         OnPropertyChanged(nameof(Services));
         SelectedService = Services.FirstOrDefault();
@@ -185,8 +174,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
 {
     ExtensionViewModel extension;
     readonly  ServiceConfiguration defaultValues;
-    readonly  KnownDataKeys keyValues;
-    DataKeyItemViewModel selectedKey;
     string extentionName;
    
     public bool IsExtension { get; set; }
@@ -199,21 +186,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     {
         get { return ParentViewModel.ParentViewModel.ServiceConfiguration.Services.FirstOrDefault(x => x.ServiceName == this.ServiceName); }
     }
-
-    public DataKeyItemViewModel SelectedKey
-    {
-        get { return selectedKey; }
-        set
-        {
-            selectedKey = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public ObservableCollection<DataKeyItemViewModel> Keys
-    {
-        get; set;
-    } = new ObservableCollection<DataKeyItemViewModel>();
 
     public bool IsIncluded
     {
@@ -241,26 +213,16 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                 };
 
                 ParentViewModel.ParentViewModel.ServiceConfiguration.Services.Add(item);
-                LoadKeys();
             }
             else
             {
                 ParentViewModel.ParentViewModel.ServiceConfiguration.Services.Remove(CurrentServiceConfiguration);
-                Keys.Clear();
             }
 
             OnPropertyChanged();
             OnPropertyChanged(nameof(ServicePort)); 
             OnPropertyChanged(nameof(ServiceUUID));
         }
-    }
-
-    private void LoadKeys()
-    {
-        Keys.Clear();
-        if (CurrentServiceConfiguration != null && keyValues != null)
-            foreach (var key in keyValues.GetDataValues())
-                Keys.Add(new DataKeyItemViewModel(this, key));
     }
 
     public bool UseSecurity
@@ -375,22 +337,9 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     {
         IsIncluded = !IsIncluded;
         OnPropertyChanged(nameof(IsIncluded));
-        OnPropertyChanged(nameof(Keys));
     }
 
-    public void SelectAll()
-    {
-        //foreach (var key in Keys)
-        //    key.IsIncluded = true;
-    }
-
-    public void UnselectAll()
-    {
-        //foreach (var key in Keys)
-        //    key.IsIncluded = false;
-    }
-
-    public ServiceConfigurationViewModel(ServiceViewModel model, ServiceConfiguration config, KnownDataKeys keyValues, ExtensionViewModel extension = null)
+    public ServiceConfigurationViewModel(ServiceViewModel model, ServiceConfiguration config, ExtensionViewModel extension = null)
         : base(model)
     {
         this.defaultValues = config;
@@ -402,65 +351,8 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
         }
         this.ServiceName = $"{config.ServiceName}";
         this.ServiceNameFull = $"{config.ServiceName} ({(config.IsExtension ? $"from {extentionName}" : "Core Module")})";
-        this.keyValues = keyValues;
-       
-        LoadKeys();
     }
 
 
-    internal class DataKeyItemViewModel : ChildViewModelBase<ServiceConfigurationViewModel>
-    {
-        /*public DataAccessLevel DataAccessLevel
-        {
-            get { return CurrentKeyItem != null ? CurrentKeyItem.DataAccessLevel : DataAccessLevel.InternalOnly; }
-            set { if (CurrentKeyItem != null) CurrentKeyItem.DataAccessLevel = value; }
-        }*/
-
-        public string Key { get; }
-
-        /*public DataServiceKeyItem CurrentKeyItem
-        {
-            get { return null; } // ParentViewModel.CurrentServiceConfiguration.DataKeyValues.FirstOrDefault(x => x.KeyName == this.Key); }
-        }*/
-
-       /* public bool IsIncluded
-        {
-            get
-            {
-                return CurrentKeyItem != null;
-            }
-            set
-            {
-                if (value == IsIncluded)
-                    return;
-
-                if (value && CurrentKeyItem == null)
-                {
-                //    ParentViewModel.CurrentServiceConfiguration.DataKeyValues.Add(new DataServiceKeyItem() {  KeyName = this.Key, DataAccessLevel = DataAccessLevel.Diagnostic });
-                }
-                else
-                {
-                //    ParentViewModel.CurrentServiceConfiguration.DataKeyValues.Remove(CurrentKeyItem);
-                }
-
-                ParentViewModel.ParentViewModel.ParentViewModel.NeedsSDKUpdate();
-
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(DataAccessLevel));
-            }
-        }*/
-
-        public DataKeyItemViewModel(ServiceConfigurationViewModel model, string keyValue)
-            : base(model)
-        {
-            this.Key = keyValue;
-        }
-
-        public void IncludeChanged()
-        {
-           // IsIncluded = !IsIncluded;
-            OnPropertyChanged(nameof(IsIncluded));
-        }
-    }
-
+ 
 }

@@ -13,10 +13,11 @@ internal class InstallServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(InstallMessageTypes.Ids.InstallLog, typeof(InstallLogInfo));
     }
 
-    public override Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
-        var result = base.GetAdditionalClientResources(type);
+        var result = base.OnGetAdditionalClientResources(type);
         result.Add("Ahsoka.Proto\\InstallService.proto", Properties.Resources.InstallService);
         return result;
     }
+
 }

@@ -1,11 +1,15 @@
 ﻿using Ahsoka.DeveloperTools.Core;
+using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Ahsoka.System;
+using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
+using ShimSkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -19,6 +23,7 @@ internal class DotNetViewModel : ViewModelBase
 {
     private readonly MainViewModel parentViewModel;
     private readonly PackageInformation packageInfo;
+   
     public bool SdkNeedsUpdate
     { 
         get; 
@@ -34,8 +39,11 @@ internal class DotNetViewModel : ViewModelBase
     {
         if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Dotnet || SdkNeedsUpdate)
         {
+            var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
+            var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x=>!x.IsInstalled);
+
             var frameworkInfo = GetFrameworkInfo();
-            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate)
+            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate || !cliExists || !extensionsUpToDate)
             {
                 var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
@@ -63,6 +71,7 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
+   
     public string ProjectPath
     {
         get { return packageInfo.DotNetInfo.ProjectPath; }
@@ -72,6 +81,7 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
+    
     public string PublishProfile
     {
         get { return packageInfo.DotNetInfo.PublishProfile; }
@@ -124,7 +134,7 @@ internal class DotNetViewModel : ViewModelBase
 
     private string GetFrameworkInfoPath()
     {
-        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), "obj/Ahsoka.Client.Shared//AhsokaFrameworkInfo.json");
+        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), $"obj/{PlatformSupportPathInfo.PlatformSupportRootFolderName_App}/AhsokaFrameworkInfo.json");
     }
 
     public DotNetViewModel(MainViewModel parentViewModel, PackageInformation packageInfo)
@@ -173,6 +183,7 @@ internal class DotNetViewModel : ViewModelBase
             parentViewModel.Console.ClearConsole();
             parentViewModel.Console.AddConsoleLine($"Beginning SDK Install to Project Path {directoryForFramework}");
 
+            
             if (Directory.Exists(directoryForFramework))
                 Directory.Delete(directoryForFramework, true);
 
@@ -183,8 +194,7 @@ internal class DotNetViewModel : ViewModelBase
                 parentViewModel.Console.AddConsoleLine(info);
             });
 
-            UpdateNuget();
-
+            await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
 
             //needs method for determining platforms to load
             List<System.PlatformFamily> platformsToSupport = new() { packageInfo.PlatformFamily };
@@ -236,12 +246,12 @@ internal class DotNetViewModel : ViewModelBase
 
     public static void RunSdkCommands(string projectPath, MainViewModel mainViewModel, Progress<CommandLineProgressInfo> progress)
     {
-        foreach (var extensionName in mainViewModel.SelectedPackage.ServiceConfiguration.Extensions)
+        foreach (var info in mainViewModel.SelectedPackage.ServiceConfiguration.ExtensionInfo)
         {
-            var list = Extensions.GetCommands(mainViewModel.SelectedPackage.PackageInfo, extensionName, CommandTypes.SdkGenerator | CommandTypes.ModelGenerators);
+            var list = Extensions.GetCommands(mainViewModel.SelectedPackage.PackageInfo, info.ExtensionName, CommandTypes.SdkGenerator | CommandTypes.ModelGenerators);
             foreach (var command in list)
                 if (command.Value == GeneratorCommandType.AhsokaCommandLine)
-                    mainViewModel.RunCommandLineProcess(command.Key, projectPath, progress, CancellationToken.None);
+                    mainViewModel.RunCommandLineProcess(command.Key, projectPath, progress, CancellationToken.None, mainViewModel.SelectedPackage.GetCommandLinePath());
                 else
                     mainViewModel.RunShellProcess(command.Key, projectPath, progress, CancellationToken.None);
         }
@@ -250,11 +260,12 @@ internal class DotNetViewModel : ViewModelBase
     internal static string InstallCommandLine(string directory, PlatformFamily platform, MainViewModel mainViewModel, IProgress<string> progressString)
     {
         string pathToCommandLine = Path.Combine(mainViewModel.GetPlatformPath(platform), "CommandLine");
+        string pathToHardware = Path.Combine(mainViewModel.GetPlatformPath(platform), "Hardware");
 
         // Copy Command Line
         if (!Directory.Exists(pathToCommandLine))
         {
-            progressString.Report($"Could not find target support for {platform}.\n" +
+            progressString?.Report($"Could not find target support for {platform}.\n" +
                 $"Please download the necessary files from the PlugIns tab.");
             return "No Target Found";
         }
@@ -262,46 +273,22 @@ internal class DotNetViewModel : ViewModelBase
         Stopwatch stopwatch = Stopwatch.StartNew();
 
         // Copy Command Line
-        string pathToCLIOutput = Path.Combine(directory, platform.ToString(), "CommandLine");
-        progressString.Report($" ");
-        progressString.Report($"Installing Ahsoka Services Application to {pathToCLIOutput}");
-        progressString.Report($" ");
+        string pathToCLIOutput = Path.Combine(directory, platform.ToString() + "_TargetSupport", "CommandLine");
+        string pathToHWOutput = Path.Combine(directory, platform.ToString() + "_TargetSupport", "Hardware");
+        progressString?.Report($" ");
+        progressString?.Report($"Installing Ahsoka Services Application to {pathToCLIOutput}");
+        progressString?.Report($" ");
         FileUtilities.CopyDirectory(pathToCommandLine, pathToCLIOutput, true, progressString);
 
-        foreach (var extensionName in mainViewModel.SelectedPackage.ServiceConfiguration.Extensions)
-            Extensions.InstallExtension(pathToCLIOutput, extensionName, progressString);
-     
-        progressString.Report($" ");
+        if (Directory.Exists(pathToHardware))
+            FileUtilities.CopyDirectory(pathToHardware, pathToHWOutput, true, progressString);
+
+
+        progressString?.Report($" ");
 
         stopwatch.Stop();
 
         return "Command Line Install Complete";
-    }
-
-    private void UpdateNuget()
-    {
-        string currentPath = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ProjectPath);
-        if (File.Exists(currentPath))
-        {
-            string projectFile = File.ReadAllText(currentPath);
-            XDocument doc = XDocument.Parse(projectFile);
-
-            // Update Nuget to Match This Tool If we are not Debugging
-            string nugetVersion = GitVersionInformation.FullSemVer;
-            foreach (var item in doc.Descendants("PackageReference"))
-            {
-                if (item.Attribute("Include").Value.StartsWith("Ahsoka.Core"))
-                {
-                    // If Release Version, Change Pre-Release to Release Versions.
-                    // if (!new NuGet.Versioning.NuGetVersion(nugetVersion).IsPrerelease) // TODO Decide how to handle this better.
-                    //   item.Attribute("Version").Value = item.Attribute("Version").Value.Replace("*-*", "*");
-                }
-            }
-
-            doc.Save(currentPath);
-
-        }
-
     }
 
     internal void DeleteCLI()

@@ -1,7 +1,10 @@
 using Ahsoka.DeveloperTools.OpenPVTools;
 using Ahsoka.DeveloperTools.Spark;
+using Ahsoka.Installer;
 using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Network;
+using Ahsoka.Services.System;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
@@ -33,6 +36,23 @@ public class GeneralTests : LinearTestBase
     {
         AhsokaLogging.StopMemoryLog();
     }
+
+    [TestMethod]
+    public void GetParametersTests()
+    {
+        var knownValues = AhsokaMessagesBase.GetAllServiceParameters();
+
+        Assert.IsTrue(knownValues.Any(x => x.Key == SystemService.Name));
+
+        var systemKeys = knownValues.FirstOrDefault(x => x.Key == SystemService.Name);
+        Assert.IsTrue(systemKeys.Value.Any(x=>x.Name == "Available"));
+
+        Assert.IsTrue(knownValues.Any(x => x.Key == NetworkService.Name));
+       
+        var networkKeys = knownValues.FirstOrDefault(x => x.Key == NetworkService.Name);
+        Assert.IsTrue(networkKeys.Value.Any(x => x.Name == "ClientNetworkName"));
+    }
+
 
     [TestMethod]
     public void NugetFetchTest()

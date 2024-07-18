@@ -18,7 +18,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS})
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-rpath='$ORIGIN'")
 
 #Add Ahsoka Library Subdirectory
-add_subdirectory ("Ahsoka.Client.Shared/$ENV{AhsokaPlatform}/SDK")
+add_subdirectory (".platform_support/$ENV{AhsokaPlatform}_TargetSupport/SDK")
 
 message(CMAKE_SOURCE_DIR="${CMAKE_SOURCE_DIR}")
 message(AhsokaSources="${AhsokaSources}")

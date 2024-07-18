@@ -4,7 +4,6 @@ using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Diagnostics;
 using System.IO;
 
 namespace Ahsoka.Test;

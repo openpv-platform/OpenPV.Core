@@ -28,11 +28,10 @@ internal class CommandLineComponent : PackageComponentBase
         Dictionary<string, byte[]> additionalFiles,
         List<InstallerPlugin> installerPlugins,
         IProgress<PackageProgressInfo> progress)
-
     {
-        // Add Extensions
-        foreach(var item in info.ServiceInfo.RuntimeConfiguration.Extensions)
-            Extensions.InstallExtension(additionalFiles, item);
+        // Add Extensions to App Folder
+        foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
+            Extensions.InstallExtension(additionalFiles, item.ExtensionName);
 
         var componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
         if (componentData != null)

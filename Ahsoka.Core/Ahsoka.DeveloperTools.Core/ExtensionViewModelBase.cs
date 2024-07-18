@@ -9,10 +9,15 @@ public abstract class ExtensionViewModelBase : ViewModelBase
 {
     protected ICustomerToolViewModel CustomerToolViewModel { get; set; }
 
-    public void InitExtension(ICustomerToolViewModel vmParent, HardwareInfo hardwareInfo, string projectFolder)
+    public bool InitComplete { get; private set; }
+
+    public void InitExtension(ICustomerToolViewModel vmParent, HardwareInfo hardwareInfo, string projectFolder, string configFile)
     {
         CustomerToolViewModel = vmParent;
-        OnInitExtension(hardwareInfo, projectFolder);
+
+        OnInitExtension(hardwareInfo, projectFolder, configFile);
+
+        InitComplete = true;
     }
 
     public UserControl GetView()
@@ -35,7 +40,7 @@ public abstract class ExtensionViewModelBase : ViewModelBase
         return OnSave(packageInfoFolder);
     }
 
-    protected abstract void OnInitExtension(HardwareInfo hardwareInfo, string projectFolder);
+    protected abstract void OnInitExtension(HardwareInfo hardwareInfo, string projectFolder, string configurationPath);
 
     protected abstract string OnSave(string packageInfoFolder);
 

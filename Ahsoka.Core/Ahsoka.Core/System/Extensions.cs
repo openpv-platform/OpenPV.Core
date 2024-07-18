@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using static NetMQ.NetMQSelector;
+using System.Runtime.Loader;
 
 namespace Ahsoka.System;
 
@@ -17,20 +17,21 @@ namespace Ahsoka.System;
 public class Extensions
 {
     internal const string LibFolder = "lib";
-    internal const string ExtensionsFolder = "Extensions";
-    private static bool initComplete = false;
+    internal const string UxFolder = "ux";
+    internal const string ExtensionsFolder = ".extensions";
+    static AssemblyLoadContext currentLoadContext;
 
-    private static List<Assembly> ExtensionLibraries { get; set; } = new(); 
-
-
+    private static List<WeakReference<Assembly>> ExtensionLibraries { get; set; } = new();
+   
     internal static List<ExtensionConfiguration> Configurations
     {
-        get; private set;
+        get; 
+        private set;
     } = new ();
 
     static Extensions()
     {
-        
+       
     }
 
     /// <summary>
@@ -39,33 +40,18 @@ public class Extensions
     /// <param name="assembly"></param>
     public static void AddPrivateExtension(Assembly assembly)
     {
-        ExtensionLibraries.Add(assembly);
+        ExtensionLibraries.Add(new WeakReference<Assembly>(assembly));
     }
 
-    internal static void InstallExtension(string basePath, string extensionName, IProgress<string> progress = null)
-    {
-        Dictionary<string, byte[]> additionalFiles = new Dictionary<string, byte[]> ();
-        InstallExtension(additionalFiles, extensionName);
-
-        progress.Report($" ");
-        progress.Report($"Installing {extensionName}");
-        
-        foreach (var item in additionalFiles)
-        {
-            progress.Report($"  Adding {item.Key}");
-            string path = Path.Combine(basePath, item.Key);
-
-            string dir = Path.GetDirectoryName(path);
-            if (!Directory.Exists(dir))
-                Directory.CreateDirectory(dir);
-
-            File.WriteAllBytes(path, item.Value);
-        }
-    }
-
-    internal static void InstallExtension(Dictionary<string, byte[]> additionalFiles, string extensionName)
+    internal static void InstallExtension(Dictionary<string, byte[]> additionalFiles, string extensionName, IProgress<string> progress = null)
     {
         var config = Configurations.FirstOrDefault(x => x.ExtensionName == extensionName);
+        if (config == null)
+        {
+            progress?.Report($"No extension found for {extensionName}");
+            return;
+        }
+
         string pathToExtensionCache = Path.GetDirectoryName(config.FilePath);
 
         foreach (var file in Directory.GetFiles(pathToExtensionCache,"*", SearchOption.AllDirectories)) 
@@ -73,7 +59,7 @@ public class Extensions
             if (!file.Contains("\\ux\\") && !file.Contains("\\demos"))
             {
                 string fileNameFromExtensions = file.Replace(pathToExtensionCache, "");
-                string fileName = $"Extensions/{extensionName}/{fileNameFromExtensions.Replace("\\", "/").TrimStart('/')}";
+                string fileName = $"{ExtensionsFolder}/{extensionName}/{fileNameFromExtensions.Replace("\\", "/").TrimStart('/')}";
                 additionalFiles[fileName] = File.ReadAllBytes(file);
             }
         }
@@ -82,25 +68,36 @@ public class Extensions
     /// <summary>
     ///  Load Extensions from the specified path (or use default if null)
     /// </summary>
-    /// <param name="path"></param>
-    public static void LoadExtensions(string path = null)
+    /// <param name="extPath"></param>
+    /// <param name="name"></param>
+    /// <param name="includeUx"></param>
+    public static void LoadExtensions(string extPath = "", bool includeUx = false, string name = "ExtensionContext")
     {
-        if (initComplete)
-            return;
+        // Search for .extensions folder in the project / path
+        if (String.IsNullOrEmpty(extPath))
+        {
+            string path = AppContext.BaseDirectory;
+            extPath = PlatformSupportPathInfo.FindPlatformSupportPath(path, ExtensionsFolder);
+        }
 
-        if (path == null)
-            path = PlatformSupportPathInfo.GetExtensionSupportFolder();
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Extension Path is " + extPath);
+       
+        // Unload any Libraries in the Load Context.
+        if (currentLoadContext != null)
+        {
+            foreach (var item in ExtensionLibraries)
+                if (item.TryGetTarget(out var lib))
+                    ClassLoader.RemoveAssembly(lib);
 
-        string extPath = path;
+            ExtensionLibraries.Clear();
+            Configurations.Clear();
 
-        // Make sure this is the Extension Folder
-        if (!extPath.EndsWith(ExtensionsFolder))
-            extPath = Path.Combine(path, ExtensionsFolder);
+            currentLoadContext.Unload();
+            currentLoadContext = null;
+        }
 
-        // Fallback to desktop Extension Support Folder
-        if (!Directory.Exists(extPath))
-            extPath = PlatformSupportPathInfo.GetExtensionSupportFolder();
-
+        currentLoadContext = new AssemblyLoadContext("ExtensionContext", true);
+           
         if (Directory.Exists(extPath))
         {
             foreach (var file in Directory.GetFiles(extPath, "*.extensioninfo.json", SearchOption.AllDirectories))
@@ -114,23 +111,21 @@ public class Extensions
                     {
                         Configurations.Add(extInfoConfiguration);
 
-                        LoadExtension(extInfoConfiguration);
+                        LoadExtension(extInfoConfiguration, includeUx);
                         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Loading Module {extInfoConfiguration.ExtensionName}");
                     }
                 }
                 catch { }
             }
         }
-
-        initComplete = Configurations.Count() > 0;
     }
 
-    internal static List<Assembly> GetExtensionLibraries(bool includeCoreLibrary = false)
+    internal static List<WeakReference<Assembly>> GetExtensionLibraries(bool includeCoreLibrary = false)
     {
         // Always Load Ahsoka.Core Assembly
         var assemblies = ExtensionLibraries.ToList();
         if (includeCoreLibrary)
-            assemblies.Add(Assembly.GetExecutingAssembly());
+            assemblies.Add(new WeakReference<Assembly>(Assembly.GetExecutingAssembly()));
 
         return assemblies;
     }
@@ -140,18 +135,19 @@ public class Extensions
         List<T> installers = new();
         var assemblies = GetExtensionLibraries();
 
-        foreach (Assembly assembly in assemblies)
+        foreach (var assembly in assemblies)
         {
-            foreach (var item in assembly.DefinedTypes)
-            {
-                if (typeof(T).IsAssignableFrom(item))
-                    installers.Add(ClassLoader.CreateType(item) as T);
-            }
+            if (assembly.TryGetTarget(out var t))
+                foreach (var item in t.DefinedTypes)
+                {
+                    if (typeof(T).IsAssignableFrom(item))
+                        installers.Add(ClassLoader.CreateType(item) as T);
+                }
         }
         return installers;
     }
 
-    private static List<string> GetExtensionFiles(string extension)
+    private static List<string> GetExtensionFiles(string extension, bool includeUx )
     {
         List<string> strings = new List<string>();
         var configuration = Configurations.FirstOrDefault(x => x.ExtensionName == extension);
@@ -160,30 +156,46 @@ public class Extensions
             string path = Path.GetDirectoryName(configuration.FilePath);
             strings.Add(configuration.FilePath);
             string extensionFolder = Path.Combine(Path.GetDirectoryName(configuration.FilePath), LibFolder);
-            foreach (var item in Directory.GetFiles(extensionFolder, "*.dll"))
-                strings.Add(item);
+            if (Directory.Exists(extensionFolder))
+                foreach (var item in Directory.GetFiles(extensionFolder, "*.dll"))
+                    strings.Add(item);
+
+            if (includeUx)
+            {
+                extensionFolder = Path.Combine(Path.GetDirectoryName(configuration.FilePath), UxFolder);
+                if (Directory.Exists(extensionFolder))
+                    foreach (var item in Directory.GetFiles(extensionFolder, "*.dll"))
+                        strings.Add(item);
+            }
         }
 
         return strings;
     }
 
-    private static void LoadExtension(ExtensionConfiguration extensionConfiguration)
+    private static void LoadExtension(ExtensionConfiguration extensionConfiguration, bool includeUx)
     {
-        var list =  AppDomain.CurrentDomain.GetAssemblies().Select(x=>new { x.GetName().Name, Assm = x  }).ToList();   
-           
-        foreach (var item in GetExtensionFiles(extensionConfiguration.ExtensionName).Where(x => x.EndsWith(".dll")))
+        foreach (var item in GetExtensionFiles(extensionConfiguration.ExtensionName,includeUx).Where(x => x.EndsWith(".dll")))
         {
             try
             {
-                // Don't Reload Files
-                var asm = list.FirstOrDefault(x => x.Name == Path.GetFileNameWithoutExtension(item))?.Assm;
-                if (asm == null)
-                    asm = Assembly.UnsafeLoadFrom(item);
-
-                if (!ExtensionLibraries.Contains(asm))
+                // Don't Reload Files 
+                var currentList = currentLoadContext.Assemblies.FirstOrDefault(x => x.GetName().Name == Path.GetFileNameWithoutExtension(item));
+                if (currentList == null)
                 {
-                    ExtensionLibraries.Insert(0, asm);
+                    Assembly asm = null;
+                    if (OperatingSystem.IsWindows())
+                    {
+                        using var fs = new FileStream(item, FileMode.Open);
+                        asm = currentLoadContext.LoadFromStream(fs);
+                    }
+                    else
+                    {
+                        asm = currentLoadContext.LoadFromAssemblyPath(item);
+                    }
+
+                    ExtensionLibraries.Insert(0, new WeakReference<Assembly>(asm));
                     ClassLoader.AddAssembly(asm);
+
                 }
             }
             catch
@@ -200,26 +212,24 @@ public class Extensions
         var config = Configurations.FirstOrDefault(x => x.ExtensionName == extensionName);
         if (config != null)
         {
-            try
-            {
-                var asm = ExtensionLibraries.FirstOrDefault(x => Path.GetFileName(x.Location) == config.LibraryFilename);
-                if (asm != null)
-                    foreach (var defType in asm.DefinedTypes)
-                    {
-                        if (typeof(IExtensionGenerator).IsAssignableFrom(defType) && !defType.IsAbstract &&
-                            defType.Name == config.SdkGeneratorName)
-                        {
-                            // Execute Generator
-                            IExtensionGenerator generator = ClassLoader.CreateType(defType, null) as IExtensionGenerator;
-                            generator.GetCommands(packageInfo, commands, commandTypes);
-                        }
-                    }
-            }
-            catch
-            {
-                // TODO Notify User of Bad Extension
-            }
 
+            foreach (var item in ExtensionLibraries)
+            {
+                if (item.TryGetTarget(out Assembly assembly))
+                {
+                    if (assembly.GetName().Name.Equals(Path.GetFileNameWithoutExtension(config.LibraryFilename), StringComparison.OrdinalIgnoreCase))
+                        foreach (var defType in assembly.DefinedTypes)
+                        {
+                            if (typeof(IExtensionGenerator).IsAssignableFrom(defType) && !defType.IsAbstract &&
+                                defType.Name == config.SdkGeneratorName)
+                            {
+                                // Execute Generator
+                                IExtensionGenerator generator = ClassLoader.CreateType(defType, null) as IExtensionGenerator;
+                                generator.GetCommands(packageInfo, commands, commandTypes);
+                            }
+                        }
+                }
+            }
         }
 
         return commands;

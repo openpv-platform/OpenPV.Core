@@ -11,6 +11,7 @@ public static class PlatformSupportPathInfo
 {
     public const string ExtensionSupportFolderName = Extensions.ExtensionsFolder;
     public const string PlatformSupportRootFolderName = "PlatformSupport";
+    public const string PlatformSupportRootFolderName_App = ".platform_support"; // Alternate name used in app folders
     static readonly string platformSupportFolder;
     static readonly string extensionSupportFolder;
 
@@ -21,33 +22,33 @@ public static class PlatformSupportPathInfo
         // Search for Root Folder Relative to Assembly first
         string path = AppContext.BaseDirectory;
 
-        platformSupportFolder = FindPlatformSupportPath(path, PlatformSupportRootFolderName);
+        platformSupportFolder = FindPlatformSupportPath(path, PlatformSupportRootFolderName_App, PlatformSupportRootFolderName);
         extensionSupportFolder = FindPlatformSupportPath(path, ExtensionSupportFolderName);
     }
 
-    public static string FindPlatformSupportPath(string rootPath, string folderName)
+    public static string FindPlatformSupportPath(string rootPath, string folderName, string alternate = "UnknownTarget")
     {
         // Work our way up looking for platform support
         // if we find it (as a parent) OR we find a path that contains it (sibling of parent)
         // we stop.
         while (!String.IsNullOrEmpty(rootPath))
         {
-            rootPath = new DirectoryInfo(rootPath).Parent?.FullName;
-
             if (rootPath != null)
             {
-                if (rootPath.EndsWith(folderName))
-                {
+                if (rootPath.EndsWith(folderName) || rootPath.EndsWith(alternate))
                     return rootPath; // Root is One Up from Platform Support Root.
-                }
-
+            
                 // Look to see if we are beside the folder
                 string siblingPath = Path.Combine(rootPath, folderName);
+                string siblingPath_alt = Path.Combine(rootPath, alternate);
+
                 if (Directory.Exists(siblingPath))
-                {
-                    return siblingPath; // Root is One Up from Platform Support Root.
-                }
+                    return siblingPath;
+                else if (Directory.Exists(siblingPath_alt))
+                    return siblingPath_alt;
             }
+            
+            rootPath = new DirectoryInfo(rootPath).Parent?.FullName;
         }
 
         return string.Empty;
@@ -69,23 +70,6 @@ public static class PlatformSupportPathInfo
     public static string GetPlatformResourcePath(PlatformFamily platform)
     {
         return Path.Combine(GetPlatformSupportPath(platform), "Resources");
-    }
-
-    public static string GetExtensionSupportFolder()
-    {
-        string returnValue = extensionSupportFolder;
-
-        // Fallback to local "Extensions" folder
-        if (!Directory.Exists(returnValue))
-        {
-            Console.WriteLine(AppContext.BaseDirectory); 
-            returnValue = Path.Combine(AppContext.BaseDirectory, Extensions.ExtensionsFolder);
-        }
-
-        if (!Directory.Exists(returnValue))
-            AhsokaLogging.LogMessage( Environment.ProcessPath.Contains("Ahsoka.CommandLine") ? AhsokaVerbosity.High : AhsokaVerbosity.Low, $"The path to the Extensions folder could not be found relative to {AppContext.BaseDirectory}.   Extension Support Not Available");
-
-        return returnValue;
     }
 
     /// <summary>

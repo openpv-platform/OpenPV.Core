@@ -2,6 +2,7 @@
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -9,9 +10,12 @@ namespace Ahsoka.ServiceFramework;
 
 public abstract class AhsokaMessagesBase
 {
+    #region Fields
     private readonly Dictionary<Int32, ServiceMessageInfo> info = new();
     internal Dictionary<Int32, ServiceMessageInfo> Info => info;
+    #endregion
 
+    #region Constructor
     public AhsokaMessagesBase()
     {
         // Add Invalid Types to All Services
@@ -22,7 +26,9 @@ public abstract class AhsokaMessagesBase
         // Returned if the service throws an error
         Info.Add(CoreTransportIds.ServiceErrorThrown.EnumToInt(), new ServiceMessageInfo() { TransportId = CoreTransportIds.ServiceErrorThrown, RequestType = typeof(ServiceErrorThrownResponse), ReplyType = typeof(ServiceErrorThrownResponse), IsNotification = false, HideInGeneratedClients = true });
     }
+    #endregion
 
+    #region Service Registration Messages
     protected void RegisterServiceRequest(Enum transportId, Type requestType, Type replyType, bool generateImplementation = true, bool hideInGeneratedClients = false, bool requireSecurity = true)
     {
         Info.Add(transportId.EnumToInt(), new ServiceMessageInfo() { AutoGenerateImplementation = generateImplementation, HideInGeneratedClients = hideInGeneratedClients, TransportId = transportId, RequestType = requestType, ReplyType = replyType, RequiresSecurity = requireSecurity });
@@ -38,8 +44,20 @@ public abstract class AhsokaMessagesBase
         Info.TryGetValue(transportType.EnumToInt(), out ServiceMessageInfo returnValue);
         return returnValue;
     }
+    #endregion
 
+    #region Client Generation Support
     public virtual Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
+    {
+        return OnGetAdditionalClientResources(type, includeImplementation);
+    }
+
+    public string GetInteropIncludes(string name, ApplicationType type)
+    {
+        return OnGetInteropIncludes(name, type);    
+    }
+
+    protected virtual Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
     {
         Dictionary<string, byte[]> newList = new()
         {
@@ -50,13 +68,77 @@ public abstract class AhsokaMessagesBase
         return newList;
     }
 
-    public virtual string GetInteropIncludes(string name, ApplicationType type)
+    protected virtual string OnGetInteropIncludes(string name, ApplicationType type)
     {
         return $"#include \"{name}.pb.h\"\n#include \"{name}Client.h\"\n"; ;
     }
+    #endregion
 
-    public virtual KnownDataKeys GetKnownValues() { return null; }
+    #region Parameter Values
+    /// <summary>
+    /// Fetch all known values in the Loaded Extensions and Core
+    /// </summary>
+    /// <returns></returns>
+    public static Dictionary<string, ServiceParameterData> GetAllServiceParameters(PackageInformation info = null)
+    {
+        Dictionary<string, ServiceParameterData> allValues = new();
+
+        foreach (var value in ClassLoader.GetSubclasses(typeof(AhsokaMessagesBase)))
+        {
+            AhsokaMessagesBase service = ClassLoader.CreateType(value, null) as AhsokaMessagesBase;
+            var values = service.GetParameters(info);
+            if (values != null && values.Count > 0)
+                allValues[values.Service] = values;
+        }
+
+        return allValues;
+    }
+
+    /// <summary>
+    /// Gets a list of Parameters Available to the System
+    /// </summary>
+    /// <returns></returns>
+    internal ServiceParameterData GetParameters(PackageInformation info)
+    {
+        var values = new ServiceParameterData();
+
+        OnGetParameters(out string service, values, info);
+        if(service != string.Empty)
+            AssignKeys(service, values);
+
+        return values;
+    }
+
+    private void AssignKeys(string service, ServiceParameterData values)
+    {
+        values.Service = service;
+
+        foreach (var parameter in values)
+        {
+            if (parameter.SystemUniqueID == 0)
+            {
+                // Generate Key (32bit Hash
+                int value = HashCode32.GetHashCode32(service + parameter.Name);
+                while (values.Any(x => x.SystemUniqueID == value))
+                    value++;
+                parameter.SystemUniqueID = value;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Pupulate the Parameters Availabe in the System
+    /// </summary>
+    /// <param name="service"></param>
+    /// <param name="values"></param>
+    /// <param name="packageInfo"></param>
+    protected virtual void OnGetParameters(out string service, List<ParameterData> values, PackageInformation packageInfo)
+    {
+        service = string.Empty;
+    }
+    #endregion  
 }
+
 
 #region ServiceRequestInfo
 public class ServiceMessageInfo

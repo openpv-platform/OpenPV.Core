@@ -16,6 +16,9 @@ message SparkMessageTypes
 		GET_RELEASE = 6;
 		GET_RELEASE_NOTIFICATION = 7; //  Occurs During GetRelease
 		UPDATE_LICENSE_INFO = 8;
+		SUBSCRIBE_TO_APP_CHANGE = 9;
+		UNSUBSCRIBE_TO_APP_CHANGE = 10;
+		APP_CHANGE_NOTIFICATION = 11;
 	}
 }
 
@@ -79,6 +82,14 @@ message SparkReleaseDownloadCompleted
   AhsokaSystem.MessageReplyStatus status = 3;
 }
 
+message AppChangeInfo
+{
+	string ChannelName = 1;
+	string ReleaseName = 2;
+	AppChangesEnum AppEvent = 3;
+	string Message = 4;
+}
+
 enum SparkTrack
 {
     DEVELOPMENT = 0;
@@ -86,4 +97,9 @@ enum SparkTrack
     BETA = 2;
     RELEASE = 3;
     NO_TRACK = 99;
+}
+
+enum AppChangesEnum
+{
+	UpdateRelease = 1;
 }

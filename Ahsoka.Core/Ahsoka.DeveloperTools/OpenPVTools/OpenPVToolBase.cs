@@ -41,7 +41,6 @@ internal class OpenPVToolBase : ViewModelBase
 
     public bool HasInfo { get; set; }
 
- 
     public bool CanLaunch { get; set; }
 
     public bool CanInstall { get; set; }

@@ -20,7 +20,7 @@
 						  SelectionMode="AlwaysSelected" Background="White">
 					<ListBox.ItemTemplate>
 						<DataTemplate>
-							<Grid Margin="-12,-12, -12 ,-12" Background="{Binding BackColor}"  Height="78"  ClipToBounds="True" >
+							<Grid Margin="-12,-12, -12 ,-12" Background="#22000000"  Height="78"  ClipToBounds="True" >
 								<Grid Margin="0,6,18,12">
 									<Border IsVisible="{Binding IsInstalled}" BorderBrush="WhiteSmoke" BorderThickness="0,0,2,0" Opacity="0.8"
 											HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,-6,0,0" Width="9" Height="300" Background="SteelBlue"  />

@@ -337,7 +337,10 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
                         string newFileName = extension.Save(packageInfoFolder);
                         if (newFileName != null)
-                            info.ConfigurationFile = Path.GetRelativePath(packageInfoFolder, newFileName);
+                            if (Path.IsPathFullyQualified(newFileName))
+                                info.ConfigurationFile = Path.GetRelativePath(packageInfoFolder, newFileName);
+                            else
+                                info.ConfigurationFile = newFileName;
                     }
                 }
             }

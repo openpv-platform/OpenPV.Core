@@ -10,7 +10,7 @@ namespace Ahsoka.Services.Security;
 /// <summary>
 /// SecurityService
 /// </summary>
-[AhsokaService(SecurityService.Name)]
+[AhsokaService(Name)]
 public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
 {
     #region Fields

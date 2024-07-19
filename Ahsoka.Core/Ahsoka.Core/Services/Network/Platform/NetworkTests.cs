@@ -128,8 +128,7 @@ internal class NetworkTests
         client.SetNetworkProfiles(new NetworkProfilesList() { AdapterId = adapterRequest.AdapterId });
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
     internal static void TestNetworkServiceAP()
@@ -221,8 +220,7 @@ internal class NetworkTests
         Console.ReadLine();
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
     private static string ChooseAP(WirelessNetworkInfoList apList)

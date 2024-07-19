@@ -38,8 +38,7 @@ internal class SystemTests
         TestUpdateTouchscreen(client);
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
   

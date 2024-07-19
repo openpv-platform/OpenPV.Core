@@ -51,6 +51,6 @@ public class PackageLoadTests : LinearTestBase
         //Directory.Delete(new DirectoryInfo(package.PackageOutputDirectory).Parent.FullName, true);
 
         // Shutdown and Wait for Exit
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 }

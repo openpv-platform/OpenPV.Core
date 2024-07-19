@@ -86,8 +86,7 @@ public class SecurityServiceTests : LinearTestBase
         systemConfig.Behaviors = EndPointBehaviors.AutoStart;
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
 
         File.Delete(devicePublicKeyFile);
 
@@ -202,8 +201,7 @@ public class SecurityServiceTests : LinearTestBase
         systemConfig.Behaviors = EndPointBehaviors.AutoStart;
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
 
         File.Delete(devicePublicKeyFile);
     }

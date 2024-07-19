@@ -26,7 +26,6 @@ variables:
 stages:
 
 - stage: MACBuild
-  condition: true
   jobs:
   - job: BuildOnMac
 
@@ -129,7 +128,6 @@ stages:
 
   jobs:
   - job: BuildOnLocalPC
-    condition: true
     pool: 'OpenPV Pool'
    
     steps:
@@ -278,7 +276,6 @@ stages:
    
   jobs:
   - job: FinalizeBuild
-    condition: true
     pool: 'OpenPV Pool'  
     
     steps:

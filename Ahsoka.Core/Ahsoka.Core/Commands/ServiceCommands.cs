@@ -2,7 +2,9 @@
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace Ahsoka.Commands;
@@ -26,14 +28,15 @@ internal static class ServiceCommands
         {
             string config = File.ReadAllText(configurationFile);
             configuration = JsonUtility.Deserialize<RuntimeConfiguration>(config);       
-        }   
+        }
 
         // Run and Block Executable Until Shutdown
         // Used for Running Ahsoka Services in a Separate Process
-        AhsokaRuntime.CreateBuilder()
-                    .AddServicesFromConfiguration(configuration)
-                    .StartLocalRuntime()
-                    .WaitForShutdown(); // Blocks Until Done
+        var services = AhsokaRuntime.CreateServicesFromConfiguration(configuration);
+        AhsokaRuntime.Default.ConnectEndPoints(services);
+
+        // Blocks Until Done
+        AhsokaRuntime.Default.ServiceEndPoints.Last().WaitForDisconnect(); 
 
         Console.WriteLine("Service Shutdown Completed");
     }

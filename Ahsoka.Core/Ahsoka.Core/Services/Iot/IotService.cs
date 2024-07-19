@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace Ahsoka.Services.Iot;
 
 
-[AhsokaService(IotService.Name)]
+[AhsokaService(Name)]
 public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
 {
     #region Fields

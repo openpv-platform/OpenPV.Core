@@ -98,6 +98,9 @@ public class InstallService : AhsokaServiceBase<InstallMessageTypes.Ids>
 
         // After Complete We Shut Down Runtime
         // Shutting Down From the Work Thread may Block
-        Task.Run(() => { CurrentRuntime.RequestShutdown(); });
+        Task.Run(() => 
+        {
+            AhsokaRuntime.Default.DisconnectAllEndPoints();
+        });
     }
 }

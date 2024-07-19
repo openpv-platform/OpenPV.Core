@@ -355,6 +355,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             {
                 progressString?.Report($"Downloading Extension {item.ExtensionName}");
                 await item.DownloadExtension(mainViewModel.SelectedPackage.ExtensionsViewModel.PreRelease, source);
+                item.IsInstalled = true;
             }
     }
     #endregion

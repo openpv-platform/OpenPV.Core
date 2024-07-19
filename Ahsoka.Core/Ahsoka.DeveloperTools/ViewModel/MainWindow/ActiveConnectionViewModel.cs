@@ -112,7 +112,7 @@ internal class ActiveConnectionViewModel : ViewModelBase
     {
         lock (syncRoot)
         {
-            var config = new System.ServiceConfiguration()
+            var config = new ServiceConfiguration()
             {
                 ServiceName = "SystemService",
                 TcpConnectionAddress = value.HostName,
@@ -123,19 +123,15 @@ internal class ActiveConnectionViewModel : ViewModelBase
             {
                 client = new(config);
                 UpdateConnectedDescription();
-                AhsokaRuntime.CreateBuilder()
-                     .AddClients(client)
-                     .StartLocalRuntime();
+                AhsokaRuntime.Default.ConnectEndPoints(client);
             }
             else
             {
                 UpdateConnectedDescription();
-                client.CurrentRuntime.RequestShutdown();
-                client.CurrentRuntime.WaitForShutdown();
+                AhsokaRuntime.Default.DisconnectEndPoints(client);
+
                 client = new(config);
-                AhsokaRuntime.CreateBuilder()
-                     .AddClients(client)
-                     .StartLocalRuntime();
+                AhsokaRuntime.Default.ConnectEndPoints(client);
             }
         }
     }

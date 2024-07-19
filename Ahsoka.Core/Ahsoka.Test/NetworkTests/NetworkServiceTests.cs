@@ -135,7 +135,7 @@ public class NetworkServiceTest : LinearTestBase
             client.DisableAdapter(new AdapterRequest() { AdapterId = wifiAdapterId });
 
         // Stop the Runtimes
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
     [TestMethod]
@@ -170,7 +170,7 @@ public class NetworkServiceTest : LinearTestBase
         }
 
         // Stop the Runtimes
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
     //[TestMethod]
@@ -261,8 +261,7 @@ public class NetworkServiceTest : LinearTestBase
         }
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
     [TestMethod]

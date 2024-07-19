@@ -2,6 +2,9 @@
 using Ahsoka.Utility;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -18,6 +21,8 @@ public interface IAhsokaEndPoint
     void Disconnect();
 
     void ReceiveMessage(bool isNotification);
+
+    void WaitForDisconnect();
 }
 
 public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
@@ -33,11 +38,12 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     public bool IsRunning { get { return Socket == null ? false : Socket.IsConnected; } }
     protected IAhsokaSocket Socket { get; private set; }
-    public AhsokaRuntime CurrentRuntime { get; set; }
+    AhsokaRuntime IAhsokaEndPoint.CurrentRuntime { get; set; }
     public ServiceConfiguration ServiceConfig { get; private set; }
     public int MessageReceiveCount { get => messageReceiveCount; set => messageReceiveCount = value; }
     public int MessageSendCount { get => messageSendCount; set => messageSendCount = value; }
     public AhsokaMessagesBase ServiceMessageInfo => serviceMessageInfo;
+    readonly ManualResetEventSlim shutdownWaiter = new(false);
     #endregion
 
     public AhsokaEndPoint(ServiceConfiguration config, AhsokaMessagesBase messages)
@@ -59,10 +65,34 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     void IAhsokaEndPoint.Disconnect()
     {
-        Socket.Disconnect();
-        OnEndPointDisconnected();
+        try
+        {
+            Socket.Disconnect();
+            OnEndPointDisconnected();
+        }
+        catch { }
+        finally
+        {
+            shutdownWaiter.Set();
+        }
     }
-    
+
+    /// <summary>
+    /// Allows the consumer to wait this endpoint to Disconnect / ShutDown
+    /// </summary>
+    public void WaitForDisconnect()
+    {
+        shutdownWaiter.Wait();
+    }
+
+    /// <summary>
+    /// Allows the consumer to wait this endpoint to Disconnect / ShutDown
+    /// </summary>
+    public WaitHandle GetWaitHandle()
+    {
+        return shutdownWaiter.WaitHandle;
+    }
+
     public void UpdateConfiguration(ServiceConfiguration config)
     {
         bool wasConnected = IsRunning;

@@ -30,12 +30,11 @@ internal static class PackageCommands
             TcpConnectionAddress = $"{connectionInfo.HostName ?? "192.168.7.1"}",
             DataChannel = 5001,
         };
-        var client = new SystemServiceClient(config);
-        var runtime = AhsokaRuntime.CreateBuilder()
-                .AddClients(client)
-                .StartLocalRuntime();
 
-        Console.WriteLine($"Connecting to {config.DataURI}...");
+        var client = new SystemServiceClient(config);
+        AhsokaRuntime.Default.ConnectEndPoints(client);
+
+       Console.WriteLine($"Connecting to {config.DataURI}...");
 
         int exitCode = 0;
         if (!WaitForConnection(client))
@@ -64,8 +63,7 @@ internal static class PackageCommands
             }
         }
 
-        runtime.RequestShutdown();
-        runtime.WaitForShutdown();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
 
         if (exitCode != 0)
             Environment.Exit(exitCode);

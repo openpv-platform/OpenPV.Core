@@ -42,10 +42,7 @@ internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointB
     {
         // Auto Start was used, we will use 
         if (autoStartUsed)
-        {
-            endPoint.CurrentRuntime.RequestShutdown();
-            endPoint.CurrentRuntime.WaitForShutdown();
-        }
+            endPoint.CurrentRuntime.DisconnectEndPoints(endPoint);
     }
 
     void ICanAutoStart.AutoStart(object requester)
@@ -66,16 +63,15 @@ internal class AutoStartClientEndPointBehavior<TTransportIds> : IClientEndPointB
             if (endPoint.CurrentRuntime != null)
                 return;
 
-            var builder = AhsokaRuntime.CreateBuilder()
-                                       .AddClients(endPoint);
-
             if (AhsokaServiceBase<TTransportIds>.IsServiceStarted)
             {
-                builder.StartLocalRuntime();
+                AhsokaRuntime.Default.ConnectEndPoints(endPoint);
             }
             else
             {
-                builder.StartWithInternalServices();
+                AhsokaRuntime.CreateBuilder()
+                            .AddClients(endPoint)
+                            .StartWithInternalServices();
             }
         }
     }

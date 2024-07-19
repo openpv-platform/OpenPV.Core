@@ -64,13 +64,9 @@ public class Dispatcher
     /// <summary>
     /// Create a Dispatcher Engine for managing Services and Data Providers in a single thread
     /// </summary>
-    /// <param name="runWarmup"></param>
-    public Dispatcher(bool runWarmup = true)
+    public Dispatcher()
     {
-        // Async Pre-Load of Critical Libraries 
-        // This call is not required but allows libraries to load while 
-        // waiting for the UI to start.
-        if (runWarmup) AhsokaRuntime.WarmupRuntime();
+       
     }
 
     /// <summary>
@@ -329,9 +325,7 @@ public class Dispatcher
         if (clientStartList.Any())
         {
             // Start Auto Start Runtime for Local CLients (Non AutoStart)
-            var builder = AhsokaRuntime.CreateBuilder()
-                .AddClients(endpoints.ToArray())
-                .StartLocalRuntime();
+            AhsokaRuntime.Default.ConnectEndPoints(clientStartList.ToArray());
         }
 
 

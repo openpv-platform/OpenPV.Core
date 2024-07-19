@@ -1,6 +1,5 @@
 ﻿using Ahsoka.System;
 using Ahsoka.Utility;
-using Microsoft.Extensions.Hosting.Systemd;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,21 +12,26 @@ namespace Ahsoka.ServiceFramework;
 
 public partial class AhsokaRuntime
 {
-    #region Builder
     /// <summary>
-    /// Creates a builder object for constructing Ahsoka Runtimes.
+    /// Set of Endpoints Started in the Runtime.
     /// </summary>
-    /// <returns></returns>
-    public static AhsokaRuntimeBuilder CreateBuilder()
+    public partial class AhsokaEndPointSet
     {
-        return new AhsokaRuntimeBuilder();
+        readonly List<IAhsokaEndPoint> endPoints = new();
+
+        internal List<IAhsokaEndPoint> EndPoints => endPoints;
+
+        internal AhsokaEndPointSet(IEnumerable<IAhsokaEndPoint> endPoints)
+        {
+            this.endPoints.AddRange(endPoints);
+        }
     }
 
     /// <summary>
     /// Builder object for specifying configurations and behaviors
     /// for Runtime
     /// </summary>
-    public class AhsokaRuntimeBuilder
+    public partial class  AhsokaRuntimeBuilder
     {
         #region Fields
         bool isClient = false;
@@ -79,19 +83,6 @@ public partial class AhsokaRuntime
         }
 
         /// <summary>
-        /// Generate a set of services from a runtime configuration.  This allows a developer to start a set of services
-        /// directly from a RuntimeConfiguration.   This is useful if you already have a configuration file or set of clients
-        /// and just want to start the equivelent service endpoints.
-        /// </summary>
-        /// <param name="configuration">RuntimeConfiguration which was created in code or from a configuration file.</param>
-        /// <returns>AhsokaRuntimeBuilder to continue building until a Start Method is used.</returns>
-        public AhsokaRuntimeBuilder AddServicesFromConfiguration(RuntimeConfiguration configuration)
-        {
-            endPoints.AddRange(CreateServicesFromConfiguration(configuration));
-            return this;
-        }
-
-        /// <summary>
         /// Allows the developer to specify the path to a Ahsoka.CommandLine to use for starting a set of services
         /// in an external process.
         /// </summary>
@@ -108,18 +99,6 @@ public partial class AhsokaRuntime
         #region Startup Methods
 
         /// <summary>
-        /// Finishes the build process and starts the runtime with the configured services
-        /// Use AddClients or AddServices to use this method. 
-        /// Note: This method starts ONLY the endpoints you have added and is used in more advanced topographies.
-        /// </summary>
-        /// <returns>AhsokaRuntime in a running state</returns>
-        /// <exception cref="ArgumentException"></exception>
-        public AhsokaRuntime StartLocalRuntime()
-        {
-            return ExecuteRuntime(endPoints.ToArray());
-        }
-
-        /// <summary>
         /// This method completes the build and starts a client and service runtime for the configured
         /// Client Endpoints.  Note that this can ONLY be used for Clients as the service runtime is generated
         /// automatically to match the configured clients.
@@ -127,7 +106,7 @@ public partial class AhsokaRuntime
         /// </summary>
         /// <returns>AhsokaRuntime in a running state</returns>
         /// <exception cref="ArgumentException"></exception>
-        public AhsokaRuntime StartWithInternalServices()
+        public AhsokaEndPointSet StartWithInternalServices()
         {
             using var stopwatch = new AhsokaStopwatch("StartWithInternalServices");
 
@@ -141,9 +120,12 @@ public partial class AhsokaRuntime
             stopwatch.ResetTiming("Services Created");
 
             // Start Services
-            ExecuteRuntime(services.ToArray());
+            Default.ConnectEndPoints(services.ToArray());
 
-            return ExecuteRuntime(endPoints.ToArray());
+            // Start Clients
+            Default.ConnectEndPoints(endPoints.ToArray());
+
+            return new AhsokaEndPointSet(services.Union(endPoints));
         }
 
         /// <summary>
@@ -154,7 +136,7 @@ public partial class AhsokaRuntime
         /// </summary>
         /// <returns>AhsokaRuntime in a running state</returns>
         /// <exception cref="ArgumentException"></exception>
-        public AhsokaRuntime StartWithExternalServices()
+        public AhsokaEndPointSet StartWithExternalServices()
         {
             if (!isClient)
                 throw new ArgumentException("Must specify Client Endpoints for using StartWithInternalServices");
@@ -166,36 +148,14 @@ public partial class AhsokaRuntime
 
             StartProcessExecutable(serviceExecutable, startupFile);
 
-            return ExecuteRuntime(endPoints.ToArray());
+            Default.ConnectEndPoints(endPoints.ToArray());
+
+            return new AhsokaEndPointSet(endPoints); 
         }
         #endregion
 
         #region Internal Methods
-        private List<IAhsokaServiceEndpoint> CreateServicesFromConfiguration(RuntimeConfiguration config)
-        {
-            using var stopwatch = new AhsokaStopwatch();
-
-            // Find Services
-            var types = ClassLoader.GetItemsWithAttribute<AhsokaServiceAttribute>();
-            stopwatch.ResetTiming("Service Objects Discovered");
-
-            List<IAhsokaServiceEndpoint> services = new();
-            foreach (var item in config.Services)
-            {           
-                var type = types.FirstOrDefault(x => x.Key.ServiceName == item.ServiceName);
-                if (type.Value == null)
-                    throw new ArgumentException($"Could not find service to match {item.ServiceName}");
-                else
-                {
-                    IAhsokaServiceEndpoint service = ClassLoader.CreateType(type.Value, item) as IAhsokaServiceEndpoint;
-                    services.Add(service);
-                    stopwatch.ResetTiming($"{service.ServiceConfig.ServiceName} Added To List");
-                }
-            }
-
-            return services;
-        }
-
+       
         private string CreateServiceConfiguration()
         {
             RuntimeConfiguration config = new();
@@ -239,38 +199,9 @@ public partial class AhsokaRuntime
         }
         #endregion
     }
-    #endregion
-
-    #region Static Factory 
-    static readonly object syncRoot = new();
-    private readonly static List<AhsokaRuntime> currentRuntimes = new();
-
-    /// <summary>
-    /// Releases startup to continue on Linux system
-    /// </summary>
-    public static void ReleaseStartup()
-    {
-        SystemdNotifier notifier = new();
-        notifier.Notify(ServiceState.Ready);
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Releasing Startup (System Notify)");
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    public static void ShutdownAll()
-    {
-        lock (syncRoot)
-        {
-            foreach (var runtime in currentRuntimes.ToArray())
-            {
-                runtime.RequestShutdown();
-                runtime.WaitForShutdown();
-            }
-        }
-    }
-    #endregion
 }
+
+
 
 /// <summary>
 /// Attribute used to Describe Services

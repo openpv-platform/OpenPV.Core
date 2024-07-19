@@ -52,8 +52,7 @@ public class IotTests : LinearTestBase
         }
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
 
@@ -77,8 +76,7 @@ public class IotTests : LinearTestBase
         }
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
     private void TestDisconnect(IotServiceClient client, ClientConnectionInfo clientState)

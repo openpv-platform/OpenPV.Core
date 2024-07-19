@@ -58,18 +58,14 @@ internal class InstallerDrawingManager : CairoDrawingManager
 
             systemService.AutoLoadReceived += SystemService_AutoLoadReceived;
 
-            AhsokaRuntime.CreateBuilder()
-                         .AddServices(systemService, sparkService, networkService)
-                         .StartLocalRuntime();
+            AhsokaRuntime.Default.ConnectEndPoints(systemService, sparkService, networkService);
 
             // Start Clients
             installClient = new();
             networkClient = new();
             systemClient = new();
 
-            AhsokaRuntime.CreateBuilder()
-                         .AddClients(installClient, networkClient, systemClient)
-                         .StartLocalRuntime();
+            AhsokaRuntime.Default.ConnectEndPoints(installClient, networkClient, systemClient);
 
             AhsokaRuntime.ReleaseStartup();
 

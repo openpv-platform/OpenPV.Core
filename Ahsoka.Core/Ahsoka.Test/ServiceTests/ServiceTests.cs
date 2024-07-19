@@ -79,7 +79,7 @@ public class ServiceTests : LinearTestBase
         systemClient.RequestServiceShutdown();
 
         // Stop the Runtimes
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
 
@@ -114,7 +114,7 @@ public class ServiceTests : LinearTestBase
        
 
         // Stop the Runtimes
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 
     [TestMethod]
@@ -141,6 +141,44 @@ public class ServiceTests : LinearTestBase
         systemClient.RequestServiceShutdown();
 
         // Stop the Runtimes
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
+    }
+
+    [TestMethod]
+    public void TestAddRemove()
+    {
+        // Create Client Runtime and Add Services
+        SystemServiceClient systemClient = new();
+        SystemService systemService = new();
+
+        AhsokaRuntime.Default.ConnectEndPoints(systemService, systemClient);
+
+        string result = systemClient.EchoValue("MyValue");
+        Assert.IsTrue(result.StartsWith("MyValue"));
+
+        AhsokaRuntime.Default.DisconnectEndPoints(systemClient, systemService);
+
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
+    }
+
+    [TestMethod]
+    public void TestLegacyShutdown()
+    {
+        // Create Client Runtime and Add Services
+        SystemServiceClient systemClient = new();
+        systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
+        var set = AhsokaRuntime.CreateBuilder()
+                     .AddClients(systemClient)
+                     .StartWithInternalServices();
+
+        // Request Service Shutdown
+        set.RequestShutdown();
+        set.WaitForShutdown();
+
+        set = AhsokaRuntime.CreateBuilder()
+                    .AddClients(systemClient)
+                    .StartWithInternalServices();
+
         AhsokaRuntime.ShutdownAll();
     }
 
@@ -160,7 +198,7 @@ public class ServiceTests : LinearTestBase
         // Test Configuration Builder
         RuntimeConfiguration config = new();
         config.Services.Add(ConfigurationLoader.GetServiceConfig("SystemService"));
-        var runtime = AhsokaRuntime.CreateBuilder().AddServicesFromConfiguration(config);
+        var items = AhsokaRuntime.CreateServicesFromConfiguration(config);
 
         string commandLine = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily.Windows64), "CommandLine", "Ahsoka.CommandLine.exe");
 
@@ -186,7 +224,7 @@ public class ServiceTests : LinearTestBase
         var result = task.Wait(10000);
 
         // Stop the Runtimes
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
 
         Assert.IsTrue(result,"The test process did not complete");
     }
@@ -285,7 +323,7 @@ public class ServiceTests : LinearTestBase
         Dispatcher.Default.StartAndRun();
 
         // Stop the Runtimes
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 }
 

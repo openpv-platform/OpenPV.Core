@@ -38,6 +38,8 @@ The implementation of your service is primarily completed by constructing 5 comp
 
 **![](MarkDownMedia/33287d96b192030144b672f0b5a45d35.png)AhsokaServiceMessageInfo**: This object is a metadata dictionary of your service. It describes to our architecture the relationships between your objects and associates each object with a Transport ID. The TransportID’s are simply defined as an Enumeration in your ProtoBuffer Definition file. You accomplish this association by calling various registration methods (available on the AhsokaServiceMessageInfo base class) for the message pairs (for synchronous calls) or for single objects (for async notifications).
 
+In addition to describing the various messages that this service can consume, the message object is also integral in helping to generate the various client objects used in non DotNet languages.    To support this, the message objects should override the method called OnGetAdditionalClientResources.  In this method, the message object should return the proto definition file for the service with a path of "Ahsoka.Proto\\\*.proto"  This enables the language specific ProtoC compilers to generate messages in the native language being developed for.   In addition, if you client have any extended functionality such as client side helpers, you can add the code for these here as well.    
+
 **AhsokaClientBase**: To create your client, you will inherit from the AhsokaClientBase object. Here you will create a client object to represent the functions used to interact with your service.
 
 *In a traditional Test-Driven Development Model, you will often create this object (ClientBase) first, as it represents your public “API”, along with any tests which drive it.*
@@ -107,8 +109,6 @@ The Ahsoka.Core project contains several core services that are useful in most a
 -   **Network Service** – This service provides low level control of networking facilities. This is primarily for configuring and interacting with WiFi capabilities.
     -   Note that there is a **WiFiManager** object that can cover most of the scenarios you may have for enumerating networks, connecting, and disconnecting from wireless networks. This manager object is compatible with Dispatcher and enables you to implement common UI’s without needing to handle the numerous calls needed to interact as a WiFi station.
 -   **Install Service** – This service is responsible for executing installs in the Installer UI. It’s not typically consumed by client except in advanced scenarios.
--   **IO Service** – This service provides access to the raw IO values available in the system such as Analog and Digital Input and Output Values. Note that this service is currently in “Preview” as it will likely have changes in the 2.0 release timeframe.
--   **CAN Service** – This service provides the ability to define, send and receive RAW CAN and J1939 Messages in the system.
 -   **Spark Service** – This service coordinates OTA Updates in the system. It enables checking for updates as well as managing downloads.
     -   Note that Spark and Network services are built into the Installer UI so do not need to be used in your application unless you with to do your own user experience for these capabilities.
 

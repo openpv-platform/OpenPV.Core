@@ -23,7 +23,6 @@ public interface IClientEndPointBehavior<TTransportIds> where TTransportIds : En
     /// <param name="requestObject"></param>
     void OnSendMessage(TTransportIds transportId, object requestObject);
 
-
     /// <summary>
     /// Message Received
     /// </summary>

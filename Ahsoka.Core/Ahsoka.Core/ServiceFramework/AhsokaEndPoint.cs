@@ -2,6 +2,7 @@
 using Ahsoka.Utility;
 using System;
 using System.IO;
+using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,18 +57,21 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
             config.TcpListenAddress = config.TcpListenAddress.Replace("*", "localhost");
     }
 
-    void IAhsokaEndPoint.Connect()
+    public void Connect()
     {
         Socket = CreateSocket(ServiceConfig);
         Socket.Connect(this);
+        ((IAhsokaEndPoint)this).CurrentRuntime = AhsokaRuntime.Default;
+        AhsokaRuntime.Default.AddEndPointInternal(this);
         OnEndPointConnected();
     }
 
-    void IAhsokaEndPoint.Disconnect()
+    public void Disconnect()
     {
         try
         {
             Socket.Disconnect();
+            AhsokaRuntime.Default.RemoveEndPointInternal(this);
             OnEndPointDisconnected();
         }
         catch { }

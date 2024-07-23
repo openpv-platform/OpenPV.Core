@@ -6,6 +6,7 @@ using Renci.SshNet.Messages.Transport;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -64,15 +65,8 @@ public partial class AhsokaRuntime
     {
         foreach (var endpoint in endPoints.Where(x => x != null))
         {
-            endpoint.CurrentRuntime = Default;
-            if (endpoint is IAhsokaClientEndPoint client)
-                Default.ClientEndPoints.Add(client);
-            else if (endpoint is IAhsokaServiceEndpoint service)
-                Default.ServiceEndPoints.Add(service);
-
             endpoint.Connect();
         }
-
     }
 
     /// <summary>
@@ -137,12 +131,6 @@ public partial class AhsokaRuntime
                 catch { }
                 finally
                 {
-
-                    if (item is IAhsokaClientEndPoint client)
-                        ClientEndPoints.Remove(client);
-                    else if (item is IAhsokaServiceEndpoint service)
-                        ServiceEndPoints.Remove(service);
-
                     // Disconnect the Cache if this EndPoint is the Default Service Cache
                     if (IServiceCache.Default == item)
                         IServiceCache.Default = null;
@@ -162,7 +150,36 @@ public partial class AhsokaRuntime
     {
         DisconnectEndPoints(set.EndPoints.ToArray());
     }
+    #endregion
 
+    #region Internal Methods
+    internal void AddEndPointInternal(IAhsokaEndPoint ahsokaEndPoint)
+    {
+        if (ahsokaEndPoint is IAhsokaClientEndPoint client)
+        {
+            if (!ClientEndPoints.Contains(client))
+                ClientEndPoints.Add(client);
+        }
+        else if (ahsokaEndPoint is IAhsokaServiceEndpoint service)
+        {
+            if (!ServiceEndPoints.Contains(service))
+                ServiceEndPoints.Add(service);
+        }
+    }
+
+    internal void RemoveEndPointInternal(IAhsokaEndPoint ahsokaEndPoint)
+    {
+        if (ahsokaEndPoint is IAhsokaClientEndPoint client)
+        {
+            if (!ClientEndPoints.Contains(client))
+                ClientEndPoints.Remove(client);
+        }
+        else if (ahsokaEndPoint is IAhsokaServiceEndpoint service)
+        {
+            if (!ServiceEndPoints.Contains(service))
+                ServiceEndPoints.Remove(service);
+        }
+    }
     #endregion
 
     #region Utility Methods

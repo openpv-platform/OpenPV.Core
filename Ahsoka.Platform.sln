@@ -13,11 +13,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "~OtherItems", "~OtherItems"
 		CMakePresets.json = CMakePresets.json
 		Ahsoka.Core\codecoverage.runsettings = Ahsoka.Core\codecoverage.runsettings
 		Demo.Build.props = Demo.Build.props
+		Developing Ahsoka (OpenPV) Extensions.md = Developing Ahsoka (OpenPV) Extensions.md
 		Ahsoka.Core\Directory.Build.props = Ahsoka.Core\Directory.Build.props
 		GitVersion.yml = GitVersion.yml
 		Ahsoka.Core\nuget.config = Ahsoka.Core\nuget.config
+		README.md = README.md
 		Ahsoka.Core\SignApp.sh = Ahsoka.Core\SignApp.sh
 		Ahsoka.Core\SignCLI.sh = Ahsoka.Core\SignCLI.sh
+		Understanding Ahsoka Service Architectures.md = Understanding Ahsoka Service Architectures.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Demos", "Demos", "{B68F5390-4032-4D7C-9FC6-E00A4AF4ADE2}"

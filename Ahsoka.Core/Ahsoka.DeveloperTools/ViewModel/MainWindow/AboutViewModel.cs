@@ -36,7 +36,7 @@ internal class AboutViewModel : ChildViewModelBase<MainViewModel>
         try
         {
             if (SelectedLicense == null) { _ = parentViewModel.Dialog.ShowDialog("Selection Error", "No License Selected", "Ok"); return; }
-            if (SelectedLicense.LicenseUrl.IsNullOrEmpty()) { _ = parentViewModel.Dialog.ShowDialog("Selection Error", "No Link for Selected License", "Ok"); return; }
+            if (String.IsNullOrEmpty(SelectedLicense.LicenseUrl)) { _ = parentViewModel.Dialog.ShowDialog("Selection Error", "No Link for Selected License", "Ok"); return; }
             ProcessUtility.RunProcessInWindow(SelectedLicense.LicenseUrl);
         }
         catch (Exception e)

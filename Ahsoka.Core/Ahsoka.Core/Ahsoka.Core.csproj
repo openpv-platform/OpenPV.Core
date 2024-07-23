@@ -73,12 +73,12 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
-		<PackageReference Include="System.Drawing.Common" Version="8.0.6" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
+		<PackageReference Include="System.Drawing.Common" Version="8.0.7" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
 		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
 		<PackageReference Include="MQTTnet" Version="4.3.6.1152" />
-		<PackageReference Include="SSH.NET" Version="2024.0.0" />
+		<PackageReference Include="SSH.NET" Version="2024.1.0" />
 	</ItemGroup>
 
 	<ItemGroup Label="Windows Only Modules - If Only I could Figure Out how to Exclude Them???">

@@ -63,13 +63,12 @@ namespace Ahsoka.DeveloperTools.Properties {
         /// <summary>
         ///   Looks up a localized string similar to &lt;Project&gt;
         ///	&lt;PropertyGroup Condition=&quot;$([MSBuild]::IsOSPlatform(&apos;Windows&apos;))&quot;&gt;
-        ///		&lt;AhsokaCommandLinePath&gt;$(ProjectDir)obj\Ahsoka.Client.Shared\Windows64\CommandLine\Ahsoka.CommandLine.exe&lt;/AhsokaCommandLinePath&gt;
+        ///		&lt;AhsokaCommandLinePath&gt;$(ProjectDir)obj\PlatformSupport\Windows64_TargetSupport\CommandLine\Ahsoka.CommandLine.exe&lt;/AhsokaCommandLinePath&gt;
         ///	&lt;/PropertyGroup&gt;
         ///	&lt;PropertyGroup Condition=&quot;$([MSBuild]::IsOSPlatform(&apos;OSX&apos;))&quot;&gt;
-        ///		&lt;AhsokaCommandLinePath&gt;$(ProjectDir)obj\Ahsoka.Client.Shared\MacOSARM64\CommandLine\Ahsoka.CommandLine&lt;/AhsokaCommandLinePath&gt;
+        ///		&lt;AhsokaCommandLinePath&gt;$(ProjectDir)obj\PlatformSupport\MacOSARM64_TargetSupport\CommandLine\Ahsoka.CommandLine&lt;/AhsokaCommandLinePath&gt;
         ///	&lt;/PropertyGroup&gt;
-        ///	&lt;PropertyGroup Condition=&quot;$([MSBuild]::IsOSPlatform(&apos;Linux&apos;))&quot;&gt;
-        ///		 [rest of string was truncated]&quot;;.
+        ///	&lt;PropertyGroup Condition=&quot;$([MSBuild]::IsOSPlatfo [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string BuildProps {
             get {

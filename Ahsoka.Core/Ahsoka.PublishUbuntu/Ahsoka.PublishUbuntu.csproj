@@ -16,7 +16,7 @@
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
 		<Message Text="Cleaning Ubuntu BuildOutputs" Importance="high" />
 		<RemoveDir Directories="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\" />
-		<Delete Files="$(PlatformSupportRoot)\SparkUpload\Ubuntu64_TargetSupport.zip"/>
+		<Delete Files="$(PlatformSupportRoot)\SparkUpload\Ubuntu64_TargetSupport.zip" />
 	</Target>
 
 

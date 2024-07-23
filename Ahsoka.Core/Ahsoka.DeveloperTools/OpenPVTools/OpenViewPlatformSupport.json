@@ -46,6 +46,18 @@
       "DevelopmentPlatform": "Windows64"
     },
     {
+      "Name": "OpenViewPro Flash Tools",
+      "Description": "Flash Tool for OpenView Pro Series",
+      "BaseClass": "Ahsoka.DeveloperTools.OpenViewProFlashTool",
+      "Version": ".11",
+      "DevelopmentPlatform": "Any",
+      "Resources": [
+        {
+          "DownloadPath": "https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/OpenViewPro/InstallTools/OpenViewPro.zip"
+        }
+      ]
+    },
+    {
       "Name": "STM Flash Tools",
       "Description": "Flash Tool for OpenView Select Series",
       "BaseClass": "Ahsoka.DeveloperTools.STMFlashTool",

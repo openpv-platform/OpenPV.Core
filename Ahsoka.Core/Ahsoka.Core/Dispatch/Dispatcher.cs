@@ -311,25 +311,10 @@ public class Dispatcher
     private void AutoStartSources()
     {
         // Pull Clients that Need a Runtime
-        var autoStartList = endpoints.Where(x => x.ServiceConfig.Behaviors.HasFlag(System.EndPointBehaviors.AutoStart)); // Get Auto Start Services
-        var clientStartList = endpoints.Where(x => !x.ServiceConfig.Behaviors.HasFlag(System.EndPointBehaviors.AutoStart)); // Get Non Auto Start Services
+        foreach (var autoStartItem in endpoints)
+            autoStartItem.Connect();
 
-        if (autoStartList.Any())
-        {
-            // Start  Auto Start Runtime(s)
-            var builder = AhsokaRuntime.CreateBuilder()
-                .AddClients(endpoints.ToArray())
-                .StartWithInternalServices();
-        }
-
-        if (clientStartList.Any())
-        {
-            // Start Auto Start Runtime for Local CLients (Non AutoStart)
-            AhsokaRuntime.Default.ConnectEndPoints(clientStartList.ToArray());
-        }
-
-
-        var nonRuntimes = startupObjects.Where(x => x is not IAutoStartServiceClient).ToList();
+        var nonRuntimes = startupObjects.ToList();
         foreach (var item in nonRuntimes)
             item.AutoStart(this);
 

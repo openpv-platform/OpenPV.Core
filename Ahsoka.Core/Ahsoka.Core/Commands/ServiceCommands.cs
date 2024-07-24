@@ -36,7 +36,7 @@ internal static class ServiceCommands
         AhsokaRuntime.Default.ConnectEndPoints(services);
 
         // Blocks Until Done
-        AhsokaRuntime.Default.ServiceEndPoints.Last().WaitForDisconnect(); 
+        WaitHandle.WaitAll(AhsokaRuntime.Default.ServiceEndPoints.Select(x => x.GetWaitHandle()).ToArray());
 
         Console.WriteLine("Service Shutdown Completed");
     }

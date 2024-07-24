@@ -89,9 +89,7 @@ public class ServiceTests : LinearTestBase
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-        AhsokaRuntime.CreateBuilder()
-                     .AddClients(systemClient)
-                     .StartWithInternalServices();
+        systemClient.Connect();
 
         // Request Service Shutdown
         try
@@ -123,9 +121,7 @@ public class ServiceTests : LinearTestBase
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-        AhsokaRuntime.CreateBuilder()
-                     .AddClients(systemClient)
-                     .StartWithInternalServices();
+        systemClient.Connect();
 
         // Run Sample Test Code
         ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
@@ -206,10 +202,8 @@ public class ServiceTests : LinearTestBase
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-        AhsokaRuntime.CreateBuilder()
-                     .AddClients(systemClient)
-                     .SetServiceExecutable(commandLine)
-                     .StartWithExternalServices();
+
+        AhsokaRuntime.StartProcessExecutable(commandLine, [systemClient]);
 
         // Run Sample Test Code
         var task = Task.Run(() =>

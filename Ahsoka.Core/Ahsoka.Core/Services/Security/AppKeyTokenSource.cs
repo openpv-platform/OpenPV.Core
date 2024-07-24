@@ -31,7 +31,7 @@ internal class AppKeyTokenSource : ITokenSource
     public Token RequestTokens(TokenRequestInfo tokenRequest, byte[] appId, out byte[] requestId)
     {
         // Generate Request Id
-        requestId = new Guid().ToByteArray();
+        requestId = Guid.NewGuid().ToByteArray();
 
         // Verify API Key
         byte[] signature = Convert.FromBase64String(tokenRequest.ApiKey);

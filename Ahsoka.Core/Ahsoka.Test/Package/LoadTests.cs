@@ -20,9 +20,7 @@ public class PackageLoadTests : LinearTestBase
     {
         // Start Client for Install System
         var client = new SystemServiceClient();
-        var clientRuntime = AhsokaRuntime.CreateBuilder()
-                     .AddClients(client)
-                     .StartWithInternalServices();
+        client.Connect();
 
         var harwareInfo = client.GetHardwareInformation();
 

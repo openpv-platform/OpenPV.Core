@@ -3,6 +3,7 @@ using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
+using System.Diagnostics;
 using System.IO;
 
 namespace Ahsoka.Services.Security;
@@ -86,7 +87,10 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
             {
                 return RSAEncryption.VerifyDataSignature(clientIdSigned, clientId, File.ReadAllText(path));
             }
-            catch { }
+            catch 
+            {
+               AhsokaLogging.LogMessage( AhsokaVerbosity.High, "Error Decoding Signature");
+            }
         }
 
         return false;
@@ -101,12 +105,14 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
         // Return Token Or Issue Challenge.
         if (configuration.RequireChallenge == ChallengeOptions.NotRequired)
         {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, "HandleCreateToken - Not Required");
             messageHeader.TransportId = SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt();
             SendMessageInternal(messageHeader, resultToken, true);
         }
         else
         {
             messageHeader.TransportId = SecurityMessageTypes.Ids.ChallengeReceived.EnumToInt();
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, "HandleCreateToken - Required");
             SendMessageInternal(messageHeader, new ChallengeRequestInfo()
             {
                 RequestId = request,
@@ -119,6 +125,7 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
     
     private void HandleCompleteChallenge(AhsokaMessageHeader messageHeader, ChallengeCompleteInfo challengeCompleteInfo)
     {
+        AhsokaLogging.LogMessage(AhsokaVerbosity.High, "HandleCompleteChallenge");
         Token token = new Token() { RequestId = challengeCompleteInfo.RequestId };
         if (challengeCompleteInfo.AcceptRequest)
         {

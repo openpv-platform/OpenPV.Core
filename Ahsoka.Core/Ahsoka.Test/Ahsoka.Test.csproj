@@ -4,7 +4,7 @@
 		<IsPackable>false</IsPackable>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<UserSecretsId>5861d827-1f17-41c9-9344-c2616ea52eb6</UserSecretsId>
-		<NoWarn>CS0618</NoWarn> <!--For Spark-->
+		<NoWarn>CS0618</NoWarn> <!--For Legacy Calls-->
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

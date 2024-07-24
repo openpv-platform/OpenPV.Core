@@ -6,6 +6,7 @@ using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace Ahsoka.Services.Security;
@@ -41,7 +42,7 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     /// Creates a Service for Use with this Client when running Local Services
     /// </summary>
     /// <returns></returns>
-    protected override IAhsokaServiceEndpoint OnCreateDefaultService()
+    protected override IAhsokaServiceEndPoint OnCreateDefaultService()
     {
         return new SecurityService(this.ServiceConfig);
     }
@@ -55,11 +56,15 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     /// <returns></returns>
     public TokenRequestResponse RequestToken(TokenRequestInfo tokenRequest, bool usingWaitMethod = true)
     {
-        var response = SendNotificationWithResponse<TokenRequestResponse>(SecurityMessageTypes.Ids.RequestToken, tokenRequest);
-        if (usingWaitMethod)
-            lock (requests)
-                requests.Add(response.RequestId.ToGuid(), null);
-        return response;
+        lock (requests) // Protect the List until we get response so notification doesn't get stepped on.
+        {
+            var response = SendNotificationWithResponse<TokenRequestResponse>(SecurityMessageTypes.Ids.RequestToken, tokenRequest);
+            if (usingWaitMethod)
+                requests[response.RequestId.ToGuid()] = null;
+            
+            return response;
+        }
+        
     }
 
     /// <summary>
@@ -80,6 +85,7 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     {
         if (messageHeader.TransportId == SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt() && message is Token token)
         {
+          
             // Accept Challenge Token and Release WaitEvent
             lock (requests)
                 requests[token.RequestId.ToGuid()] = token;
@@ -97,15 +103,18 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     /// <returns></returns>
     public Token WaitForToken(byte[] requestId)
     {
+        Token token = null;
         var requestGuid = requestId.ToGuid();
         waitForChallengeAccept.WaitOne();
 
         lock (requests)
         {
-            var token = requests[requestGuid];
+            token = requests[requestGuid];
             requests.Remove(requestGuid);
-            return token;
         }
+
+
+        return token;
     }
 
     /// <summary>

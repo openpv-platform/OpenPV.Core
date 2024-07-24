@@ -43,9 +43,17 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
     /// Creates a Service for Use with this Client when running Local Services
     /// </summary>
     /// <returns></returns>
-    protected override IAhsokaServiceEndpoint OnCreateDefaultService()
+    protected override IAhsokaServiceEndPoint OnCreateDefaultService()
     {
         return new InstallService(this.ServiceConfig);
+    }
+
+    /// <summary>
+    /// Override and Disable AutoStart
+    /// </summary>
+    protected override void AutoStartServiceIfNeeded()
+    {
+        // Configuration Service Always Requires Manual Start
     }
 
     /// <summary>
@@ -88,7 +96,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     RunServiceOutOfProcess(installerPath, installerArgs); // Blocks until finished
 
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Process Finished.");
-
+                   
                     // Remove Installer Folder
                     string path = Path.GetDirectoryName(installerPath);
                     while (Path.Exists(path))

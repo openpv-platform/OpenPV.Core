@@ -22,10 +22,8 @@ internal class NetworkTests
         // Start client for NetworkService
         var client = new NetworkServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
-        var clientRuntime = AhsokaRuntime.CreateBuilder()
-                    .AddClients(client)
-                    .StartWithInternalServices();
-
+        client.Connect();
+       
         Console.WriteLine($"Getting Adapters");
         var networkAdapters = client.GetNetworkAdapters();
         Console.WriteLine($"Found {networkAdapters.Adapters.Count} Adapters");
@@ -139,9 +137,7 @@ internal class NetworkTests
         // Start client for NetworkService
         var client = new NetworkServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
-        var clientRuntime = AhsokaRuntime.CreateBuilder()
-                    .AddClients(client)
-                    .StartWithInternalServices();
+        client.Connect();
 
         Console.WriteLine($"Getting Adapters");
         var networkAdapters = client.GetNetworkAdapters();

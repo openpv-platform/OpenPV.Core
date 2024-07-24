@@ -5,7 +5,6 @@
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<SignAssembly>False</SignAssembly>
 		<UseRidGraph>true</UseRidGraph>
-		<NoWarn>CS0618</NoWarn>	<!--Until Spark Is Upgraded-->
 		<TrimMode>copyused</TrimMode>
 		<AssemblyName>OpenPV.DeveloperToolkit</AssemblyName>
 	</PropertyGroup>

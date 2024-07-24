@@ -24,6 +24,8 @@ public interface IAhsokaEndPoint
     void ReceiveMessage(bool isNotification);
 
     void WaitForDisconnect();
+
+    WaitHandle GetWaitHandle();
 }
 
 public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
@@ -37,7 +39,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     #region Properties
 
-    public bool IsRunning { get { return Socket == null ? false : Socket.IsConnected; } }
+    public bool IsConnected { get { return Socket == null ? false : Socket.IsConnected; } }
     protected IAhsokaSocket Socket { get; private set; }
     AhsokaRuntime IAhsokaEndPoint.CurrentRuntime { get; set; }
     public ServiceConfiguration ServiceConfig { get; private set; }
@@ -59,10 +61,15 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     public void Connect()
     {
+        // Before Connecting
+        OnEndPointConnecting();
+
         Socket = CreateSocket(ServiceConfig);
         Socket.Connect(this);
         ((IAhsokaEndPoint)this).CurrentRuntime = AhsokaRuntime.Default;
         AhsokaRuntime.Default.AddEndPointInternal(this);
+
+        // After Connected
         OnEndPointConnected();
     }
 
@@ -99,7 +106,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     public void UpdateConfiguration(ServiceConfiguration config)
     {
-        bool wasConnected = IsRunning;
+        bool wasConnected = IsConnected;
         if (wasConnected)
             this.Socket.Disconnect();
 
@@ -111,7 +118,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     protected void SendMessageInternal(AhsokaMessageHeader messageHeader, object messageObject = null, bool isBroadcast = false)
     {
-        if (IsRunning)
+        if (IsConnected)
         {
             messageObject ??= new EmptyNotification();
 
@@ -171,6 +178,8 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     abstract protected void OnHandleReceive(AhsokaMessageHeader messageHeader, object message);
 
+    protected virtual void OnEndPointConnecting() { }
+    
     protected virtual void OnEndPointDisconnected() { }
 
     protected virtual void OnEndPointConnected() { }

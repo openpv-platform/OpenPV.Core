@@ -379,7 +379,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         List<ServiceStats> services = new();
         foreach (var service in AhsokaRuntime.Default.ServiceEndPoints)
         {
-            IAhsokaServiceEndpoint endPoint = service as IAhsokaServiceEndpoint;
+            IAhsokaServiceEndPoint endPoint = service as IAhsokaServiceEndPoint;
 
             services.Add(new ServiceStats()
             {

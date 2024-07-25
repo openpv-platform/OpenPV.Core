@@ -13,15 +13,16 @@
 	<PropertyGroup>
 		<SecretPath>$(appdata)\Microsoft\UserSecrets\$(UserSecretsId)\secrets.json</SecretPath>
 		<OpenViewBSP>3.2024-07-08T134730.develop.f0b12f1</OpenViewBSP>
+		<Download_Root>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</Download_Root>
 	</PropertyGroup>
 
 
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
 		<Message Text="Cleaning Downloads" Importance="high" />
-		<RemoveDir Directories="$(SolutionDir)FirmwareDownload" />
+		<RemoveDir Condition="false" Directories="$(Download_Root)FirmwareDownload" />
 	</Target>
 	
-	<Target Name="DownloadBSPs" AfterTargets="PostBuildEvent">
+	<Target Name="DownloadBSPs" AfterTargets="PostBuildEvent" Condition="!Exists('$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\image.$(OpenViewBSP).zip')">
 		<!--This section Downloads the BSP to be included in the OpenView Package the Version used is specfied in the OpenViewBSP Property Above.
 		Note that this requires that you have the SparkLogin and SparkPassword stored in your local Secrets file...same values used for tests.-->
 
@@ -35,10 +36,8 @@
 			<SparkLogin>@(SparkLogin)</SparkLogin>
 			<SparkPassword>@(SparkPassword)</SparkPassword>
 		</PropertyGroup>
-		
-		<PropertyGroup>
-			<Download_Root>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</Download_Root>
-		</PropertyGroup>
+
+		<Message Text="$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\image.$(OpenViewBSP).zip"  Importance="high"/>
 
 		<Exec Command="dotnet tool update --global  EnovationCloud.CommandLine" />
 		<Copy SourceFiles="OpenView.upgradeinfo.json" DestinationFiles="$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\OpenView.upgradeinfo.json" />

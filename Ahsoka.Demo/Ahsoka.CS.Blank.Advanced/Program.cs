@@ -25,9 +25,7 @@ public class Program
         // or custom startups that don't start the services directly such as when runnign services on a separate physical system (PC, Remote Display)
         // Our example, mimics the basic demo and simply starts the services in this process.
         // We capture the runtime itself to allow us to shut it down manually if needed.
-        var runtime = AhsokaRuntime.CreateBuilder()
-                     .AddClients(client)
-                     .StartWithInternalServices();
+       
 
         CancellationTokenSource source = new();
         var backgroundWorkThread = Task.Run(() =>
@@ -84,7 +82,7 @@ public class Program
         // Here we will do the final cleanup of our runtime(s).   
         // Note that we could also call AhsokaRuntime.Default.ShutdownAll(); which
         // will request and wait for a any runtimes that were started to shutdown and
-        AhsokaRuntime.ShutdownAll();
+        client.Disconnect();
 
         // Finally lets call the Application Context Exit.  This ensures that any other processes running in our service "Ahsoka.Application"
         // are shutdown as well.  This will typically always be the last line of code in your app but is handled for you when using Dispatcher.

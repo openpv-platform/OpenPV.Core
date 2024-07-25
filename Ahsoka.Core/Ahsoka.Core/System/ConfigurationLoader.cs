@@ -97,7 +97,16 @@ public class ConfigurationLoader
             configuration.Services.Add(result);
         }
 
-        return result;
+        return new()
+        {
+            ServiceName = result.ServiceName,
+            DataChannel = result.DataChannel,
+            Behaviors = result.Behaviors,
+            IsExtension = result.IsExtension,
+            SocketType = result.SocketType,
+            TcpListenAddress = result.TcpListenAddress,
+            TcpConnectionAddress = result.TcpConnectionAddress,
+        };
     }
 
     internal static RuntimeConfiguration GetRuntimeConfiguration()

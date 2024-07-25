@@ -32,7 +32,7 @@ public class TimeServiceClient : AhsokaClientBase<TimeServiceMessageTypes.Ids>
     /// without needing to start it separately.
     /// </summary>
     /// <returns></returns>
-    protected override IAhsokaServiceEndpoint OnCreateDefaultService()
+    protected override IAhsokaServiceEndPoint OnCreateDefaultService()
     {
         return new TimeService();
     }

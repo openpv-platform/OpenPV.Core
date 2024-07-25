@@ -35,8 +35,11 @@ internal static class ServiceCommands
         var services = AhsokaRuntime.CreateServicesFromConfiguration(configuration);
         AhsokaRuntime.Default.ConnectEndPoints(services);
 
-        // Blocks Until Done
-        WaitHandle.WaitAll(AhsokaRuntime.Default.ServiceEndPoints.Select(x => x.GetWaitHandle()).ToArray());
+        // Get a list of Running Services.  We will wait for the whole list to stop.
+        var list = AhsokaRuntime.Default.ServiceEndPoints.Select(x => x.GetWaitHandle()).ToArray();
+      
+        // Blocks Until Services Shutdown
+        WaitHandle.WaitAll(list);
 
         Console.WriteLine("Service Shutdown Completed");
     }

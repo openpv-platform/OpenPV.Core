@@ -30,6 +30,8 @@ public partial class AhsokaRuntime
     #region Fields
     private const int MillisecondsTimeout = 5000;
     static readonly object syncRoot = new();
+    static Task externalServicesTask = null;
+    static CancellationTokenSource tokenSource = null;
     #endregion
 
     #region Static Singleton Methods
@@ -116,6 +118,13 @@ public partial class AhsokaRuntime
                     endpoint.Disconnect();
 
                 ServiceEndPoints.Clear();
+            }
+
+            // Shutdown External Task if Running
+            if (tokenSource != null && externalServicesTask != null)
+            {
+                tokenSource.Cancel();
+                externalServicesTask.Wait();
             }
         }
     }
@@ -264,14 +273,14 @@ public partial class AhsokaRuntime
         if (!OperatingSystem.IsWindows())
             Process.Start("chmod", "+x " + executablePath).WaitForExit();
 
-        CancellationTokenSource tokenSource = new CancellationTokenSource();
+        tokenSource = new CancellationTokenSource();
 
         IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
         {
             if (!String.IsNullOrEmpty(info.Data))
             {
                 if (!info.Error)
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "External Process Information: " + info.Data);
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, "External Process Information: " + info.Data);
                 else
                 {
                     AhsokaLogging.LogMessage(AhsokaVerbosity.High, "External Process Error: " + info.Data);
@@ -280,10 +289,11 @@ public partial class AhsokaRuntime
             }
         });
 
-        Task.Run(() =>
+        externalServicesTask = Task.Run(() =>
         {
             ProcessUtility.RunProcessAsync(executablePath, $"--StartServices {configurationFile}", null, progressText, tokenSource.Token);
-        }, 
+
+        },
         tokenSource.Token);
     }
 

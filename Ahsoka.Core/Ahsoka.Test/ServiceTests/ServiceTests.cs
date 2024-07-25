@@ -193,16 +193,16 @@ public class ServiceTests : LinearTestBase
     {
         // Test Configuration Builder
         RuntimeConfiguration config = new();
-        config.Services.Add(ConfigurationLoader.GetServiceConfig("SystemService"));
-        var items = AhsokaRuntime.CreateServicesFromConfiguration(config);
-
+        var systemItem = ConfigurationLoader.GetServiceConfig("SystemService");
+        systemItem.Behaviors = EndPointBehaviors.NoBehavior; // Don't AutoStart
+        config.Services.Add(systemItem);
+       
         string commandLine = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily.Windows64), "CommandLine", "Ahsoka.CommandLine.exe");
-
 
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-
+       
         AhsokaRuntime.StartProcessExecutable(commandLine, [systemClient]);
 
         // Run Sample Test Code

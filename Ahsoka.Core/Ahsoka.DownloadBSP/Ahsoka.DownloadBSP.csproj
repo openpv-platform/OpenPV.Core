@@ -12,7 +12,8 @@
 
 	<PropertyGroup>
 		<SecretPath>$(appdata)\Microsoft\UserSecrets\$(UserSecretsId)\secrets.json</SecretPath>
-		<OpenViewBSP>3.2024-07-08T134730.develop.f0b12f1</OpenViewBSP>
+		<OpenViewBSP>3.2024-07-27T132135.openview.kirkstone.632b977</OpenViewBSP>
+		<OpenViewProBSP>3.2024-07-27T091759.openviewpro.kirkstone.75c2722</OpenViewProBSP>
 		<Download_Root>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</Download_Root>
 	</PropertyGroup>
 
@@ -21,8 +22,8 @@
 		<Message Text="Cleaning Downloads" Importance="high" />
 		<RemoveDir Condition="false" Directories="$(Download_Root)FirmwareDownload" />
 	</Target>
-	
-	<Target Name="DownloadBSPs" AfterTargets="PostBuildEvent" Condition="!Exists('$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\image.$(OpenViewBSP).zip')">
+
+	<Target Name="DownloadBSPs" AfterTargets="PostBuildEvent" >
 		<!--This section Downloads the BSP to be included in the OpenView Package the Version used is specfied in the OpenViewBSP Property Above.
 		Note that this requires that you have the SparkLogin and SparkPassword stored in your local Secrets file...same values used for tests.-->
 
@@ -37,15 +38,19 @@
 			<SparkPassword>@(SparkPassword)</SparkPassword>
 		</PropertyGroup>
 
-		<Message Text="$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\image.$(OpenViewBSP).zip"  Importance="high"/>
+		<Message Text="$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\image.$(OpenViewBSP).zip" Importance="high" />
 
 		<Exec Command="dotnet tool update --global  EnovationCloud.CommandLine" />
+	</Target>
+	
+	<Target Name="DownloadOpenView" AfterTargets="DownloadBSPs" Condition="!Exists('$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\image.$(OpenViewBSP).zip')">
 		<Copy SourceFiles="OpenView.upgradeinfo.json" DestinationFiles="$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\OpenView.upgradeinfo.json" />
-		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewBSP) image.$(OpenViewBSP).zip" />
 		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution Upgrade&quot; $(OpenViewBSP) ota.$(OpenViewBSP).zip" />
-		
 		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewBSP) image.$(OpenViewBSP).zip" />
-		<DownloadFile SourceUrl="https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/OpenViewPro/InstallTools/image.hlio-image-openviewpro-base.zip" DestinationFolder="$(Download_Root)FirmwareDownload\OpenViewLinuxPro_TargetSupport\Firmware\" />
+	</Target>
+	
+	<Target Name="DownloadOpenViewPro" AfterTargets="DownloadBSPs" Condition="!Exists('$(Download_Root)FirmwareDownload\OpenViewLinuxPro_TargetSupport\Firmware\image.$(OpenViewProBSP).zip')">
+		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinuxPro_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewProBSP) image.$(OpenViewProBSP).zip" />
 	</Target>
 
 	<ItemGroup>

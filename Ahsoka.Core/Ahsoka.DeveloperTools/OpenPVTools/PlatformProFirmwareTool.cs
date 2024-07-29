@@ -82,7 +82,7 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
 
                 string result = "";
                 if (family == PlatformFamily.OpenViewLinuxPro)
-                    result = ExecuteDFUInstall(firmwareFolder + $"\\{Path.GetFileNameWithoutExtension(downloadFileName)}", toolModel, pathToCli);
+                    result = ExecuteDFUInstall(firmwareFolder , toolModel, pathToCli);
 
                 Directory.Delete(firmwareFolder, true);
                 if (result == "")

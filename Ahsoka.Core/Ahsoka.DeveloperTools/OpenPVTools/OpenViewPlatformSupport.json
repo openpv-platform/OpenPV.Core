@@ -30,33 +30,33 @@
       ]
     },
     {
-      "Name": "3.0 OpenViewSelect SDK Container",
-      "Version": "3.0",
-      "Description": "3.0 C++ Container for OpenView Select Series",
+      "Name": "OpenViewSelect SDK Container",
+      "Version": "3.2024-08-06T111839.openview.kirkstone.284a364",
+      "Description": "OpenViewSelect SDK Container",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewSelectSDKContainerTool",
       "CanLaunch": true,
       "DevelopmentPlatform": "Windows64"
     },
     {
-      "Name": "3.0 OpenViewPro SDK Container",
-      "Version": "3.0",
-      "Description": "3.0 C++ Container for OpenView Pro Series",
-      "BaseClass": "Ahsoka.DeveloperTools.OpenViewProSDKContainerTool",
-      "CanLaunch": true,
-      "DevelopmentPlatform": "Windows64"
-    },
-    {
-      "Name": "3.0 OpenViewSelect QT5 Container",
-      "Version": "3.0",
-      "Description": "3.0 QT5 Container for OpenView Select Series",
+      "Name": "OpenViewSelect QT5 Container",
+      "Version": "3.2024-08-06T111839.openview.kirkstone.284a364",
+      "Description": "OpenViewSelect QT5 Container",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewSelectQT5ContainerTool",
       "CanLaunch": true,
       "DevelopmentPlatform": "Windows64"
     },
     {
-      "Name": "3.0 OpenViewPro QT5 Container",
-      "Version": "3.0",
-      "Description": "3.0 QT5 Container for OpenView Pro Series",
+      "Name": "OpenViewPro SDK Container",
+      "Version": "3.2024-08-06T110843.openviewpro.kirkstone.6d309b5",
+      "Description": "OpenViewPro SDK Container",
+      "BaseClass": "Ahsoka.DeveloperTools.OpenViewProSDKContainerTool",
+      "CanLaunch": true,
+      "DevelopmentPlatform": "Windows64"
+    },
+    {
+      "Name": "OpenViewPro QT5 Container",
+      "Version": "3.2024-08-06T110843.openviewpro.kirkstone.6d309b5",
+      "Description": "OpenViewPro QT5 Container",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewProQT5ContainerTool",
       "CanLaunch": true,
       "DevelopmentPlatform": "Windows64"

@@ -12,11 +12,10 @@
 
 	<PropertyGroup>
 		<SecretPath>$(appdata)\Microsoft\UserSecrets\$(UserSecretsId)\secrets.json</SecretPath>
-		<OpenViewBSP>3.2024-07-27T132135.openview.kirkstone.632b977</OpenViewBSP>
-		<OpenViewProBSP>3.2024-07-27T091759.openviewpro.kirkstone.75c2722</OpenViewProBSP>
+		<OpenViewBSP>3.2024-08-06T111839.openview.kirkstone.284a364</OpenViewBSP>
+		<OpenViewProBSP>3.2024-08-06T110843.openviewpro.kirkstone.6d309b5</OpenViewProBSP>
 		<Download_Root>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</Download_Root>
 	</PropertyGroup>
-
 
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
 		<Message Text="Cleaning Downloads" Importance="high" />

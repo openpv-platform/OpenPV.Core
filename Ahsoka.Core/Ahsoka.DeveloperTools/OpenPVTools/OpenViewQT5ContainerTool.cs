@@ -1,11 +1,9 @@
 ﻿namespace Ahsoka.DeveloperTools;
 
-
-
 internal class OpenViewProQT5ContainerTool : OpenViewQT5ContainerTool
 {
     public OpenViewProQT5ContainerTool() :
-     base("openpv/openviewpro_qt_creator_3_0", "Ahsoka.QTCreator.Pro.3.0", true)
+     base("openpv/openviewpro_qt_creator_3_0", "Ahsoka.QTCreator.Pro.3.0", false)
     {
         this.InstallText = "This process will download the OpenView Pro QT5 Container to your Operating System (Requires Docker)";
     }

@@ -1,16 +1,36 @@
 ﻿namespace Ahsoka.DeveloperTools;
 
-internal class OpenViewQT5ContainerTool : DockerBaseTool
+
+
+internal class OpenViewProQT5ContainerTool : OpenViewQT5ContainerTool
 {
-    public OpenViewQT5ContainerTool() :
-        base("openpv/openview_qt_creator_3_0", "Ahsoka.QTCreator.30", false)
+    public OpenViewProQT5ContainerTool() :
+     base("openpv/openviewpro_qt_creator_3_0", "Ahsoka.QTCreator.Pro.3.0", true)
+    {
+        this.InstallText = "This process will download the OpenView Pro QT5 Container to your Operating System (Requires Docker)";
+    }
+}
+
+
+internal class OpenViewSelectQT5ContainerTool : OpenViewQT5ContainerTool
+{
+    public OpenViewSelectQT5ContainerTool() :
+      base("openpv/openview_qt_creator_3_0", "Ahsoka.QTCreator.3.0", false)
+    {
+        this.InstallText = "This process will download the OpenView Select QT5 Container to your Operating System (Requires Docker)";
+    }
+}
+
+internal abstract class OpenViewQT5ContainerTool : DockerBaseTool
+{
+    public OpenViewQT5ContainerTool(string imageName, string containerName, bool isShell) :
+        base(imageName, containerName, false)
     {
         this.IncludedProfiles = PluginsViewModel.profileWSL;
 
         this.PackageType = "Software Install";
         this.CanLaunch = true;
         this.CanInstall = false;
-        this.InstallText = "This process will download the OpenView Select QT5 Container to your Operating System (Requires Docker)";
     }
 
     protected override string GetLaunchScript(string imageName, string containerName, string workingDirectoryPath)

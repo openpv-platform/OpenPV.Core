@@ -171,7 +171,12 @@ internal class CppViewModel : ViewModelBase
 
             await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
 
-            System.PlatformFamily[] platformsToSupport = { System.PlatformFamily.OpenViewLinux, System.PlatformFamily.Ubuntu64, PlatformFamily.Windows64 };
+            System.PlatformFamily[] platformsToSupport = 
+            { 
+                packageInfo.PlatformFamily, 
+                System.PlatformFamily.Ubuntu64, 
+                PlatformFamily.Windows64 
+            };
             parentViewModel.SelectedPackage.Deps.CheckDependencies(SystemInfo.CurrentPlatform, platformsToSupport);
 
             //needs method for determining platforms to load

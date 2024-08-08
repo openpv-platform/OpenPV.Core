@@ -67,7 +67,7 @@ internal class InstallerDrawingManager : CairoDrawingManager
 
             AhsokaRuntime.Default.ConnectEndPoints(installClient, networkClient, systemClient);
 
-            AhsokaRuntime.ReleaseStartup();
+            ApplicationContext.ReleaseStartup();
 
             ((StartState)CurrentState).Init(true);
 

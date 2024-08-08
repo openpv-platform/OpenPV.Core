@@ -1,5 +1,6 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System;
+using Ahsoka.System;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -98,7 +99,7 @@ public class Dispatcher
             StartBackgroundIfNotRunning();
 
         // Call Ahsoka Release Startup 
-        AhsokaRuntime.ReleaseStartup();
+        ApplicationContext.ReleaseStartup();
         
         if (alternativeInvoker == null)
             RunInvokerCore(autoStopDispatcherSources);

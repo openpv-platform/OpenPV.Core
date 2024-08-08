@@ -14,6 +14,12 @@
   "OriginalFileSizeInBytes": 0,
   "Contents": [
     {
+      "Path": "Ahsoka.CS.Browser.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
       "Path": "Ahsoka.CS.Blank.Basic.zip",
       "DownloadToken": null,
       "SizeInBytes": 0,

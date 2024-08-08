@@ -1,4 +1,5 @@
-﻿using Ahsoka.Utility;
+﻿using Ahsoka.System;
+using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,6 +11,15 @@ namespace Ahsoka.ServiceFramework;
 
 public partial class AhsokaRuntime
 {
+
+    /// <summary>
+    /// Releases startup to continue on Linux system
+    /// </summary>
+    [Obsolete("Use ApplicationContext.ReleaseStartup Instead")]
+    public static void ReleaseStartup()
+    {
+        ApplicationContext.ReleaseStartup();
+    }
 
     /// <summary>
     /// Creates a builder object for constructing Ahsoka Runtimes.

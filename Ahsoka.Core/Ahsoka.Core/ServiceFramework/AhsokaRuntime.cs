@@ -240,15 +240,6 @@ public partial class AhsokaRuntime
         return services;
     }
 
-    /// <summary>
-    /// Releases startup to continue on Linux system
-    /// </summary>
-    public static void ReleaseStartup()
-    {
-        SystemdNotifier notifier = new();
-        notifier.Notify(ServiceState.Ready);
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Releasing Startup (System Notify)");
-    }
     #endregion
     
     #region Internal Methods

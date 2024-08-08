@@ -22,6 +22,7 @@
 			<DEMO_Blank_Advanced Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Blank.Advanced\**" />
 			<DEMO_SERVICES Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Services\**" />
 			<DEMO_CAIRO Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Cairo\**" />
+			<DEMO_BROWSER Include="$(DemoRoot)Ahsoka.Demo\Ahoska.CS.Browser\**" />
 		</ItemGroup>
 
 		<Copy SourceFiles="@(DEMO_Blank_Basic)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\%(RecursiveDir)" />
@@ -29,6 +30,7 @@
 
 		<Copy SourceFiles="@(DEMO_SERVICES)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\%(RecursiveDir)" />
 		<Copy SourceFiles="@(DEMO_CAIRO)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_BROWSER)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Browser\%(RecursiveDir)" />
 
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\bin\" />
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\obj\" />
@@ -39,6 +41,11 @@
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\obj\" />
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Advanced\.vs\" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Blank.Advanced\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Blank.Advanced.zip" />
+
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Browser\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Browser\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Browser\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Browser\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Browser.zip" />
 
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\bin\" />
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Cairo\obj\" />

@@ -224,8 +224,15 @@ public class Extensions
                                 defType.Name == config.SdkGeneratorName)
                             {
                                 // Execute Generator
-                                IExtensionGenerator generator = ClassLoader.CreateType(defType, null) as IExtensionGenerator;
-                                generator.GetCommands(packageInfo, commands, commandTypes);
+                                try
+                                {
+                                    IExtensionGenerator generator = ClassLoader.CreateType(defType, null) as IExtensionGenerator;
+                                    generator.GetCommands(packageInfo, commands, commandTypes);
+                                }
+                                catch(Exception ex)
+                                {
+                                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, ex.Message);
+                                }
                             }
                         }
                 }

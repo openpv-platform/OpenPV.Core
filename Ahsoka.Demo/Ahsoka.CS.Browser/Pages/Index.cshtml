@@ -1,0 +1,74 @@
+﻿@page
+@using Ahoska.CS.Browser.Pages
+@model IndexModel
+@{
+    ViewData["Title"] = "OpenPV Web App Demo";
+}
+
+<div class="text-center">
+    <br />
+    <h1 class="display-4">OpenPV Web App Demo</h1>
+
+    <table class="table table-striped">
+      
+        <tr>
+            <td>Platform Family:&nbsp;</td>
+            <td>@Model.HardwareInfo.PlatformFamily</td>
+        </tr>
+        <tr>
+            <td>Platform Qualifier:&nbsp;</td>
+            <td>@Model.HardwareInfo.PlatformQualifier</td>
+        </tr>
+        <tr>
+            <td>Application Name:&nbsp</td>
+            <td>@Model.HardwareInfo.ApplicationName</td>
+        </tr>
+        <tr>
+            <td>Serial Number:&nbsp</td>
+            <td>@Model.HardwareInfo.SerialNumber</td>
+        </tr>
+        <tr>
+            <td>Part Number:&nbsp</td>
+            <td>@Model.HardwareInfo.PlatformQualifier</td>
+        </tr>
+        <tr>
+            <td>DeviceId:&nbsp</td>
+            <td>@Model.HardwareInfo.DeviceId</td>
+        </tr>
+        <tr>
+            <td>CPU Temp:&nbsp</td>
+            <td id="cputemp">@Model.HardwareInfo.CpuTempInC</td>
+        </tr>
+        <tr>
+            <td>USB Mode:&nbsp</td>
+            <td id="usbtemp">@Model.UsbInfo.Mode</td>
+        </tr>
+     </table>
+     <br />
+
+    <button class="btn btn-primary btn-lg" id="roleswap" type="submit">Role Swap Display</button>
+
+    <!--Timer to refresh the CPU Temp via Ajax-->
+    @section scripts {
+        <script>
+            document.getElementById('roleswap').addEventListener('click', () => {
+                fetch('/index?handler=RolePartial')
+                    .then((response) => {
+                        return response.text();
+                    })
+                    .then((result) => {
+                        document.getElementById('usbtemp').innerHTML = result;
+                    });
+            }, 5000);
+            var id = setInterval(() => {
+                fetch('/index?handler=InfoPartial')
+                    .then((response) => {
+                        return response.text();
+                    })
+                    .then((result) => {
+                        document.getElementById('cputemp').innerHTML = result;
+                    });
+            }, 5000);
+        </script>
+    }
+</div>

@@ -22,7 +22,7 @@
 			<DEMO_Blank_Advanced Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Blank.Advanced\**" />
 			<DEMO_SERVICES Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Services\**" />
 			<DEMO_CAIRO Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Cairo\**" />
-			<DEMO_BROWSER Include="$(DemoRoot)Ahsoka.Demo\Ahoska.CS.Browser\**" />
+			<DEMO_BROWSER Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Browser\**" />
 		</ItemGroup>
 
 		<Copy SourceFiles="@(DEMO_Blank_Basic)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\%(RecursiveDir)" />

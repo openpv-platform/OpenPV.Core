@@ -54,7 +54,7 @@ public class Program
         // startup, the system will automatically release after around 60s.   Until that time you can't access services such as
         // ssh and scp.
         // Note that this is handled for you is using Dispatcher
-        AhsokaRuntime.ReleaseStartup();
+        ApplicationContext.ReleaseStartup();
 
 
         // Block our main thread. There are numerous ways to do this but we are simply waiting for an Enter Key.

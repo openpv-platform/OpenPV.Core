@@ -69,7 +69,7 @@ public class Program
         app.UseRouting();
         app.MapRazorPages();
 
-        return "http://localhost:5000/"; // Start Index Page
+        return "http://localhost:4000/"; // Start Index Page
 
     }
 
@@ -87,7 +87,7 @@ public class Program
             return "Hello World";
         });
 
-        return "http://localhost:5000/WebAPI"; // Start Index Page
+        return "http://localhost:4000/WebAPI"; // Start Index Page
 
     }
 }

@@ -68,8 +68,8 @@ internal class OpenViewProFlashTool : OpenPVToolBase
         else if (OperatingSystem.IsWindows())
         {
             pathToScript = Path.Combine(LocalPath, "driver\\OpenViewPro_DFU.inf");
-            executable = "cmd.exe";
-            args = "/c C:\\Windows\\System32\\InfDefaultInstall.exe " + pathToScript;
+            executable = "C:\\Windows\\System32\\InfDefaultInstall.exe";
+            args = pathToScript;
 
             admin = true;
         }

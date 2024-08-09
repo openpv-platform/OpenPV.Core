@@ -15,6 +15,7 @@ using System.Linq;
 using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
+using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.DeveloperTools;
 internal class PluginsViewModel : ViewModelBase, IToolViewModel
@@ -184,7 +185,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         this.parentViewModel = customerToolsViewModel;
 
         SupportInfo = (JsonUtility.Deserialize<PlatformSupportPackage>(Properties.Resources.OpenViewPlatformSupport));
-
+       
         ProfileDefinitions.Add(new ProfileDefinition()
         {
             ProfileName = "C# Developer Profile",
@@ -448,6 +449,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
         if (wait)
             task.Wait();
+
     }
 
     private void AddTool(PlatformSupportPackage platformSupport, OpenPVToolBase selectedTool)
@@ -455,9 +457,16 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         if (SelectedProfile != null)
             if (selectedTool.IncludedProfiles.Contains(SelectedProfile.ProfileTag) || selectedTool.IncludedProfiles == "All")
                 if (!SelectedDownloads.Any(x => x.Name == selectedTool.Name))
-                    SelectedDownloads.Add(selectedTool);
+                {
+                    // If Not Hidden
+                    if  (!(selectedTool.PlatformFamily == PlatformFamily.OpenViewLinux && HideOpenView)&&
+                         !(selectedTool.PlatformFamily == PlatformFamily.OpenViewLinuxPro && HideOpenViewPro))
 
-        platformSupport?.Downloads.Add(selectedTool);
+                    SelectedDownloads.Add(selectedTool);
+                }
+
+        if (platformSupport != null && !platformSupport.Downloads.Contains(SelectedTool))
+            platformSupport.Downloads.Add(selectedTool);
     }
 
     internal void LoadSparkItems(PlatformSupportPackage platformSupport, string channelName, string property, string filter)
@@ -527,15 +536,8 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     {
         SelectedDownloads.Clear();
         foreach (var item in SupportInfo.Downloads)
-        {
-            if (item.PlatformFamily == PlatformFamily.OpenViewLinux && HideOpenView)
-                continue;
-            else if (item.PlatformFamily == PlatformFamily.OpenViewLinuxPro && HideOpenViewPro)
-                continue;
-            
             AddTool(null, item);
-        }
-
+       
         SelectedProfile.CanLaunch = SelectedDownloads.Any(x => x.CanLaunch);
 
 

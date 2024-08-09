@@ -19,6 +19,8 @@ using System.Threading.Tasks;
 using Path = System.IO.Path;
 using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
+using System.Reflection;
+using ShimSkiaSharp;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -744,10 +746,17 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
 
     internal void LaunchDevTool()
     {
+        if (ParentViewModel.Plugins.SupportInfo.Downloads.Count == 0)
+            ParentViewModel.Plugins.RefreshTools();
+
         // Check Pre-Requisites
         var family = this.PlatformFamily;
-        var tools = ParentViewModel.Plugins.SupportInfo; // TODO Handle Other Families
-        var launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewQT5ContainerTool);
+        var tools = ParentViewModel.Plugins.SupportInfo;
+        OpenPVToolBase launchTool = null;
+        if (family == PlatformFamily.OpenViewLinux)
+            launchTool = tools?.Downloads.FirstOrDefault(x =>  x is OpenViewQT5ContainerTool);
+        else if (family == PlatformFamily.OpenViewLinuxPro)
+            launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewProQT5ContainerTool);
 
         if (launchTool == null || !launchTool.IsDownloaded)
         {

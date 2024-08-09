@@ -16,12 +16,11 @@ namespace Ahsoka.ServiceFramework;
 
 public interface IAhsokaClientEndPoint : IAhsokaEndPoint, IDispatchSource
 {
-    IAhsokaServiceEndpoint CreateDefaultService();
+    IAhsokaServiceEndPoint CreateDefaultService();
 
     byte[] GetClientId();
     byte[] GetNotificationId();
     void SetToken(Token securityToken);
-
 }
 
 public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTransportIds>,
@@ -32,6 +31,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
     byte[] notificationClientId = Guid.NewGuid().ToByteArray();
 
     Task notificationTask = null;
+    IAhsokaServiceEndPoint autoStartService = null;
     CancellationTokenSource source;
     BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> incomingMessages = new();
     BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> notificationMessages = new();
@@ -68,12 +68,18 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
     protected AhsokaClientBase(ServiceConfiguration config, AhsokaMessagesBase messages) :
         base(config, messages)
     {
-        if (config.Behaviors.HasFlag(EndPointBehaviors.AutoStart))
-            AddBehavior(new AutoStartClientEndPointBehavior<TTransportIds>());
+
     }
 
     byte[] IAhsokaClientEndPoint.GetClientId() { return clientId; }
     byte[] IAhsokaClientEndPoint.GetNotificationId() { return notificationClientId; }
+
+    protected override void OnEndPointConnecting()
+    {
+        base.OnEndPointConnecting();
+
+        AutoStartServiceIfNeeded();
+    }
 
     protected override void OnEndPointConnected()
     {
@@ -125,6 +131,9 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
     protected override void OnEndPointDisconnected()
     {
+        if (autoStartService != null)
+            autoStartService.Disconnect();
+
         // Deregister Client for Notifications
         UpdateClientRegistration(CoreTransportIds.DeregisterClient);
 
@@ -175,6 +184,9 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
     public virtual T SendNotificationWithResponse<T>(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue) where T : class
     {
+        if (!IsConnected)
+            Connect();
+
         foreach (IClientEndPointBehavior<TTransportIds> behavior in behaviors)
             behavior.OnSendMessage(transportId, requestObject);
 
@@ -187,6 +199,16 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
         SendMessageInternal(header, requestObject);
         return WaitForResponse<T>(header, timeoutInMs);
+    }
+
+    protected virtual void AutoStartServiceIfNeeded()
+    {
+        // Handle AutoStartServices
+        if (autoStartService == null &&  ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.AutoStart))
+        {
+            autoStartService = ((IAhsokaClientEndPoint)this).CreateDefaultService();
+            autoStartService.Connect();
+        }
     }
 
     protected T WaitForResponse<T>(AhsokaMessageHeader requestHeader, int timeoutInMs = int.MaxValue) where T : class
@@ -238,12 +260,12 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         return value.ReplyType;
     }
 
-    IAhsokaServiceEndpoint IAhsokaClientEndPoint.CreateDefaultService()
+    IAhsokaServiceEndPoint IAhsokaClientEndPoint.CreateDefaultService()
     {
         return OnCreateDefaultService();
     }
 
-    protected abstract IAhsokaServiceEndpoint OnCreateDefaultService();
+    protected abstract IAhsokaServiceEndPoint OnCreateDefaultService();
 
     #endregion
 }

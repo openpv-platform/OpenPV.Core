@@ -20,9 +20,7 @@ public class PackageLoadTests : LinearTestBase
     {
         // Start Client for Install System
         var client = new SystemServiceClient();
-        var clientRuntime = AhsokaRuntime.CreateBuilder()
-                     .AddClients(client)
-                     .StartWithInternalServices();
+        client.Connect();
 
         var harwareInfo = client.GetHardwareInformation();
 
@@ -51,6 +49,6 @@ public class PackageLoadTests : LinearTestBase
         //Directory.Delete(new DirectoryInfo(package.PackageOutputDirectory).Parent.FullName, true);
 
         // Shutdown and Wait for Exit
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
     }
 }

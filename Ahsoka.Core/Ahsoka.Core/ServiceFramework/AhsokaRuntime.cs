@@ -1,10 +1,17 @@
 ﻿using Ahsoka.System;
 using Ahsoka.Utility;
-using NetMQ;
+using Microsoft.Extensions.Hosting.Systemd;
+using ProtoBuf.Meta;
+using Renci.SshNet.Messages.Transport;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
-using System.Threading;
+using System.Net;
 using System.Threading.Tasks;
+using System.Threading;
+using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -22,108 +29,265 @@ public partial class AhsokaRuntime
 {
     #region Fields
     private const int MillisecondsTimeout = 5000;
-    bool isRunning = false;
-    readonly AutoResetEvent shutDownEvent = new(false);
+    static readonly object syncRoot = new();
+    static Task externalServicesTask = null;
+    static CancellationTokenSource tokenSource = null;
+    #endregion
+
+    #region Static Singleton Methods
+    /// <summary>
+    /// Default Runtime
+    /// </summary>
+    public static AhsokaRuntime Default { get; private set; } = new();
     #endregion
 
     #region Properties
-    internal Dictionary<string, IAhsokaEndPoint> EndPoints { get; init; } = new Dictionary<string, IAhsokaEndPoint>();
+    private List<IAhsokaClientEndPoint> ClientEndPoints { get; init; } = new();
+    internal List<IAhsokaServiceEndPoint> ServiceEndPoints { get; init; } = new();
     #endregion
 
-    #region Public Methods
+    #region Private Constructor
     private AhsokaRuntime()
     {
+
+    }
+    #endregion
+
+    #region Public Interface
+    /// <summary>
+    /// Get a reference to a Service Available in the Runtime
+    /// </summary>
+    /// <param name="serviceName"></param>
+    /// <returns></returns>
+    public IAhsokaServiceEndPoint GetService(string serviceName)
+    {
+        return ServiceEndPoints.Where(x=>x.ServiceConfig.ServiceName == serviceName).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Get a reference to a Client Available in the Runtime
+    /// </summary>
+    /// <param name="serviceName"></param>
+    /// <returns></returns>
+    public IAhsokaClientEndPoint GetClient(string serviceName)
+    {
+        return ClientEndPoints.Where(x => x.ServiceConfig.ServiceName == serviceName).FirstOrDefault();
+    }
+
+    /// <summary>
+    /// Start and Add the Endpoints to the Runtime 
+    /// </summary>
+    /// <param name="endPoints"></param>
+    /// <returns></returns>
+    public void ConnectEndPoints(IEnumerable<IAhsokaEndPoint> endPoints)
+    {
+        foreach (var endpoint in endPoints.Where(x => x != null))
+        {
+            endpoint.Connect();
+        }
+    }
+
+    /// <summary>
+    /// Start and Add the Endpoints to the Runtime 
+    /// </summary>
+    /// <param name="endPoints"></param>
+    /// <returns></returns>
+    public void ConnectEndPoints(params IAhsokaEndPoint[] endPoints)
+    {
+        ConnectEndPoints(endPoints.AsEnumerable());
+    }
+
+    /// <summary>
+    /// Shutdown All Endpoints (usually before stopping an application)
+    /// </summary>
+    public void DisconnectAllEndPoints(bool shutdownClients = true, bool shutdownServices = true)
+    {
+        lock (syncRoot)
+        {
+            if (shutdownClients)
+            {
+                foreach (var endpoint in ClientEndPoints.ToArray())
+                    endpoint.Disconnect();
+
+                ClientEndPoints.Clear();
+            }
+
+            if (shutdownServices)
+            {
+                foreach (var endpoint in ServiceEndPoints.ToArray())
+                    endpoint.Disconnect();
+
+                ServiceEndPoints.Clear();
+            }
+
+            // Shutdown External Task if Running
+            if (tokenSource != null && externalServicesTask != null)
+            {
+                tokenSource.Cancel();
+                externalServicesTask.Wait();
+            }
+        }
     }
 
     /// <summary>
     /// Request that the runtime disconnects all endpoints and
     /// shuts down.
     /// </summary>
-    public void RequestShutdown()
+    public void DisconnectEndPoints(params IAhsokaEndPoint[] endpoints)
     {
-        try
+        DisconnectEndPoints(endpoints.AsEnumerable());
+    }
+
+    /// <summary>
+    /// Request that the runtime disconnects all endpoints
+    /// shuts down.
+    /// </summary>
+    public void DisconnectEndPoints(IEnumerable<IAhsokaEndPoint> endpoints)
+    {
+        lock (syncRoot)
         {
-            lock (syncRoot)
-                if (isRunning)
+            // Disconnect Blocks Until Threads End.
+            foreach (var item in endpoints)
+            {
+                try
                 {
-                    // Disconnect Blocks Until Threads End.
-                    foreach (var item in EndPoints)
-                    {
-                        try
-                        {
-                            item.Value.Disconnect();
-                        }
-                        catch { }
-                        finally
-                        {
-                            // Disconnect the Cache if this EndPoint is the Default Service Cache
-                            if (IServiceCache.Default == item.Value)
-                                IServiceCache.Default = null;
-                        }
-                    }
-
-                    isRunning = false;
+                    item.Disconnect();
                 }
-        }
-        finally
-        {
-            shutDownEvent.Set();
-        }
-    }
+                catch { }
+            }
 
-    /// <summary>
-    /// Allows the consumer to wait for all services to complete shutting down.
-    /// </summary>
-    public void WaitForShutdown()
-    {
-        shutDownEvent.WaitOne();
-
-        lock (syncRoot)
-            currentRuntimes.Remove(this);
+        }
     }
     #endregion
 
-    #region Private Methods
-    private static AhsokaRuntime ExecuteRuntime(params IAhsokaEndPoint[] endPoints)
+    #region Internal Methods
+    internal void AddEndPointInternal(IAhsokaEndPoint ahsokaEndPoint)
     {
-        AhsokaRuntime runtime = new();
-        foreach (var endpoint in endPoints.Where(x=>x != null))
+        if (ahsokaEndPoint is IAhsokaClientEndPoint client)
         {
-            endpoint.CurrentRuntime = runtime;
-            runtime.EndPoints.Add(endpoint.ServiceConfig.ServiceName, endpoint);
+            if (!ClientEndPoints.Contains(client))
+                ClientEndPoints.Add(client);
         }
-
-        lock (syncRoot)
-            currentRuntimes.Add(runtime);
-
-        runtime.ExecuteRuntime();
-
-        return runtime;
+        else if (ahsokaEndPoint is IAhsokaServiceEndPoint service)
+        {
+            if (!ServiceEndPoints.Contains(service))
+                ServiceEndPoints.Add(service);
+        }
     }
 
-    private void ExecuteRuntime()
+    internal void RemoveEndPointInternal(IAhsokaEndPoint ahsokaEndPoint)
     {
-        // Connect will start thread if needed to handle recieve (Services)
-        foreach (var item in EndPoints)
-            item.Value.Connect();
+        if (ahsokaEndPoint is IAhsokaClientEndPoint client)
+        {
+            if (!ClientEndPoints.Contains(client))
+                ClientEndPoints.Remove(client);
+        }
+        else if (ahsokaEndPoint is IAhsokaServiceEndPoint service)
+        {
+            if (!ServiceEndPoints.Contains(service))
+                ServiceEndPoints.Remove(service);
+        }
 
-        isRunning = true;
+        // Disconnect the Cache if this EndPoint is the Default Service Cache
+        if (IServiceCache.Default == ahsokaEndPoint)
+            IServiceCache.Default = null;
+        if (IServiceEvent.Default == ahsokaEndPoint)
+            IServiceEvent.Default = null;
+
+    }
+    #endregion
+
+    #region Utility Methods
+    /// <summary>
+    /// Start an External Service for the Specified EndPoints
+    /// </summary>
+    /// <param name="executablePath"></param>
+    /// <param name="endpoints"></param>
+    public static void StartProcessExecutable(string executablePath, IEnumerable<IAhsokaEndPoint> endpoints)
+    {
+        string config = CreateServiceConfiguration(endpoints);
+        StartProcessExecutable(executablePath, config);
     }
 
     /// <summary>
-    /// Warmup Function allowing you to Pre-Load Libraries
-    /// Since we do nothing but access protected methods and force libraries to load we should be ok.
+    /// Creates a set of Service Endpoints from the Given Configuration
     /// </summary>
+    /// <param name="config"></param>
     /// <returns></returns>
-    public static void WarmupRuntime()
+    /// <exception cref="ArgumentException"></exception>
+    public static List<IAhsokaServiceEndPoint> CreateServicesFromConfiguration(RuntimeConfiguration config)
     {
-        Task.Run(() =>
+        using var stopwatch = new AhsokaStopwatch();
+
+        // Find Services
+        var types = ClassLoader.GetItemsWithAttribute<AhsokaServiceAttribute>();
+        stopwatch.ResetTiming("Service Objects Discovered");
+
+        List<IAhsokaServiceEndPoint> services = new();
+        foreach (var item in config.Services)
         {
-            using var stopwatch = new AhsokaStopwatch("Ahsoka Warmup");
-            var hardwareInfo = SystemInfo.HardwareInfo.FactoryInfo;
-            var poller = new NetMQPoller();
-        });
+            var type = types.FirstOrDefault(x => x.Key.ServiceName == item.ServiceName);
+            if (type.Value == null)
+                throw new ArgumentException($"Could not find service to match {item.ServiceName}");
+            else
+            {
+                IAhsokaServiceEndPoint service = ClassLoader.CreateType(type.Value, item) as IAhsokaServiceEndPoint;
+                services.Add(service);
+                stopwatch.ResetTiming($"{service.ServiceConfig.ServiceName} Added To List");
+            }
+        }
+
+        return services;
     }
 
     #endregion
+    
+    #region Internal Methods
+
+    private static string CreateServiceConfiguration(IEnumerable<IAhsokaEndPoint> endpoints)
+    {
+        RuntimeConfiguration config = new();
+        foreach (var item in endpoints)
+            config.Services.Add(item.ServiceConfig);
+
+        // Write out Protobuffer Config
+        string startupFile = SystemInfo.HardwareInfo.TargetPathInfo.GetTempFileName() + ".pbuff";
+        using var stream = new FileStream(startupFile, FileMode.OpenOrCreate);
+        ProtoBuf.Serializer.Serialize(stream, config);
+
+        return startupFile;
+    }
+
+    private static void StartProcessExecutable(string executablePath, string configurationFile)
+    {
+        // Give Process Execute Rights
+        if (!OperatingSystem.IsWindows())
+            Process.Start("chmod", "+x " + executablePath).WaitForExit();
+
+        tokenSource = new CancellationTokenSource();
+
+        IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
+        {
+            if (!String.IsNullOrEmpty(info.Data))
+            {
+                if (!info.Error)
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, "External Process Information: " + info.Data);
+                else
+                {
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, "External Process Error: " + info.Data);
+                    tokenSource.Cancel();
+                }
+            }
+        });
+
+        externalServicesTask = Task.Run(() =>
+        {
+            ProcessUtility.RunProcessAsync(executablePath, $"--StartServices {configurationFile}", null, progressText, tokenSource.Token);
+
+        },
+        tokenSource.Token);
+    }
+
+    #endregion
+
 }

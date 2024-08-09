@@ -116,7 +116,10 @@ internal class PlatformSupportTool : SparkToolBase
             firmwareFolder = Path.Combine(Path.GetDirectoryName(LocalPath), "Firmware"); // Fall back to Path passed in
 
         if (Directory.Exists(firmwareFolder))
-            this.firmwareTool = new PlatformFirmwareTool(firmwareFolder, PlatformFamily);
+            if (PlatformFamily == PlatformFamily.OpenViewLinux)
+                this.firmwareTool = new PlatformFirmwareTool(firmwareFolder, PlatformFamily);
+            else if (PlatformFamily == PlatformFamily.OpenViewLinuxPro)
+                this.firmwareTool = new PlatformProFirmwareTool(firmwareFolder, PlatformFamily);
 
         // Reload Hardware next time its requested.
         HardwareInfo.LoadHardwareInfo(CustomerToolPaths.GetToolPath("PlatformSupport"));

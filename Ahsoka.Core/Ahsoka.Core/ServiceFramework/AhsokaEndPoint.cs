@@ -2,6 +2,10 @@
 using Ahsoka.Utility;
 using System;
 using System.IO;
+using System.Net;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -18,6 +22,10 @@ public interface IAhsokaEndPoint
     void Disconnect();
 
     void ReceiveMessage(bool isNotification);
+
+    void WaitForDisconnect();
+
+    WaitHandle GetWaitHandle();
 }
 
 public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
@@ -31,13 +39,14 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     #region Properties
 
-    public bool IsRunning { get { return Socket == null ? false : Socket.IsConnected; } }
+    public bool IsConnected { get { return Socket == null ? false : Socket.IsConnected; } }
     protected IAhsokaSocket Socket { get; private set; }
-    public AhsokaRuntime CurrentRuntime { get; set; }
+    AhsokaRuntime IAhsokaEndPoint.CurrentRuntime { get; set; }
     public ServiceConfiguration ServiceConfig { get; private set; }
     public int MessageReceiveCount { get => messageReceiveCount; set => messageReceiveCount = value; }
     public int MessageSendCount { get => messageSendCount; set => messageSendCount = value; }
     public AhsokaMessagesBase ServiceMessageInfo => serviceMessageInfo;
+    readonly ManualResetEventSlim shutdownWaiter = new(false);
     #endregion
 
     public AhsokaEndPoint(ServiceConfiguration config, AhsokaMessagesBase messages)
@@ -50,22 +59,54 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
             config.TcpListenAddress = config.TcpListenAddress.Replace("*", "localhost");
     }
 
-    void IAhsokaEndPoint.Connect()
+    public void Connect()
     {
+        // Before Connecting
+        OnEndPointConnecting();
+
         Socket = CreateSocket(ServiceConfig);
         Socket.Connect(this);
+        ((IAhsokaEndPoint)this).CurrentRuntime = AhsokaRuntime.Default;
+        AhsokaRuntime.Default.AddEndPointInternal(this);
+
+        // After Connected
         OnEndPointConnected();
     }
 
-    void IAhsokaEndPoint.Disconnect()
+    public void Disconnect()
     {
-        Socket.Disconnect();
-        OnEndPointDisconnected();
+        try
+        {
+            Socket.Disconnect();
+            AhsokaRuntime.Default.RemoveEndPointInternal(this);
+            OnEndPointDisconnected();
+        }
+        catch { }
+        finally
+        {
+            shutdownWaiter.Set();
+        }
     }
-    
+
+    /// <summary>
+    /// Allows the consumer to wait this endpoint to Disconnect / ShutDown
+    /// </summary>
+    public void WaitForDisconnect()
+    {
+        shutdownWaiter.Wait();
+    }
+
+    /// <summary>
+    /// Allows the consumer to wait this endpoint to Disconnect / ShutDown
+    /// </summary>
+    public WaitHandle GetWaitHandle()
+    {
+        return shutdownWaiter.WaitHandle;
+    }
+
     public void UpdateConfiguration(ServiceConfiguration config)
     {
-        bool wasConnected = IsRunning;
+        bool wasConnected = IsConnected;
         if (wasConnected)
             this.Socket.Disconnect();
 
@@ -77,7 +118,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     protected void SendMessageInternal(AhsokaMessageHeader messageHeader, object messageObject = null, bool isBroadcast = false)
     {
-        if (IsRunning)
+        if (IsConnected)
         {
             messageObject ??= new EmptyNotification();
 
@@ -137,6 +178,8 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     abstract protected void OnHandleReceive(AhsokaMessageHeader messageHeader, object message);
 
+    protected virtual void OnEndPointConnecting() { }
+    
     protected virtual void OnEndPointDisconnected() { }
 
     protected virtual void OnEndPointConnected() { }

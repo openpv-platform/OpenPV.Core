@@ -151,13 +151,12 @@ internal class PlatformExtensionsTool : SparkToolBase
         var providers = Repository.Provider.GetCoreV3();
         var repository = new SourceRepository(source, providers);
 
-        var search = await repository.GetResourceAsync<RawSearchResourceV3>();
-        var filter = new SearchFilter(true);
+        var search = await repository.GetResourceAsync<PackageSearchResource>();
+        var filter = new SearchFilter(pullPreRelease);
 
-        var response = await search.Search($"packageid:{packageName}", filter, skip: 0, take: 20, NullLogger.Instance, CancellationToken.None);
-        var versions = response.SelectMany(x => x["versions"]);
-
-        var results = versions.Select(x => new NuGetVersion((string)x.SelectToken("version")));
+        var response = await search.SearchAsync($"packageid:{packageName}", filter, skip: 0, take: 20, NullLogger.Instance, CancellationToken.None);
+        var versions = await response.First().GetVersionsAsync();
+        var results = versions.Select(x => x.Version);
 
         NuGetVersionFloatBehavior behavior = pullPreRelease ? NuGetVersionFloatBehavior.PrereleaseMinor : NuGetVersionFloatBehavior.Minor;
 

@@ -10,11 +10,13 @@ using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -65,17 +67,16 @@ public class GeneralTests : LinearTestBase
         var providers = Repository.Provider.GetCoreV3();
         var repository = new SourceRepository(source, providers);
 
-        var search =  repository.GetResourceAsync<RawSearchResourceV3>().GetAwaiter().GetResult();
-        var filter = new SearchFilter(true);
+        var search =  repository.GetResourceAsync<PackageSearchResource>().GetAwaiter().GetResult();
+        var filter = new SearchFilter(false);
 
-        var response = search.Search($"packageid:{packageName}", filter, skip: 0, take: 100, NuGet.Common.NullLogger.Instance, CancellationToken.None).GetAwaiter().GetResult();
-        var versions = response.SelectMany(x => x["versions"]);
+        IEnumerable<IPackageSearchMetadata> response = search.SearchAsync($"packageid:{packageName}", filter, skip: 0, take: 20, NullLogger.Instance, CancellationToken.None).GetAwaiter().GetResult();
+        var versions = response.First().GetVersionsAsync().GetAwaiter().GetResult();
 
-        var results = versions.Select(x => new NuGetVersion((string)x.SelectToken("version")));
+        var results = versions.Select(x => x.Version);
         var minVersion = new NuGetVersion(minVersionString);
         var maxVersion = new NuGetVersion(maxVersionString);
-
-
+        
         var thisVersion = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(NuGetVersionFloatBehavior.Major,minVersion,"")).FindBestMatch(results)?.ToFullString();
         Console.WriteLine($"Minor Finds {thisVersion}");
 

@@ -1,10 +1,13 @@
 ﻿using Ahsoka.Dispatch;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Utility;
+using Microsoft.Extensions.Hosting.Systemd;
 using Mono.Unix;
 using Mono.Unix.Native;
 using System;
+using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.System;
 
@@ -15,6 +18,37 @@ namespace Ahsoka.System;
 public static class ApplicationContext
 {
     static readonly ManualResetEventSlim reset = new();
+
+    /// <summary>
+    /// Releases startup to continue on Linux system
+    /// </summary>
+    public static void ReleaseStartup()
+    {
+        SystemdNotifier notifier = new();
+        notifier.Notify(ServiceState.Ready);
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Releasing Startup (System Notify)");
+    }
+
+    /// <summary>
+    /// Starts a WebBrowser returning a task which can be use to wait for the browser to shut down
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="token"></param>
+    /// <returns></returns>
+    public static Task StartEmbeddedBrowser(string url, CancellationToken token)
+    {
+        // Startup Browser in an Async Thread
+        return Task.Run(() =>
+        {
+            IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, info.Data);
+            });
+
+            if (!OperatingSystem.IsWindows())
+                ProcessUtility.RunProcessAsync("web-browser", url, null, progressText, token);
+        });
+    }
 
     /// <summary>
     /// Block until a signal is received to shutdown from SystemD (Linux) or the Application is closed (Windows)
@@ -41,7 +75,7 @@ public static class ApplicationContext
         Dispatcher.Default.Stop();
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Shutting Down Runtimes");
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
 
         if (OperatingSystem.IsWindows())
         {

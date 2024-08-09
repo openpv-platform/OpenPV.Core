@@ -23,11 +23,12 @@ internal static class InstallerCommands
         ServiceConfiguration configLocal = ConfigurationLoader.GetServiceConfig(InstallService.Name);
 
         Console.WriteLine("Starting Installer Service");
-       
-        AhsokaRuntime.CreateBuilder()
-                    .AddServices(new InstallService(configLocal))
-                    .StartLocalRuntime()
-                    .WaitForShutdown(); // Blocks Until Done
+
+        var installService = new InstallService(configLocal);
+        AhsokaRuntime.Default.ConnectEndPoints(installService);
+
+        // Blocks Until Done
+        installService.WaitForDisconnect(); 
 
         Console.WriteLine("Service Shutdown Completed");
     }
@@ -49,7 +50,6 @@ internal static class InstallerCommands
         var client = new SystemServiceClient(config);
         var cancellationTokenSource = new CancellationTokenSource();
         var prep = RemoteTargetToolFactory.GetToolsForPlatform(connectionInfo.PlatformFamily);
-
 
         var result = prep.ReturnToInstaller(connectionInfo, client, cancellationTokenSource, progress);
 

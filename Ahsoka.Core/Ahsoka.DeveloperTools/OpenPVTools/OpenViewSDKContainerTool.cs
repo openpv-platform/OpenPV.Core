@@ -13,16 +13,34 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ahsoka.DeveloperTools;
 
-internal class OpenViewSDKContainerTool : DockerBaseTool
+internal class OpenViewProSDKContainerTool : OpenViewSDKContainerTool
 {
-    public OpenViewSDKContainerTool() :
-        base("openpv/openview_sdk_3_0", "Ahsoka.Platform.3.0", true)
+    public OpenViewProSDKContainerTool() :
+     base("openpv/openviewpro_sdk_3_0", "Ahsoka.Platform.Pro.3.0", true)
+    {
+        this.InstallText = "This process will download the 3.0 OpenView Pro SDK Container to your Operating System (Requires Docker)";
+    }
+}
+
+
+internal class OpenViewSelectSDKContainerTool : OpenViewSDKContainerTool
+{
+    public OpenViewSelectSDKContainerTool() :
+       base("openpv/openview_sdk_3_0", "Ahsoka.Platform.3.0", true)
+    {
+        this.InstallText = "This process will download the 3.0 OpenView Select SDK Container to your Operating System (Requires Docker)";
+    }
+}
+
+internal abstract class OpenViewSDKContainerTool : DockerBaseTool
+{
+    public OpenViewSDKContainerTool(string imageName, string containerName, bool isShell) :
+       base(imageName, containerName, true)
     {
         this.IncludedProfiles = PluginsViewModel.profileCPP;
         this.PackageType = "Software Install";
         this.CanLaunch = true;
         this.CanInstall = false;
-        this.InstallText = "This process will download the 3.0 OpenView Select SDK Container to your Operating System (Requires Docker)";
     }
 
     protected override string GetLaunchScript(string imageName, string containerName, string workingDirectoryPath)

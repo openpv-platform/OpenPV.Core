@@ -107,7 +107,7 @@ internal class PlatformFirmwareTool : OpenPVToolBase
         });
     }
 
-    internal string ConnectToTarget(IToolViewModel toolVM)
+    private string ConnectToTarget(IToolViewModel toolVM)
     {
         string result = "";
         if (family == PlatformFamily.OpenViewLinux)
@@ -116,7 +116,7 @@ internal class PlatformFirmwareTool : OpenPVToolBase
         return result;
     }
 
-    internal string ConnectToTargetLinux(IToolViewModel toolVM)
+    private string ConnectToTargetLinux(IToolViewModel toolVM)
     {
         string pathToCli = GetExecutablePath(toolVM);
         if (!File.Exists(pathToCli))
@@ -161,7 +161,7 @@ internal class PlatformFirmwareTool : OpenPVToolBase
         return result;
     }
 
-    private static string GetExecutablePath(IToolViewModel toolVM)
+    private string GetExecutablePath(IToolViewModel toolVM)
     {
         string path = toolVM.MainViewModel.Settings.STMExecutable;
         if (!File.Exists(path))
@@ -170,7 +170,7 @@ internal class PlatformFirmwareTool : OpenPVToolBase
         return path;
     }
 
-    internal string InstallOnTargetLinux(string installFile, IToolViewModel toolVM)
+    private string InstallOnTargetLinux(string installFile, IToolViewModel toolVM)
     {
         string pathToCli = GetExecutablePath(toolVM);
         if (!File.Exists(pathToCli))

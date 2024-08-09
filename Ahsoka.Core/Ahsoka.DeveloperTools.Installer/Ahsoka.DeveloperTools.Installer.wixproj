@@ -7,14 +7,14 @@
     <SuppressIces>ICE60;ICE61</SuppressIces>
     <OutputPath>..\..\SparkUpload\</OutputPath>
     <DebugType>Full</DebugType>
-	<DefaultCompressionLevel>mszip</DefaultCompressionLevel>
+    <DefaultCompressionLevel>mszip</DefaultCompressionLevel>
     <SuppressValidation>True</SuppressValidation>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.0" />
-    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.0" />
-    <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.0" />
-    <PackageReference Include="WixToolset.Heat" Version="5.0.0" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.1" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.1" />
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.1" />
+    <PackageReference Include="WixToolset.Heat" Version="5.0.1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="OpenPV-Icon.ico" />

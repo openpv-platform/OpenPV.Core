@@ -72,16 +72,17 @@ The resulting JSON should look at follows:
      - Run and Debug toolbar items should also be available for Linux Debug for running the various test executables (Ahsoka.Client.Test or Ahsoka.Storyboard.Test)
 
 
-**Ahsoka.Platform (C#)** - To setup your system for C# Development do the following...
+**Ahsoka.Platform (C#)** - Ahsoka.Platform is the Core Solution for OpenPV.  Here you will find the core libraries as well as platfrom / target support for each hardware type.   You will no longer find extensions in this solution as they are relocated to the Extension Repos.    To setup your system for C# Development in the Core do the following...
 
 1. Install Prerequisites for C++ and C#
 2. Launch Docker Desktop or an Equivalent Daemon (Docker Desktop requires Windows Subsystem for Linux (WSL) feature enabled.)
-3. Download Ahsoka.Platform (this repository)
+3. Download OpenPV.Platform (this repository)
 4. Update the repo submodules if using git CLI (The esp-hosted repo may require esp-hosted/docker/build_firmware.sh to be made executable.)
 5. Open Visual Studio 2022 and Open the Ahsoka.Platform solution found in the Ahsoka.Platform folder.
 6. Right click on the project "Ahsoka.BuildPreReqs" to build all container based packages.  This now builds the following sub-projects located in the PreRequisites Folder.
 
-  - Ahsoka.BuildCoProcessor - This build uses ST CubeIDE to build the CoProcessor Firmware for use with Real Time CAN.
+ 
+  - Ahsoka.TargetSupport - This collection of projects contains TargetSupport files for OpenView, OpenViewPro, Ubuntu, Mac and Windows.
   - Ahsoka.BuildESP32 - This build creates firmware or the ESP32 Module used for WiFi and Bluetooth.
   - Ahsoka.BuildInterop - This project builds the C++ Interop DLL's (so's) for use with Ahsoka.Core.
   - Ahsoka.DownloadBSP - This project downloads the BSP for OpenView for packaging into the PlatformSupport zip file.
@@ -96,7 +97,17 @@ The resulting JSON should look at follows:
 Note that the PreReqs project does NOT build automatically.  Since this project takes 5-10 minutes, its recommended you build it one time and as needed after that (Clean and Build Ahsoka.PreReqs).   
 The project Ahsoka.PublishOutputs will build automatically the first time you build the solution.  If you need to build these dependency packages again, you must clean Ahsoka.PreRequisites or Ahsoka.PublishOutputs.    
 
+**Ahsoka.Extensions.* (C#)** - Development of Extensions has now moved to separate repositories.  These external repos each contain sets of extensions owned by individual teams including...
 
+- Ahsoka.Extensions.Control - Extensions for Control Subsystems such as CAN and IO.
+- Ahsoka.Extensions.Core - Core extensions such as Storyboard and DataService
+- Ahsoka.Extensions.Bluetooth - Bluetooth Extensions for BLE and BT Classic.
+- Ahsoka.Extensions.Cygnus  - Cygnus Extension for the Cygnus Reach Product.
+
+Each of these extension repos has its own Continuous Delivery pipeline and are now versioned independently from the core.   The Core references "compatible" extensions using its extensioninfo.json file.  If a breaking change is needed in the core, it will set a new  min value for the extensions to prevent downloading incompatible extensions.    It is up to the extension developers to then revise their extension to support the core and release a new release.    **The core does use synaptic versioning so the expectation is that once released minor releases should not include breaking changes for extensions.**
+
+For more information about developing extensions for OpenPV, you can go here...
+[Ahsoka Extensions](Developing%20Ahsoka%20(OpenPV)%20Extensions.md)
 # Pipelines & Component Delivery
  
 All components in Ahsoka.Platform use Pipelines to contribute to Public Delivery.  At the current time, there are 4 primary public deliveries made of the following components
@@ -117,6 +128,7 @@ All components in Ahsoka.Platform use Pipelines to contribute to Public Delivery
 
    
 # Ahsoka Services Framework
- 
+
+For more information about the Ahsoka Service Framework, you can visit the document below.
 [Ahsoka Service Framework](Understanding%20Ahsoka%20Service%20Architectures.md)
 

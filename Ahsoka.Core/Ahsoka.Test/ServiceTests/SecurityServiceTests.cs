@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace Ahsoka.Test;
 
@@ -22,6 +23,9 @@ public class SecurityServiceTests : LinearTestBase
         var key = ECDsaEncryption.GenerateNewKeyPair();
         var appid = Guid.NewGuid().ToByteArray(); // Real app uses TeamID / APPID
         var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.ServiceSecurityFile);
+
+        if (File.Exists(devicePublicKeyFile))
+            File.Delete(devicePublicKeyFile);
 
         // Test the ECDsaEncryption Functions
         TestEncryption(key, appid);
@@ -42,11 +46,7 @@ public class SecurityServiceTests : LinearTestBase
         // Create Service Clients for Testing
         var securityServiceClient = new SecurityServiceClient();
         var systemClient = new SystemServiceClient(systemConfig);
-
-        // Start client for NetworkService to test Real Calls
-        var clientRuntime = AhsokaRuntime.CreateBuilder()
-                     .AddClients(securityServiceClient, systemClient)
-                     .StartWithInternalServices();
+        AhsokaRuntime.Default.ConnectEndPoints(securityServiceClient,systemClient);
 
         // Begin By Requesting a Token for the SystemService from the Security Service
         var request = securityServiceClient.RequestToken(new TokenRequestInfo()
@@ -86,26 +86,30 @@ public class SecurityServiceTests : LinearTestBase
         systemConfig.Behaviors = EndPointBehaviors.AutoStart;
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
 
         File.Delete(devicePublicKeyFile);
 
     }
 
+    
     [TestMethod]
     public void TestChallengeSecurityService()
     {
         var key = ECDsaEncryption.GenerateNewKeyPair();
         var appid = Guid.NewGuid().ToByteArray(); // Real app uses TeamID / APPID
         var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.ServiceSecurityFile);
+
+        if (File.Exists(devicePublicKeyFile))
+            File.Delete(devicePublicKeyFile);
+
         string challengeCode = Random.Shared.Next(100000, 999999).ToString(); // Challenge Code
 
         // Create Device and Service KeyFiles
         var config = CreateKeyFiles(key, appid, ChallengeOptions.RequireDisplayChallenge, devicePublicKeyFile);
 
         // Create Default Token Source
-        TokenSource.Default = new AppKeyTokenSource(config);
+        TokenSource.RegisterTokenSource(new AppKeyTokenSource(config));
 
         // Test Authorization Method 1
         // Authorize the Service using the Device Private Key....used for 
@@ -124,10 +128,7 @@ public class SecurityServiceTests : LinearTestBase
         var systemClient = new SystemServiceClient(systemConfig);
 
         // Start client for NetworkService to test Real Calls
-        var clientRuntime = AhsokaRuntime.CreateBuilder()
-                     .AddClients(securityServiceClient, systemClient)
-                     .StartWithInternalServices();
-
+        AhsokaRuntime.Default.ConnectEndPoints(securityServiceClient, systemClient);
 
         // Handle the Challenge Callback
         bool generateSecret = false;
@@ -202,8 +203,7 @@ public class SecurityServiceTests : LinearTestBase
         systemConfig.Behaviors = EndPointBehaviors.AutoStart;
 
         // Stop the Runtimes
-        clientRuntime.RequestShutdown();
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
 
         File.Delete(devicePublicKeyFile);
     }
@@ -241,7 +241,7 @@ public class SecurityServiceTests : LinearTestBase
     private static string TestTokenSource(SecurityConfiguration config, byte[] clientId)
     {
         // Create Default Token Source
-        TokenSource.Default = new AppKeyTokenSource(config);
+        TokenSource.RegisterTokenSource(new AppKeyTokenSource(config));
 
         // Test Authorization Method 1
         // Authorize the Service using the Device Private Key....used for 

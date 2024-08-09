@@ -1,5 +1,6 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System;
+using Ahsoka.System;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -64,13 +65,9 @@ public class Dispatcher
     /// <summary>
     /// Create a Dispatcher Engine for managing Services and Data Providers in a single thread
     /// </summary>
-    /// <param name="runWarmup"></param>
-    public Dispatcher(bool runWarmup = true)
+    public Dispatcher()
     {
-        // Async Pre-Load of Critical Libraries 
-        // This call is not required but allows libraries to load while 
-        // waiting for the UI to start.
-        if (runWarmup) AhsokaRuntime.WarmupRuntime();
+       
     }
 
     /// <summary>
@@ -102,7 +99,7 @@ public class Dispatcher
             StartBackgroundIfNotRunning();
 
         // Call Ahsoka Release Startup 
-        AhsokaRuntime.ReleaseStartup();
+        ApplicationContext.ReleaseStartup();
         
         if (alternativeInvoker == null)
             RunInvokerCore(autoStopDispatcherSources);
@@ -315,27 +312,10 @@ public class Dispatcher
     private void AutoStartSources()
     {
         // Pull Clients that Need a Runtime
-        var autoStartList = endpoints.Where(x => x.ServiceConfig.Behaviors.HasFlag(System.EndPointBehaviors.AutoStart)); // Get Auto Start Services
-        var clientStartList = endpoints.Where(x => !x.ServiceConfig.Behaviors.HasFlag(System.EndPointBehaviors.AutoStart)); // Get Non Auto Start Services
+        foreach (var autoStartItem in endpoints)
+            autoStartItem.Connect();
 
-        if (autoStartList.Any())
-        {
-            // Start  Auto Start Runtime(s)
-            var builder = AhsokaRuntime.CreateBuilder()
-                .AddClients(endpoints.ToArray())
-                .StartWithInternalServices();
-        }
-
-        if (clientStartList.Any())
-        {
-            // Start Auto Start Runtime for Local CLients (Non AutoStart)
-            var builder = AhsokaRuntime.CreateBuilder()
-                .AddClients(endpoints.ToArray())
-                .StartLocalRuntime();
-        }
-
-
-        var nonRuntimes = startupObjects.Where(x => x is not IAutoStartServiceClient).ToList();
+        var nonRuntimes = startupObjects.ToList();
         foreach (var item in nonRuntimes)
             item.AutoStart(this);
 

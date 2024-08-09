@@ -10,6 +10,8 @@ namespace Ahsoka.Services.System.Platform;
 [ExcludeFromCodeCoverage]
 internal class DesktopServiceImplementation : IServiceImplementation
 {
+    UsbInfo usbInfo = new UsbInfo() { Mode = UsbMode.Host };
+
     public string GetHardwareSerialNumber()
     {
         if (OperatingSystem.IsWindows())
@@ -39,17 +41,12 @@ internal class DesktopServiceImplementation : IServiceImplementation
     public UsbInfo GetUsbInfo()
     {
         // Not Implemented
-        UsbInfo usbInfo = new()
-        {
-            Mode = UsbMode.Unknown,
-            MountPoint = ""
-        };
         return usbInfo;
     }
 
     public void SetUsbInfo(UsbInfo usbInfo)
     {
-        // Not Implemented
+        this.usbInfo = usbInfo;
     }
 
     private static string GetWMICValue(string args)

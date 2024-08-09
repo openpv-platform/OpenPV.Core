@@ -26,6 +26,7 @@
 			Condition="!Exists('..\Ahsoka.Core\Resources\Licenses.json') ">
 		
 		<Message Text="Generate License File" Importance="High" />
+		<Exec ContinueOnError="true" Command="dotnet tool update --global dotnet-project-licenses --version 2.4.*" />
 		<Exec Command="dotnet project-licenses -i . -o --outfile ../Ahsoka.Core/Resources/Licenses.json -j -p false" />
 		<Exec Condition="'$(OS)' != 'Unix'" Command="..\..\Ahsoka.ThirdParty\Doxygen\doxygen.exe .\Docs\Doxyfile"  />
 	</Target>

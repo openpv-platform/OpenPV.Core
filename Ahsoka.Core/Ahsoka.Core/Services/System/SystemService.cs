@@ -214,7 +214,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         if (message.ShutdownType == ShutdownTypes.ShutdownServices)
         {
             // Shutting Down From the Work Thread may Block
-            Task.Run(() => { CurrentRuntime.RequestShutdown(); });
+            Task.Run(() => { AhsokaRuntime.Default.DisconnectAllEndPoints(false, true); });
         }
         else if (message.ShutdownType == ShutdownTypes.ShutdownApplication)
         {
@@ -377,9 +377,9 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
     internal List<ServiceStats> GetServiceInfo()
     {
         List<ServiceStats> services = new();
-        foreach (var service in CurrentRuntime.EndPoints)
+        foreach (var service in AhsokaRuntime.Default.ServiceEndPoints)
         {
-            IAhsokaServiceEndpoint endPoint = service.Value as IAhsokaServiceEndpoint;
+            IAhsokaServiceEndPoint endPoint = service as IAhsokaServiceEndPoint;
 
             services.Add(new ServiceStats()
             {

@@ -1,4 +1,5 @@
-﻿using Ahsoka.Utility;
+﻿using Ahsoka.System.Hardware;
+using Ahsoka.Utility;
 using Avalonia.Threading;
 using System;
 using System.Diagnostics;
@@ -12,14 +13,15 @@ namespace Ahsoka.DeveloperTools;
 internal abstract class DockerBaseTool : OpenPVToolBase
 {
     bool isDownloaded = false;
-    readonly string imageName = string.Empty;
     readonly string containerName = string.Empty;
     string version = string.Empty;
     readonly bool isShell = false;
 
+    protected string ImageName { get; set; }
+
     public DockerBaseTool(string imageName, string containerName, bool isShell)
     {
-        this.imageName = imageName;
+        this.ImageName = imageName;
         this.containerName = containerName;
         this.isShell = isShell;
 
@@ -27,20 +29,29 @@ internal abstract class DockerBaseTool : OpenPVToolBase
         this.CanLaunch = true;
         this.CanInstall = false;
         this.InstallText = "This process will download the Container to your Operating System (Requires Docker)";
-        UpdateVersion(imageName);
     }
 
-    private void UpdateVersion(string imageName)
+    public override string Version
     {
-        ProcessUtility.RunProcess("docker", $"images --filter=reference={imageName} --format \"{{{{.ID}}}}\"", "", out string result, out string error);
-        isDownloaded = !String.IsNullOrEmpty(result) && String.IsNullOrEmpty(error);
-        if (isDownloaded)
-            version = result.ToUpper().Trim();
-
-        OnPropertyChanged(nameof(Version));
+        get
+        {
+            return base.Version;
+        }
+        set
+        {
+            base.Version = value;
+            UpdateVersion();
+            OnPropertyChanged();
+        }
     }
+    
 
-    public override string Version { get => version; set { } }
+    private void UpdateVersion()
+    {
+        ProcessUtility.RunProcess("docker", $"images --filter=reference={ImageName}:{Version} --format \"{{{{.ID}}}}\"", "", out string result, out string error);
+        isDownloaded = !String.IsNullOrEmpty(result) && String.IsNullOrEmpty(error);
+        OnPropertyChanged(nameof(IsDownloaded));
+    }
 
     protected override bool GetIsDownloaded()
     {
@@ -59,7 +70,7 @@ internal abstract class DockerBaseTool : OpenPVToolBase
         {
             try
             {
-                toolVM.MainViewModel.Console.AddConsoleLine($"Downloading  {imageName}");
+                toolVM.MainViewModel.Console.AddConsoleLine($"Downloading  {ImageName}:{Version}");
 
                 IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
                 {
@@ -67,7 +78,7 @@ internal abstract class DockerBaseTool : OpenPVToolBase
                         toolVM.MainViewModel.Console.AddConsoleLine(info.Data);
                 });
 
-                ProcessUtility.RunProcessAsync("docker", $"pull {imageName}", "", progressText, token.Token);
+                ProcessUtility.RunProcessAsync("docker", $"pull {ImageName}:{Version}", "", progressText, token.Token);
 
                 return "";
             }
@@ -86,7 +97,7 @@ internal abstract class DockerBaseTool : OpenPVToolBase
                     else
                         toolVM.MainViewModel.Console.AddConsoleLine($"Download Failed with Error error: {result.Result}");
 
-                    UpdateVersion(imageName);
+                    UpdateVersion();
                 }
                 catch (Exception ex)
                 {
@@ -101,7 +112,7 @@ internal abstract class DockerBaseTool : OpenPVToolBase
 
     protected override void OnRemove(string path)
     {
-        ProcessUtility.RunProcess("docker", $"image rm -f {imageName}", "", out string _, out string _);
+        ProcessUtility.RunProcess("docker", $"image rm -f {ImageName}:{Version}", "", out string _, out string _);
         ProcessUtility.RunProcess("docker", $"container rm -f {containerName}", "", out _, out _);
         isDownloaded = false;
         version = null;
@@ -113,7 +124,7 @@ internal abstract class DockerBaseTool : OpenPVToolBase
         if (!CheckDependencies(toolVM)) return;
 
         ProcessUtility.RunProcess("wsl", $"docker ps --all --filter name={containerName}", null, out string result, out string error);
-        bool containerCreated = result.Contains(imageName);
+        bool containerCreated = result.Contains($"{ImageName}:{Version}");
 
         Process process = null;
         if (containerCreated)
@@ -122,7 +133,7 @@ internal abstract class DockerBaseTool : OpenPVToolBase
         {
             var path = await toolVM.MainViewModel.FolderLocatorAsync("Please select your development folder");
             if (Directory.Exists(path))
-                process = ProcessUtility.CreateProcess("wsl", GetLaunchCommand(imageName, containerName, path));
+                process = ProcessUtility.CreateProcess("wsl", GetLaunchCommand($"{ImageName}:{Version}", containerName, path));
         }
 
 

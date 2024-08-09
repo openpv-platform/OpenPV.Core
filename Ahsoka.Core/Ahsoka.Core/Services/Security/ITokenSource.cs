@@ -48,7 +48,7 @@ public static class TokenSource
     /// <summary>
     /// Token Source for all Running Services
     /// </summary>
-    public static ITokenSource Default { get; internal set; }
+    public static ITokenSource Default { get; private set; }
 
     internal static void RegisterTokenSource(ITokenSource tokenSource)
     {

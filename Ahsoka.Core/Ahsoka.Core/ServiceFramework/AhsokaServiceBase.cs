@@ -9,7 +9,7 @@ namespace Ahsoka.ServiceFramework;
 #pragma warning disable CS1591
 
 
-public interface IAhsokaServiceEndpoint : IAhsokaEndPoint
+public interface IAhsokaServiceEndPoint : IAhsokaEndPoint
 {
     int MessageReceiveCount { get; set; }
     int MessageSendCount { get; set; }
@@ -18,7 +18,7 @@ public interface IAhsokaServiceEndpoint : IAhsokaEndPoint
 }
 
 
-public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTransportIds>, IAhsokaServiceEndpoint
+public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTransportIds>, IAhsokaServiceEndPoint
     where TTransportIds : Enum, new()
 {
     #region Fields
@@ -63,7 +63,7 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
         if (messageHeader.TransportId == CoreTransportIds.RegisterClient.EnumToInt())
         {
             ((IAhsokaServiceSocket)Socket)?.RegisterClient(message as ClientRegistration);
-            ((IAhsokaServiceEndpoint)this).ClientConnected();
+            ((IAhsokaServiceEndPoint)this).ClientConnected();
             return;
         }
         else if (messageHeader.TransportId == CoreTransportIds.DeregisterClient.EnumToInt())
@@ -112,7 +112,7 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
         IsServiceStarted = false;
     }
 
-    void IAhsokaServiceEndpoint.ClientConnected()
+    void IAhsokaServiceEndPoint.ClientConnected()
     {
         OnClientConnected();
     }
@@ -123,6 +123,14 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
             return -1;
 
         return IServiceCache.Default.UpdateCacheValue(this.ServiceConfig.ServiceName, key, value, publisherId);
+    }
+
+    public int UpdateAlert(object alert)
+    {
+        if (IServiceEvent.Default == null)
+            return -1;
+
+        return IServiceEvent.Default.SendEvent(this.ServiceConfig.ServiceName, alert, publisherId);
     }
 
     #endregion

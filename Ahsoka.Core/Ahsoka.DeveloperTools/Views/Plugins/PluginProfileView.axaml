@@ -44,18 +44,6 @@
 				</StackPanel>
 			</Button>
 
-			<Button Margin="3,15,5,3"
-				HorizontalAlignment="Stretch"
-				Height="38"
-				VerticalContentAlignment="Center"
-				IsEnabled="{Binding SelectedProfile.CanLaunch}"
-				Command="{Binding LaunchProfile}" >
-				<StackPanel Orientation="Horizontal">
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Launch"></material:MaterialIcon>
-					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch..."/>
-				</StackPanel>
-			</Button>
-			
 		</StackPanel >
 		<StackPanel Margin="20" Grid.Column="3" Grid.RowSpan="99" HorizontalAlignment="Center" VerticalAlignment="Bottom">
 			<CheckBox Foreground="DimGray" FontSize="12" IsChecked="{Binding HideOpenViewPro}" Content="Hide OpenView Pro"/>

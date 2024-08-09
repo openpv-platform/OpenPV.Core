@@ -5,7 +5,7 @@ namespace Ahsoka.Core.Drawing.Cairo;
 
 internal static class LinuxFontConfig
 {
-    const string lib = "libfontconfig.so";
+    const string lib = "libfontconfig.so.1";
 
     [DllImport(lib, CallingConvention = CallingConvention.Cdecl)]
     static extern int FcConfigAppFontAddFile(IntPtr config, string fileName);

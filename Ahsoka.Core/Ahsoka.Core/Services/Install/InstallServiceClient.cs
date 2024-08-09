@@ -43,9 +43,17 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
     /// Creates a Service for Use with this Client when running Local Services
     /// </summary>
     /// <returns></returns>
-    protected override IAhsokaServiceEndpoint OnCreateDefaultService()
+    protected override IAhsokaServiceEndPoint OnCreateDefaultService()
     {
         return new InstallService(this.ServiceConfig);
+    }
+
+    /// <summary>
+    /// Override and Disable AutoStart
+    /// </summary>
+    protected override void AutoStartServiceIfNeeded()
+    {
+        // Configuration Service Always Requires Manual Start
     }
 
     /// <summary>
@@ -60,7 +68,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
     {
         AutoResetEvent unpackReady = new(false);
         bool unpackSuccessful = false;
-        AhsokaRuntime internalRuntime = null;
+        InstallService internalService = null;
         var serviceTask = Task.Run(() =>
         {
             // Launch Installer....we will use this executable to run the installer...only for testing
@@ -69,9 +77,9 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                 unpackSuccessful = true;
 
                 // Start Async Service
-                internalRuntime = AhsokaRuntime.CreateBuilder()
-                            .AddServices(new InstallService())
-                            .StartLocalRuntime();
+                internalService = new InstallService();
+                AhsokaRuntime.Default.ConnectEndPoints(internalService);
+
             }
             else
             {
@@ -88,7 +96,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     RunServiceOutOfProcess(installerPath, installerArgs); // Blocks until finished
 
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Process Finished.");
-
+                   
                     // Remove Installer Folder
                     string path = Path.GetDirectoryName(installerPath);
                     while (Path.Exists(path))
@@ -137,18 +145,14 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Client Process Ended Abnormally");
 
-            this.CurrentRuntime.RequestShutdown();
-            this.CurrentRuntime.WaitForShutdown();
+            AhsokaRuntime.Default.DisconnectEndPoints(this);
 
             returnValue = InstallResult.UnknownError;
             installerUI?.InstallComplete(new InstallCompleteInfo() { Result = InstallResult.UnknownError, Message = "The install process did not end successfully" });
         }
 
-        if (internalRuntime != null)
-        {
-            internalRuntime.RequestShutdown();
-            internalRuntime.WaitForShutdown();
-        }
+        if (internalService != null)
+            AhsokaRuntime.Default.DisconnectEndPoints(internalService);
 
         // Remove opv Package
         File.Delete(installFile);

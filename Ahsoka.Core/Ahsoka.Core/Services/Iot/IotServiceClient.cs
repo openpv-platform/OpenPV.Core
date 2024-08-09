@@ -32,7 +32,7 @@ public class IotServiceClient : AhsokaClientBase<IotMessageTypes.Ids>
     /// Creates a Service for Use with this Client when running Local Services
     /// </summary>
     /// <returns></returns>
-    protected override IAhsokaServiceEndpoint OnCreateDefaultService()
+    protected override IAhsokaServiceEndPoint OnCreateDefaultService()
     {
         return new IotService(this.ServiceConfig);
     }

@@ -107,9 +107,7 @@ public class PackagingTests : LinearTestBase
         client.SetInstallerUI(new InstallerUIMock());
 
         // Create a Client Only Runtime
-        AhsokaRuntime.CreateBuilder()
-                     .AddClients(client)
-                     .StartLocalRuntime();
+        AhsokaRuntime.Default.ConnectEndPoints(client);
 
         // Launch Install Service and Execute Install
         // This will block until its done.
@@ -125,8 +123,7 @@ public class PackagingTests : LinearTestBase
         {
             File.Delete(newTempFile);
 
-            client.CurrentRuntime.RequestShutdown();
-            AhsokaRuntime.ShutdownAll();
+            AhsokaRuntime.Default.DisconnectAllEndPoints();
         }
     }
 

@@ -169,14 +169,8 @@ public class SparkTeamsTests : LinearTestBase
     {
         // Start System Service to Talk To.
         SparkService sparkService = new();
-        AhsokaRuntime.CreateBuilder()
-                     .AddServices(sparkService)
-                     .StartLocalRuntime();
-
         SparkServiceClient sparkClient = new();
-        AhsokaRuntime.CreateBuilder()
-                   .AddClients(sparkClient)
-                   .StartLocalRuntime();
+        AhsokaRuntime.Default.ConnectEndPoints(sparkService, sparkClient);
 
         var subscription = sparkClient.GetSparkSubscription();
         subscription.SubscriptionUrl = SparkTests.DefaultTestSparkServer;
@@ -239,7 +233,7 @@ public class SparkTeamsTests : LinearTestBase
         }
         SparkProjectTools.RemoveTeamDevice(team, device);
 
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.DisconnectAllEndPoints();
 
     }
 

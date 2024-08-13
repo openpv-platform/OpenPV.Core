@@ -40,7 +40,8 @@ internal class DotNetViewModel : ViewModelBase
         if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Dotnet || SdkNeedsUpdate)
         {
             var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
-            var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x=>!x.IsInstalled);
+            var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x=>!x.IsInstalled) || 
+                                     parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Count() == 0;
 
             var frameworkInfo = GetFrameworkInfo();
             if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate || !cliExists || !extensionsUpToDate)
@@ -225,7 +226,6 @@ internal class DotNetViewModel : ViewModelBase
                 });
 
                 RunSdkCommands(projectPath, parentViewModel, progress);
-
             });
 
             parentViewModel.Console.AddConsoleLine($" ");

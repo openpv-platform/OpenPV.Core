@@ -5,6 +5,7 @@ using Ahsoka.Utility;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Security;
 using System.Threading;
@@ -93,25 +94,36 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         {
             incomingMessages = new();
             source = new CancellationTokenSource();
-            try
+            notificationTask = Task.Factory.StartNew(() =>
             {
-                notificationTask = Task.Factory.StartNew(() =>
+                // Set Thread Name
+                var originalName = Thread.CurrentThread.Name;
+                Thread.CurrentThread.Name = $"{ServiceConfig.ServiceName}_NotificationHandler";
+
+                while (!source.IsCancellationRequested)
                 {
-                    // Set Thread Name
-                    var originalName = Thread.CurrentThread.Name;
-                    Thread.CurrentThread.Name = $"{this.ServiceConfig.ServiceName}_NotificationHandler";
+                    if (GetMessage(out KeyValuePair<AhsokaMessageHeader, object> message))
+                        OnHandleReceive(message.Key, message.Value);
+                }
 
-                    while (!source.IsCancellationRequested)
-                        if (notificationMessages.TryTake(out var message, int.MaxValue, source.Token))
-                            OnHandleReceive(message.Key, message.Value);
+                // Restore Name since this comes from the Thread Pool
+                Thread.CurrentThread.Name = originalName;
 
-                    // Restore Name since this comes from the Thread Pool
-                    Thread.CurrentThread.Name = originalName;
-
-                }, source.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-            }
-            catch (OperationCanceledException) { }
+            }, source.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+        
         }
+    }
+    
+    [DebuggerHidden]
+    private bool GetMessage(out KeyValuePair<AhsokaMessageHeader, object> message)
+    {
+        message = new();
+        try
+        {
+         
+            return notificationMessages.TryTake(out message, int.MaxValue, source.Token);
+        }
+        catch (OperationCanceledException) { return false; }
     }
 
     private void UpdateClientRegistration(CoreTransportIds transportId)

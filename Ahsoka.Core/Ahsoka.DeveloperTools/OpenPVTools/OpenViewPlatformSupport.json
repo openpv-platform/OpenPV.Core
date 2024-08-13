@@ -1,6 +1,7 @@
 ﻿{
   "DemoSparkChannelName": "OpenPV Demos",
   "ExtensionSparkChannelName": "OpenPV Extensions",
+  "HelpSparkChannelName": "OpenPV Help",
   "PlatformSupportSparkChannelName": "OpenPV Dependencies",
   "FirmwareResources": {
     "Name": "OpenView Firmware Resources",

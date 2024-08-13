@@ -1,4 +1,4 @@
-Understanding Ahsoka Service Architectures
+# Understanding Ahsoka Service Architectures
 
 Ahsoka Services provide an architecture to support creating functionality in your application that can be used in a wide variety of application architectures. As part of its design, we tried to achieve the following goals….
 
@@ -36,7 +36,7 @@ The implementation of your service is primarily completed by constructing 5 comp
 
 **ProtoBuffer Definition Files** – All messages (which travel between clients and services) in an Ahsoka Service are represented using a Protocol Buffers V3 ‘.proto’ file. In this file, you define message objects for the data being sent or received from a service as well as a set of Transport ID’s which are used by our message framing system which enable us to route and decode your messages at each endpoint (client / service). If you are not familiar with Google Protocol Buffers, you can learn more about it here… <https://protobuf.dev>
 
-**![](MarkDownMedia/33287d96b192030144b672f0b5a45d35.png)AhsokaServiceMessageInfo**: This object is a metadata dictionary of your service. It describes to our architecture the relationships between your objects and associates each object with a Transport ID. The TransportID’s are simply defined as an Enumeration in your ProtoBuffer Definition file. You accomplish this association by calling various registration methods (available on the AhsokaServiceMessageInfo base class) for the message pairs (for synchronous calls) or for single objects (for async notifications).
+**![](Images/33287d96b192030144b672f0b5a45d35.png)AhsokaServiceMessageInfo**: This object is a metadata dictionary of your service. It describes to our architecture the relationships between your objects and associates each object with a Transport ID. The TransportID’s are simply defined as an Enumeration in your ProtoBuffer Definition file. You accomplish this association by calling various registration methods (available on the AhsokaServiceMessageInfo base class) for the message pairs (for synchronous calls) or for single objects (for async notifications).
 
 In addition to describing the various messages that this service can consume, the message object is also integral in helping to generate the various client objects used in non DotNet languages.    To support this, the message objects should override the method called OnGetAdditionalClientResources.  In this method, the message object should return the proto definition file for the service with a path of "Ahsoka.Proto\\\*.proto"  This enables the language specific ProtoC compilers to generate messages in the native language being developed for.   In addition, if you client have any extended functionality such as client side helpers, you can add the code for these here as well.    
 
@@ -87,7 +87,7 @@ The sequences below show a couple of the most common sequences that occur when i
 
 In this first diagram, we show the object instantiation of a Service and Client along with their respective runtimes when using a typical Builder.StartWithInternalServices() method to start the system. *Note that when using Dispatcher, this orchestration still occurs simply behind the Dispatchers StartAndRun() method.*
 
-![A screenshot of a computer Description automatically generated with medium confidence](MarkDownMedia/7565cbd4c5bcc1e8272165d02e93b346.png =500x)
+![A screenshot of a computer Description automatically generated with medium confidence](Images\7565cbd4c5bcc1e8272165d02e93b346.png =500x)
 
 ## 
 
@@ -97,7 +97,7 @@ In this sequence we show what interaction looks like between the App, Client, an
 
 In the second flow, the “SetTime” async call is executed to start a set time operation on an Implementation (likely a thread or other opaque implementation). When this work is completed, the service sends an out of band “Notification” to the client that then invokes the registered callback with the resulting data.
 
-![A screenshot of a computer screen Description automatically generated with low confidence](MarkDownMedia/4a4d680d3d11e8aa033dc0607cd77080.png =500x)
+![A screenshot of a computer screen Description automatically generated with low confidence](Images/4a4d680d3d11e8aa033dc0607cd77080.png =500x)
 
 # Ahsoka Core Services
 

@@ -540,12 +540,22 @@ internal class MainViewModel : ViewModelBase
 
     internal void ShowHelp()
     {
+        string helpFile = Path.Combine(PlatformHelpTool.GetHelpPath(), "html", "index.html");
+        if (!File.Exists(helpFile))
+        {
+            var result = Dialog.ShowDialog("Help Not Found", "Help file could not be found, Please download the 'OpenPV Help' Plugin", "OK");
+            return;
+        }
+
         using var myProcess = new Process();
         string command = "explorer.exe";
-        string args = "index.html";
-        string folder = Path.Combine(Path.GetDirectoryName(Environment.ProcessPath), "APIHelp");
+        string args = $"\"{helpFile}\"";
+        string folder = Path.Combine(Path.GetDirectoryName(helpFile));
+
         if (OperatingSystem.IsLinux())
             command = "xdg-open";
+        else if (OperatingSystem.IsMacOS())
+            command = "open";
 
         try
         {

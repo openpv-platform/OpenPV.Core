@@ -4,9 +4,9 @@ using Ahsoka.Utility;
 using Avalonia.Controls;
 using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
-using static NuGet.Packaging.PackagingConstants;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -184,13 +184,30 @@ internal class NewPackageViewModel : ViewModelBase
             if (File.Exists(launchFile))
             {
                 parentViewModel.SelectedPackage = new PackageViewModel(parentViewModel, launchFile);
-                parentViewModel.Dialog.ShowDialog("Project Created", $"Your project is now ready for development at... \r\n\r\n{Path.GetDirectoryName(launchFile)}", "Ok");
-            }
 
+                if (parentViewModel.SelectedPackage.SdkNeedsUpdate)
+                {
+                    // Wait for Console Output to Finish.
+                    parentViewModel.Console.PropertyChanged += ShowFinishedDialog;
+                }
+                else
+                {
+                    ShowFinishedDialog(this, new PropertyChangedEventArgs("ConsoleVisible"));
+                }
+            }
         }
         catch (Exception ex)
         {
             _ = parentViewModel.Dialog.ShowDialog("Error", ex.Message, "Ok");
+        }
+    }
+
+    private void ShowFinishedDialog(object sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == "ConsoleVisible" && !parentViewModel.Console.ConsoleVisible )
+        {
+            parentViewModel.Dialog.ShowDialog("Project Created", $"Your project is now ready for development at... \r\n\r\n{Path.GetDirectoryName(this.ProjectPath)}", "Ok");
+            parentViewModel.Dialog.PropertyChanged -= ShowFinishedDialog;
         }
     }
 

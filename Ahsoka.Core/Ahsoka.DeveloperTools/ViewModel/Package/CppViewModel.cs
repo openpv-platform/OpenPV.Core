@@ -29,11 +29,9 @@ internal class CppViewModel : ViewModelBase
     {
         if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Cpp || SdkNeedsUpdate)
         {
-            var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
-            var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => !x.IsInstalled);
+            UpdateSDKUpdateState(parentViewModel);
 
-            var frameworkInfo = GetFrameworkInfo();
-            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate || !cliExists || !extensionsUpToDate)
+            if (SdkNeedsUpdate)
             {
                 var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
@@ -126,6 +124,20 @@ internal class CppViewModel : ViewModelBase
         this.packageInfo = packageInfo;
 
         packageInfo.CppInfo ??= new CppInformation();
+
+        UpdateSDKUpdateState(parentViewModel);
+    }
+
+    private void UpdateSDKUpdateState(MainViewModel parentViewModel)
+    {
+        var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
+        var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => !x.IsInstalled) ||
+                                 parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Count() == 0;
+        var frameworkInfo = GetFrameworkInfo();
+        var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion();
+
+        if (!cliExists || !extensionsUpToDate || frameworkNeedsUpdate)
+            SdkNeedsUpdate = true;
     }
 
     internal async void SetProjectDirectory()

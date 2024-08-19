@@ -1,10 +1,8 @@
 ﻿using Ahsoka.DeveloperTools.Core;
-using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
-using ShimSkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Extensions = Ahsoka.System.Extensions;
 
 #pragma warning disable CS0436 // Type conflicts with imported type for GitVersionInformation
@@ -39,12 +36,8 @@ internal class DotNetViewModel : ViewModelBase
     {
         if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Dotnet || SdkNeedsUpdate)
         {
-            var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
-            var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x=>!x.IsInstalled) || 
-                                     parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Count() == 0;
-
-            var frameworkInfo = GetFrameworkInfo();
-            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate || !cliExists || !extensionsUpToDate)
+            UpdateSDKUpdateState(parentViewModel);
+            if (SdkNeedsUpdate)
             {
                 var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
@@ -144,6 +137,20 @@ internal class DotNetViewModel : ViewModelBase
         this.packageInfo = packageInfo;
 
         packageInfo.DotNetInfo ??= new DotNetInformation();
+
+        UpdateSDKUpdateState(parentViewModel);
+    }
+
+    private void UpdateSDKUpdateState(MainViewModel parentViewModel)
+    {
+        var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
+        var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => !x.IsInstalled) ||
+                                 parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Count() == 0;
+        var frameworkInfo = GetFrameworkInfo();
+        var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion();
+
+        if (!cliExists || !extensionsUpToDate || frameworkNeedsUpdate)
+            SdkNeedsUpdate = true;
     }
 
     internal async void SetProject()

@@ -21,7 +21,8 @@ internal class CppViewModel : ViewModelBase
  
     public void UpdateSDK()
     {
-        InstallSDK(false);
+        Task.Run(() => { InstallSDK(false).GetAwaiter().GetResult(); });
+
     }
 
     public async Task NeedsUpdate(bool isGenerating = false)
@@ -37,7 +38,7 @@ internal class CppViewModel : ViewModelBase
                 var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
                 {
-                    InstallSDK(isGenerating);
+                    await InstallSDK(isGenerating);
                     SdkNeedsUpdate = false;
                 }
             }
@@ -135,7 +136,7 @@ internal class CppViewModel : ViewModelBase
             ProjectPath = Path.GetRelativePath(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), path);
     }
 
-    internal async void InstallSDK(bool isGenerating = false)
+    internal async Task InstallSDK(bool isGenerating = false)
     {
         if (!isGenerating)
             parentViewModel.StartProcess(null);

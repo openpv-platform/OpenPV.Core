@@ -32,7 +32,7 @@ internal class DotNetViewModel : ViewModelBase
 
     public void UpdateSDK()
     {
-        InstallCLI(false);
+        Task.Run(() => { InstallCLI(false).GetAwaiter().GetResult(); });
     }
 
     public async Task NeedsUpdate(bool isGenerating = false)
@@ -49,7 +49,7 @@ internal class DotNetViewModel : ViewModelBase
                 var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
                 {
-                    InstallCLI(isGenerating);
+                    await InstallCLI(isGenerating);
                     SdkNeedsUpdate = false;
                 }
             }
@@ -162,7 +162,7 @@ internal class DotNetViewModel : ViewModelBase
             PublishProfile = Path.GetRelativePath(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), path);
     }
 
-    internal async void InstallCLI(bool isGenerating = false)
+    internal async Task InstallCLI(bool isGenerating = false)
     {
         if (!isGenerating)
             parentViewModel.StartProcess(null);
@@ -237,6 +237,7 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged(nameof(FrameworkButtonText));
 
             File.WriteAllText(Path.Combine(projectPath, "Directory.Build.props"), Properties.Resources.BuildProps);
+            finishedInstall = true;
         }
         catch (IOException)
         {

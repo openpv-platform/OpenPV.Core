@@ -38,6 +38,9 @@ add_subdirectory (".platform_support/$ENV{AhsokaPlatform}_TargetSupport/SDK")
 
 add_ahsoka(Ahsoka.QT.Demo)
 
+target_include_directories(Ahsoka.QT.Demo PRIVATE ${AhsokaHeaders})
+target_link_libraries(Ahsoka.QT.Demo PRIVATE Qt5::Widgets ${AhsokaLibs})
+
 # Required to Deploy to the Target
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/Outputs/ DESTINATION Ahsoka.QT.Demo
     PATTERN "**/*"

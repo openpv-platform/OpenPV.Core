@@ -13,14 +13,7 @@
 		<Copy SourceFiles="Proto\Configuration.proto" DestinationFolder="..\..\Ahsoka.Shared" OverwriteReadOnlyFiles="true"  />
 	</Target>
 
-	<Target Name="GenerateHelp" BeforeTargets="PreBuildEvent" Condition="'$(OS)' != 'Unix'">
-		<Message Text="BuildHelpOutput" Importance="High" />
-		<Exec  Command="..\..\Ahsoka.ThirdParty\Doxygen\doxygen.exe .\Docs\Doxyfile"  />
-		<ZipDirectory Overwrite="true" SourceDirectory="..\..\SparkUpload\APIHelp\" DestinationFile="..\..\SparkUpload\OpenPV Help.zip" />
-		<Copy SourceFiles="OpenPV Help.release.json" DestinationFiles="..\..\SparkUpload\OpenPV Help.release.json"/>
-		<RemoveDir Directories="..\..\SparkUpload\APIHelp\"/>
-	</Target>
-
+	
 	<!--Note that this will only run once.  To generate licenses again, you must delete the file.-->
 	<Target Name="GenerateLicenseFile" BeforeTargets="PreBuildEvent"
 			Condition="!Exists('..\Ahsoka.Core\Resources\Licenses.json') ">

@@ -14,18 +14,31 @@
 	</PropertyGroup>
 
 	<Target Name="Clean Platform Support Folders" BeforeTargets="BeforeClean">
-		
 		<Message Text="Clean Platform Support Folders at $(PlatformSupportRoot)" Importance="high" />
-		<RemoveDir Directories="$(PlatformSupportRoot)PlatformSupport\" />
-		<RemoveDir Directories="$(PlatformSupportRoot)SparkUpload\" />
-		<MakeDir Directories="$(PlatformSupportRoot)PlatformSupport\" />
-		<MakeDir Directories="$(PlatformSupportRoot)SparkUpload\" />
+		<RemoveDir Directories="$(PlatformSupportRoot)\PlatformSupport\" />
+		<RemoveDir Directories="$(PlatformSupportRoot)\SparkUpload\" />
+
+		<MakeDir Directories="$(PlatformSupportRoot)\PlatformSupport\" />
+		<MakeDir Directories="$(PlatformSupportRoot)\SparkUpload\" />
+		<MakeDir Directories="$(PlatformSupportRoot)\SparkUpload\APIHelp\" />
+	</Target>
+
+	<Target Name="GenerateHelp" BeforeTargets="PreBuildEvent" Condition="'$(OS)' != 'Unix'">
 		
+		<MakeDir Directories="$(PlatformSupportRoot)\PlatformSupport\" />
+		<MakeDir Directories="$(PlatformSupportRoot)\SparkUpload\" />
+		<MakeDir Directories="$(PlatformSupportRoot)\SparkUpload\APIHelp\" />
+
+		<Message Text="BuildHelpOutput" Importance="High" />
+		<Exec WorkingDirectory="$(PlatformSupportRoot)\Ahsoka.Core\Ahsoka.Core"  Command="$(PlatformSupportRoot)\Ahsoka.ThirdParty\Doxygen\doxygen.exe .\Docs\Doxyfile"  />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\SparkUpload\APIHelp\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\OpenPV Help.zip" />
+		<Copy SourceFiles="$(PlatformSupportRoot)\Ahsoka.Core\Ahsoka.Core\OpenPV Help.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV Help.release.json"/>
+		<RemoveDir Directories="$(PlatformSupportRoot)\SparkUpload\APIHelp\"/>
 	</Target>
 
 	<Target Name="BuildSupportPackages" Condition="true" AfterTargets="PostBuildEvent">
-		
-		<MSBuild Projects="../Ahsoka.PublishWindows/Ahsoka.PublishWindows.csproj;../Ahsoka.PublishOpenView/Ahsoka.PublishOpenView.csproj;../Ahsoka.PublishOpenViewPro/Ahsoka.PublishOpenViewPro.csproj;../Ahsoka.PublishUbuntu/Ahsoka.PublishUbuntu.csproj;" BuildInParallel="false" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
+		<Exec Command="dotnet restore -r linux-x64"/>
+		<MSBuild Projects="../Ahsoka.PublishUbuntu/Ahsoka.PublishUbuntu.csproj;../Ahsoka.PublishWindows/Ahsoka.PublishWindows.csproj;../Ahsoka.PublishOpenView/Ahsoka.PublishOpenView.csproj;../Ahsoka.PublishOpenViewPro/Ahsoka.PublishOpenViewPro.csproj;" BuildInParallel="false" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
 		
 		<!--Copy Spark Package Manifst to Output -->
 		<Copy SourceFiles="OpenPV Dependencies.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV Dependencies.release.json" />

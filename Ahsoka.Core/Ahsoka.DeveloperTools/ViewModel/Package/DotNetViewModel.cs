@@ -167,6 +167,7 @@ internal class DotNetViewModel : ViewModelBase
         if (!isGenerating)
             parentViewModel.StartProcess(null);
 
+        bool finishedInstall = false;
         string result = "Process Ended";
         try
         {
@@ -237,10 +238,15 @@ internal class DotNetViewModel : ViewModelBase
 
             File.WriteAllText(Path.Combine(projectPath, "Directory.Build.props"), Properties.Resources.BuildProps);
         }
+        catch (IOException)
+        {
+            finishedInstall = false;
+            parentViewModel.Console.AddConsoleLine($"Unable to Remove and Re-Add the SDK Folder");
+        }
         finally
         {
             if (!isGenerating)
-                parentViewModel.FinishProcess("SDK Updated", true);
+                parentViewModel.FinishProcess("SDK Updated", finishedInstall);
         }
     }
 

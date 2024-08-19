@@ -161,7 +161,7 @@ internal class CppViewModel : ViewModelBase
 
             if (Directory.Exists(directoryForFramework))
                 Directory.Delete(directoryForFramework, true);
-
+            
             Directory.CreateDirectory(directoryForFramework);
 
             var progressString = new Progress<string>(info =>
@@ -254,6 +254,11 @@ internal class CppViewModel : ViewModelBase
                 result = "SDK's Updated Successfully";
                 finishedInstall = true;
             }
+        }
+        catch (IOException)
+        {
+            finishedInstall = false;
+            parentViewModel.Console.AddConsoleLine($"Unable to Remove and Re-Add the SDK Folder");
         }
         finally
         {

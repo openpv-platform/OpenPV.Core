@@ -120,7 +120,6 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         message = new();
         try
         {
-         
             return notificationMessages.TryTake(out message, int.MaxValue, source.Token);
         }
         catch (OperationCanceledException) { return false; }

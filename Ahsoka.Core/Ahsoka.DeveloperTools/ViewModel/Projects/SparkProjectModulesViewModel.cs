@@ -228,10 +228,12 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
         if (continueWork)
         {
             var result = SparkAccountClient.SharedSparkClient.AddTeamModules(ParentViewModel.TeamID, purchaseInfo);
-            if (result.ToLower().Contains("error"))
+            if (result.ToLower().Contains("error") || result.ToLower().Contains("false"))
             {
                 _ = root.Dialog.ShowDialog("Purchase Error",
                     "Payment could not be processed at this time. Please try again later or confirm payment method in billing portal.", "Ok");
+
+                this.ModuleList.FirstOrDefault()?.ViewHistory();
                 return;
             }
 

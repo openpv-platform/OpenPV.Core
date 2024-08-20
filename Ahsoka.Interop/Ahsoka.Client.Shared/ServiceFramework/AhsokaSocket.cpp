@@ -129,7 +129,7 @@ namespace AhsokaServiceFramework
         IsListening = true;
         while (IsListening)
         {
-            int value = zmq::poll(items, 2, 100);
+            int value = zmq::poll(items, 2, 1000);
             if (value != 0)
             {
                 // Message Received

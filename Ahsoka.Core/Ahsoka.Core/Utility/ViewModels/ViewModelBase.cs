@@ -22,6 +22,15 @@ public class ViewModelBase : INotifyPropertyChanged, IHasParent
     /// </summary>
     public ViewModelBase()
     {
+        OnConstruct();
+    }
+
+    /// <summary>
+    /// Constructor Extension Method 
+    /// </summary>
+    protected virtual void OnConstruct()
+    {
+       
     }
 
     /// <summary>

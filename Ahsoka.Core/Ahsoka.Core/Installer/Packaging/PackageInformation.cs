@@ -134,7 +134,7 @@ public class PackageInformation : PackageHeader
     internal bool CanUseOptimizerdServiceManager()
     {
         ProcessUtility.RunProcess("dotnet", "--list-sdks", null, out string result, out string error);
-        return result.Contains("8.0.") && OptimizedServiceManager;
+        return result.Contains("8.0.") && OptimizedServiceManager && (PlatformFamily is PlatformFamily.OpenViewLinux or PlatformFamily.OpenViewLinuxPro);
     }
 }
 

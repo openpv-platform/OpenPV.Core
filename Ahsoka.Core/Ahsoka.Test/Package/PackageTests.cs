@@ -154,7 +154,8 @@ public class PackagingTests : LinearTestBase
 
         string packagefile = Path.Combine(appOutputs, "OpenLinuxST.PackageInfo.json");
         PackageInformation package = JsonUtility.Deserialize<PackageInformation>(File.ReadAllText(packagefile));
-        
+        package.OptimizedServiceManager = false;
+
         if (asCodesys)
         {
             package.ApplicationType = ApplicationType.CODESYS;

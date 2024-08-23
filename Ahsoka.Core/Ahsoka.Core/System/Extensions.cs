@@ -326,7 +326,8 @@ public class Extensions
         // Write Program
         string outputFileName = Path.Combine(Path.GetDirectoryName(projectFile), "Properties", "PublishProfiles", "Outputs.pubxml");
         file = Properties.Resources.Publish_xmlpub;
-        file = file.Replace("<!--RUNTIMEID-->", "linux-arm");
+        string runtimeID = packageInfo.PlatformFamily == PlatformFamily.OpenViewLinux ? "linux-arm" : "linux-arm64";
+        file = file.Replace("<!--RUNTIMEID-->", runtimeID);
 
         Directory.CreateDirectory(Path.GetDirectoryName(outputFileName));
         File.WriteAllText(outputFileName, file);

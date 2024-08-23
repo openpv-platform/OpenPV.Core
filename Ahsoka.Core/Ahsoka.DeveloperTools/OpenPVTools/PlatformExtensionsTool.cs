@@ -34,7 +34,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         base(viewModel, false)
     {
         this.viewModel = viewModel;
-        this.PackageType = System.Extensions.ExtensionsFolder;
+        this.PackageType = "Software Install";
         this.CanInstall = false;
         this.Description = viewModel.ChannelName.TrimEnd('s') + " Info";
         this.Name = viewModel.ChannelName.TrimEnd('s') + " Info";

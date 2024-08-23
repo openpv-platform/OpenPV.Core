@@ -70,7 +70,10 @@
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
 		<AvaloniaResource Include="Assets\*" />
+		<Compile Remove="OpenPVTools\OpenViewProFlashTool.cs" />
+		<ApplicationDefinition Include="OpenPVTools\OpenViewPlatformSupport.json" />
 		<Resource Include="Assets\OpenPV-Icon.ico" />
+		<Resource Include="OpenPVTools\OpenViewProFlashTool.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

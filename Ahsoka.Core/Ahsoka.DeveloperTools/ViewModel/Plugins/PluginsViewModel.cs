@@ -408,8 +408,12 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
                 selectedTool.LocalPath = Path.Combine(CustomerToolPaths.GetToolPath("DeveloperTools"), item.Name.Replace(" ", "_")); // Tool Download Path
                 selectedTool.Name = item.Name;
-                selectedTool.Description = item.Description;
-                selectedTool.Version = item.Version;
+                
+                if (string.IsNullOrEmpty(selectedTool.Description))
+                    selectedTool.Description = item.Description;
+                if (string.IsNullOrEmpty(selectedTool.Version))
+                    selectedTool.Version = item.Version;
+
                 if (item.Resources != null)
                     selectedTool.Resources = new List<Resource>(item.Resources);
 

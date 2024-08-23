@@ -110,6 +110,9 @@ public partial class TargetPathInfo
                     return $"{factoryRoot}/installerui/InstallerVersion.txt";
                 else
                     return $"{fieldRoot}/installerui/InstallerVersion.txt";
+
+            case InstallerPaths.FirmwareUpgradePath:
+                return "/usr/local/Ahsoka/upgrade";
         }
 
         return factoryRoot;
@@ -315,6 +318,11 @@ public enum InstallerPaths
     /// Service Security Info
     /// </summary>
     ServiceSecurityFile,
+
+    /// <summary>
+    /// Path used for extracting the BSP Upgrade before executing
+    /// </summary>
+    FirmwareUpgradePath
 }
 
 /// <summary>

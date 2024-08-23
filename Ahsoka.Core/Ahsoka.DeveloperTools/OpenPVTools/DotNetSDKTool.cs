@@ -73,7 +73,7 @@ internal class DotNetSDKTool : OpenPVToolBase
         string downloadFileName = LocalPath;
         string downloadDirectory = Path.GetDirectoryName(downloadFileName);
 
-        await Task.Run(async () =>
+        await Task.Run(() =>
         {
             try
             {

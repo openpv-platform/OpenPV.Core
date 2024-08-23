@@ -52,7 +52,6 @@ public partial class HardwareInfo
             }
             else { return; } // Running on a target...Don't Load Anything.
         }
-
     }
 
     /// <summary>

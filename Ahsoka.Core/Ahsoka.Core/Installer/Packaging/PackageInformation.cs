@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 
 namespace Ahsoka.Installer;
@@ -33,6 +34,8 @@ public class PackageInformation : PackageHeader
     public bool IncludeFirmwareUpdate { get; set; } = false;
 
     public List<ModuleLicense> Licenses { get; set; } = new();
+
+    public bool OptimizedServiceManager { get; set; } = true;
 
     public DotNetInformation DotNetInfo { get; set; }
 
@@ -126,6 +129,12 @@ public class PackageInformation : PackageHeader
         else
             return Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), Extensions.ExtensionsFolder);
 
+    }
+
+    internal bool CanUseOptimizerdServiceManager()
+    {
+        ProcessUtility.RunProcess("dotnet", "--list-sdks", null, out string result, out string error);
+        return result.Contains("8.0.") && OptimizedServiceManager;
     }
 }
 

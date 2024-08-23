@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
 		<RootNamespace>Ahsoka</RootNamespace>
-		<TrimMode>copyused</TrimMode>
+		<TrimMode>partial</TrimMode>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

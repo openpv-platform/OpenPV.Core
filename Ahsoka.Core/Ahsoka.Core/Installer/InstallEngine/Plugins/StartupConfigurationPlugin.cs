@@ -111,9 +111,11 @@ internal class StartupInstallerPlugin : InstallerPlugin
         ProtoBuf.Serializer.Serialize(stream, info.ServiceInfo.RuntimeConfiguration);
         jsonData = Encoding.UTF8.GetBytes( JsonUtility.Serialize(info.ServiceInfo.RuntimeConfiguration));
 
-        additionalFiles[pathRelativeToExecutable + $"/{AutoStartFileName}"] = stream.ToArray();
         additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/{AutoStartFileName}"] = stream.ToArray(); // Place Copy Here as Indicator that we are using Auto Start.
         additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/{AutoStartFileName + ".json"}"] = jsonData; // Place JSON so we can read it.
+
+        if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup != StartOptions.NoAutoStart || info.ApplicationType != ApplicationType.Dotnet)
+            additionalFiles[pathRelativeToExecutable + $"/{AutoStartFileName}"] = stream.ToArray();
 
         return targetCommandLinePath.Replace("\\","/");
     }

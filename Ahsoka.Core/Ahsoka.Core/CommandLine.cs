@@ -1,8 +1,10 @@
-﻿using Ahsoka.System;
+﻿using Ahsoka.ServiceFramework;
+using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace Ahsoka;
@@ -14,16 +16,13 @@ public static class CommandLine
 {
     public static void Execute(string[] args)
     {
-        // Initialing Assembly Resolver
-        AssemblyResolver.Init();
-
         string pathToExecutable = Environment.ProcessPath;
 
-        Console.WriteLine($"Loading Extensions ...");
-        System.Extensions.LoadExtensions(null, false,"CommandLine");
+        using var stopwatch = new AhsokaStopwatch("Ahsoka.Commandline.Main()");
+
+        args = HandleStartupOptions(args);
 
         string version = VersionUtility.GetAppVersionString();
-
 
         Console.ForegroundColor = ConsoleColor.Green;
         Console.WriteLine();
@@ -63,6 +62,29 @@ public static class CommandLine
         {
             PrintHelp();
         }
+    }
+
+    private static string[] HandleStartupOptions(string[] args)
+    {
+        List<string> mutableArgs = new(args);
+        if (mutableArgs.Count > 0)
+        {
+            int waitForDebugger = mutableArgs.IndexOf("--WaitForDebugger");
+            if (waitForDebugger >= 0)
+            {
+                DebugUtility.WaitForDebugger();
+                mutableArgs.RemoveAt(waitForDebugger);
+            }
+
+            int verbose = mutableArgs.IndexOf("--Verbose");
+            if (verbose >= 0)
+            {
+                AhsokaLogging.LoggingVerbosity = AhsokaVerbosity.Low | AhsokaVerbosity.Performance;
+                mutableArgs.RemoveAt(verbose);
+            }
+        }
+
+        return mutableArgs.ToArray();
     }
 
     private static bool ExecuteCommand(string command, string[] commandArgs)

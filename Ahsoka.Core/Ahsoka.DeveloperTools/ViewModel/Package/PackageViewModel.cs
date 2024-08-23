@@ -1,12 +1,13 @@
-﻿using Ahsoka.Installer;
+﻿using Ahsoka.DeveloperTools.Core;
+using Ahsoka.Installer;
 using Ahsoka.Spark;
-using EnovationCloud.Core.DataTransferObjects;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,10 +18,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Path = System.IO.Path;
-using Ahsoka.DeveloperTools.Core;
-using Ahsoka.DeveloperTools.ViewModel;
-using System.Reflection;
-using ShimSkiaSharp;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -70,6 +67,22 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             }
         }
     }
+
+
+    public bool GenerateOptimizedServiceManager
+    {
+        get
+        {
+            return packageInfo.OptimizedServiceManager;
+        }
+
+        set
+        {
+            packageInfo.OptimizedServiceManager = value;
+            OnPropertyChanged();
+        }
+    }
+
 
     public DependenciesCheckViewModel Deps
     {
@@ -779,17 +792,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         // Save Before Generating
         ParentViewModel.SavePackage();
 
-        if (SdkNeedsUpdate)
-        {
-            ParentViewModel.Console.AddConsoleLine("Updating SDK");
-
-            if (ApplicationType == ApplicationType.Dotnet)
-               await dotNetModel.NeedsUpdate(true);
-            else if (ApplicationType == ApplicationType.Cpp)
-               await cppViewModel.NeedsUpdate(true);
-        }
-        
-
         ParentViewModel.Console.ClearConsole();
         ParentViewModel.Console.AddConsoleLine("Generating OPV Package File");
 
@@ -809,6 +811,17 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         {
             // Grab Latest Copy of Info.
             itemToGenerate.UpdatePackageInfo();
+
+            if (SdkNeedsUpdate)
+            {
+                ParentViewModel.Console.AddConsoleLine("Updating SDK");
+
+                if (ApplicationType == ApplicationType.Dotnet)
+                    dotNetModel.NeedsUpdate(true).GetAwaiter().GetResult();
+                else if (ApplicationType == ApplicationType.Cpp)
+                    cppViewModel.NeedsUpdate(true).GetAwaiter().GetResult();
+            }
+
 
             string workingDirectory = Path.GetDirectoryName(itemToGenerate.PackageInfoPath);
             string packageInfoPath = itemToGenerate.PackageInfoPath;

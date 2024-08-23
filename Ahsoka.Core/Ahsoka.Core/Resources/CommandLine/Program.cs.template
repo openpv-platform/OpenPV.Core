@@ -1,0 +1,16 @@
+﻿using Ahsoka.Utility;
+using System;
+
+namespace Ahsoka;
+
+class Program
+{
+    public static void Main(string[] args)
+    {
+        Console.WriteLine(DateTime.Now.ToString("hh:mm:ss.fff"));
+
+/*ClassLoaderAdds*/
+
+        CommandLine.Execute(args);
+    }
+}

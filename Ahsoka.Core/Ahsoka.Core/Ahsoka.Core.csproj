@@ -42,6 +42,10 @@
 	<ItemGroup>
 	  <Compile Remove="Spark\SparkUploadTool.cs" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Remove="Resources\CommandLine\Publish.xmlpub.template" />
+	</ItemGroup>
 	<ItemGroup>
 		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
 		<None Include="README.md" Pack="true" PackagePath="\" />

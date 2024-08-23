@@ -115,6 +115,27 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;Project Sdk=&quot;Microsoft.NET.Sdk&quot;&gt;
+        ///
+        ///	&lt;PropertyGroup&gt;
+        ///		&lt;OutputType&gt;Exe&lt;/OutputType&gt;
+        ///		&lt;RootNamespace&gt;Ahsoka&lt;/RootNamespace&gt;
+        ///		&lt;TrimMode&gt;partial&lt;/TrimMode&gt;
+        ///		&lt;AutoGenerateBindingRedirects&gt;true&lt;/AutoGenerateBindingRedirects&gt;
+        ///		&lt;Copyright&gt;Copyright © $([System.DateTime]::UtcNow.Year) Enovation Controls ($([System.DateTime]::UtcNow.ToString(&quot;s&quot;)))&lt;/Copyright&gt;
+        ///		&lt;TargetFramework&gt;net8.0&lt;/TargetFramework&gt;
+        ///	
+        ///		&lt;NoDefaultExcludes&gt;true&lt;/NoDefaultExcludes&gt;
+        ///		&lt;AllowUnsafeBlocks&gt;True&lt;/AllowUnsafeBlocks&gt;
+        ///		&lt;Pr [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Ahsoka_CommandLine {
+            get {
+                return ResourceManager.GetString("Ahsoka_CommandLine", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to [Unit]
         ///Description=Early Ahsoka startup target
         ///
@@ -294,7 +315,7 @@ namespace Ahsoka.Properties {
         ///[Service]
         ///Environment=&quot;DROPBEAR_RSAKEY_DIR=/etc/dropbear&quot;
         ///EnvironmentFile=-/etc/default/dropbear
-        ///ExecStart=-/usr/sbin/dropbear -i -r ${DROPBEAR_RSAKEY_DIR}/dropbear_ecdsa_host_key -r ${DROPBEAR_RSAKEY_DIR}/dropbear_ed25519_host_key $DROPBEAR_EXTRA_ARGS
+        ///ExecStart=-/usr/sbin/dropbear -i -r ${DROPBEAR_RSAKEY_DIR}/dropbear_ecdsa_host_key -r ${DROPBEAR_RSAKEY_DIR}/dropbear_ed25519_host_key -r ${DROPBEAR_RSAKEY_DIR}/dropbear_rsa_host_key $DROPBEAR_EXTRA_ARGS
         ///ExecReload=/bin/kill -HUP $MAINPID
         ///StandardInput=socket
         ///KillMode=process
@@ -435,6 +456,54 @@ namespace Ahsoka.Properties {
         internal static string OPVServicesConfiguration {
             get {
                 return ResourceManager.GetString("OPVServicesConfiguration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using Ahsoka.Utility;
+        ///using System;
+        ///
+        ///namespace Ahsoka;
+        ///
+        ///class Program
+        ///{
+        ///    public static void Main(string[] args)
+        ///    {
+        ///        Console.WriteLine(DateTime.Now.ToString(&quot;hh:mm:ss.fff&quot;));
+        ///
+        ///        /*ClassLoaderAdds*/
+        ///
+        ///        CommandLine.Execute(args);
+        ///    }
+        ///}
+        ///.
+        /// </summary>
+        internal static string Program_cs {
+            get {
+                return ResourceManager.GetString("Program_cs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;!--
+        ///https://go.microsoft.com/fwlink/?LinkID=208121.
+        ///--&gt;
+        ///&lt;Project&gt;
+        ///  &lt;PropertyGroup&gt;
+        ///    &lt;Configuration&gt;Release&lt;/Configuration&gt;
+        ///    &lt;Platform&gt;Any CPU&lt;/Platform&gt;
+        ///    &lt;PublishDir&gt;publish&lt;/PublishDir&gt;
+        ///    &lt;PublishProtocol&gt;FileSystem&lt;/PublishProtocol&gt;
+        ///    &lt;TargetFramework&gt;net8.0&lt;/TargetFramework&gt;
+        ///    &lt;RuntimeIdentifier&gt;&lt;!--RUNTIMEID--&gt;&lt;/RuntimeIdentifier&gt;
+        ///    &lt;SelfContained&gt;true&lt;/SelfContained&gt;
+        ///    &lt;PublishSingleFile&gt;true&lt;/PublishSingleFile&gt;
+        ///    &lt;PublishTrimm [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string Publish_xmlpub {
+            get {
+                return ResourceManager.GetString("Publish_xmlpub", resourceCulture);
             }
         }
         

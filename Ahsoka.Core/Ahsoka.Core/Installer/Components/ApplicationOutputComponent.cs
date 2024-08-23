@@ -170,7 +170,13 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             InstallerPlugin appPlugin = InstallerPlugin.GetApplicationPlugin(projectType);
             appPlugin?.ModifyTargetInstall(workingDirectory, appCommand);
 
-            AddCommandLine(context, item);
+            // Should we use add the CommandLine App?
+            var autoStart = File.Exists(Path.Combine(workingDirectory, ApplicationOutputComponent.AppInfoFolder,"AutoStartEnabled"));
+            var appType = File.ReadAllText(Path.Combine(workingDirectory, ApplicationOutputComponent.AppInfoFolder, ApplicationOutputComponent.AppTypeFile));
+            context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"AutoStart: {autoStart}  AppType: {appType}" });
+
+            if (autoStart || appType != ApplicationType.Dotnet.ToString())
+                AddCommandLine(context, item);
 
             // Enable the Services for Application Startup.
             output = Process.Start("systemctl", "disable Ahsoka.Installer.service -q");

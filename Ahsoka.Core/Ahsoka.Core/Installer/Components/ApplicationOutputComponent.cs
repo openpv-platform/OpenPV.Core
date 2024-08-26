@@ -38,8 +38,6 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
     #region Properties
     public override Guid ComponentType => new(ComponentTypeGuid);
 
-    public override bool IsRequiredComponent => true;
-
     public override bool FilterPlatformFolder => false;
 
     public override string ComponentName => "Application";

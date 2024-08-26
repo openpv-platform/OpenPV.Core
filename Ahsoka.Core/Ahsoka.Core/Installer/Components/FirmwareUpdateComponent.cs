@@ -16,9 +16,7 @@ internal class FirmwareUpdateComponent : FileSystemComponentBase
 {
     public const string PackageName = "FirmwareUpdate";
     public override Guid ComponentType => new("171A5303-F6BC-403E-B123-19792F1FE3E2");
-    public override bool IsRequiredComponent => false;
     public override string ComponentName => PackageName;
-
 
     protected override PackageComponent OnCreateFilePackageStream(string buildLocation,
         PackageInformation info,

@@ -1,0 +1,119 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+             xmlns:material="using:Material.Icons.Avalonia" 
+             x:Class="Ahsoka.DeveloperTools.Views.DeviceView">
+		
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="250"/>
+		</Grid.ColumnDefinitions>
+		<StackPanel Margin="-35" Grid.Column="1"
+					HorizontalAlignment="Center" >
+			<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12,40,12,12"
+				   Foreground="DimGray"
+				   Text="Device Actions "/>
+
+			<Button Margin="3,3,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding SelectedPackage.GenerateCustomPackage}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Webpack"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Create Custom Package"/>
+				</StackPanel>
+			</Button>
+
+			<Button Margin="3,3,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding SelectedPackage.LoadToTargetCustom}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Download"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Load Custom Package"/>
+				</StackPanel>
+			</Button>
+		
+		</StackPanel>
+		<ScrollViewer>
+			<StackPanel DataContext="{Binding SelectedPackage}" HorizontalAlignment="Stretch" >
+				<StackPanel.Styles>
+					<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+				</StackPanel.Styles>
+
+
+				<Border IsVisible="{Binding IsOpenView}" Margin="40,35,40,0" Padding="3" BorderBrush="WhiteSmoke" 
+						BorderThickness="0,1,0,1">
+					<Grid Margin="5,15,5,30" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*,*,">
+						<TextBlock Text="Custom Install Components  " Background="White" Margin="-10,-30"  FontSize="15"
+								   Foreground="SteelBlue" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"  Grid.Column="0"/>
+
+						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Application:" Grid.Row="1" Margin="5,10" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
+							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeAppComponents}"/>
+							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+									   Text="Adds All Application Components (Installer, App, Extensions)."
+									   ToolTip.Tip="Checking this checkbox creates a standard install package with only the Application Updaters."/>
+						</StackPanel>
+						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Installer UI:" Grid.Row="2" Margin="5,10" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3">
+							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeInstallerUI}" />
+							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+									   Text="Adds a component to updates the Installer UI on the Target" />
+						</StackPanel>
+						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Firmware:" Grid.Row="3" Margin="5,10" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">
+							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeFirmwareUpdate}"/>
+							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+									   Text="Adds a delta Firmware Upgrader Component to the installer."
+									   ToolTip.Tip="Adds a delta upgrader component to your install package which upgrades the base image.  This does increase install times as well as require a reboot as part of the install process."/>
+						</StackPanel>
+						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Boot Logo:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
+							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeBootLogo}"/>
+							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+									   Text="Updates the Boot Logo"
+									   ToolTip.Tip="Adds a delta upgrader component to your install package which upgrades the base image.  This does increase install times as well as require a reboot as part of the install process."/>
+						</StackPanel>
+
+					</Grid>
+				</Border>
+				<Border IsVisible="{Binding IsOpenView}"
+							Margin="40,20,40,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
+						<TextBlock Text="Boot Logo Setup " HorizontalAlignment="Left" FontSize="15"
+								 Foreground="SteelBlue"  Margin="-10,-40" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"/>
+						<TextBlock Text="System Orientation:" Grid.Row="1" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+							<ComboBox  SelectedItem="{Binding SystemOrientation}" ItemsSource="{Binding Orientations}" Grid.Row="4" Grid.Column="1" Width="250"  />
+							<TextBlock Text="(Rotates Logo and Installer)" ToolTip.Tip="Orientation is available via the SYSTEM_ORIENTATION environment variable." Grid.Row="1" Grid.Column="0"/>
+						</StackPanel>
+
+						<TextBlock ToolTip.Tip="Path where your development tool outputs your application files."
+								 Text="Startup Logo:" Grid.Row="2" Grid.Column="0"/>
+						<Button  Margin="5,0"  Grid.Row="2" Grid.Column="2" Content="Choose Path..." Command="{Binding SetStartLogo}"/>
+						<TextBox Text="{Binding StartupLogoPath}" Grid.Row="2" Grid.Column="1"  Width="280" TextWrapping="1" IsReadOnly="True"/>
+
+						<Border Margin="2" BorderBrush="Gainsboro" BorderThickness="1" Grid.Column="1"
+								Grid.Row="3"
+								MinWidth="250" MinHeight="100"
+								MaxWidth="250" MaxHeight="100">
+							<Image Source="{Binding StartupLogoImage}" Stretch="Uniform"  ToolTip.Tip="Startup Logo." />
+						</Border>
+					</Grid>
+				</Border>
+			</StackPanel>
+		</ScrollViewer>
+	
+	</Grid>
+</UserControl>
+

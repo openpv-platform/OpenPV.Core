@@ -20,8 +20,6 @@ internal class CommandLineComponent : PackageComponentBase
 
     public override Guid ComponentType => CommandLineComponentType;
 
-    public override bool IsRequiredComponent => true;
-
     public override string ComponentName => PackageName;
 
     protected override string GetPackagingPath(string buildLocation, PackageInformation info)

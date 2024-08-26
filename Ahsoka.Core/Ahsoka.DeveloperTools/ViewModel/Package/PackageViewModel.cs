@@ -223,6 +223,32 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
     }
 
+    public bool IncludeBootLogo
+    {
+        get
+        {
+            return PackageInfo.IncludeBootLogo;
+        }
+        set
+        {
+            PackageInfo.IncludeBootLogo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IncludeAppComponents
+    {
+        get
+        {
+            return PackageInfo.IncludeApplication;
+        }
+        set
+        {
+            PackageInfo.IncludeApplication = value;
+            OnPropertyChanged();
+        }
+    }
+
     public bool IncludeFirmwareUpdate
     {
         get
@@ -619,7 +645,17 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         return filled;
     }
 
-    internal async void LoadToTarget()
+    internal void LoadToTarget()
+    {
+        LoadToTarget(false);
+    }
+
+    internal void LoadToTargetCustom()
+    {
+        LoadToTarget(true);
+    }
+
+    internal async void LoadToTarget(bool isCustomInstall)
     {
         source = new CancellationTokenSource();
 
@@ -660,7 +696,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
         else
         {
-            pathToLoad = itemToGenerate.PackageInfo.GetOutputFullPath();
+            pathToLoad = itemToGenerate.PackageInfo.GetOutputFullPath(isCustomInstall);
             if (!File.Exists(pathToLoad))
             {
                 ParentViewModel.Console.AddConsoleLine("Generate this Package");
@@ -780,7 +816,17 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         launchTool.LaunchTool(this);
     }
 
-    internal async void GenerateInstallPackage()
+    internal  void GenerateInstallPackage()
+    {
+       GeneratePackage(false);
+    }
+
+    internal  void GenerateCustomPackage()
+    {
+        GeneratePackage(true);
+    }
+
+    internal async void GeneratePackage(bool customInstall)
     {
         var itemToGenerate = ParentViewModel.SelectedPackage;
         if (itemToGenerate == null)
@@ -834,9 +880,9 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             if (ParentViewModel.Settings.WaitForDebuggerInCLI)
                 prefix = "--WaitForDebugger ";
 
-            ParentViewModel.RunCommandLineProcess($"{prefix}--Package \"{workingDirectory}\" \"{packageInfoPath}\"", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
+            ParentViewModel.RunCommandLineProcess($"{prefix}--Package \"{workingDirectory}\" \"{packageInfoPath}\" {customInstall}", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
 
-            output = itemToGenerate.PackageInfo.GetOutputFullPath();
+            output = itemToGenerate.PackageInfo.GetOutputFullPath(customInstall);
             if (File.Exists(output))
                 return output;
             else
@@ -864,6 +910,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             });
         });
     }
+
 
     public void Cancel()
     {

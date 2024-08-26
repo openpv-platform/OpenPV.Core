@@ -13,8 +13,6 @@ namespace Ahsoka.Installer.Components;
 internal class BeginInstallEngineComponent : InstallEngineComponent
 {
     #region Properties
-    public override bool IsRequiredComponent => true;
-
     public override Guid ComponentType => new("D0BE7C9D-084B-40E9-9716-452053B751C1");
 
     public override string ComponentName => "Begin Install";

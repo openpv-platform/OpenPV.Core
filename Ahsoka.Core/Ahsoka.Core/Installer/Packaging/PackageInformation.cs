@@ -28,12 +28,18 @@ public class PackageInformation : PackageHeader
     public string PackageOutputDirectory { get; set; }
     public string StartupLogoPath { get; set; }
     public string PackageSigningCertFile { get; set; }
+    public List<ModuleLicense> Licenses { get; set; } = new();
+
+
+    public bool IncludeApplication { get; set; } = false;
+
+    public bool IncludeBootLogo { get; set; } = false;
 
     public bool IncludeInstallerUI { get; set; } = false;
-    
+
     public bool IncludeFirmwareUpdate { get; set; } = false;
 
-    public List<ModuleLicense> Licenses { get; set; } = new();
+
 
     public bool OptimizedServiceManager { get; set; } = true;
 
@@ -73,18 +79,21 @@ public class PackageInformation : PackageHeader
         return path;
     }
 
-    public string GetOutputFullPath()
+    public string GetOutputFullPath(bool isCustomPackage = false)
     {
         if (PackageOutputDirectory == null)
             return String.Empty;
 
         string path = Path.Combine(Path.GetDirectoryName(originalFilePath), PackageOutputDirectory);
-        return Path.Combine(path, PackageName + PackageType.GetFileExtension());
+        if (isCustomPackage)
+            return Path.Combine(path, PackageName + ".custom" +PackageType.GetFileExtension());
+        else
+            return Path.Combine(path, PackageName + PackageType.GetFileExtension());
     }
 
-    public string GetOutputRelativePath()
+    public string GetOutputRelativePath(bool isCustomPackage = false)
     {
-        return Path.GetRelativePath(Path.GetDirectoryName(originalFilePath), GetOutputFullPath());
+        return Path.GetRelativePath(Path.GetDirectoryName(originalFilePath), GetOutputFullPath(isCustomPackage));
     }
 
     internal PackageHeader CopyAsPackageHeader(string signingKey)

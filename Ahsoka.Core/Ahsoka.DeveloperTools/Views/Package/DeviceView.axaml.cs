@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Ahsoka.DeveloperTools.Views;
 
-public partial class LicensingView : UserControl
+public partial class DeviceView : UserControl
 {
-    public LicensingView()
+    public DeviceView()
     {
         InitializeComponent();
     }

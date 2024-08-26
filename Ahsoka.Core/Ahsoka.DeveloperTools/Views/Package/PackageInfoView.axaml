@@ -170,26 +170,14 @@
 						<TextBlock Text="Execute Command:" Grid.Row="3" Grid.Column="0"/>
 						<TextBox Text="{Binding ExecCommand}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Width="325" TextWrapping="1" />
 
-						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Installer UI:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
+						<TextBlock IsVisible="{Binding IsOpenView}" Text="Optimize Services:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
 						<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
-							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeInstallerUI}" />
-							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray" 
-									   Text="Adds a component to updates the Installer UI on the Target" />
-						</StackPanel>
-						<TextBlock IsVisible="{Binding IsOpenView}" Text="Optimize Services:" Grid.Row="5" Margin="5,10" Grid.Column="0"/>
-						<StackPanel Orientation="Horizontal" Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3">
 							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding GenerateOptimizedServiceManager}" />
 							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray" 
 									   Text="Generates an optimized service manager executable (requires SDK)"
 									   ToolTip.Tip="Compiles an optimized executable which includes your extensions. This improves boot times and performance of services however you should disable this option if you need to remotely debug services"/>
 						</StackPanel>
-						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Firmware:" Grid.Row="6" Margin="5,10" Grid.Column="0"/>
-						<StackPanel Orientation="Horizontal" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="3">
-							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeFirmwareUpdate}"/>
-							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
-									   Text="Adds a delta Firmware Upgrader Component to the installer."
-									   ToolTip.Tip="Adds a delta upgrader component to your install package which upgrades the base image.  This does increase install times as well as require a reboot as part of the install process."/>
-						</StackPanel>
+					
 					</Grid>
 				</Border>
 

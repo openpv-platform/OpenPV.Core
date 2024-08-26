@@ -13,8 +13,6 @@ internal class InstallerUIComponent : PackageComponentBase
 
     public override Guid ComponentType => new("4194A78B-953F-414E-BBBB-C2D33B5F6C75");
 
-    public override bool IsRequiredComponent => false;
-
     public override string ComponentName => PackageName;
 
     protected override PackageComponent OnCreateFilePackageStream(string buildLocation,

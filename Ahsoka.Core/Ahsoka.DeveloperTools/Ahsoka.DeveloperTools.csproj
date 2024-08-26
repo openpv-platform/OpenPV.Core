@@ -91,8 +91,8 @@
 	  <Compile Update="Views\Package\DeveloperView.axaml.cs">
 	    <DependentUpon>DeveloperView.axaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Views\Package\LicensingView.axaml.cs">
-	    <DependentUpon>LicensingView.axaml</DependentUpon>
+	  <Compile Update="Views\Package\DeviceView.axaml.cs">
+	    <DependentUpon>DeviceView.axaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Package\PackageInfoView.axaml.cs">
 	    <DependentUpon>PackageInfoView.axaml</DependentUpon>

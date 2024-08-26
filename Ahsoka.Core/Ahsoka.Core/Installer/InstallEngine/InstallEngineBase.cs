@@ -2,6 +2,7 @@
 using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
+using Ahsoka.Services.System;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
@@ -14,6 +15,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.Installer.InstallEngine;
 
@@ -114,20 +116,55 @@ public class InstallEngineBase
     }
 
     public string CreateInstallPackage(string pemKey = null,
-        IProgress<PackageProgressInfo> progress = null)
+        IProgress<PackageProgressInfo> progress = null,
+        bool isCustomInstall = false)
     {
-        RunGeneratorCommands(progress);
+          bool appUpdate = true;
 
-        // Create Installer Items
-        List<InstallerPlugin> installedPlugins = RunInstallerPreReqs(progress);
+        if (!isCustomInstall)
+        {
+            // Enable All Exceipt Firmware and Installer UI
+            foreach (var item in Components)
+                item.IsEnabled = !(item is FirmwareUpdateComponent or InstallerUIComponent);
+
+            appUpdate = true;
+        }
+        else
+        {
+            foreach (var item in Components)
+            {
+                if (item is BeginInstallEngineComponent or EndInstallEngineComponent or CommandLineComponent) // Required
+                    item.IsEnabled = true;
+                else if (item is FirmwareUpdateComponent)
+                    item.IsEnabled = this.PackageInformation.IncludeFirmwareUpdate;
+                else if (item is StartLogoComponent)
+                    item.IsEnabled = this.PackageInformation.IncludeBootLogo;
+                else if (item is InstallerUIComponent)
+                    item.IsEnabled = this.PackageInformation.IncludeInstallerUI;
+                else
+                    item.IsEnabled = this.PackageInformation.IncludeApplication;
+            }
+
+            appUpdate = this.PackageInformation.IncludeApplication;
+        }
+
+
+        List<InstallerPlugin> installedPlugins = new();
+        if (appUpdate)
+        {
+            RunGeneratorCommands(progress);
+
+            // Create Installer Items
+            installedPlugins = RunInstallerPreReqs(progress);
+        }
 
         string applicationPath = PackageInformation.GetApplicationFullPath();
-        string outputPath = PackageInformation.GetOutputFullPath();
+        string outputPath = PackageInformation.GetOutputFullPath(isCustomInstall);
 
         if (!Directory.Exists(Path.GetDirectoryName(outputPath)))
             Directory.CreateDirectory(Path.GetDirectoryName(outputPath));
 
-        string outputPathRelative = PackageInformation.GetOutputRelativePath();
+        string outputPathRelative = PackageInformation.GetOutputRelativePath(isCustomInstall);
         progress?.Report(new PackageProgressInfo() { Message = $"Begin Package Creation at {outputPathRelative}" });
 
         // Check that Output Contains Command
@@ -158,6 +195,9 @@ public class InstallEngineBase
             // Execute Installer Pack Methods which add components if needed.
             foreach (var component in Components)
             {
+                if (!component.IsEnabled)
+                    continue;
+
                 if (cancelToken.IsCancellationRequested)
                     return "Process Cancelled";
 
@@ -168,6 +208,7 @@ public class InstallEngineBase
 
             // Open the File
             using FileStream fs = new(outputPath, FileMode.Create);
+
             // Write File
             WriteOutputPackage(PackageInformation, fs, data.Values.ToList(), pemKey);
         }

@@ -55,7 +55,7 @@
 						FontSize="18"
 						Text="Device"/>
 				</TabItem.Header>
-				<CustomerTools:LicensingView/>
+				<CustomerTools:DeviceView/>
 			</TabItem>
 			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
 				<TabItem.Header>

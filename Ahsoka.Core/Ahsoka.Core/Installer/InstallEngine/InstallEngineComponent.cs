@@ -15,7 +15,10 @@ internal abstract class InstallEngineComponent
 
     public abstract string ComponentName { get; }
 
-    public abstract bool IsRequiredComponent { get; }
+    public virtual bool IsEnabled { get; set; } = true;
+
+    [Obsolete()]
+    public virtual bool IsRequiredComponent { get; } 
     #endregion
 
     #region Public Methods
@@ -36,11 +39,7 @@ internal abstract class InstallEngineComponent
             if (data.ComponentType != ComponentType)
                 throw new ApplicationException("Component Type was not set on the Package Component");
         }
-        else if (this.IsRequiredComponent) // Debug Mode Skips Empty Packages
-        {
-            throw new ApplicationException($"The component {this.ComponentName} is required and was not found.");
-        }
-
+        
         progress?.Report(new PackageProgressInfo() { Message = $"  Finished {ComponentName}" });
 
         return data;

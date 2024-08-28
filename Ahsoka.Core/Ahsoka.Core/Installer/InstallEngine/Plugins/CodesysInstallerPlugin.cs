@@ -14,7 +14,7 @@ namespace Ahsoka.Installer.InstallEngine;
 
 internal class CodesysInstallerPlugin : InstallerPlugin
 {
-    internal override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
+    public override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
     {
         if (packageInformation.ApplicationType != ApplicationType.CODESYS)
             return;

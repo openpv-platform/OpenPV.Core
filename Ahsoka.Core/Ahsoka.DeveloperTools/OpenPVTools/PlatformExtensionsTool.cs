@@ -92,9 +92,13 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         var nugetVersion = new NuGetVersion(this.Version);
 
-        var version = await GetVersionToDownload(config, config.PackageName, nugetVersion.IsPrerelease);
+        try
+        {
+            var version = await GetVersionToDownload(config, config.PackageName, nugetVersion.IsPrerelease);
 
-        await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version.FirstOrDefault(), false, demoPath, false, true);
+            await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version.FirstOrDefault(), false, demoPath, false, true);
+        }
+        catch { Console.WriteLine($"Unable to Download Packages for {config.PackageName}"); }
     }
  
     protected override string GetVersionFilePath()

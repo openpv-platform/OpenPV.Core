@@ -43,7 +43,7 @@ public class InstallerPlugin
     /// <param name="additionalFiles"></param>
     /// <param name="info"></param>
     /// <param name="progress"></param>
-    internal virtual void AddAdditionalApplicationFiles(string buildLocation, 
+    public virtual void AddAdditionalApplicationFiles(string buildLocation, 
         Dictionary<string, string> attributes, 
         Dictionary<string, byte[]> additionalFiles,
         PackageInformation info, 

@@ -18,7 +18,7 @@ internal class StartupInstallerPlugin : InstallerPlugin
     public const string OverrideWorkingFolder = "OverrideWorkingFolder";
     public const string OverrideApplicationName = "OverrideAppName";
 
-    internal override void AddAdditionalApplicationFiles(string buildLocation, 
+    public override void AddAdditionalApplicationFiles(string buildLocation, 
         Dictionary<string, string> attributes, 
         Dictionary<string, byte[]> additionalFiles, 
         PackageInformation info, 

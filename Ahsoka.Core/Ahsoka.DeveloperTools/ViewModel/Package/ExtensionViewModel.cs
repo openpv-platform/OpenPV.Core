@@ -170,29 +170,33 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     private async Task GetVersions()
     {
         IsWorking = true;
-        List<Task> tasks = new List<Task>();
-        foreach (var item in SelectedExtensions.Union(AllExtensions))
+
+        try
         {
-            var taskItem = PlatformExtensionsTool.GetVersionToDownload(item.ExtensionConfiguration,
-                    item.ExtensionConfiguration.PackageName,
-                    this.preRelease)
-            .ContinueWith((s) =>
+            List<Task> tasks = new List<Task>();
+            foreach (var item in SelectedExtensions.Union(AllExtensions))
             {
-                if (s != null)
+                var taskItem = PlatformExtensionsTool.GetVersionToDownload(item.ExtensionConfiguration,
+                        item.ExtensionConfiguration.PackageName,
+                        this.preRelease)
+
+                .ContinueWith((s) =>
                 {
-                    item.AvailableVersions.Clear();
-                    item.AvailableVersions.AddRange(s.Result);
-                    item.AvailableVersion = s.Result.FirstOrDefault();
-                }
-            });
+                    if (s != null)
+                    {
+                        item.AvailableVersions.Clear();
+                        item.AvailableVersions.AddRange(s.Result);
+                        item.AvailableVersion = s.Result.FirstOrDefault();
+                    }
+                });
 
 
-            tasks.Add(taskItem);
+                tasks.Add(taskItem);
+            }
+
+            await Task.WhenAll(tasks.ToArray());
         }
-
-        await Task.WhenAll(tasks.ToArray());
-
-        IsWorking = false;
+        finally { IsWorking = false; }
     }
 
     public void AddExtension()
@@ -209,6 +213,12 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     {
         if (selectedAvailableExtension == null)
             return;
+
+        if (SelectedAvailableExtension.AvailableVersion == "0.0")
+        {
+            await ParentViewModel.ParentViewModel.Dialog.ShowDialog("Extension Not Available", "This extension not not currently available. This may be due to an incompatiblity with the currently released extension. Contact the extension developer for more information.", "Ok");
+            return;
+        }
 
         var selectedExtension = selectedAvailableExtension;
         CancellationTokenSource source = new CancellationTokenSource();

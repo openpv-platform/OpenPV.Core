@@ -1,7 +1,7 @@
 ﻿{
   "extensionName": "Bluetooth Classic Extension",
-  "packageName": "Ahsoka.Bluetooth.Classic",
-  "uxpackageName": "Ahsoka.Bluetooth.UX",
+  "packageName": "Ahsoka.Extensions.Bluetooth.Classic",
+  "uxpackageName": "Ahsoka.Extensions.Bluetooth.UX",
   "uxViewModelName": "BluetoothViewModel",
   "serviceConfigurations": [
     {

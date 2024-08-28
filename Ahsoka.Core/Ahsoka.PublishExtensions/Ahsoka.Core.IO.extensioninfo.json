@@ -1,6 +1,6 @@
 ﻿{
   "extensionName": "IO Service Extension",
-  "packageName": "Ahsoka.IO",
+  "packageName": "Ahsoka.Extensions.IO",
   "serviceConfigurations": [
     {
       "socketType": "TcpSocket",

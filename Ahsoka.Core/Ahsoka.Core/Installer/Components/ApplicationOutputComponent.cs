@@ -9,17 +9,26 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Net.Mime;
 using System.Text;
 
 namespace Ahsoka.Installer.Components;
 
+/// <summary>
+/// Constant Values for Application Installer
+/// </summary>
+public class ApplicationOutputConstants
+{
+    /// <summary>
+    /// Folder name for AppInfo
+    /// </summary>
+    public const string AppInfoFolder = ".appinfo";
+}
+
+
 internal class ApplicationOutputComponent : FileSystemComponentBase
 {
     #region Fields
-    public const string AppInfoFolder = ".appinfo";
-    public const string CoProcessorFolder = ".coprocessor";
+    public const string CoProcessorFolder = ".coprocessor"; 
     public const string AppNameFile = "AppName.txt";
     public const string AppVersionFile = "AppVersion.txt";
     public const string AppTypeFile = "AppType.txt";
@@ -57,10 +66,10 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
     {
         // Add Version Info to .appinfo Folder
         if (info.ApplicationVersion != null)
-            additionalFiles[$"{AppInfoFolder}/{AppVersionFile}"] = Encoding.UTF8.GetBytes(info.ApplicationVersion);
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AppVersionFile}"] = Encoding.UTF8.GetBytes(info.ApplicationVersion);
 
         if (info.PackageDescription != null)
-            additionalFiles[$"{AppInfoFolder}/{AppDescriptionFile}"] = Encoding.UTF8.GetBytes(info.PackageDescription);
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AppDescriptionFile}"] = Encoding.UTF8.GetBytes(info.PackageDescription);
 
         string pathToCert = PackageInformation.GetPackageCertPath(info.ServiceInfo.RuntimeConfiguration.ServiceKey, KeyTypes.ServiceKey);
         if (File.Exists(pathToCert))
@@ -75,11 +84,11 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
                 TokenPublicKey = keyData.PublicKey
                 // We Do not send Private Key to Display
             };
-            additionalFiles[$"{AppInfoFolder}/{ServiceSecurityFile}"] = Encoding.UTF8.GetBytes(JsonUtility.Serialize(securityConfig));
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{ServiceSecurityFile}"] = Encoding.UTF8.GetBytes(JsonUtility.Serialize(securityConfig));
         }
 
-        additionalFiles[$"{AppInfoFolder}/{AppNameFile}"] = Encoding.UTF8.GetBytes(info.PackageName);
-        additionalFiles[$"{AppInfoFolder}/{AppTypeFile}"] = Encoding.UTF8.GetBytes(info.ApplicationType.ToString());
+        additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AppNameFile}"] = Encoding.UTF8.GetBytes(info.PackageName);
+        additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AppTypeFile}"] = Encoding.UTF8.GetBytes(info.ApplicationType.ToString());
       
         // Attributes to add to the Install Package
         Dictionary<string, string> attributes = new()
@@ -169,8 +178,8 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             appPlugin?.ModifyTargetInstall(workingDirectory, appCommand);
 
             // Should we use add the CommandLine App?
-            var autoStart = File.Exists(Path.Combine(workingDirectory, ApplicationOutputComponent.AppInfoFolder,"AutoStartEnabled"));
-            var appType = File.ReadAllText(Path.Combine(workingDirectory, ApplicationOutputComponent.AppInfoFolder, ApplicationOutputComponent.AppTypeFile));
+            var autoStart = File.Exists(Path.Combine(workingDirectory, ApplicationOutputConstants.AppInfoFolder,"AutoStartEnabled"));
+            var appType = File.ReadAllText(Path.Combine(workingDirectory, ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppTypeFile));
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"AutoStart: {autoStart}  AppType: {appType}" });
 
             if (autoStart || appType != ApplicationType.Dotnet.ToString())

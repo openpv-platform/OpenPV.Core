@@ -1,7 +1,7 @@
 ﻿{
   "extensionName": "Storyboard Extension",
-  "packageName": "Ahsoka.Storyboard",
-  "uxpackageName": "Ahsoka.Storyboard.Ux",
+  "packageName": "Ahsoka.Extensions.Storyboard",
+  "uxpackageName": "Ahsoka.Extensions.Storyboard.Ux",
   "uxViewModelName": "StoryboardViewModel",
   "sdkGeneratorName": "StoryboardCodeGenerator",
   "serviceConfigurations": [],

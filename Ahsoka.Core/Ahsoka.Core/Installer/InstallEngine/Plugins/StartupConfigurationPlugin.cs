@@ -68,12 +68,12 @@ internal class StartupInstallerPlugin : InstallerPlugin
 
         if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.BeforeApplicationStart)
         {
-            additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
             preScript.Append($"\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} & ");
         }
         else if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.AfterApplicationStart)
         {
-            additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
             postScript.Append($"\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} &");
         }
 
@@ -111,8 +111,8 @@ internal class StartupInstallerPlugin : InstallerPlugin
         ProtoBuf.Serializer.Serialize(stream, info.ServiceInfo.RuntimeConfiguration);
         jsonData = Encoding.UTF8.GetBytes( JsonUtility.Serialize(info.ServiceInfo.RuntimeConfiguration));
 
-        additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/{AutoStartFileName}"] = stream.ToArray(); // Place Copy Here as Indicator that we are using Auto Start.
-        additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/{AutoStartFileName + ".json"}"] = jsonData; // Place JSON so we can read it.
+        additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AutoStartFileName}"] = stream.ToArray(); // Place Copy Here as Indicator that we are using Auto Start.
+        additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AutoStartFileName + ".json"}"] = jsonData; // Place JSON so we can read it.
 
         if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup != StartOptions.NoAutoStart || info.ApplicationType != ApplicationType.Dotnet)
             additionalFiles[pathRelativeToExecutable + $"/{AutoStartFileName}"] = stream.ToArray();

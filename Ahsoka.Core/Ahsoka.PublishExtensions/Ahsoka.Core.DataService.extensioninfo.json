@@ -1,6 +1,6 @@
 ﻿{
   "extensionName": "Data Service Extension",
-  "packageName": "Ahsoka.DataService",
+  "packageName": "Ahsoka.Extensions.DataService",
   "uxpackageName": "",
   "uxViewModelName": "",
   "serviceConfigurations": [

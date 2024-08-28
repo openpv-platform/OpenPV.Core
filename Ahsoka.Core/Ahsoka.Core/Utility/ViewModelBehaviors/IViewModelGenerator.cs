@@ -98,7 +98,7 @@ public class GeneratorUtility
     /// <param name="generatorOutput"></param>
     /// <param name="nameSpace"></param>
     /// <param name="isHeader">Indicates if generator is creating a header or implementation for CPP.  Unused or other languages</param>
-    internal void ExtendHeader(StringBuilder generatorOutput, string nameSpace, bool isHeader = false)
+    public void ExtendHeader(StringBuilder generatorOutput, string nameSpace, bool isHeader = false)
     {
         foreach (var item in plugins)
             item.ExtendHeader(generatorOutput, nameSpace, isHeader);
@@ -110,7 +110,7 @@ public class GeneratorUtility
     /// </summary>
     /// <param name="generatorOutput"></param>
     /// <param name="className"></param>
-    internal void ExtendConstructor(StringBuilder generatorOutput, string className)
+    public void ExtendConstructor(StringBuilder generatorOutput, string className)
     {
         foreach (var item in plugins)
             item.ExtendConstructor(generatorOutput, className);
@@ -122,7 +122,7 @@ public class GeneratorUtility
     /// </summary>
     /// <param name="generatorOutput"></param>
     /// <param name="className"></param>
-    internal void ExtendAfterClassOutput(StringBuilder generatorOutput, string className)
+    public void ExtendAfterClassOutput(StringBuilder generatorOutput, string className)
     {
         foreach (var item in plugins)
             item.ExtendAfterClassOutput(generatorOutput, className);
@@ -136,7 +136,7 @@ public class GeneratorUtility
     /// <param name="generatorOutput"></param>
     /// <param name="className"></param>
     /// <param name="isHeader">Indicates if generator is creating a header or implementation for CPP.  Unused or other languages</param>
-    internal void ExtendMethods(StringBuilder generatorOutput, string className, bool isHeader)
+    public void ExtendMethods(StringBuilder generatorOutput, string className, bool isHeader)
     {
         foreach (var item in plugins)
             item.ExtendMethods(generatorOutput, className, isHeader);
@@ -150,7 +150,7 @@ public class GeneratorUtility
     /// <param name="propertyName"></param>
     /// <param name="dataType"></param>
     /// <returns></returns>
-    internal void ExtendSetter(StringBuilder generatorOutput, string propertyName, string dataType)
+    public void ExtendSetter(StringBuilder generatorOutput, string propertyName, string dataType)
     {
         foreach (var item in plugins)
             item.ExtendSetter(generatorOutput, propertyName, dataType);

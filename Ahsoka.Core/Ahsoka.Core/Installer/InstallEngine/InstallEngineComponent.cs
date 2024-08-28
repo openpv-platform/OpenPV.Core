@@ -7,22 +7,28 @@ using System.Runtime.CompilerServices;
 
 namespace Ahsoka.Installer.InstallEngine;
 
-
-internal abstract class InstallEngineComponent
+/// <summary>
+/// Component Base for Installer Slots
+/// </summary>
+public abstract class InstallEngineComponent
 {
     #region Properties
+    /// <summary>
+    /// GUID Used to Track Components
+    /// </summary>
     public abstract Guid ComponentType { get; }
 
+    /// <summary>
+    /// Name of the Component / Slot
+    /// </summary>
     public abstract string ComponentName { get; }
 
-    public virtual bool IsEnabled { get; set; } = true;
+    internal virtual bool IsEnabled { get; set; } = true;
 
-    [Obsolete()]
-    public virtual bool IsRequiredComponent { get; } 
     #endregion
 
     #region Public Methods
-    public PackageComponent Pack(string buildLocation,
+    internal PackageComponent Pack(string buildLocation,
         List<InstallerPlugin> installedPlugins,
         PackageInformation info,
         IProgress<PackageProgressInfo> progress = null)
@@ -45,7 +51,7 @@ internal abstract class InstallEngineComponent
         return data;
     }
 
-    public void Cleanup(string buildLocation,
+    internal void Cleanup(string buildLocation,
         PackageComponent componentData,
         PackageInformation info,
         IProgress<PackageProgressInfo> progress = null)
@@ -53,7 +59,7 @@ internal abstract class InstallEngineComponent
         OnCleanup(buildLocation, componentData, info, progress);
     }
 
-    public InstallResult InstallComponent(InstallContext context, PackageComponent item)
+    internal InstallResult InstallComponent(InstallContext context, PackageComponent item)
     {
         context.Progress?.Report(new InstallProgressInfo() { Message = $"Installing {ComponentName}", PercentComplete = 0 });
         var result = OnInstallComponent(context, item);
@@ -66,16 +72,37 @@ internal abstract class InstallEngineComponent
     #endregion
 
     #region Abstract
+    /// <summary>
+    /// Handles Creating the Package
+    /// </summary>
+    /// <param name="buildLocation"></param>
+    /// <param name="info"></param>
+    /// <param name="installedPlugins"></param>
+    /// <param name="progress"></param>
+    /// <returns></returns>
     protected abstract PackageComponent OnCreatePackageStream(string buildLocation,
         PackageInformation info,
         List<InstallerPlugin> installedPlugins,
         IProgress<PackageProgressInfo> progress = null);
 
+    /// <summary>
+    ///  Handles Cleanup of the Component after Packageing
+    /// </summary>
+    /// <param name="buildLocation"></param>
+    /// <param name="componentData"></param>
+    /// <param name="info"></param>
+    /// <param name="progress"></param>
     protected abstract void OnCleanup(string buildLocation,
         PackageComponent componentData,
         PackageInformation info,
         IProgress<PackageProgressInfo> progress = null);
 
+    /// <summary>
+    /// Handles any On Device Work involved in Installing the Component
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="item"></param>
+    /// <returns></returns>
     protected abstract InstallResult OnInstallComponent(InstallContext context, PackageComponent item);
 
     #endregion

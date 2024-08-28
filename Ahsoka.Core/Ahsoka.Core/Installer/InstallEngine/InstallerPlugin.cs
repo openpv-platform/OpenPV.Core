@@ -7,7 +7,10 @@ using System.Threading;
 
 namespace Ahsoka.Installer.InstallEngine;
 
-internal class InstallerPlugin
+/// <summary>
+/// Base Class for Plugins
+/// </summary>
+public class InstallerPlugin
 {
     internal static InstallerPlugin GetApplicationPlugin(ApplicationType applicationType)
     {

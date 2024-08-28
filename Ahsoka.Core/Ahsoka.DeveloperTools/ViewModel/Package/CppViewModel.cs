@@ -221,7 +221,7 @@ internal class CppViewModel : ViewModelBase
 
                         ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput));
 
-                        AddRuntimeConfig(Path.Combine(directoryForFramework, ApplicationOutputComponent.AppInfoFolder));
+                        AddRuntimeConfig(Path.Combine(directoryForFramework, ApplicationOutputConstants.AppInfoFolder));
                     }
 
                     return DotNetViewModel.InstallCommandLine(directoryForFramework, platform, parentViewModel, null);

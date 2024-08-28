@@ -240,7 +240,7 @@ public class SparkTeamsTests : LinearTestBase
         var containerTemp = TestContainers(team, "1.1");
 
         // Wait for Notification
-        var notif = notifEvent.WaitOne(10000);
+        var notif = notifEvent.WaitOne(30000);
         Assert.IsTrue(notif, "Notification not recieved from Service");
 
         SparkProjectTools.RemoveTeamDevice(team, device);

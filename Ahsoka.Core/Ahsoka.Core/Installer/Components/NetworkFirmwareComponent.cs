@@ -27,7 +27,7 @@ internal class NetworkFirmwareComponent : InstallEngineComponent
         IProgress<PackageProgressInfo> progress = null)
     {
         var hardware = HardwareInfo.GetHardwareInfo(info.PlatformFamily, info.PlatformQualifier);
-        var networkFirmware = GetPlatformFirmware(hardware);
+        var networkFirmware = NetworkAdapterFirmware.GetPlatformFirmware(hardware);
         if (networkFirmware == null)
             return null;
 
@@ -61,7 +61,7 @@ internal class NetworkFirmwareComponent : InstallEngineComponent
 
             var package = context.InstallEngine.PackageContents;
             var hardware = SystemInfo.HardwareInfo; // Pull Installed System Hardware Info.
-            var networkFirmware = GetPlatformFirmware(hardware);
+            var networkFirmware = NetworkAdapterFirmware.GetPlatformFirmware(hardware);
             networkFirmware?.InstallLocal(pathToFirmware);
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Installed Network Firmware Successfully" });
         }
@@ -73,7 +73,18 @@ internal class NetworkFirmwareComponent : InstallEngineComponent
 
         return InstallResult.Success;
     }
+}
 
+/// <summary>
+///  Base Class for Accessing Network Firmware
+/// </summary>
+public class NetworkAdapterFirmware
+{ 
+    /// <summary>
+    /// Get Firmware Base For Network Adapter
+    /// </summary>
+    /// <param name="info"></param>
+    /// <returns></returns>
     public static INetworkFirmwareBase GetPlatformFirmware(HardwareInfo info)
     {
         if (info.NetworkInfo.AdapterInfoList.Count == 0)

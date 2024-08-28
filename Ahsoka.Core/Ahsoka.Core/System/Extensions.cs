@@ -305,7 +305,7 @@ public class Extensions
                     if(item.EndsWith(info.PackageName + ".dll"))
                     {
                         var asm = buildContext.LoadFromAssemblyPath(item);
-                        var typeToAdd = asm.ExportedTypes.First();
+                        var typeToAdd = asm.ExportedTypes.First(x=>!x.IsAbstract && !x.IsGenericType && x.IsPublic);
                         string loaderLine = $"        Ahsoka.System.Extensions.AddPrivateExtension(typeof({typeToAdd.FullName}).Assembly);";
                         references.AppendLine(loaderLine);
                     }

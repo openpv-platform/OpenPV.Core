@@ -31,6 +31,6 @@ internal class OpenViewRemoteTargetTool : LinuxRemoteTargetTool
     protected override void InstallNetwork(HardwareInfo info, SshClient sshClient, ScpClient scpClient)
     {
         if (!tokenSource.IsCancellationRequested)
-            NetworkFirmwareComponent.GetPlatformFirmware(info)?.InstallRemote(info, sshClient, scpClient, progress);
+            NetworkAdapterFirmware.GetPlatformFirmware(info)?.InstallRemote(info, sshClient, scpClient, progress);
     }
 }

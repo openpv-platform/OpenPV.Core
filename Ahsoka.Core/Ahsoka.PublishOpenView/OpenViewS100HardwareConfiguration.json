@@ -16,31 +16,6 @@
     "screenHeight": "800",
     "screenDpi": "96"
   },
-  "bluetoothInfo": {
-    "bluetoothAdapters": [
-      {
-        "index": "0",
-        "deviceInterfacePath": "/org/bluez/hci0",
-        "stack": "BlueZ"
-      }
-    ]
-  },
-  "canInfo": {
-    "canPorts": [
-      {
-        "port": "0",
-        "coprocessorSerialPath": "/dev/ttyRPMSG0",
-        "socketCanInterfacePath": "can0",
-        "coprocessorFirmwarePath": "/lib/firmware/rproc-m4-fw"
-      },
-      {
-        "port": "1",
-        "coprocessorSerialPath": "/dev/ttyRPMSG0",
-        "socketCanInterfacePath": "can1",
-        "coprocessorFirmwarePath": "/lib/firmware/rproc-m4-fw"
-      }
-    ]
-  },
   "networkInfo": {
     "adapterInfoList": [
       {
@@ -64,11 +39,5 @@
         "macAddress": ""
       }
     ]
-  },
-  "ioInfo": {
-    "analogInputs": [ 1, 2 ],
-    "analogOutputs": [],
-    "digitalInputs": [ 1, 2 ],
-    "digitalOutputs": [ 1, 2 ]
   }
 }

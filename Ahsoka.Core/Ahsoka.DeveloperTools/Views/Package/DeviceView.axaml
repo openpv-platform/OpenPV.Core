@@ -54,7 +54,8 @@
 				<Border IsVisible="{Binding IsOpenView}" Margin="40,35,40,0" Padding="3" BorderBrush="WhiteSmoke" 
 						BorderThickness="0,1,0,1">
 					<Grid Margin="5,15,5,30" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*,*,">
-						<TextBlock Text="Custom Install Components  " Background="White" Margin="-10,-30"  FontSize="15"
+						<TextBlock Text="Custom Install Components  " 
+								   ToolTip.Tip="Custom Installs allow you to create installs which include optional features or exclude normally installed features." Background="White" Margin="-10,-30"  FontSize="15"
 								   Foreground="SteelBlue" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"  Grid.Column="0"/>
 
 						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Application:" Grid.Row="1" Margin="5,10" Grid.Column="0"/>
@@ -82,9 +83,23 @@
 							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeBootLogo}"/>
 							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
 									   Text="Updates the Boot Logo"
-									   ToolTip.Tip="Adds a delta upgrader component to your install package which upgrades the base image.  This does increase install times as well as require a reboot as part of the install process."/>
+									   ToolTip.Tip="Boot logos are always included in the default Application but can be excluded from custom packages."/>
 						</StackPanel>
 
+					</Grid>
+				</Border>
+				<Border IsVisible="{Binding IsOpenView}"
+							Margin="40,20,40,40" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
+						<TextBlock Text="Screen Options " HorizontalAlignment="Left" FontSize="15"
+								 Foreground="SteelBlue"  Margin="-10,-40" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"/>
+						<TextBlock Text="Screen Orientation:" Grid.Row="1" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+							<ComboBox  SelectedItem="{Binding SystemOrientation}" ItemsSource="{Binding Orientations}" Grid.Row="4" Grid.Column="1" Width="250"  />
+							<TextBlock Text="(Rotates Logo and Installer)" ToolTip.Tip="Orientation is available via the SYSTEM_ORIENTATION environment variable." Grid.Row="1" Grid.Column="0"/>
+						</StackPanel>
+
+					
 					</Grid>
 				</Border>
 				<Border IsVisible="{Binding IsOpenView}"
@@ -92,14 +107,8 @@
 					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
 						<TextBlock Text="Boot Logo Setup " HorizontalAlignment="Left" FontSize="15"
 								 Foreground="SteelBlue"  Margin="-10,-40" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"/>
-						<TextBlock Text="System Orientation:" Grid.Row="1" Grid.Column="0"/>
-						<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
-							<ComboBox  SelectedItem="{Binding SystemOrientation}" ItemsSource="{Binding Orientations}" Grid.Row="4" Grid.Column="1" Width="250"  />
-							<TextBlock Text="(Rotates Logo and Installer)" ToolTip.Tip="Orientation is available via the SYSTEM_ORIENTATION environment variable." Grid.Row="1" Grid.Column="0"/>
-						</StackPanel>
 
-						<TextBlock ToolTip.Tip="Path where your development tool outputs your application files."
-								 Text="Startup Logo:" Grid.Row="2" Grid.Column="0"/>
+						<TextBlock Text="Startup Logo:" Grid.Row="2" Grid.Column="0"/>
 						<Button  Margin="5,0"  Grid.Row="2" Grid.Column="2" Content="Choose Path..." Command="{Binding SetStartLogo}"/>
 						<TextBox Text="{Binding StartupLogoPath}" Grid.Row="2" Grid.Column="1"  Width="280" TextWrapping="1" IsReadOnly="True"/>
 

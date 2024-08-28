@@ -1,6 +1,6 @@
 ﻿{
   "extensionName": "Bluetooth LE Extension",
-  "packageName": "Ahsoka.Core.Bluetooth.LE",
+  "packageName": "Ahsoka.Bluetooth.LE",
   "serviceConfigurations": [
     {
       "socketType": "TcpSocket",

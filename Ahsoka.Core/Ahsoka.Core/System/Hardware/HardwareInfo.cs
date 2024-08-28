@@ -34,18 +34,18 @@ public partial class HardwareInfo : ICanDeserializeBase
     /// Information about the Platform and Factory Defined Information such as Serial Number / Part Number. 
     /// </summary>
     public FactoryInfo FactoryInfo { get; set; }
-
-    /// <summary>
-    /// Information about the supported Bluetooth Modules on the system.
-    /// </summary>
-    public BluetoothHardwareInfo BluetoothInfo { get; set; }
-
+    
     /// <summary>
     /// Information about the supported Network Interfaces on the system.
     /// </summary>
     public NetworkHardwareInfo NetworkInfo { get; set; }
 
-    /// <summary>
+    /*/// <summary>
+    /// Information about the supported Bluetooth Modules on the system.
+    /// </summary>
+    public BluetoothHardwareInfo BluetoothInfo { get; set; }
+
+   /// <summary>
     /// Information about the support Raw IO for the system.
     /// </summary>
     public IOHardwareInfo IOInfo { get; set; }
@@ -53,7 +53,7 @@ public partial class HardwareInfo : ICanDeserializeBase
     /// <summary>
     /// Information about the support Raw IO for the system.
     /// </summary>
-    public CANHardwareInfo CANInfo { get; set; }
+    public CANHardwareInfo CANInfo { get; set; }*/
 
     /// <summary>
     /// Information about the support Raw IO for the system.
@@ -116,14 +116,14 @@ public partial class HardwareInfo : ICanDeserializeBase
     {
         if (propertyName == "factoryInfo")
             return FactoryInfo = new();
-        else if (propertyName == "bluetoothInfo")
-            return BluetoothInfo = new();
         else if (propertyName == "networkInfo")
             return NetworkInfo = new();
+        /*else if (propertyName == "bluetoothInfo")
+            return BluetoothInfo = new();
         else if (propertyName == "ioInfo")
             return IOInfo = new();
         else if (propertyName == "canInfo")
-            return CANInfo = new();
+            return CANInfo = new();*/
         else if (propertyName == "screenInfo")
             return ScreenInfo = new();
 

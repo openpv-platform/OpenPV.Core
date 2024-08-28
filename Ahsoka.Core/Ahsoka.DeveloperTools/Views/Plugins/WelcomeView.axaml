@@ -69,11 +69,11 @@
 							<Border VerticalAlignment="Center"  Width="65" Height="50" BorderBrush="LightSteelBlue" BorderThickness="1" Padding="4">
 								<StackPanel >
 									<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Connection"></material:MaterialIcon>
-									<TextBlock Foreground="DimGray" HorizontalAlignment="Center" FontSize="12"  Text="Displays"/>
+									<TextBlock Foreground="DimGray" HorizontalAlignment="Center" FontSize="12"  Text="Targets"/>
 								</StackPanel>
 							</Border>
 							<TextBlock  FontFamily="11" VerticalAlignment="Center" Width="500" Margin="15,0" TextWrapping="Wrap"
-									 Text="From the Displays Tool you can configure communication with your OpenView Display.  Here you can access the 'Flash' tools as well as 'Prep' and 'Install' Software Packages to the display."
+									 Text="From the Targets Tool you can configure communication with your OpenView Display.  Here you can access the 'Flash' tools as well as 'Prep' and 'Install' Software Packages to the display."
 									   Foreground="Gray" FontStyle="Italic"/>
 						</StackPanel>
 

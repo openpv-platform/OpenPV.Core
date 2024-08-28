@@ -30,7 +30,6 @@ public class PackageInformation : PackageHeader
     public string PackageSigningCertFile { get; set; }
     public List<ModuleLicense> Licenses { get; set; } = new();
 
-
     public bool IncludeApplication { get; set; } = false;
 
     public bool IncludeBootLogo { get; set; } = false;
@@ -38,8 +37,6 @@ public class PackageInformation : PackageHeader
     public bool IncludeInstallerUI { get; set; } = false;
 
     public bool IncludeFirmwareUpdate { get; set; } = false;
-
-
 
     public bool OptimizedServiceManager { get; set; } = true;
 

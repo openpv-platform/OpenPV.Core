@@ -1,7 +1,7 @@
 ﻿{
   "extensionName": "CAN Service Extension",
-  "packageName": "Ahsoka.Core.Can",
-  "uxpackageName": "Ahsoka.Core.Can.UX",
+  "packageName": "Ahsoka.Can",
+  "uxpackageName": "Ahsoka.Can.UX",
   "uxViewModelName": "CanSetupViewModel",
   "sdkGeneratorName": "CanCodeGenerator",
   "serviceConfigurations": [

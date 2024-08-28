@@ -16,15 +16,6 @@
     "screenHeight": "480",
     "screenDpi": "96"
   },
-  "bluetoothInfo": {
-    "bluetoothAdapters": [
-      {
-        "index": "0",
-        "deviceInterfacePath": "/org/bluez/hci0",
-        "stack": "BlueZ"
-      }
-    ]
-  },
   "networkInfo": {
     "adapterInfoList": [
       {
@@ -35,11 +26,5 @@
         "module": "esp32"
       }
     ]
-  },
-  "ioInfo": {
-    "analogInputs": [],
-    "analogOutputs": [],
-    "digitalInputs": [],
-    "digitalOutputs": []
   }
 }

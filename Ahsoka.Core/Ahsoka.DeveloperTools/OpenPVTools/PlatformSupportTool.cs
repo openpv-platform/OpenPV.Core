@@ -1,12 +1,13 @@
 ﻿using Ahsoka.DeveloperTools.ViewModel;
-using EnovationCloud.Core.DataTransferObjects;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
+using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.IO;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Text;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -102,24 +103,49 @@ internal class PlatformSupportTool : SparkToolBase
             builder.AppendLine($"- {folderName} ({version})");
         }
 
+        string firmwareFileName = GetFirmwareVersionFile();
+        if (firmwareFileName != null)
+        {
+            string firmwareFolder = localPath + "_Firmware";
+            string imageFile = "image.*." + firmwareFileName.Replace("Firmware_","");
+            string fileName = Directory.EnumerateFiles(firmwareFolder, imageFile).FirstOrDefault();
+            string versionNumber = this.Version;
+
+            if (File.Exists(fileName))
+                versionNumber = Path.GetFileNameWithoutExtension(fileName).Replace("image.", "");
+
+            builder.AppendLine($"- Firmware ({versionNumber})");
+        }
+
+
         return builder.ToString();
     }
 
     private void UpdateLocalTool()
     {
-        // Look for "Default Plaform Support folder first (may be in the Repo instead of AppData).
+        string imageFileName = string.Empty; ;
+
+
+        // Find Path to Support Folder (Changes based on Running in Development)
         string firmwareFolder = string.Empty;
-        try { firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily), "Firmware"); }
+        try
+        {
+            firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily));
+            string firmwareFileName = GetFirmwareVersionFile(firmwareFolder);
+            if (firmwareFileName != null)
+            {
+                string firmwareLocation = firmwareFolder + "_Firmware";
+                string imageFile = "image.*." + firmwareFileName.Replace("Firmware_", "");
+                imageFileName = Directory.EnumerateFiles(firmwareLocation, imageFile).FirstOrDefault();
+            }
+        }
         catch { }
-
-        if (!Path.Exists(firmwareFolder))
-            firmwareFolder = Path.Combine(Path.GetDirectoryName(LocalPath), "Firmware"); // Fall back to Path passed in
-
-        if (Directory.Exists(firmwareFolder))
+      
+        if (File.Exists(imageFileName))
             if (PlatformFamily == PlatformFamily.OpenViewLinux)
-                this.firmwareTool = new PlatformFirmwareTool(firmwareFolder, PlatformFamily);
+                this.firmwareTool = new PlatformFirmwareTool(imageFileName, PlatformFamily);
             else if (PlatformFamily == PlatformFamily.OpenViewLinuxPro)
-                this.firmwareTool = new PlatformProFirmwareTool(firmwareFolder, PlatformFamily);
+                this.firmwareTool = new PlatformProFirmwareTool(imageFileName, PlatformFamily);
 
         // Reload Hardware next time its requested.
         HardwareInfo.LoadHardwareInfo(CustomerToolPaths.GetToolPath("PlatformSupport"));
@@ -128,12 +154,44 @@ internal class PlatformSupportTool : SparkToolBase
     protected override async Task ExecuteDownload(IToolViewModel toolVM, CancellationTokenSource cancellationToken)
     {
         string value = Path.GetDirectoryName(LocalPath);
+       
         if (Directory.Exists(value))
             Directory.Delete(value, true);
 
-        await ExecuteDownloadInternal(toolVM, LocalPath, cancellationToken);
+        await Task.Run(() =>
+        {
+            ExecuteDownloadInternal(toolVM, LocalPath, cancellationToken).GetAwaiter().GetResult();
 
-        UpdateLocalTool();
+            string firmwareFileName = GetFirmwareVersionFile();
+
+            // Fetch Firmware if Not Available
+            if (firmwareFileName != null)
+            {
+                string firmwareFolder = value + "_Firmware";
+                string pathToDownload = Path.Combine(firmwareFolder, firmwareFileName);
+                string pathToFolder = Path.Combine(firmwareFolder, Path.GetFileNameWithoutExtension(pathToDownload));
+                if (!Directory.Exists(pathToFolder))
+                {
+                    ExecuteDownloadInternal(toolVM, pathToDownload, cancellationToken, false, pathToFolder).GetAwaiter().GetResult();
+                    File.Delete(pathToDownload);
+                }
+            }
+            
+            UpdateLocalTool();
+        });
+
+        
+    }
+
+    private string GetFirmwareVersionFile(string overrideLocal = "")
+    {
+        string value = overrideLocal == string.Empty ? Path.GetDirectoryName(LocalPath) : overrideLocal;
+
+        string fileName =  Path.Combine(Path.Combine(value), this.PlatformFamily.ToString() + "_Firmware.zip.customertools.version");
+        if (File.Exists(fileName))
+            return File.ReadAllText(fileName).TrimEnd();
+        else
+            return null;
     }
 
     protected override void OnRemove(string path)

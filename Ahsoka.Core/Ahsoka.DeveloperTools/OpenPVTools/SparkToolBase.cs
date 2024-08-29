@@ -35,7 +35,7 @@ internal abstract class SparkToolBase : OpenPVToolBase
         return false;
     }
 
-    protected async Task ExecuteDownloadInternal(IToolViewModel toolVM, string path, CancellationTokenSource cancellationToken, bool writeVersion = true)
+    protected async Task ExecuteDownloadInternal(IToolViewModel toolVM, string path, CancellationTokenSource cancellationToken, bool writeVersion = true, string overrideLocal = "")
     {
         await Task.Run(async () =>
         {
@@ -62,6 +62,8 @@ internal abstract class SparkToolBase : OpenPVToolBase
                 if (extractInPlace)
                 {
                     string extractPath = Path.GetDirectoryName(LocalPath);
+                    if (overrideLocal != "")
+                        extractPath = overrideLocal;
 
                     PackagingUtility.ExtractPackage(path, extractPath, null, null);
                     if (File.Exists(LocalPath))

@@ -1,0 +1,7 @@
+﻿<Project>
+	<PropertyGroup>
+		<OpenViewBSP>3.2024-08-23T163333.openview.kirkstone.e8c0030</OpenViewBSP>
+		<OpenViewProBSP>3.2024-08-06T110843.openviewpro.kirkstone.6d309b5</OpenViewProBSP>
+		<Download_Root>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</Download_Root>
+	</PropertyGroup>
+</Project>

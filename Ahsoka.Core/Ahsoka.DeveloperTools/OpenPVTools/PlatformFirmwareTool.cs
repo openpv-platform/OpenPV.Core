@@ -19,9 +19,6 @@ internal class PlatformFirmwareTool : OpenPVToolBase
     PlatformFamily family = PlatformFamily.Any;
     public PlatformFirmwareTool(string pathToFirmware, PlatformFamily family) 
     {
-
-        pathToFirmware = Directory.EnumerateFiles(pathToFirmware,"image.*.zip", SearchOption.AllDirectories).FirstOrDefault();
-
         this.family = family;
         this.PackageType = "Target Firmware";
         this.Description = "Distribution for " + family;

@@ -1,20 +1,14 @@
 ﻿using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.System;
-using Azure.Storage.Blobs.Models;
-using EnovationCloud.Core.DataTransferObjects;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ahsoka.DeveloperTools;
-
 
 internal class PlatformProFirmwareTool : PlatformFirmwareTool
 {
@@ -23,8 +17,6 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
 
     public PlatformProFirmwareTool(string pathToFirmware, PlatformFamily family) : base(pathToFirmware, family)
     {
-        pathToFirmware = Directory.EnumerateFiles(pathToFirmware, "image.*.zip", SearchOption.AllDirectories).FirstOrDefault();
-
         this.family = family;
         this.PackageType = "Target Firmware";
         this.Description = "Distribution for " + family;

@@ -1,21 +1,46 @@
 ﻿using Ahsoka.Installer;
 using Ahsoka.Utility;
+using ProtoBuf.Meta;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata;
 
 namespace Ahsoka.ServiceFramework;
 
 /// <summary>
 /// Collection of Known Parameter Info for a Service
 /// </summary>
-public class ServiceParameterData : List<ParameterData>
+public class SystemParameterData : List<ParameterData>
 {
     /// <summary>
     /// Name of the Parameter
     /// </summary>
-    public string Service { get; set; }
+    public string SystemName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Assign Service and Keys to All Objects
+    /// </summary>
+    /// <param name="service"></param>
+    public void AssignKeys(string service = null)
+    {
+        if (service != null)
+            SystemName = service;
+
+        foreach (var parameter in this)
+        {
+            if (parameter.SystemUniqueID == 0)
+            {
+                // Generate Key (32bit Hash
+                var value  = ParameterData.GenerateUniqueID(SystemName, parameter.ObjectName, parameter.Name);
+                while (this.Any(x => x.SystemUniqueID == value))
+                    value++;
+
+                parameter.SystemUniqueID = value;
+            }
+        }
+    }
 }
 
 /// <summary>
@@ -26,8 +51,13 @@ public class ParameterData
     /// <summary>
     /// Name of the Parameter
     /// </summary>
-    public int SystemUniqueID { get; set; }
+    public uint SystemUniqueID { get; set; }
 
+    /// <summary>
+    /// Name of the Object (Optional)
+    /// </summary>
+    public string ObjectName { get; set; }
+    
     /// <summary>
     /// Name of the Parameter
     /// </summary>
@@ -57,6 +87,41 @@ public class ParameterData
     /// Valid Values
     /// </summary>
     public Dictionary<int, string> Enumerations { get; set; }
+
+    /// <summary>
+    /// Convert Types to Parameter Types
+    /// </summary>
+    /// <param name="propertyType"></param>
+    /// <returns></returns>
+    public static ParameterValueTypes GetValueType(Type propertyType)
+    {
+        if (propertyType == typeof(int) || propertyType == typeof(long) || propertyType == typeof(short) || propertyType == typeof(sbyte))
+            return ParameterValueTypes.SignedInteger;
+        else if (propertyType == typeof(uint) || propertyType == typeof(ulong) || propertyType == typeof(ushort) || propertyType == typeof(byte))
+            return ParameterValueTypes.UnsignedInteger;
+        else if (propertyType == typeof(float))
+            return ParameterValueTypes.Float;
+        else if (propertyType == typeof(double))
+            return ParameterValueTypes.Double;
+        else if (propertyType == typeof(string))
+            return ParameterValueTypes.String;
+        else if (propertyType == typeof(bool))
+            return ParameterValueTypes.Boolean;
+        else
+            return ParameterValueTypes.String; // Default Case
+    }
+
+    /// <summary>
+    /// Generate a Unique ID For an System / Object / Property
+    /// </summary>
+    /// <param name="systemName"></param>
+    /// <param name="objectName"></param>
+    /// <param name="name"></param>
+    /// <returns></returns>
+    public static uint GenerateUniqueID(string systemName, string objectName, string name)
+    {
+        return (uint)HashCode32.GetHashCode32($"{systemName}_{objectName}_{name}");
+    }
 }
 
 /// <summary>

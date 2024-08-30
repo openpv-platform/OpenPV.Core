@@ -24,7 +24,6 @@ internal class DialogViewModel : ViewModelBase
         set { dialogText = value; OnPropertyChanged(); }
     }
 
-
     public string DialogTitle
     {
         get { return dialogTitle; }

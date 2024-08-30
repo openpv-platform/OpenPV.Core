@@ -130,13 +130,18 @@ internal class PlatformSupportTool : SparkToolBase
         string firmwareFolder = string.Empty;
         try
         {
-            firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily));
+            try { firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily)); }
+            catch { }
+
+            if (!Path.Exists(firmwareFolder))
+                firmwareFolder = Path.Combine(Path.GetDirectoryName(LocalPath)); // Fall back to Path passed in
+
             string firmwareFileName = GetFirmwareVersionFile(firmwareFolder);
             if (firmwareFileName != null)
             {
                 string firmwareLocation = firmwareFolder + "_Firmware";
                 string imageFile = "image.*." + firmwareFileName.Replace("Firmware_", "");
-                imageFileName = Directory.EnumerateFiles(firmwareLocation, imageFile).FirstOrDefault();
+                imageFileName = Directory.EnumerateFiles(firmwareLocation, imageFile, SearchOption.AllDirectories).FirstOrDefault();
             }
         }
         catch { }

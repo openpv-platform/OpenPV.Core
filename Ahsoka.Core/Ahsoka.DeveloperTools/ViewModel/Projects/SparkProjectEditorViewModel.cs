@@ -282,11 +282,20 @@ internal class SparkProjectEditorViewModel : ChildViewModelBase<MainViewModel>
                 return;
             }
 
+            SelectedTeam.Devices.LoadDevices();
             if (SelectedTeam.Devices.Devices.Count > 0)
             {
                 ParentViewModel.Dialog.ShowDialog("Remove Error", "Projects with devices can not be deleted. Remove any devices before deleteing.", "Ok");
                 return;
             }
+
+            if (SelectedTeam.Modules.HasModules)
+            {
+                ParentViewModel.Dialog.ShowDialog("Remove Error", "Projects with existing purchases can not be removed.", "Ok");
+                return;
+            }
+
+
 
             IsWorking = true;
             WorkingText = "Removing Team";

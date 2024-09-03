@@ -1,7 +1,7 @@
 ﻿{
-  "extensionName": "Cygnus Service Extension",
-  "packageName": "Ahsoka.Extensions.Cygnus",
-  "uxpackageName": "Ahsoka.Extensions.Cygnus.UX",
+  "extensionName": "Cygnus Reach Service Extension",
+  "packageName": "Ahsoka.Extensions.CygnusReach",
+  "uxpackageName": "Ahsoka.Extensions.CygnusReach.UX.Desktop",
   "uxViewModelName": "CygnusReachSetupViewModel",
   "serviceConfigurations": [
     {

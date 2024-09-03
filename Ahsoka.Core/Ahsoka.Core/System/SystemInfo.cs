@@ -155,6 +155,15 @@ public static class SystemInfo
         return true;
     }
 
+    /// <summary>
+    /// Returns true for Deskkop Targets
+    /// </summary>
+    /// <returns></returns>
+    public static bool IsDesktop()
+    {
+        return OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || (OperatingSystem.IsLinux() && RuntimeInformation.OSDescription.Contains("Ubuntu"));
+    }
+
     private static HardwareInfo LoadHardwareInformation()
     {
         using var stopwatch = new AhsokaStopwatch("LoadHardwareInformation");

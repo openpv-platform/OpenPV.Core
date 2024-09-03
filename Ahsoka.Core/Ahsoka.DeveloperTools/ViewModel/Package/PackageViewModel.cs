@@ -11,6 +11,7 @@ using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -38,8 +39,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     private Bitmap bitmap;
     SparkViewModel sparkViewModel;
     DependenciesCheckViewModel deps;
-    
-    bool isOpenView = false;
     int selectedTab = 0;
     #endregion
 
@@ -54,20 +53,10 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
-            return isOpenView;
+            return PlatformFamily != PlatformFamily.PowerVision;
         }
-
-        set
-        {
-            if (value != IsOpenView)
-            {
-                isOpenView = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(PlatformDescriptions));
-            }
-        }
+        set { }
     }
-
 
     public bool GenerateOptimizedServiceManager
     {
@@ -82,7 +71,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             OnPropertyChanged();
         }
     }
-
 
     public DependenciesCheckViewModel Deps
     {
@@ -178,8 +166,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         {
             PackageInfo.PlatformFamily = value;
             OnPropertyChanged();
-
-            IsOpenView = PlatformFamily.ToString().Contains("OpenView");
 
             OnPropertyChanged(nameof(PlatformDescription));
             Deps.CheckDependencies(SystemInfo.CurrentPlatform, value);
@@ -322,12 +308,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                     PackageInfo.PlatformFamily = hardwareInfo.PlatformFamily;
                     PackageInfo.PlatformQualifier = hardwareInfo.PlatformQualifier;
 
-                    IsOpenView = PlatformFamily.ToString().Contains("OpenView");
-
                     Deps.CheckDependencies(SystemInfo.CurrentPlatform, PackageInfo.PlatformFamily);
 
                     HandleHardwareInfoChanges();
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsOpenView));
+
                 }
             }
         }
@@ -460,10 +446,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         get
         {
             var list = HardwareInfo.GetHardwareInfoDescriptions().Where(x=>!x.StartsWith( "PowerVision")).ToList();
-
-            if (!IsOpenView)
-                list.Add($"{PackageInfo.PlatformFamily} ({PackageInfo.PlatformQualifier})");
-
             return list;
         }
         set
@@ -584,8 +566,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         LoadStartLogo();
 
         HandleHardwareInfoChanges();
-
-        IsOpenView = PlatformFamily.ToString().Contains("OpenView");
 
         DotNetViewModel?.NeedsUpdate();
         CppViewModel?.NeedsUpdate();
@@ -742,7 +722,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             // Load Package
             using (var stream = new FileStream(pathToLoad, FileMode.Open, FileAccess.Read))
             {
-                if (isOpenView && (!ParentViewModel.ActiveConnection.IsInstaller || forceInstallerAttempt))
+                if (IsOpenView && (!ParentViewModel.ActiveConnection.IsInstaller || forceInstallerAttempt))
                 {
                     var hwInfo = ParentViewModel.ActiveConnection.ReturnToInstaller(source, progressString);
 

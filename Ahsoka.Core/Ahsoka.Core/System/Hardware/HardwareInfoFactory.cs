@@ -26,7 +26,7 @@ public partial class HardwareInfo
     {
         hardwareDefinitions = new Dictionary<string, HardwareInfo>();
 
-        if (OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || (OperatingSystem.IsLinux() && RuntimeInformation.OSDescription.Contains("Ubuntu")))
+        if (SystemInfo.IsDesktop()) // Load Local Hardware Defs
         {
             // Load Files in Hardware Folders
             string path = Path.Exists(PlatformSupportPathInfo.PlatformSupportRootFolder) ? PlatformSupportPathInfo.PlatformSupportRootFolder : fallbackPath;

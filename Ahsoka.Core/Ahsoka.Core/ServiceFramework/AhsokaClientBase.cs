@@ -142,11 +142,11 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
     protected override void OnEndPointDisconnected()
     {
-        if (autoStartService != null)
-            autoStartService.Disconnect();
-
         // Deregister Client for Notifications
         UpdateClientRegistration(CoreTransportIds.DeregisterClient);
+
+        if (autoStartService != null)
+            autoStartService.Disconnect();
 
         base.OnEndPointDisconnected();
 

@@ -1,6 +1,8 @@
 ﻿{
   "extensionName": "Cygnus Service Extension",
   "packageName": "Ahsoka.Extensions.Cygnus",
+  "uxpackageName": "Ahsoka.Extensions.Cygnus.UX",
+  "uxViewModelName": "CygnusReachSetupViewModel",
   "serviceConfigurations": [
     {
       "socketType": "TcpSocket",

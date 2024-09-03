@@ -124,7 +124,7 @@ public class ServiceTests : LinearTestBase
         systemClient.Connect();
 
         // Run Sample Test Code
-        ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
+        ServiceSelfTests.RunEchoPerfTest(100000, systemClient);
         ServiceSelfTests.PrintServerMetrics(systemClient);
       
         var brightness = systemClient.GetBrightness();
@@ -198,13 +198,15 @@ public class ServiceTests : LinearTestBase
         config.Services.Add(systemItem);
        
         string commandLine = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily.Windows64), "CommandLine", "Ahsoka.CommandLine.exe");
-
+      
         // Create Client Runtime and Add Services
-        SystemServiceClient systemClient = new();
+        SystemServiceClient systemClient = new(systemItem);
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-       
+        systemClient.Connect();
+
         AhsokaRuntime.StartProcessExecutable(commandLine, [systemClient]);
 
+        
         // Run Sample Test Code
         var task = Task.Run(() =>
         {

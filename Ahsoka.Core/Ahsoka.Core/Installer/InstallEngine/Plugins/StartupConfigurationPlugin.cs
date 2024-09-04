@@ -66,6 +66,8 @@ internal class StartupInstallerPlugin : InstallerPlugin
         // Add Startup Configuration
         string commandLineScriptName = AddRuntimeConfigToOutputs(buildLocation, additionalFiles, info);
 
+        string delay = $"\n\nsleep {info.ServiceInfo.RuntimeConfiguration.StartupDelay}";
+
         if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.BeforeApplicationStart)
         {
             additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
@@ -74,14 +76,15 @@ internal class StartupInstallerPlugin : InstallerPlugin
         else if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.AfterApplicationStart)
         {
             additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
-            postScript.Append($"\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} &");
+            postScript.Append($"{delay}\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} &");
+            delay = "";
         }
 
         // Release if Option Enabled (With Sleep if After to Allow Apps to Start)
         if (info.ServiceInfo.RuntimeConfiguration.ReleaseOption == StartOptions.BeforeApplicationStart)
             preScript.Append($"\n\nsystemd-notify --ready");
         else if (info.ServiceInfo.RuntimeConfiguration.ReleaseOption == StartOptions.AfterApplicationStart)
-            postScript.Append($"\n\nsleep {info.ServiceInfo.RuntimeConfiguration.StartupDelay}\nsystemd-notify --ready"); // Add Delay for After Starts
+            postScript.Append($"{delay}\nsystemd-notify --ready"); // Add Delay for After Starts
 
         startScriptFileContents = startScriptFileContents.Replace("${PreReleaseScript}", preScript.ToString());
         startScriptFileContents = startScriptFileContents.Replace("${PostReleaseScript}", postScript.ToString());

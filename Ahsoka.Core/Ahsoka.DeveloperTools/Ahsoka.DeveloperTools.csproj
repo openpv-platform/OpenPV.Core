@@ -88,6 +88,9 @@
 	  <Compile Update="Views\MainWindow\ConnectionDetailsView.axaml.cs">
 	    <DependentUpon>ConnectionDetailsView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Package\CodesysView.axaml.cs">
+	    <DependentUpon>CodesysView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Package\DeveloperView.axaml.cs">
 	    <DependentUpon>DeveloperView.axaml</DependentUpon>
 	  </Compile>

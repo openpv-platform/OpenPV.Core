@@ -152,6 +152,7 @@
 
 					</Grid>
 				</Border>
+			
 				<Border IsVisible="{Binding IsOpenView}"
 					 Margin="20,10,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,1,0,1">
 					<Grid Margin="5,15,5,10" ColumnDefinitions="150,Auto,Auto" RowDefinitions="auto,36,36,36,auto,auto,auto">
@@ -180,7 +181,6 @@
 					
 					</Grid>
 				</Border>
-
 
 				<Border Margin="20,10,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
 					<Grid Margin="5" ColumnDefinitions="150,Auto" RowDefinitions="*,*,auto">

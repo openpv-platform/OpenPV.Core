@@ -373,6 +373,13 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         set { dataServiceModel = value; OnPropertyChanged(); }
     }
 
+    public CppViewModel CodesysViewModel
+    {
+        get { return ApplicationType == ApplicationType.CODESYS ? cppViewModel : null; }
+        set { cppViewModel = value; OnPropertyChanged(); }
+    }
+
+
     public CppViewModel CppViewModel
     {
         get { return ApplicationType == ApplicationType.Cpp ? cppViewModel : null; }
@@ -529,7 +536,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     MainViewModel IToolViewModel.MainViewModel => ParentViewModel;
 
     string IToolViewModel.PercentStatus { get; set; }
- 
+
     internal async void SetOutputDir()
     {
         string currentPath = Path.Combine(Path.GetDirectoryName(PackageInfo.GetPackageInfoPath()), PackageOutputDirectory);
@@ -851,7 +858,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
 
                 if (ApplicationType == ApplicationType.Dotnet)
                     dotNetModel.NeedsUpdate(true).GetAwaiter().GetResult();
-                else if (ApplicationType == ApplicationType.Cpp)
+                else if (ApplicationType == ApplicationType.Cpp || ApplicationType == ApplicationType.CODESYS)
                     cppViewModel.NeedsUpdate(true).GetAwaiter().GetResult();
             }
 
@@ -914,12 +921,13 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             case ApplicationType.Dotnet:
                 DotNetViewModel = new DotNetViewModel(ParentViewModel, PackageInfo);
                 break;
+            case ApplicationType.CODESYS:
+                CodesysViewModel = new CppViewModel(ParentViewModel, PackageInfo);
+                break;
             case ApplicationType.Cpp:
                 CppViewModel = new CppViewModel(ParentViewModel, PackageInfo);
                 break;
             case ApplicationType.PowerVision:
-                break;
-            case ApplicationType.CODESYS:
                 break;
             default:
                 break;

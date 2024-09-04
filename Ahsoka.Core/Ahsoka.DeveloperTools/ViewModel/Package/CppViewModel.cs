@@ -26,7 +26,7 @@ internal class CppViewModel : ViewModelBase
 
     public async Task NeedsUpdate(bool isGenerating = false)
     {
-        if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Cpp || SdkNeedsUpdate)
+        if (parentViewModel.SelectedPackage.IsOpenView && (packageInfo.ApplicationType is  ApplicationType.Cpp or ApplicationType.CODESYS) || SdkNeedsUpdate)
         {
             UpdateSDKUpdateState(parentViewModel);
 

@@ -437,6 +437,9 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
+            if (PlatformFamily == PlatformFamily.PowerVision)
+                return Enum.GetValues<ApplicationType>().Where(x => x == ApplicationType.PowerVision).ToArray();
+
             return Enum.GetValues<ApplicationType>().Where(x => x != ApplicationType.Unknown).ToArray();
         }
     }
@@ -445,8 +448,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
-            var list = HardwareInfo.GetHardwareInfoDescriptions().Where(x=>!x.StartsWith( "PowerVision")).ToList();
-            return list;
+            if (this.PlatformFamily == PlatformFamily.PowerVision)
+            {
+                return new List<string>() { $"{PackageInfo.PlatformFamily} ({PackageInfo.PlatformQualifier})" };
+            }
+            else
+               return HardwareInfo.GetHardwareInfoDescriptions().Where(x => !x.StartsWith("PowerVision")).ToList();
         }
         set
         {

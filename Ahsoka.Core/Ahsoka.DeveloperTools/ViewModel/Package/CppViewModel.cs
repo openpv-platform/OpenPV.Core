@@ -22,7 +22,6 @@ internal class CppViewModel : ViewModelBase
     public void UpdateSDK()
     {
         Task.Run(() => { InstallSDK(false).GetAwaiter().GetResult(); });
-
     }
 
     public async Task NeedsUpdate(bool isGenerating = false)

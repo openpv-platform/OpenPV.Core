@@ -49,7 +49,7 @@
 				</TabItem.Header>
 				<CustomerTools:DeveloperView/>
 			</TabItem>
-			<TabItem>
+			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}">
 				<TabItem.Header>
 					<TextBlock
 						FontSize="18"

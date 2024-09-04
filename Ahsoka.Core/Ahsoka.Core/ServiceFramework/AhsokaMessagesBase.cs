@@ -3,6 +3,7 @@ using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -13,7 +14,12 @@ public interface IHasParameters
     SystemParameterData GetParameters(PackageInformation info);
 }
 
-public abstract class AhsokaMessagesBase: IHasParameters
+public interface IHasEvents
+{
+    SystemEventData GetEvents(PackageInformation info);
+}
+
+public abstract class AhsokaMessagesBase: IHasParameters, IHasEvents
 {
     #region Fields
     private readonly Dictionary<Int32, ServiceMessageInfo> info = new();
@@ -126,7 +132,48 @@ public abstract class AhsokaMessagesBase: IHasParameters
     {
         service = string.Empty;
     }
-    #endregion  
+    #endregion
+
+    #region Event Values
+    /// <summary>
+    /// Fetch all known event configs in the Loaded Extensions and Core
+    /// </summary>
+    /// <returns></returns>
+    public static Dictionary<string, SystemEventData> GetAllServiceEvents(PackageInformation info = null)
+    {
+        Dictionary<string, SystemEventData> allValues = new();
+
+        foreach (var value in ClassLoader.GetItemsWithInterface(typeof(IHasEvents)))
+        {
+            IHasEvents service = ClassLoader.CreateType(value, null) as IHasEvents;
+            var config = service.GetEvents(info);
+            if (config != null && config.Count > 0)
+                allValues[service.ToString()] = config;
+        }
+
+        return allValues;
+    }
+
+    /// <summary>
+    /// Gets the event config for a service
+    /// </summary>
+    /// <returns></returns>
+    SystemEventData IHasEvents.GetEvents(PackageInformation info)
+    {
+        var values = new SystemEventData();
+
+        OnGetEvents(out string service, values, info);
+        if (service != string.Empty)
+            values.AssignKeys(service);
+
+        return values;
+    }
+
+    protected virtual void OnGetEvents(out string service, List<EventData> values, PackageInformation packageInfo)
+    {
+        service = string.Empty;
+    }
+    #endregion
 }
 
 

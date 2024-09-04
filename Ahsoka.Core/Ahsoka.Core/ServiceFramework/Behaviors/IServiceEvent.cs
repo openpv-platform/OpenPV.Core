@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -28,9 +29,8 @@ public interface IServiceEvent
     /// <summary>
     /// Send an Event to the Service
     /// </summary>
-    /// <param name="serviceName"></param>
     /// <param name="Event"></param>
     /// <param name="publisherId"></param>
     /// <returns></returns>
-    int SendEvent(string serviceName, object Event, string publisherId);
+    int SendEvent(EventData Event, string publisherId);
 }

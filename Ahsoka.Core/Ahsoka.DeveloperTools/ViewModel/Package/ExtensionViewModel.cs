@@ -547,8 +547,15 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
         return extensionFolder;
     }
 
-    internal void ShowUx()
+    internal async void ShowUx()
     {
-        ParentViewModel.ShowUx(this.ExtensionName);
+        try
+        {
+            ParentViewModel.ShowUx(this.ExtensionName);
+        }
+        catch 
+        {
+            await ParentViewModel.ParentViewModel.ParentViewModel.Dialog.ShowDialog("Extension Not Available", "This extensions does not appear to have a Configuration Tool. This may be due to an incompatiblity with the currently released extension. Contact the extension developer for more information.", "Ok");
+        }
     }
 }

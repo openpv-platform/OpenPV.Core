@@ -125,12 +125,12 @@ public abstract class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<TTranspo
         return IServiceCache.Default.UpdateCacheValue(this.ServiceConfig.ServiceName, key, value, publisherId);
     }
 
-    public int UpdateEvent(EventData serviceEvent)
+    public int UpdateEvent(EventData serviceEvent, EventState state)
     {
         if (IServiceEvent.Default == null)
             return -1;
 
-        return IServiceEvent.Default.SendEvent(serviceEvent, publisherId);
+        return IServiceEvent.Default.SendEvent(serviceEvent, state);
     }
 
     #endregion

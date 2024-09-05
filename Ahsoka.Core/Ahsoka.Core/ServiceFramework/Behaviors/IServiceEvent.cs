@@ -29,8 +29,8 @@ public interface IServiceEvent
     /// <summary>
     /// Send an Event to the Service
     /// </summary>
-    /// <param name="Event"></param>
-    /// <param name="publisherId"></param>
+    /// <param name="eventData"></param>
+    /// <param name="state"></param>
     /// <returns></returns>
-    int SendEvent(EventData Event, string publisherId);
+    int SendEvent(EventData eventData, EventState state);
 }

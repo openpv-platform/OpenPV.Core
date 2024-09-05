@@ -62,11 +62,6 @@ public class EventData
     public string Name { get; set; }
 
     /// <summary>
-    /// Status of the event
-    /// </summary>
-    public EventState State { get; set; }
-
-    /// <summary>
     /// Event Description
     /// </summary>
     public string Description { get; set; }

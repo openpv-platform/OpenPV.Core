@@ -1,7 +1,7 @@
 {
   "extensionName": "Diagnostic Service Extension",
   "packageName": "Ahsoka.Extensions.DiagnosticService",
-  "uxpackageName": "Ahsoka.Extensions.Diagnostic.UX",
+  "uxpackageName": "Ahsoka.Extensions.DiagnosticService.UX",
   "uxViewModelName": "DiagnosticSetupViewModel",
   "serviceConfigurations": [
     {

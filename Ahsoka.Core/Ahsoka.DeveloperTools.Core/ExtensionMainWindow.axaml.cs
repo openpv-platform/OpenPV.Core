@@ -84,8 +84,6 @@ public partial class ExtensionMainWindow : Window, ICustomerToolViewModel, INoti
         this.UserControl = new UserControl();
     }
 
-
-
     private async Task SelectPackage()
     {
         var dialog = new FilePickerOpenOptions
@@ -163,6 +161,12 @@ public partial class ExtensionMainWindow : Window, ICustomerToolViewModel, INoti
         }
     }
 
+    internal DialogViewModel Dialog
+    {
+        get; 
+        set;
+    } = new();
+
     #endregion
 
     #region Customer View Model 
@@ -214,7 +218,7 @@ public partial class ExtensionMainWindow : Window, ICustomerToolViewModel, INoti
 
     public Task<bool> ShowDialog(string dialogTitle, string dialogText, string dialogAcceptText, string dialogRejectText = "")
     {
-        return Task.FromResult(true);
+        return this.Dialog.ShowDialog(dialogTitle,dialogText, dialogAcceptText, dialogRejectText);
     }
 
     public void StartProcess(bool clearConsole = true)

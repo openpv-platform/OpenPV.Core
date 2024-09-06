@@ -45,5 +45,20 @@
 		<ContentControl Grid.Row="1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
 						Content="{Binding PopupUserControl}"/>
 
+		<Grid Row="1"  Background="#33555555" DataContext="{Binding Dialog}"  IsVisible="{Binding DialogVisible, FallbackValue=True}">
+			<Border Padding="30" BoxShadow="5 5 10 2 DarkGray" BorderBrush="SteelBlue" VerticalAlignment="Center"  Width="650"  Grid.RowSpan="2" Background="White" BorderThickness="1,1">
+				<DockPanel LastChildFill="False">
+					<TextBlock FontWeight="Bold" DockPanel.Dock="Top" Foreground="SteelBlue" TextWrapping="Wrap" FontSize="16" Padding="10" Text="{Binding DialogTitle, FallbackValue='TitleText'}"></TextBlock>
+					<ScrollViewer Margin="0,0,0,15" DockPanel.Dock="Top" MaxHeight="450">
+						<TextBlock  Foreground="SteelBlue" TextWrapping="Wrap" FontSize="16" Padding="10" Text="{Binding DialogText, FallbackValue='Text'}"></TextBlock>
+					</ScrollViewer>
+					<DockPanel MinHeight="30" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+						<Button IsDefault="True"  Content="{Binding DialogAcceptText}" Padding="15,8" Command="{Binding AcceptMessage}"/>
+						<Button IsCancel="True"  Content="{Binding DialogRejectText}"  Padding="15,8" Command="{Binding CancelMessage}" IsVisible="{Binding ShowReject}"/>
+					</DockPanel>
+				</DockPanel>
+			</Border>
+		</Grid>
+
 	</Grid>
 </Window>

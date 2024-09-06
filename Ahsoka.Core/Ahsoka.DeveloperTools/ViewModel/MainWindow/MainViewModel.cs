@@ -483,7 +483,7 @@ internal class MainViewModel : ViewModelBase
         LoadSettings();
         About = new(this);
         Console = new(this);
-        Dialog = new(this);
+        Dialog = new();
         Popup = new(this);
         ActiveConnection = new(this);
         Plugins = new(this);

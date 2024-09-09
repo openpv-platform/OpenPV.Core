@@ -46,7 +46,7 @@ public class SecurityServiceTests : LinearTestBase
         // Create Service Clients for Testing
         var securityServiceClient = new SecurityServiceClient();
         var systemClient = new SystemServiceClient(systemConfig);
-        AhsokaRuntime.Default.ConnectEndPoints(securityServiceClient,systemClient);
+        AhsokaRuntime.Default.StartEndPoints(securityServiceClient,systemClient);
 
         // Begin By Requesting a Token for the SystemService from the Security Service
         var request = securityServiceClient.RequestToken(new TokenRequestInfo()
@@ -86,7 +86,7 @@ public class SecurityServiceTests : LinearTestBase
         systemConfig.Behaviors = EndPointBehaviors.AutoStart;
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
 
         File.Delete(devicePublicKeyFile);
 
@@ -128,7 +128,7 @@ public class SecurityServiceTests : LinearTestBase
         var systemClient = new SystemServiceClient(systemConfig);
 
         // Start client for NetworkService to test Real Calls
-        AhsokaRuntime.Default.ConnectEndPoints(securityServiceClient, systemClient);
+        AhsokaRuntime.Default.StartEndPoints(securityServiceClient, systemClient);
 
         // Handle the Challenge Callback
         bool generateSecret = false;
@@ -203,7 +203,7 @@ public class SecurityServiceTests : LinearTestBase
         systemConfig.Behaviors = EndPointBehaviors.AutoStart;
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
 
         File.Delete(devicePublicKeyFile);
     }

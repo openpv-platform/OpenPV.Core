@@ -32,7 +32,7 @@ internal static class PackageCommands
         };
 
         var client = new SystemServiceClient(config);
-        AhsokaRuntime.Default.ConnectEndPoints(client);
+        AhsokaRuntime.Default.StartEndPoints(client);
 
        Console.WriteLine($"Connecting to {config.DataURI}...");
 
@@ -63,7 +63,7 @@ internal static class PackageCommands
             }
         }
 
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
 
         if (exitCode != 0)
             Environment.Exit(exitCode);

@@ -76,7 +76,7 @@ public static class SparkCustomerTools
         finally
         {
             // Shut Down Client and Runtime
-            AhsokaRuntime.Default.DisconnectEndPoints(client);
+            AhsokaRuntime.Default.StopEndPoints(client);
         }
 
         return true;
@@ -288,7 +288,7 @@ public static class SparkCustomerTools
         };
 
         var client = new SparkServiceClient(config);
-        AhsokaRuntime.Default.ConnectEndPoints(client);
+        AhsokaRuntime.Default.StartEndPoints(client);
 
         return client;
     }

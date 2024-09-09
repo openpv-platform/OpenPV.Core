@@ -22,7 +22,7 @@ internal class NetworkTests
         // Start client for NetworkService
         var client = new NetworkServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
-        client.Connect();
+        client.Start();
        
         Console.WriteLine($"Getting Adapters");
         var networkAdapters = client.GetNetworkAdapters();
@@ -126,7 +126,7 @@ internal class NetworkTests
         client.SetNetworkProfiles(new NetworkProfilesList() { AdapterId = adapterRequest.AdapterId });
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     internal static void TestNetworkServiceAP()
@@ -137,7 +137,7 @@ internal class NetworkTests
         // Start client for NetworkService
         var client = new NetworkServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
-        client.Connect();
+        client.Start();
 
         Console.WriteLine($"Getting Adapters");
         var networkAdapters = client.GetNetworkAdapters();
@@ -216,7 +216,7 @@ internal class NetworkTests
         Console.ReadLine();
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     private static string ChooseAP(WirelessNetworkInfoList apList)

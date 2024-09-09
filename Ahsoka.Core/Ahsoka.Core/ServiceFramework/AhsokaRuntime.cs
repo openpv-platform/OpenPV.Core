@@ -79,11 +79,11 @@ public partial class AhsokaRuntime
     /// </summary>
     /// <param name="endPoints"></param>
     /// <returns></returns>
-    public void ConnectEndPoints(IEnumerable<IAhsokaEndPoint> endPoints)
+    public void StartEndPoints(IEnumerable<IAhsokaEndPoint> endPoints)
     {
         foreach (var endpoint in endPoints.Where(x => x != null))
         {
-            endpoint.Connect();
+            endpoint.Start();
         }
     }
 
@@ -92,22 +92,22 @@ public partial class AhsokaRuntime
     /// </summary>
     /// <param name="endPoints"></param>
     /// <returns></returns>
-    public void ConnectEndPoints(params IAhsokaEndPoint[] endPoints)
+    public void StartEndPoints(params IAhsokaEndPoint[] endPoints)
     {
-        ConnectEndPoints(endPoints.AsEnumerable());
+        StartEndPoints(endPoints.AsEnumerable());
     }
 
     /// <summary>
     /// Shutdown All Endpoints (usually before stopping an application)
     /// </summary>
-    public void DisconnectAllEndPoints(bool shutdownClients = true, bool shutdownServices = true)
+    public void StopAllEndPoints(bool shutdownClients = true, bool shutdownServices = true)
     {
         lock (syncRoot)
         {
             if (shutdownClients)
             {
                 foreach (var endpoint in ClientEndPoints.ToArray())
-                    endpoint.Disconnect();
+                    endpoint.Stop();
 
                 ClientEndPoints.Clear();
             }
@@ -115,7 +115,7 @@ public partial class AhsokaRuntime
             if (shutdownServices)
             {
                 foreach (var endpoint in ServiceEndPoints.ToArray())
-                    endpoint.Disconnect();
+                    endpoint.Stop();
 
                 ServiceEndPoints.Clear();
             }
@@ -133,16 +133,16 @@ public partial class AhsokaRuntime
     /// Request that the runtime disconnects all endpoints and
     /// shuts down.
     /// </summary>
-    public void DisconnectEndPoints(params IAhsokaEndPoint[] endpoints)
+    public void StopEndPoints(params IAhsokaEndPoint[] endpoints)
     {
-        DisconnectEndPoints(endpoints.AsEnumerable());
+        StopEndPoints(endpoints.AsEnumerable());
     }
 
     /// <summary>
     /// Request that the runtime disconnects all endpoints
     /// shuts down.
     /// </summary>
-    public void DisconnectEndPoints(IEnumerable<IAhsokaEndPoint> endpoints)
+    public void StopEndPoints(IEnumerable<IAhsokaEndPoint> endpoints)
     {
         lock (syncRoot)
         {
@@ -151,7 +151,7 @@ public partial class AhsokaRuntime
             {
                 try
                 {
-                    item.Disconnect();
+                    item.Stop();
                 }
                 catch { }
             }

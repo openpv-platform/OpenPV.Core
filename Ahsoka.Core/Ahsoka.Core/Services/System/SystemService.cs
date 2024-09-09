@@ -188,7 +188,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         if (message.ShutdownType == ShutdownTypes.ShutdownServices)
         {
             // Shutting Down From the Work Thread may Block
-            Task.Run(() => { AhsokaRuntime.Default.DisconnectAllEndPoints(false, true); });
+            Task.Run(() => { AhsokaRuntime.Default.StopAllEndPoints(false, true); });
         }
         else if (message.ShutdownType == ShutdownTypes.ShutdownApplication)
         {

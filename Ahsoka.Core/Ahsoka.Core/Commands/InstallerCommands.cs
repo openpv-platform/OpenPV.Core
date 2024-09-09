@@ -25,10 +25,10 @@ internal static class InstallerCommands
         Console.WriteLine("Starting Installer Service");
 
         var installService = new InstallService(configLocal);
-        AhsokaRuntime.Default.ConnectEndPoints(installService);
+        AhsokaRuntime.Default.StartEndPoints(installService);
 
         // Blocks Until Done
-        installService.WaitForDisconnect(); 
+        installService.WaitForStop(); 
 
         Console.WriteLine("Service Shutdown Completed");
     }

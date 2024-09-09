@@ -146,7 +146,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         UpdateClientRegistration(CoreTransportIds.DeregisterClient);
 
         if (autoStartService != null)
-            autoStartService.Disconnect();
+            autoStartService.Stop();
 
         base.OnEndPointDisconnected();
 
@@ -196,7 +196,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
     public virtual T SendNotificationWithResponse<T>(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue) where T : class
     {
         if (!IsConnected)
-            Connect();
+            Start();
 
         foreach (IClientEndPointBehavior<TTransportIds> behavior in behaviors)
             behavior.OnSendMessage(transportId, requestObject);
@@ -218,7 +218,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         if (autoStartService == null &&  ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.AutoStart))
         {
             autoStartService = ((IAhsokaClientEndPoint)this).CreateDefaultService();
-            autoStartService.Connect();
+            autoStartService.Start();
         }
     }
 

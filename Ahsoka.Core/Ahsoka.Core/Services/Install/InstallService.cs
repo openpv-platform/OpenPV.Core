@@ -100,7 +100,7 @@ public class InstallService : AhsokaServiceBase<InstallMessageTypes.Ids>
         // Shutting Down From the Work Thread may Block
         Task.Run(() => 
         {
-            AhsokaRuntime.Default.DisconnectAllEndPoints();
+            AhsokaRuntime.Default.StopAllEndPoints();
         });
     }
 }

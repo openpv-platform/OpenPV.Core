@@ -78,7 +78,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
                 // Start Async Service
                 internalService = new InstallService();
-                AhsokaRuntime.Default.ConnectEndPoints(internalService);
+                AhsokaRuntime.Default.StartEndPoints(internalService);
 
             }
             else
@@ -145,14 +145,14 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Client Process Ended Abnormally");
 
-            AhsokaRuntime.Default.DisconnectEndPoints(this);
+            AhsokaRuntime.Default.StopEndPoints(this);
 
             returnValue = InstallResult.UnknownError;
             installerUI?.InstallComplete(new InstallCompleteInfo() { Result = InstallResult.UnknownError, Message = "The install process did not end successfully" });
         }
 
         if (internalService != null)
-            AhsokaRuntime.Default.DisconnectEndPoints(internalService);
+            AhsokaRuntime.Default.StopEndPoints(internalService);
 
         // Remove opv Package
         File.Delete(installFile);

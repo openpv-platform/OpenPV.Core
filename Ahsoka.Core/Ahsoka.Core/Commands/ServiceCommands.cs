@@ -33,7 +33,7 @@ internal static class ServiceCommands
         // Run and Block Executable Until Shutdown
         // Used for Running Ahsoka Services in a Separate Process
         var services = AhsokaRuntime.CreateServicesFromConfiguration(configuration);
-        AhsokaRuntime.Default.ConnectEndPoints(services);
+        AhsokaRuntime.Default.StartEndPoints(services);
 
         // Get a list of Running Services.  We will wait for the whole list to stop.
         var list = AhsokaRuntime.Default.ServiceEndPoints.Select(x => x.GetWaitHandle()).ToArray();

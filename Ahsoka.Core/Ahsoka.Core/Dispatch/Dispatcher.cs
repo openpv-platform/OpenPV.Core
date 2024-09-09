@@ -313,7 +313,7 @@ public class Dispatcher
     {
         // Pull Clients that Need a Runtime
         foreach (var autoStartItem in endpoints)
-            autoStartItem.Connect();
+            autoStartItem.Start();
 
         var nonRuntimes = startupObjects.ToList();
         foreach (var item in nonRuntimes)

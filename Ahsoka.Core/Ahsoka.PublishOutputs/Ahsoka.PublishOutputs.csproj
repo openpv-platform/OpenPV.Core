@@ -37,9 +37,8 @@
 	</Target>
 
 	<Target Name="BuildSupportPackages" Condition="true" AfterTargets="PostBuildEvent">
-		<Exec Command="dotnet restore -r linux-x64"/>
-		<MSBuild Projects="../Ahsoka.PublishUbuntu/Ahsoka.PublishUbuntu.csproj;../Ahsoka.PublishWindows/Ahsoka.PublishWindows.csproj;../Ahsoka.PublishOpenView/Ahsoka.PublishOpenView.csproj;../Ahsoka.PublishOpenViewPro/Ahsoka.PublishOpenViewPro.csproj;" BuildInParallel="false" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
-		
+		<MSBuild Projects="../Ahsoka.PublishWindows/Ahsoka.PublishWindows.csproj;../Ahsoka.PublishOpenView/Ahsoka.PublishOpenView.csproj;../Ahsoka.PublishOpenViewPro/Ahsoka.PublishOpenViewPro.csproj;../Ahsoka.PublishUbuntu/Ahsoka.PublishUbuntu.csproj;" BuildInParallel="false" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
+
 		<!--Copy Spark Package Manifst to Output -->
 		<Copy SourceFiles="OpenPV Dependencies.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV Dependencies.release.json" />
 	</Target>

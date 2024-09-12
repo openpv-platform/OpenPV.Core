@@ -82,7 +82,7 @@ public class Program
         // Here we will do the final cleanup of our runtime(s).   
         // Note that we could also call AhsokaRuntime.Default.ShutdownAll(); which
         // will request and wait for a any runtimes that were started to shutdown and
-        client.Disconnect();
+        client.Stop();
 
         // Finally lets call the Application Context Exit.  This ensures that any other processes running in our service "Ahsoka.Application"
         // are shutdown as well.  This will typically always be the last line of code in your app but is handled for you when using Dispatcher.

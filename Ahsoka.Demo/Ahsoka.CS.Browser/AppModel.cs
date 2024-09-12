@@ -16,7 +16,7 @@ internal class AppModel
         ApplicationContext.ReleaseStartup();
         systemClient = new SystemServiceClient();
         systemClient.ServiceConfig.Behaviors = EndPointBehaviors.AutoStart;
-        systemClient.Connect();
+        systemClient.Start();
     }
     
     internal static GetHardwareInformationReply GetHardwareInformation()

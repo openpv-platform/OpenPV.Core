@@ -36,7 +36,7 @@ public partial class AhsokaRuntime
     [Obsolete("Use Singleton (Default) DisconnectAllEndPoints Instead ")]
     public static void ShutdownAll()
     {
-        Default.DisconnectAllEndPoints();
+        Default.StopAllEndPoints();
     }
 
     /// <summary>
@@ -117,7 +117,7 @@ public partial class AhsokaRuntime
         [Obsolete("Use AhsokaRuntime.Default.ConnectEndPoints Instead")]
         public AhsokaEndPointSet StartLocalRuntime()
         {
-            Default.ConnectEndPoints(endPoints.ToArray());
+            Default.StartEndPoints(endPoints.ToArray());
             return new AhsokaEndPointSet(endPoints);
         }
 
@@ -144,7 +144,7 @@ public partial class AhsokaRuntime
             foreach (var item in endPoints)
                 item.ServiceConfig.Behaviors |= System.EndPointBehaviors.AutoStart;
 
-            Default.ConnectEndPoints(endPoints.ToArray());
+            Default.StartEndPoints(endPoints.ToArray());
 
             return new AhsokaEndPointSet(endPoints);
         }
@@ -174,7 +174,7 @@ public partial class AhsokaRuntime
 
             StartProcessExecutable(serviceExecutable, startupFile);
 
-            Default.ConnectEndPoints(endPoints.ToArray());
+            Default.StartEndPoints(endPoints.ToArray());
 
             return new AhsokaEndPointSet(endPoints);
         }
@@ -187,7 +187,7 @@ public partial class AhsokaRuntime
     [Obsolete("Use DisconnectEndPoints<IEnumerable<IAhsokaEndPoint>() or Connect/Disconnect")]
     public void DisconnectEndPoints(AhsokaEndPointSet set)
     {
-        DisconnectEndPoints(set.EndPoints);
+        StopEndPoints(set.EndPoints);
     }
 
 
@@ -213,7 +213,7 @@ public partial class AhsokaRuntime
         [Obsolete("Use AhsokaRuntime.Default.DisconnectEndpoints() instead")]
         public void RequestShutdown()
         {
-            AhsokaRuntime.Default.DisconnectEndPoints(this.endPoints.ToArray());
+            AhsokaRuntime.Default.StopEndPoints(this.endPoints.ToArray());
             shutdownEvent.Set();
         }
 

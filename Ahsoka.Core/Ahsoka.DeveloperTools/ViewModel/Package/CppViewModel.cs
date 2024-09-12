@@ -21,23 +21,21 @@ internal class CppViewModel : ViewModelBase
  
     public void UpdateSDK()
     {
-        InstallSDK(false);
+        Task.Run(() => { InstallSDK(false).GetAwaiter().GetResult(); });
     }
 
     public async Task NeedsUpdate(bool isGenerating = false)
     {
-        if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Cpp || SdkNeedsUpdate)
+        if (parentViewModel.SelectedPackage.IsOpenView && (packageInfo.ApplicationType is  ApplicationType.Cpp or ApplicationType.CODESYS) || SdkNeedsUpdate)
         {
-            var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
-            var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => !x.IsInstalled);
+            UpdateSDKUpdateState(parentViewModel);
 
-            var frameworkInfo = GetFrameworkInfo();
-            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate || !cliExists || !extensionsUpToDate)
+            if (SdkNeedsUpdate)
             {
                 var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
                 {
-                    InstallSDK(isGenerating);
+                    await InstallSDK(isGenerating);
                     SdkNeedsUpdate = false;
                 }
             }
@@ -125,6 +123,20 @@ internal class CppViewModel : ViewModelBase
         this.packageInfo = packageInfo;
 
         packageInfo.CppInfo ??= new CppInformation();
+
+        UpdateSDKUpdateState(parentViewModel);
+    }
+
+    private void UpdateSDKUpdateState(MainViewModel parentViewModel)
+    {
+        var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
+        var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => !x.IsInstalled) ||
+                                 parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Count() == 0;
+        var frameworkInfo = GetFrameworkInfo();
+        var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion();
+
+        if (!cliExists || !extensionsUpToDate || frameworkNeedsUpdate)
+            SdkNeedsUpdate = true;
     }
 
     internal async void SetProjectDirectory()
@@ -135,7 +147,7 @@ internal class CppViewModel : ViewModelBase
             ProjectPath = Path.GetRelativePath(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), path);
     }
 
-    internal async void InstallSDK(bool isGenerating = false)
+    internal async Task InstallSDK(bool isGenerating = false)
     {
         if (!isGenerating)
             parentViewModel.StartProcess(null);
@@ -161,7 +173,7 @@ internal class CppViewModel : ViewModelBase
 
             if (Directory.Exists(directoryForFramework))
                 Directory.Delete(directoryForFramework, true);
-
+            
             Directory.CreateDirectory(directoryForFramework);
 
             var progressString = new Progress<string>(info =>
@@ -208,7 +220,7 @@ internal class CppViewModel : ViewModelBase
 
                         ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput));
 
-                        AddRuntimeConfig(Path.Combine(directoryForFramework, ApplicationOutputComponent.AppInfoFolder));
+                        AddRuntimeConfig(Path.Combine(directoryForFramework, ApplicationOutputConstants.AppInfoFolder));
                     }
 
                     return DotNetViewModel.InstallCommandLine(directoryForFramework, platform, parentViewModel, null);
@@ -254,6 +266,11 @@ internal class CppViewModel : ViewModelBase
                 result = "SDK's Updated Successfully";
                 finishedInstall = true;
             }
+        }
+        catch (IOException)
+        {
+            finishedInstall = false;
+            parentViewModel.Console.AddConsoleLine($"Unable to Remove and Re-Add the SDK Folder");
         }
         finally
         {

@@ -1,0 +1,23 @@
+{
+  "extensionName": "Diagnostic Service Extension",
+  "packageName": "Ahsoka.Extensions.DiagnosticService",
+  "uxpackageName": "Ahsoka.Extensions.DiagnosticService.UX",
+  "uxViewModelName": "DiagnosticSetupViewModel",
+  "serviceConfigurations": [
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "DiagnosticService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+      "dataChannel": 5106,
+      "behaviors": "AutoStart"
+    }
+  ],
+  "hasCommands": "true",
+  "hasUx": "true",
+  "hasSdkGenerator": "true",
+  "minVersion": "3.6.0",
+  "maxVersion": "4.0.0",
+  "requireExactVersion": "false"
+}

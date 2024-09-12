@@ -24,6 +24,7 @@ public class SparkTeamsTests : LinearTestBase
     public TestContext TestContext { get; set; }
 
     readonly AutoResetEvent loginEvent = new(false);
+    readonly AutoResetEvent notifEvent = new(false);
 
     [TestMethod]
     public void TestSparkTeams()
@@ -68,12 +69,12 @@ public class SparkTeamsTests : LinearTestBase
         var container = TestContainers(team);
 
         // Provision a "Fake" Display (use Local Service)
-        ProvisionDisplayForContainer(team, container);
+        var containerTwo = ProvisionDisplayForContainer(team, container);
 
         TestPreProvision(team);
 
         // Delete Container
-        DeleteContainer(team, container);
+        DeleteContainers(team, container);
 
         // Remove the Test Team
         SparkProjectTools.RemoveTeam(team);
@@ -165,12 +166,12 @@ public class SparkTeamsTests : LinearTestBase
         return factoryResultVerification;
     }
 
-    private void ProvisionDisplayForContainer(TeamDTO team, ReleaseDTO container)
+    private ReleaseDTO ProvisionDisplayForContainer(TeamDTO team, ReleaseDTO container)
     {
         // Start System Service to Talk To.
         SparkService sparkService = new();
         SparkServiceClient sparkClient = new();
-        AhsokaRuntime.Default.ConnectEndPoints(sparkService, sparkClient);
+        AhsokaRuntime.Default.StartEndPoints(sparkService, sparkClient);
 
         var subscription = sparkClient.GetSparkSubscription();
         subscription.SubscriptionUrl = SparkTests.DefaultTestSparkServer;
@@ -231,13 +232,33 @@ public class SparkTeamsTests : LinearTestBase
             // Cleanup File.
             File.Delete(path);
         }
+
+        sparkClient.NotificationReceived += SparkClient_NotificationReceived;
+        sparkClient.SubscribeToAppChanges();
+        
+        // Upload an App
+        var containerTemp = TestContainers(team, "1.1");
+
+        // Wait for Notification
+        var notif = notifEvent.WaitOne(30000);
+        Assert.IsTrue(notif, "Notification not recieved from Service");
+
         SparkProjectTools.RemoveTeamDevice(team, device);
 
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
 
+        return containerTemp;
     }
 
-    private ReleaseDTO TestContainers(TeamDTO team)
+    private void SparkClient_NotificationReceived(object sender, AhsokaClientBase<SparkMessageTypes.Ids>.AhsokaNotificationArgs e)
+    {
+        if (e.TransportId == SparkMessageTypes.Ids.AppChangeNotification)
+        {
+            notifEvent.Set();
+        }
+    }
+
+    private ReleaseDTO TestContainers(TeamDTO team, string overrideVersion = "1.0")
     {
         // Create temp package for Upload
         var package = PackagingTests.CreatePackage(out string tempFilePath);
@@ -247,7 +268,7 @@ public class SparkTeamsTests : LinearTestBase
 
         var uploadInfo = new ReleaseDTO
         {
-            ContainerVersion = "1.0",
+            ContainerVersion = overrideVersion,
             ContainerType = SparkContainerType.Software,
             TrackType = SparkTrackType.Development,
             ReleaseName = package.PackageName,
@@ -275,21 +296,21 @@ public class SparkTeamsTests : LinearTestBase
         return uploadInfo;
     }
 
-    private static void DeleteContainer(TeamDTO team, ReleaseDTO uploadInfo)
+    private static void DeleteContainers(TeamDTO team, ReleaseDTO uploadInfo)
     {
 
         // Get Containers and Validate its Uploadex
         var containers = SparkProjectTools.GetTeamContainers(team.TeamID, null);
-        Assert.IsTrue(containers.Containers.First().ContainerName == uploadInfo.ContainerName);
+        Assert.IsTrue(containers.Containers.Any(x=>x.ContainerName == uploadInfo.ContainerName));
 
         SparkProjectTools.PromoteApplication(team, containers.Containers.First());
         SparkProjectTools.DemoteApplication(team, containers.Containers.First());
 
-        SparkProjectTools.RemoveTeamContainer(team, containers.Containers.First());
+        foreach(var item in containers.Containers)
+            SparkProjectTools.RemoveTeamContainer(team, item);
+
         containers = SparkProjectTools.GetTeamContainers(team.TeamID, null);
         Assert.IsTrue(containers.Containers.Count == 0);
-
-
     }
 
     private static void TestDevKeys(TeamDTO team)

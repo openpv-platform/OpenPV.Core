@@ -1,6 +1,7 @@
 ﻿{
   "DemoSparkChannelName": "OpenPV Demos",
   "ExtensionSparkChannelName": "OpenPV Extensions",
+  "HelpSparkChannelName": "OpenPV Help",
   "PlatformSupportSparkChannelName": "OpenPV Dependencies",
   "FirmwareResources": {
     "Name": "OpenView Firmware Resources",
@@ -108,6 +109,13 @@
           "DownloadPath": "https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/STFlash/2.12/stm_installer_win64.zip"
         }
       ]
+    },
+    {
+      "Name": "Service Manager Compiler",
+      "Description": "Service Manager Compile Tools (DotNet SDK)",
+      "BaseClass": "Ahsoka.DeveloperTools.DotNetSDKTool",
+      "Version": "8.00",
+      "DevelopmentPlatform": "Any"
     }
   ]
 }

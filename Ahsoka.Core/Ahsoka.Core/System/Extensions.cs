@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Installer;
+using Ahsoka.Properties;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
@@ -8,11 +9,14 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Loader;
+using System.Text;
+using System.Threading;
+using System.Xml.Linq;
 
 namespace Ahsoka.System;
 
 /// <summary>
-/// Extension Manager for OpeNPV
+/// Extension Manager for OpenPV
 /// </summary>
 public class Extensions
 {
@@ -79,6 +83,9 @@ public class Extensions
             string path = AppContext.BaseDirectory;
             extPath = PlatformSupportPathInfo.FindPlatformSupportPath(path, ExtensionsFolder);
         }
+
+        if (!Directory.Exists(extPath))
+            return;
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Extension Path is " + extPath);
        
@@ -242,7 +249,89 @@ public class Extensions
         return commands;
     }
 
-   
+    internal static void CreateAhsokaCommandLine(PackageInformation info, IProgress<CommandOutput> progress, string path)
+    {
+        Directory.CreateDirectory(path);
+
+        string project = Path.Combine(path, "Ahsoka.CommandLine.csproj");
+        CreateProject(info, project, info.ServiceInfo.RuntimeConfiguration.ExtensionInfo);
+
+        progress.Report(new CommandOutput() { Data = "Restoring Nuget Packages" });
+        ProcessUtility.RunProcessAsync("dotnet", "restore", path, progress, CancellationToken.None);
+        progress.Report(new CommandOutput() { Data = " " });
+
+        progress.Report(new CommandOutput() { Data = "Creating Optimized Service Executable" });
+        ProcessUtility.RunProcessAsync("dotnet", $"publish {project} -p:PublishProfile=Outputs", path, progress, CancellationToken.None);
+        progress.Report(new CommandOutput() { Data = " " });
+    }
+
+    private static void CreateProject(PackageInformation packageInfo, string projectFile, List<ExtensionInfo> extensionInfos)
+    {
+        string pathToExtensionInfo = packageInfo.GetPackageExtentionFolder();
+
+        var configs = Extensions.Configurations;
+
+        StringBuilder references = new StringBuilder();
+
+        string projectFileText = Resources.Ahsoka_CommandLine;
+        XDocument doc = XDocument.Parse(projectFileText);
+        var propGroup = doc.Descendants("PropertyGroup").FirstOrDefault();
+        propGroup.Add(new XElement("Version", GitVersionInformation.FullSemVer));
+
+        // If this is a released (non developer) version, update nuget to match.
+        var packageGroup = doc.Descendants("ItemGroup").FirstOrDefault(x => x.Attributes().Any(y => y.Name == "Label" && y.Value == "Packages"));
+        if (packageGroup != null)
+        {
+            var package = new XElement("PackageReference");
+            package.Add(new XAttribute("Include", "Ahsoka.Core"));
+            package.Add(new XAttribute("Version", GitVersionInformation.FullSemVer));
+            packageGroup.Add(package);
+
+            AssemblyLoadContext buildContext = new("BuildContext",true);
+
+
+            foreach (var extension in extensionInfos)
+            {
+                var info = configs.FirstOrDefault(x => x.ExtensionName == extension.ExtensionName);
+
+                package = new XElement("PackageReference");
+                package.Add(new XAttribute("Include", info.PackageName));
+                package.Add(new XAttribute("Version", info.InstalledVersion));
+                packageGroup.Add(package);
+
+         
+                foreach (var item in Extensions.GetExtensionFiles(info.ExtensionName,false))
+                {
+                    if(item.EndsWith(info.PackageName + ".dll"))
+                    {
+                        var asm = buildContext.LoadFromAssemblyPath(item);
+                        var typeToAdd = asm.ExportedTypes.First(x=>!x.IsAbstract && !x.IsGenericType && x.IsPublic);
+                        string loaderLine = $"        Ahsoka.System.Extensions.AddPrivateExtension(typeof({typeToAdd.FullName}).Assembly);";
+                        references.AppendLine(loaderLine);
+                    }
+                }
+            }
+
+            buildContext.Unload();
+        }
+
+        // Write Project
+        doc.Save(projectFile);
+
+        string programFileName = Path.Combine(Path.GetDirectoryName(projectFile), "Program.cs");
+        string file = Properties.Resources.Program_cs;
+        file = file.Replace("/*ClassLoaderAdds*/", references.ToString());
+        File.WriteAllText(programFileName, file);
+
+        // Write Program
+        string outputFileName = Path.Combine(Path.GetDirectoryName(projectFile), "Properties", "PublishProfiles", "Outputs.pubxml");
+        file = Properties.Resources.Publish_xmlpub;
+        string runtimeID = packageInfo.PlatformFamily == PlatformFamily.OpenViewLinux ? "linux-arm" : "linux-arm64";
+        file = file.Replace("<!--RUNTIMEID-->", runtimeID);
+
+        Directory.CreateDirectory(Path.GetDirectoryName(outputFileName));
+        File.WriteAllText(outputFileName, file);
+    }
 }
 
 /// <summary>

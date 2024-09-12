@@ -84,7 +84,7 @@ public static class JsonUtility
                 if (!string.IsNullOrEmpty(propertyName)) // Root Object...ignore
                 {
                     propertyStack.Push(propertyName); // Push Collection Property
-                    currentObject = currentObject.CreatePropertyObject(propertyName);
+                    currentObject = currentObject?.CreatePropertyObject(propertyName);
                 }
 
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Developer, $"{new string(' ', depth)}Start Object: {propertyName}");

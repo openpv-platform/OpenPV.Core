@@ -14,6 +14,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Spark;
 
@@ -79,7 +80,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         }
     }
 
-    private void HandleSubscribeToAppChange(AhsokaMessageHeader messageHeader) 
+    private void HandleSubscribeToAppChange(AhsokaMessageHeader messageHeader)
     {
         SparkSubscriptionInfo info = GetSparkSubscription();
 
@@ -90,27 +91,26 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         if (auth == null)
             throw new ApplicationException("No authorization found");
 
-        //SparkDisplayClient.SharedSparkClient.ReceiveAppChanges = new Action<AppChangesDTO>((changesDto) =>
-        //{
-        //    var reply = CreateReplyMessageHeader(messageHeader, SparkMessageTypes.Ids.AppChangeNotification);
-        //    var info = new AppChangeInfo()
-        //    {
-        //        ChannelName = changesDto.ChannelName,
-        //        ReleaseName = changesDto.ReleaseName,
-        //        AppEvent = (AppChangesEnum)changesDto.AppEvent,
-        //        Message = changesDto.Message,
-        //    };
-        //    SendMessageInternal(reply, info);
-        //});
-
-        //SparkDisplayClient.SharedSparkClient.SubscribeToAppChanges();
+        SparkDisplayClient.SharedSparkClient.SubscribeToAppChanges((changesDto) =>
+        {
+            var reply = CreateReplyMessageHeader(messageHeader, SparkMessageTypes.Ids.AppChangeNotification);
+            var info = new AppChangeInfo()
+            {
+                ChannelName = changesDto.ChannelName,
+                ReleaseName = changesDto.ReleaseName,
+                AppEvent = (AppChangesEnum)changesDto.AppEvent,
+                Message = changesDto.Message,
+            };
+            SendMessageInternal(reply, info);
+        });
 
         SendMessageInternal(messageHeader);
+
     }
 
     private void HandleUnsubscribeToAppChange(AhsokaMessageHeader messageHeader) 
     { 
-        //SparkDisplayClient.SharedSparkClient.UnsubscribeToAppChanges();
+        SparkDisplayClient.SharedSparkClient.UnsubscribeToAppChanges();
 
         SendMessageInternal(messageHeader);
     }

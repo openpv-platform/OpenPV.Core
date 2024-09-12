@@ -15,7 +15,6 @@
 
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
 		<Message Text="Cleaning Windows BuildOutputs" Importance="high" />
-		<RemoveDir Directories="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\" />
 		<Delete Files="$(PlatformSupportRoot)\SparkUpload\Windows64_TargetSupport.zip" />
 	</Target>
 

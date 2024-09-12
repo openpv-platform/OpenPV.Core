@@ -17,6 +17,7 @@ public interface IViewModelBehavior
     /// <typeparam name="T"></typeparam>
     /// <param name="baseValue"></param>
     /// <param name="newValue"></param>
+    /// <param name="propertyId"></param>
     /// <param name="memberName"></param>
-    void OnSetValue<T>(T baseValue, T newValue, string memberName) where T : struct;
+    void OnSetValue<T>(T baseValue, T newValue, uint propertyId, string memberName);
 }

@@ -3,25 +3,19 @@ using Ahsoka.System;
 using Ahsoka.Utility;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Utilities;
-using Microsoft.Extensions.Configuration;
 using NuGet.Common;
 using NuGet.Configuration;
-using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.ServiceModel.Channels;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -40,7 +34,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         base(viewModel, false)
     {
         this.viewModel = viewModel;
-        this.PackageType = System.Extensions.ExtensionsFolder;
+        this.PackageType = "Software Install";
         this.CanInstall = false;
         this.Description = viewModel.ChannelName.TrimEnd('s') + " Info";
         this.Name = viewModel.ChannelName.TrimEnd('s') + " Info";
@@ -98,9 +92,13 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         var nugetVersion = new NuGetVersion(this.Version);
 
-        var version = await GetVersionToDownload(config, config.PackageName, nugetVersion.IsPrerelease);
+        try
+        {
+            var version = await GetVersionToDownload(config, config.PackageName, nugetVersion.IsPrerelease);
 
-        await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version.FirstOrDefault(), false, demoPath, false, true);
+            await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version.FirstOrDefault(), false, demoPath, false, true);
+        }
+        catch { Console.WriteLine($"Unable to Download Packages for {config.PackageName}"); }
     }
  
     protected override string GetVersionFilePath()

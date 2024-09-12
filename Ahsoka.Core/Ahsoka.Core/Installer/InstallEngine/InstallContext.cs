@@ -7,21 +7,35 @@ using System.IO;
 
 namespace Ahsoka.Installer.InstallEngine;
 
-internal class InstallContext
+/// <summary>
+///  Context Object for referencing Shared Progress and Logging During Install Creation.
+/// </summary>
+public class InstallContext
 {
     double percentComplete = 0;
     readonly double percentStep = 0;
 
     StreamWriter output;
 
+    /// <summary>
+    ///  Shared Progress Object
+    /// </summary>
     public LocalProgress<InstallProgressInfo> Progress { get; internal set; }
+
+    /// <summary>
+    /// Shared Logging 
+    /// </summary>
     public LocalProgress<InstallLogInfo> Log { get; internal set; }
 
+    /// <summary>
+    ///  Shared Pointer to current Install Engine
+    /// </summary>
     public InstallEngineBase InstallEngine { get; internal set; }
-    public string PassKey { get; internal set; }
+
+    internal string PassKey { get;  set; }
     private InstallService Service { get; set; }
 
-    public InstallContext(InstallEngineBase installEngine, InstallService service, string passKey)
+    internal InstallContext(InstallEngineBase installEngine, InstallService service, string passKey)
     {
         Service = service;
         InstallEngine = installEngine;
@@ -42,7 +56,7 @@ internal class InstallContext
         });
     }
 
-    public void CloseLog()
+    internal void CloseLog()
     {
         if (output != null)
             using (output)
@@ -52,7 +66,7 @@ internal class InstallContext
             };
     }
 
-    public void OpenLog()
+    internal void OpenLog()
     {
         string timeStamp = DateTime.Now.ToString("yyyyMMddHHmmssfff");
 

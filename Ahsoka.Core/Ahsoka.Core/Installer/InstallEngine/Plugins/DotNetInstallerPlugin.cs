@@ -8,7 +8,7 @@ namespace Ahsoka.Installer.InstallEngine;
 
 internal class DotNetInstallerPlugin : InstallerPlugin
 {
-    internal override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
+    public override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
     {
         if (packageInformation.ApplicationType != ApplicationType.Dotnet)
             return;

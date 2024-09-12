@@ -46,6 +46,7 @@
 			</Grid>
 
 			<CustomerTools:DotNetView IsVisible="{Binding DotNetViewModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+			<CustomerTools:CodesysView IsVisible="{Binding CodesysViewModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 			<CustomerTools:CppView IsVisible="{Binding CppViewModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
 		</StackPanel>
 

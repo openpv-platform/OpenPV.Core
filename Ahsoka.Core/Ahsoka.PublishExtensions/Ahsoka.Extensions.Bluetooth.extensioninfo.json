@@ -1,7 +1,7 @@
 ﻿{
   "extensionName": "Bluetooth Classic Extension",
-  "packageName": "Ahsoka.Core.Bluetooth",
-  "uxpackageName": "Ahsoka.Core.Bluetooth.UX",
+  "packageName": "Ahsoka.Extensions.Bluetooth.Classic",
+  "uxpackageName": "Ahsoka.Extensions.Bluetooth.UX",
   "uxViewModelName": "BluetoothViewModel",
   "serviceConfigurations": [
     {
@@ -27,7 +27,7 @@
   ],
   "hasCommands": "false",
   "hasUx": "true",
-  "minVersion": "3.4.0",
+  "minVersion": "3.5.0",
   "maxVersion": "4.0.0",
   "requireExactVersion": "false"
 }

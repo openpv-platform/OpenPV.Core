@@ -15,7 +15,6 @@
 
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
 		<Message Text="Cleaning OpenView BuildOutputs" Importance="high" />
-		<RemoveDir Directories="$(PlatformSupportRoot)\PlatformSupport\PowerVision_TargetSupport\" />
 		<Delete Files="$(PlatformSupportRoot)\SparkUpload\PowerVision_TargetSupport.zip" />
 	</Target>
 

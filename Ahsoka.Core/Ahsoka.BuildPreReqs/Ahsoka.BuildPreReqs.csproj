@@ -12,8 +12,11 @@
 	<Target Name="BuildPreReqs" BeforeTargets="PreBuildEvent">
 		<MSBuild Projects="../Ahsoka.DownloadBSP/Ahsoka.DownloadBSP.csproj;../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="true" />
 	</Target>
+
+
+	<!--Don't CLEAN BSP By Default since downloads are huge-->
 	<Target Name="CleanPreReqs" AfterTargets="BeforeClean">
-		<MSBuild Projects="../Ahsoka.DownloadBSP/Ahsoka.DownloadBSP.csproj;../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" Targets="BeforeClean" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
+		<MSBuild Projects="../Ahsoka.BuildInterop/Ahsoka.BuildInterop.csproj;../Ahsoka.BuildEsp32/Ahsoka.BuildEsp32.csproj" Targets="BeforeClean" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
 	</Target>
 	
 </Project>

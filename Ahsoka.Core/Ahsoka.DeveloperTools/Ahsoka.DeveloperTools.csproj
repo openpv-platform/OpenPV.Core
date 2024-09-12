@@ -5,21 +5,13 @@
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
 		<SignAssembly>False</SignAssembly>
 		<UseRidGraph>true</UseRidGraph>
-		<TrimMode>copyused</TrimMode>
+		<TrimMode>partial</TrimMode>
 		<AssemblyName>OpenPV.DeveloperToolkit</AssemblyName>
 	</PropertyGroup>
 
 	<PropertyGroup Label="Suppress Errors for GPIO Project">
 		<SuppressWindowsPlatformTargetingRequiredError>true</SuppressWindowsPlatformTargetingRequiredError>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<Content Include="..\..\BuildOutputs\Ahsoka.Documentation\html\**">
-			<Link>APIHelp\%(RecursiveDir)%(Filename)%(Extension)</Link>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Visible>true</Visible>
-		</Content>
-	</ItemGroup>
 
 	<PropertyGroup>
 		<CFBundleName>OpenPV.DeveloperToolkit</CFBundleName> <!-- Also defines .app file name -->
@@ -78,7 +70,10 @@
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 		</None>
 		<AvaloniaResource Include="Assets\*" />
+		<Compile Remove="OpenPVTools\OpenViewProFlashTool.cs" />
+		<ApplicationDefinition Include="OpenPVTools\OpenViewPlatformSupport.json" />
 		<Resource Include="Assets\OpenPV-Icon.ico" />
+		<Resource Include="OpenPVTools\OpenViewProFlashTool.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -93,11 +88,14 @@
 	  <Compile Update="Views\MainWindow\ConnectionDetailsView.axaml.cs">
 	    <DependentUpon>ConnectionDetailsView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Package\CodesysView.axaml.cs">
+	    <DependentUpon>CodesysView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Package\DeveloperView.axaml.cs">
 	    <DependentUpon>DeveloperView.axaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Views\Package\LicensingView.axaml.cs">
-	    <DependentUpon>LicensingView.axaml</DependentUpon>
+	  <Compile Update="Views\Package\DeviceView.axaml.cs">
+	    <DependentUpon>DeviceView.axaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Package\PackageInfoView.axaml.cs">
 	    <DependentUpon>PackageInfoView.axaml</DependentUpon>

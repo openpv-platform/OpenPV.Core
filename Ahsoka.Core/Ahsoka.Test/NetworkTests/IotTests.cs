@@ -27,7 +27,7 @@ public class IotTests : LinearTestBase
         // Start client for NetworkService
         var client = new IotServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
-        client.Connect();
+        client.Start();
 
         // Create Client for Spa
         var clientInfo = new ClientInfo()
@@ -50,7 +50,7 @@ public class IotTests : LinearTestBase
         }
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
 
@@ -60,7 +60,7 @@ public class IotTests : LinearTestBase
         // Start client for NetworkService
         var client = new IotServiceClient();
         client.NotificationReceived += Client_NotificationReceived; 
-        client.Connect();
+        client.Start();
 
         var clientState = TestConnections(client);
 
@@ -72,7 +72,7 @@ public class IotTests : LinearTestBase
         }
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     private void TestDisconnect(IotServiceClient client, ClientConnectionInfo clientState)

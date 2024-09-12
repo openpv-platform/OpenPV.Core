@@ -17,13 +17,13 @@ public interface IAhsokaEndPoint
 
     AhsokaRuntime CurrentRuntime { get; set; }
 
-    void Connect();
+    void Start();
 
-    void Disconnect();
+    void Stop();
 
     void ReceiveMessage(bool isNotification);
 
-    void WaitForDisconnect();
+    void WaitForStop();
 
     WaitHandle GetWaitHandle();
 }
@@ -59,7 +59,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
             config.TcpListenAddress = config.TcpListenAddress.Replace("*", "localhost");
     }
 
-    public void Connect()
+    public void Start()
     {
         // Before Connecting
         OnEndPointConnecting();
@@ -73,7 +73,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
         OnEndPointConnected();
     }
 
-    public void Disconnect()
+    public void Stop()
     {
         try
         {
@@ -91,7 +91,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
     /// <summary>
     /// Allows the consumer to wait this endpoint to Disconnect / ShutDown
     /// </summary>
-    public void WaitForDisconnect()
+    public void WaitForStop()
     {
         shutdownWaiter.Wait();
     }

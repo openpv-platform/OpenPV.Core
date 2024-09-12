@@ -13,22 +13,14 @@
 		<Copy SourceFiles="Proto\Configuration.proto" DestinationFolder="..\..\Ahsoka.Shared" OverwriteReadOnlyFiles="true"  />
 	</Target>
 
-	<Target Name="InstallLicenseTool" BeforeTargets="PreBuildEvent"
-			Condition="false">
-		
-		<Message Text="Install License Generator" Importance="High" />
-		<Exec ContinueOnError="true" Command="dotnet tool uninstall --global dotnet-project-licenses" />
-		<Exec ContinueOnError="true" Command="dotnet tool install --global dotnet-project-licenses --version 2.4.*" />
-	</Target>
 	
 	<!--Note that this will only run once.  To generate licenses again, you must delete the file.-->
 	<Target Name="GenerateLicenseFile" BeforeTargets="PreBuildEvent"
 			Condition="!Exists('..\Ahsoka.Core\Resources\Licenses.json') ">
 		
 		<Message Text="Generate License File" Importance="High" />
-		<Exec ContinueOnError="true" Command="dotnet tool update --global dotnet-project-licenses --version 2.4.*" />
+		<Exec ContinueOnError="true" Command="dotnet tool update --global dotnet-project-licenses --version 2.7.*" />
 		<Exec Command="dotnet project-licenses -i . -o --outfile ../Ahsoka.Core/Resources/Licenses.json -j -p false" />
-		<Exec Condition="'$(OS)' != 'Unix'" Command="..\..\Ahsoka.ThirdParty\Doxygen\doxygen.exe .\Docs\Doxyfile"  />
 	</Target>
 
 	<ItemGroup Label="Native Libraries For Core" Condition="$(IGNORE_PREREQS) != 'YES' and '$(OS)' != 'Unix'" >

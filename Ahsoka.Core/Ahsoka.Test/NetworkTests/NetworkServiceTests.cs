@@ -27,7 +27,7 @@ public class NetworkServiceTest : LinearTestBase
         // Start client for NetworkService
         var client = new NetworkServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
-        client.Connect();
+        client.Start();
 
         string wifiAdapterId = null;
 
@@ -133,7 +133,7 @@ public class NetworkServiceTest : LinearTestBase
             client.DisableAdapter(new AdapterRequest() { AdapterId = wifiAdapterId });
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     [TestMethod]
@@ -168,7 +168,7 @@ public class NetworkServiceTest : LinearTestBase
         }
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     //[TestMethod]
@@ -216,7 +216,7 @@ public class NetworkServiceTest : LinearTestBase
         // Start client for NetworkService
         var client = new NetworkServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
-        client.Connect();
+        client.Start();
 
         // Get Adapter
         var networkAdapters = client.GetNetworkAdapters();
@@ -257,7 +257,7 @@ public class NetworkServiceTest : LinearTestBase
         }
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     [TestMethod]

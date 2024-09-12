@@ -7,10 +7,10 @@
              x:Class="Ahsoka.DeveloperTools.Views.ExtensionContainerView"
 			Background="#33555555">
 	<Grid>
-		<Border Name="Container" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" Margin="40" BorderThickness="1" Background="White">
+		<Border Name="Container" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" Margin="15" BorderThickness="1" Background="White">
 
 		</Border>
-		<Button Margin="44,44" Width="24" Grid.Column="2"  Height="24"
+		<Button Margin="24,24" Width="24" Grid.Column="2"  Height="24"
 				HorizontalAlignment="Right"
 			DockPanel.Dock="Right"
 			VerticalAlignment="Top"

@@ -123,15 +123,15 @@ internal class ActiveConnectionViewModel : ViewModelBase
             {
                 client = new(config);
                 UpdateConnectedDescription();
-                AhsokaRuntime.Default.ConnectEndPoints(client);
+                AhsokaRuntime.Default.StartEndPoints(client);
             }
             else
             {
                 UpdateConnectedDescription();
-                AhsokaRuntime.Default.DisconnectEndPoints(client);
+                AhsokaRuntime.Default.StopEndPoints(client);
 
                 client = new(config);
-                AhsokaRuntime.Default.ConnectEndPoints(client);
+                AhsokaRuntime.Default.StartEndPoints(client);
             }
         }
     }

@@ -42,7 +42,7 @@ public class GeneralTests : LinearTestBase
     [TestMethod]
     public void GetParametersTests()
     {
-        var knownValues = AhsokaMessagesBase.GetAllServiceParameters();
+        var knownValues = AhsokaMessagesBase.GetAllSystemParameters();
 
         Assert.IsTrue(knownValues.Any(x => x.Key == SystemService.Name));
 
@@ -319,6 +319,10 @@ public class GeneralTests : LinearTestBase
         Assert.AreEqual(model.ParentViewModel, parent);
         Assert.AreEqual(model.ValueObject, this);
         Assert.AreEqual(model.Value, 1234);
+
+        var parms =  parent.GetPropertyMap();
+        Assert.AreEqual(parms.SystemName,this.GetType().Namespace);
+
     }
 
 

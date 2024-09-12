@@ -48,6 +48,18 @@
       "DownloadToken": null,
       "SizeInBytes": 0,
       "Hash": null
+    },
+    {
+      "Path": "Firmware_openview.*.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Firmware_openviewpro.*.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
     }
   ],
   "Dependencies": null

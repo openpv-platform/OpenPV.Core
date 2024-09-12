@@ -19,9 +19,6 @@ internal class PlatformFirmwareTool : OpenPVToolBase
     PlatformFamily family = PlatformFamily.Any;
     public PlatformFirmwareTool(string pathToFirmware, PlatformFamily family) 
     {
-
-        pathToFirmware = Directory.EnumerateFiles(pathToFirmware,"image.*.zip", SearchOption.AllDirectories).FirstOrDefault();
-
         this.family = family;
         this.PackageType = "Target Firmware";
         this.Description = "Distribution for " + family;
@@ -68,8 +65,7 @@ internal class PlatformFirmwareTool : OpenPVToolBase
         {
             try
             {
-                toolModel.MainViewModel.Console.AddConsoleLine($"Beginning Installation of {pathToFirmware}");
-
+               
                 toolModel.MainViewModel.Console.AddConsoleLine($"Extracting files from zipped folder");
 
                 string zipPath = Path.Combine(downloadDirectory, "TempExtract");
@@ -79,6 +75,8 @@ internal class PlatformFirmwareTool : OpenPVToolBase
 
                 List<string> file = Directory.GetFiles(zipPath, "*.tsv", SearchOption.AllDirectories).ToList();
                 string installFile = file.First();
+
+                toolModel.MainViewModel.Console.AddConsoleLine($"Beginning Installation of {downloadFileName}");
 
                 string result = ""; 
                 if (family ==  PlatformFamily.OpenViewLinux)

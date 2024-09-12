@@ -1,10 +1,8 @@
 ﻿using Ahsoka.DeveloperTools.Core;
-using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
-using ShimSkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Extensions = Ahsoka.System.Extensions;
 
 #pragma warning disable CS0436 // Type conflicts with imported type for GitVersionInformation
@@ -32,23 +29,20 @@ internal class DotNetViewModel : ViewModelBase
 
     public void UpdateSDK()
     {
-        InstallCLI(false);
+        Task.Run(() => { InstallCLI(false).GetAwaiter().GetResult(); });
     }
 
     public async Task NeedsUpdate(bool isGenerating = false)
     {
         if (parentViewModel.SelectedPackage.IsOpenView && packageInfo.ApplicationType == ApplicationType.Dotnet || SdkNeedsUpdate)
         {
-            var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
-            var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x=>!x.IsInstalled);
-
-            var frameworkInfo = GetFrameworkInfo();
-            if (frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || SdkNeedsUpdate || !cliExists || !extensionsUpToDate)
+            UpdateSDKUpdateState(parentViewModel);
+            if (SdkNeedsUpdate)
             {
                 var continueWork = await parentViewModel.Dialog.ShowDialog("SDK Update Needed", "The installed 'SDK Package' is out of date, do you wish to update?", "Yes", "No");
                 if (continueWork)
                 {
-                    InstallCLI(isGenerating);
+                    await InstallCLI(isGenerating);
                     SdkNeedsUpdate = false;
                 }
             }
@@ -143,6 +137,20 @@ internal class DotNetViewModel : ViewModelBase
         this.packageInfo = packageInfo;
 
         packageInfo.DotNetInfo ??= new DotNetInformation();
+
+        UpdateSDKUpdateState(parentViewModel);
+    }
+
+    private void UpdateSDKUpdateState(MainViewModel parentViewModel)
+    {
+        var cliExists = File.Exists(parentViewModel.SelectedPackage.GetCommandLinePath());
+        var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => !x.IsInstalled) ||
+                                 parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Count() == 0;
+        var frameworkInfo = GetFrameworkInfo();
+        var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion();
+
+        if (!cliExists || !extensionsUpToDate || frameworkNeedsUpdate)
+            SdkNeedsUpdate = true;
     }
 
     internal async void SetProject()
@@ -161,11 +169,12 @@ internal class DotNetViewModel : ViewModelBase
             PublishProfile = Path.GetRelativePath(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), path);
     }
 
-    internal async void InstallCLI(bool isGenerating = false)
+    internal async Task InstallCLI(bool isGenerating = false)
     {
         if (!isGenerating)
             parentViewModel.StartProcess(null);
 
+        bool finishedInstall = false;
         string result = "Process Ended";
         try
         {
@@ -225,7 +234,6 @@ internal class DotNetViewModel : ViewModelBase
                 });
 
                 RunSdkCommands(projectPath, parentViewModel, progress);
-
             });
 
             parentViewModel.Console.AddConsoleLine($" ");
@@ -236,11 +244,17 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged(nameof(FrameworkButtonText));
 
             File.WriteAllText(Path.Combine(projectPath, "Directory.Build.props"), Properties.Resources.BuildProps);
+            finishedInstall = true;
+        }
+        catch (IOException)
+        {
+            finishedInstall = false;
+            parentViewModel.Console.AddConsoleLine($"Unable to Remove and Re-Add the SDK Folder");
         }
         finally
         {
             if (!isGenerating)
-                parentViewModel.FinishProcess("SDK Updated", true);
+                parentViewModel.FinishProcess("SDK Updated", finishedInstall);
         }
     }
 

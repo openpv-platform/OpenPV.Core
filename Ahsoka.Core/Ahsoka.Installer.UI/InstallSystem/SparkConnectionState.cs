@@ -40,7 +40,7 @@ internal class SparkConnectionState : InstallerUIStateBase
 
         var tempClient = new SparkServiceClient();
         tempClient.NotificationReceived += Client_NotificationReceived;
-        AhsokaRuntime.Default.ConnectEndPoints(tempClient);
+        AhsokaRuntime.Default.StartEndPoints(tempClient);
         return tempClient;
     }
 
@@ -49,7 +49,7 @@ internal class SparkConnectionState : InstallerUIStateBase
         if (client != null)
         {
             client.NotificationReceived -= Client_NotificationReceived;
-            AhsokaRuntime.Default.DisconnectEndPoints(client);
+            AhsokaRuntime.Default.StopEndPoints(client);
             client = null;
         }
     }

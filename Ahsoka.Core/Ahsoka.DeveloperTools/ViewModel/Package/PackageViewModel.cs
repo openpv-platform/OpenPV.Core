@@ -1,15 +1,17 @@
-﻿using Ahsoka.Installer;
+﻿using Ahsoka.DeveloperTools.Core;
+using Ahsoka.Installer;
 using Ahsoka.Spark;
-using EnovationCloud.Core.DataTransferObjects;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Threading;
+using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -17,10 +19,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Path = System.IO.Path;
-using Ahsoka.DeveloperTools.Core;
-using Ahsoka.DeveloperTools.ViewModel;
-using System.Reflection;
-using ShimSkiaSharp;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -41,8 +39,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     private Bitmap bitmap;
     SparkViewModel sparkViewModel;
     DependenciesCheckViewModel deps;
-    
-    bool isOpenView = false;
     int selectedTab = 0;
     #endregion
 
@@ -57,17 +53,22 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
-            return isOpenView;
+            return PlatformFamily != PlatformFamily.PowerVision;
+        }
+        set { }
+    }
+
+    public bool GenerateOptimizedServiceManager
+    {
+        get
+        {
+            return packageInfo.OptimizedServiceManager;
         }
 
         set
         {
-            if (value != IsOpenView)
-            {
-                isOpenView = value;
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(PlatformDescriptions));
-            }
+            packageInfo.OptimizedServiceManager = value;
+            OnPropertyChanged();
         }
     }
 
@@ -166,8 +167,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             PackageInfo.PlatformFamily = value;
             OnPropertyChanged();
 
-            IsOpenView = PlatformFamily.ToString().Contains("OpenView");
-
             OnPropertyChanged(nameof(PlatformDescription));
             Deps.CheckDependencies(SystemInfo.CurrentPlatform, value);
         }
@@ -206,6 +205,32 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         set
         {
             PackageInfo.IncludeInstallerUI = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IncludeBootLogo
+    {
+        get
+        {
+            return PackageInfo.IncludeBootLogo;
+        }
+        set
+        {
+            PackageInfo.IncludeBootLogo = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public bool IncludeAppComponents
+    {
+        get
+        {
+            return PackageInfo.IncludeApplication;
+        }
+        set
+        {
+            PackageInfo.IncludeApplication = value;
             OnPropertyChanged();
         }
     }
@@ -283,12 +308,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                     PackageInfo.PlatformFamily = hardwareInfo.PlatformFamily;
                     PackageInfo.PlatformQualifier = hardwareInfo.PlatformQualifier;
 
-                    IsOpenView = PlatformFamily.ToString().Contains("OpenView");
-
                     Deps.CheckDependencies(SystemInfo.CurrentPlatform, PackageInfo.PlatformFamily);
 
                     HandleHardwareInfoChanges();
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsOpenView));
+
                 }
             }
         }
@@ -347,6 +372,13 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         get { return dataServiceModel; }
         set { dataServiceModel = value; OnPropertyChanged(); }
     }
+
+    public CppViewModel CodesysViewModel
+    {
+        get { return ApplicationType == ApplicationType.CODESYS ? cppViewModel : null; }
+        set { cppViewModel = value; OnPropertyChanged(); }
+    }
+
 
     public CppViewModel CppViewModel
     {
@@ -412,6 +444,9 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
+            if (PlatformFamily == PlatformFamily.PowerVision)
+                return Enum.GetValues<ApplicationType>().Where(x => x == ApplicationType.PowerVision).ToArray();
+
             return Enum.GetValues<ApplicationType>().Where(x => x != ApplicationType.Unknown).ToArray();
         }
     }
@@ -420,12 +455,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
-            var list = HardwareInfo.GetHardwareInfoDescriptions().Where(x=>!x.StartsWith( "PowerVision")).ToList();
-
-            if (!IsOpenView)
-                list.Add($"{PackageInfo.PlatformFamily} ({PackageInfo.PlatformQualifier})");
-
-            return list;
+            if (this.PlatformFamily == PlatformFamily.PowerVision)
+            {
+                return new List<string>() { $"{PackageInfo.PlatformFamily} ({PackageInfo.PlatformQualifier})" };
+            }
+            else
+               return HardwareInfo.GetHardwareInfoDescriptions().Where(x => !x.StartsWith("PowerVision")).ToList();
         }
         set
         {
@@ -501,7 +536,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     MainViewModel IToolViewModel.MainViewModel => ParentViewModel;
 
     string IToolViewModel.PercentStatus { get; set; }
- 
+
     internal async void SetOutputDir()
     {
         string currentPath = Path.Combine(Path.GetDirectoryName(PackageInfo.GetPackageInfoPath()), PackageOutputDirectory);
@@ -545,8 +580,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         LoadStartLogo();
 
         HandleHardwareInfoChanges();
-
-        IsOpenView = PlatformFamily.ToString().Contains("OpenView");
 
         DotNetViewModel?.NeedsUpdate();
         CppViewModel?.NeedsUpdate();
@@ -606,7 +639,17 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         return filled;
     }
 
-    internal async void LoadToTarget()
+    internal void LoadToTarget()
+    {
+        LoadToTarget(false);
+    }
+
+    internal void LoadToTargetCustom()
+    {
+        LoadToTarget(true);
+    }
+
+    internal async void LoadToTarget(bool isCustomInstall)
     {
         source = new CancellationTokenSource();
 
@@ -647,7 +690,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
         else
         {
-            pathToLoad = itemToGenerate.PackageInfo.GetOutputFullPath();
+            pathToLoad = itemToGenerate.PackageInfo.GetOutputFullPath(isCustomInstall);
             if (!File.Exists(pathToLoad))
             {
                 ParentViewModel.Console.AddConsoleLine("Generate this Package");
@@ -693,7 +736,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             // Load Package
             using (var stream = new FileStream(pathToLoad, FileMode.Open, FileAccess.Read))
             {
-                if (isOpenView && (!ParentViewModel.ActiveConnection.IsInstaller || forceInstallerAttempt))
+                if (IsOpenView && (!ParentViewModel.ActiveConnection.IsInstaller || forceInstallerAttempt))
                 {
                     var hwInfo = ParentViewModel.ActiveConnection.ReturnToInstaller(source, progressString);
 
@@ -767,7 +810,17 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         launchTool.LaunchTool(this);
     }
 
-    internal async void GenerateInstallPackage()
+    internal  void GenerateInstallPackage()
+    {
+       GeneratePackage(false);
+    }
+
+    internal  void GenerateCustomPackage()
+    {
+        GeneratePackage(true);
+    }
+
+    internal async void GeneratePackage(bool customInstall)
     {
         var itemToGenerate = ParentViewModel.SelectedPackage;
         if (itemToGenerate == null)
@@ -778,17 +831,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
 
         // Save Before Generating
         ParentViewModel.SavePackage();
-
-        if (SdkNeedsUpdate)
-        {
-            ParentViewModel.Console.AddConsoleLine("Updating SDK");
-
-            if (ApplicationType == ApplicationType.Dotnet)
-               await dotNetModel.NeedsUpdate(true);
-            else if (ApplicationType == ApplicationType.Cpp)
-               await cppViewModel.NeedsUpdate(true);
-        }
-        
 
         ParentViewModel.Console.ClearConsole();
         ParentViewModel.Console.AddConsoleLine("Generating OPV Package File");
@@ -810,6 +852,17 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             // Grab Latest Copy of Info.
             itemToGenerate.UpdatePackageInfo();
 
+            if (SdkNeedsUpdate)
+            {
+                ParentViewModel.Console.AddConsoleLine("Updating SDK");
+
+                if (ApplicationType == ApplicationType.Dotnet)
+                    dotNetModel.NeedsUpdate(true).GetAwaiter().GetResult();
+                else if (ApplicationType == ApplicationType.Cpp || ApplicationType == ApplicationType.CODESYS)
+                    cppViewModel.NeedsUpdate(true).GetAwaiter().GetResult();
+            }
+
+
             string workingDirectory = Path.GetDirectoryName(itemToGenerate.PackageInfoPath);
             string packageInfoPath = itemToGenerate.PackageInfoPath;
             string output = itemToGenerate.PackageInfo.GetOutputFullPath();
@@ -821,9 +874,9 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             if (ParentViewModel.Settings.WaitForDebuggerInCLI)
                 prefix = "--WaitForDebugger ";
 
-            ParentViewModel.RunCommandLineProcess($"{prefix}--Package \"{workingDirectory}\" \"{packageInfoPath}\"", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
+            ParentViewModel.RunCommandLineProcess($"{prefix}--Package \"{workingDirectory}\" \"{packageInfoPath}\" {customInstall}", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
 
-            output = itemToGenerate.PackageInfo.GetOutputFullPath();
+            output = itemToGenerate.PackageInfo.GetOutputFullPath(customInstall);
             if (File.Exists(output))
                 return output;
             else
@@ -852,6 +905,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         });
     }
 
+
     public void Cancel()
     {
         // Prevent Starting new Process
@@ -867,12 +921,13 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             case ApplicationType.Dotnet:
                 DotNetViewModel = new DotNetViewModel(ParentViewModel, PackageInfo);
                 break;
+            case ApplicationType.CODESYS:
+                CodesysViewModel = new CppViewModel(ParentViewModel, PackageInfo);
+                break;
             case ApplicationType.Cpp:
                 CppViewModel = new CppViewModel(ParentViewModel, PackageInfo);
                 break;
             case ApplicationType.PowerVision:
-                break;
-            case ApplicationType.CODESYS:
                 break;
             default:
                 break;

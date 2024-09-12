@@ -79,7 +79,7 @@ public class ServiceTests : LinearTestBase
         systemClient.RequestServiceShutdown();
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
 
@@ -89,7 +89,7 @@ public class ServiceTests : LinearTestBase
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-        systemClient.Connect();
+        systemClient.Start();
 
         // Request Service Shutdown
         try
@@ -112,7 +112,7 @@ public class ServiceTests : LinearTestBase
        
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     [TestMethod]
@@ -121,10 +121,10 @@ public class ServiceTests : LinearTestBase
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-        systemClient.Connect();
+        systemClient.Start();
 
         // Run Sample Test Code
-        ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
+        ServiceSelfTests.RunEchoPerfTest(100000, systemClient);
         ServiceSelfTests.PrintServerMetrics(systemClient);
       
         var brightness = systemClient.GetBrightness();
@@ -137,7 +137,7 @@ public class ServiceTests : LinearTestBase
         systemClient.RequestServiceShutdown();
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     [TestMethod]
@@ -147,14 +147,14 @@ public class ServiceTests : LinearTestBase
         SystemServiceClient systemClient = new();
         SystemService systemService = new();
 
-        AhsokaRuntime.Default.ConnectEndPoints(systemService, systemClient);
+        AhsokaRuntime.Default.StartEndPoints(systemService, systemClient);
 
         string result = systemClient.EchoValue("MyValue");
         Assert.IsTrue(result.StartsWith("MyValue"));
 
-        AhsokaRuntime.Default.DisconnectEndPoints(systemClient, systemService);
+        AhsokaRuntime.Default.StopEndPoints(systemClient, systemService);
 
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     [TestMethod]
@@ -198,13 +198,15 @@ public class ServiceTests : LinearTestBase
         config.Services.Add(systemItem);
        
         string commandLine = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily.Windows64), "CommandLine", "Ahsoka.CommandLine.exe");
-
+      
         // Create Client Runtime and Add Services
-        SystemServiceClient systemClient = new();
+        SystemServiceClient systemClient = new(systemItem);
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-       
+        systemClient.Start();
+
         AhsokaRuntime.StartProcessExecutable(commandLine, [systemClient]);
 
+        
         // Run Sample Test Code
         var task = Task.Run(() =>
         {
@@ -218,7 +220,7 @@ public class ServiceTests : LinearTestBase
         var result = task.Wait(10000);
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
 
         Assert.IsTrue(result,"The test process did not complete");
     }
@@ -317,7 +319,7 @@ public class ServiceTests : LinearTestBase
         Dispatcher.Default.StartAndRun();
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 }
 

@@ -152,9 +152,10 @@
 
 					</Grid>
 				</Border>
+			
 				<Border IsVisible="{Binding IsOpenView}"
-					 Margin="20,15,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,1,0,1">
-					<Grid Margin="5,20,5,5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="auto,36,36,36,auto">
+					 Margin="20,10,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,1,0,1">
+					<Grid Margin="5,15,5,10" ColumnDefinitions="150,Auto,Auto" RowDefinitions="auto,36,36,36,auto,auto,auto">
 
 						<TextBlock  ToolTip.Tip="Path where your development tool outputs your application files."
 								 Text="Application Output:" Grid.Row="1" Grid.Column="0"/>
@@ -170,18 +171,18 @@
 						<TextBlock Text="Execute Command:" Grid.Row="3" Grid.Column="0"/>
 						<TextBox Text="{Binding ExecCommand}" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="4" Width="325" TextWrapping="1" />
 
-						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Installer UI:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
-						<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2">
-							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeInstallerUI}" />
-							<TextBlock IsVisible="{Binding IsOpenView}" Text="Include Firmware Update:"/>
-							<CheckBox IsVisible="{Binding IsOpenView}" Margin="5,10,0,10" IsChecked="{Binding IncludeFirmwareUpdate}"/>
-							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray" Text="(Typically 40-50mb)" />
+						<TextBlock IsVisible="{Binding IsOpenView}" Text="Optimize Services:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
+							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding GenerateOptimizedServiceManager}" />
+							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray" 
+									   Text="Generates an optimized service manager executable (requires SDK)"
+									   ToolTip.Tip="Compiles an optimized executable which includes your extensions. This improves boot times and performance of services however you should disable this option if you need to remotely debug services"/>
 						</StackPanel>
+					
 					</Grid>
 				</Border>
 
-
-				<Border Margin="20,20,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+				<Border Margin="20,10,20,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
 					<Grid Margin="5" ColumnDefinitions="150,Auto" RowDefinitions="*,*,auto">
 						<TextBlock Text="Provisioning Project:"  Grid.Column="0"/>
 						<StackPanel Orientation="Horizontal" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >

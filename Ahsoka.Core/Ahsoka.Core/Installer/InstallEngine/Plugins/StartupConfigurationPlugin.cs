@@ -18,7 +18,7 @@ internal class StartupInstallerPlugin : InstallerPlugin
     public const string OverrideWorkingFolder = "OverrideWorkingFolder";
     public const string OverrideApplicationName = "OverrideAppName";
 
-    internal override void AddAdditionalApplicationFiles(string buildLocation, 
+    public override void AddAdditionalApplicationFiles(string buildLocation, 
         Dictionary<string, string> attributes, 
         Dictionary<string, byte[]> additionalFiles, 
         PackageInformation info, 
@@ -66,22 +66,25 @@ internal class StartupInstallerPlugin : InstallerPlugin
         // Add Startup Configuration
         string commandLineScriptName = AddRuntimeConfigToOutputs(buildLocation, additionalFiles, info);
 
+        string delay = $"\n\nsleep {info.ServiceInfo.RuntimeConfiguration.StartupDelay}";
+
         if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.BeforeApplicationStart)
         {
-            additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
             preScript.Append($"\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} & ");
         }
         else if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.AfterApplicationStart)
         {
-            additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
-            postScript.Append($"\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} &");
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
+            postScript.Append($"{delay}\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} &");
+            delay = "";
         }
 
         // Release if Option Enabled (With Sleep if After to Allow Apps to Start)
         if (info.ServiceInfo.RuntimeConfiguration.ReleaseOption == StartOptions.BeforeApplicationStart)
             preScript.Append($"\n\nsystemd-notify --ready");
         else if (info.ServiceInfo.RuntimeConfiguration.ReleaseOption == StartOptions.AfterApplicationStart)
-            postScript.Append($"\n\nsleep {info.ServiceInfo.RuntimeConfiguration.StartupDelay}\nsystemd-notify --ready"); // Add Delay for After Starts
+            postScript.Append($"{delay}\nsystemd-notify --ready"); // Add Delay for After Starts
 
         startScriptFileContents = startScriptFileContents.Replace("${PreReleaseScript}", preScript.ToString());
         startScriptFileContents = startScriptFileContents.Replace("${PostReleaseScript}", postScript.ToString());
@@ -111,9 +114,11 @@ internal class StartupInstallerPlugin : InstallerPlugin
         ProtoBuf.Serializer.Serialize(stream, info.ServiceInfo.RuntimeConfiguration);
         jsonData = Encoding.UTF8.GetBytes( JsonUtility.Serialize(info.ServiceInfo.RuntimeConfiguration));
 
-        additionalFiles[pathRelativeToExecutable + $"/{AutoStartFileName}"] = stream.ToArray();
-        additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/{AutoStartFileName}"] = stream.ToArray(); // Place Copy Here as Indicator that we are using Auto Start.
-        additionalFiles[$"{ApplicationOutputComponent.AppInfoFolder}/{AutoStartFileName + ".json"}"] = jsonData; // Place JSON so we can read it.
+        additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AutoStartFileName}"] = stream.ToArray(); // Place Copy Here as Indicator that we are using Auto Start.
+        additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AutoStartFileName + ".json"}"] = jsonData; // Place JSON so we can read it.
+
+        if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup != StartOptions.NoAutoStart || info.ApplicationType != ApplicationType.Dotnet)
+            additionalFiles[pathRelativeToExecutable + $"/{AutoStartFileName}"] = stream.ToArray();
 
         return targetCommandLinePath.Replace("\\","/");
     }

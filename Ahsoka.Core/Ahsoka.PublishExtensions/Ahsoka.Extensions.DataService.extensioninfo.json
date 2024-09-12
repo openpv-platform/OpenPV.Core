@@ -1,20 +1,23 @@
 ﻿{
-  "extensionName": "Bluetooth LE Extension",
-  "packageName": "Ahsoka.Core.Bluetooth.LE",
+  "extensionName": "Data Service Extension",
+  "packageName": "Ahsoka.Extensions.DataService",
+  "uxpackageName": "",
+  "uxViewModelName": "",
   "serviceConfigurations": [
     {
       "socketType": "TcpSocket",
-      "serviceName": "BLEService",
+      "serviceName": "DataService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel": 5108,
+      "dataChannel": 5109,
       "behaviors": "AutoStart"
     }
   ],
-  "hasCommands": "true",
+  "hasCommands": "false",
   "hasUx": "false",
-  "minVersion": "3.4.0",
+  "hasSdkGenerator": "false",
+  "minVersion": "3.7.0",
   "maxVersion": "4.0.0",
   "requireExactVersion": "false"
 }

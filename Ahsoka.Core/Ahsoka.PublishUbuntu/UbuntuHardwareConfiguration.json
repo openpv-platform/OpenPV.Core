@@ -16,22 +16,6 @@
     "screenHeight": "600",
     "screenDpi": "96"
   },
-  "bluetoothInfo": {
-    "bluetoothAdapters": [
-      {
-        "index": "0",
-        "deviceInterfacePath": "",
-        "stack": "Desktop"
-      }
-    ]
-  },
-  "canInfo": {
-    "canPorts": [
-      {
-        "port": "1"
-      }
-    ]
-  },
   "networkInfo": {
     "adapterInfoList": [
       {

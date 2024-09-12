@@ -75,7 +75,7 @@ public static class ApplicationContext
         Dispatcher.Default.Stop();
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Shutting Down Runtimes");
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
 
         if (OperatingSystem.IsWindows())
         {

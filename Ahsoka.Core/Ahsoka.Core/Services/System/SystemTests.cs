@@ -18,7 +18,7 @@ internal class SystemTests
         // Start client for NetworkService
         var client = new SystemServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
-        client.Connect();
+        client.Start();
 
         // Test Backlight
         BrightnessTest(client);
@@ -35,7 +35,7 @@ internal class SystemTests
         TestUpdateTouchscreen(client);
 
         // Stop the Runtimes
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
   

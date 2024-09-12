@@ -85,22 +85,22 @@ public partial class TargetPathInfo
                 return $"/usr/share/psplash/splash.png";
 
             case InstallerPaths.ApplicationVersion:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder, ApplicationOutputComponent.AppVersionFile);
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppVersionFile);
             
             case InstallerPaths.ServiceSecurityFile:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.ServiceSecurityFile);
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder , ApplicationOutputComponent.ServiceSecurityFile);
             
             case InstallerPaths.ApplicationDescription:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder , ApplicationOutputComponent.AppDescriptionFile);
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder , ApplicationOutputComponent.AppDescriptionFile);
 
             case InstallerPaths.ApplicationName:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder, ApplicationOutputComponent.AppNameFile);
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppNameFile);
 
             case InstallerPaths.ApplicationType:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder, ApplicationOutputComponent.AppTypeFile);
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppTypeFile);
 
             case InstallerPaths.StartConfig:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.AppInfoFolder, StartupInstallerPlugin.AutoStartFileName);
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, StartupInstallerPlugin.AutoStartFileName);
 
             case InstallerPaths.CoProcessorApplicationPath:
                 return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputComponent.CoProcessorFolder);
@@ -110,6 +110,9 @@ public partial class TargetPathInfo
                     return $"{factoryRoot}/installerui/InstallerVersion.txt";
                 else
                     return $"{fieldRoot}/installerui/InstallerVersion.txt";
+
+            case InstallerPaths.FirmwareUpgradePath:
+                return "/usr/local/Ahsoka/upgrade";
         }
 
         return factoryRoot;
@@ -315,6 +318,11 @@ public enum InstallerPaths
     /// Service Security Info
     /// </summary>
     ServiceSecurityFile,
+
+    /// <summary>
+    /// Path used for extracting the BSP Upgrade before executing
+    /// </summary>
+    FirmwareUpgradePath
 }
 
 /// <summary>

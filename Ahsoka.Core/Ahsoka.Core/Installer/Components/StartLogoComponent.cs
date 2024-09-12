@@ -18,8 +18,6 @@ internal class StartLogoComponent : InstallEngineComponent
 
     public override Guid ComponentType => StartLogoComponentType;
 
-    public override bool IsRequiredComponent => false;
-
     public override string ComponentName => PackageName;
 
     protected override PackageComponent OnCreatePackageStream(string buildLocation,

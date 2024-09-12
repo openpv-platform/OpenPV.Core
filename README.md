@@ -107,7 +107,7 @@ The project Ahsoka.PublishOutputs will build automatically the first time you bu
 Each of these extension repos has its own Continuous Delivery pipeline and are now versioned independently from the core.   The Core references "compatible" extensions using its extensioninfo.json file.  If a breaking change is needed in the core, it will set a new  min value for the extensions to prevent downloading incompatible extensions.    It is up to the extension developers to then revise their extension to support the core and release a new release.    **The core does use synaptic versioning so the expectation is that once released minor releases should not include breaking changes for extensions.**
 
 For more information about developing extensions for OpenPV, you can go here...
-[Ahsoka Extensions](Developing%20Ahsoka%20(OpenPV)%20Extensions.md)
+[Ahsoka Extensions](Ahsoka.Core\Ahsoka.Core\Docs\Developing%20Ahsoka%20(OpenPV)%20Extensions.md)
 # Pipelines & Component Delivery
  
 All components in Ahsoka.Platform use Pipelines to contribute to Public Delivery.  At the current time, there are 4 primary public deliveries made of the following components
@@ -130,5 +130,5 @@ All components in Ahsoka.Platform use Pipelines to contribute to Public Delivery
 # Ahsoka Services Framework
 
 For more information about the Ahsoka Service Framework, you can visit the document below.
-[Ahsoka Service Framework](Understanding%20Ahsoka%20Service%20Architectures.md)
+[Ahsoka Service Framework](Ahsoka.Core\Ahsoka.Core\Docs\Understanding%20Ahsoka%20Service%20Architectures.md)
 

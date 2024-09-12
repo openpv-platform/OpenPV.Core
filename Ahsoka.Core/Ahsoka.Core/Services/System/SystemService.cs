@@ -70,7 +70,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         InitSystemSettings(settings);
         stopwatch.ResetTiming("Settings Loaded");
 
-        currentAppPath = GetSystemInfo(out applicationName, out applicationDescription, out applicationVersion, out sdkVersion);
+        currentAppPath = SystemInfo.GetApplicationInfo(out applicationName, out applicationDescription, out applicationVersion, out sdkVersion);
 
         GetVersions();
 
@@ -87,32 +87,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
         UpdateCacheValue(SystemServiceMessages.Available, true);
         UpdateCacheValue(SystemServiceMessages.CurrentApplicationName, applicationName);
-    }
-
-    internal static string GetSystemInfo(out string applicationName, out string applicationDescription, out string applicationVersion, out string sdkVersion )
-    {
-        applicationName = Path.GetFileName(Environment.ProcessPath).Replace(".exe", ""); // remove exe from windows exe's
-        var currentAppPath = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
-        sdkVersion = VersionUtility.GetAppVersionString();
-        applicationVersion = applicationDescription = string.Empty;
-
-        if (Environment.ProcessPath.ToLower().StartsWith(currentAppPath.ToLower()))
-        {
-            string appNameFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationName);
-            if (File.Exists(appNameFile))
-                applicationName = File.ReadAllText(appNameFile);
-
-            string applicationVersionPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationVersion);
-            if (File.Exists(applicationVersionPath))
-                applicationVersion = File.ReadAllText(applicationVersionPath);
-
-            string applicationDescriptionPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationDescription);
-            if (File.Exists(applicationDescriptionPath))
-                applicationDescription = File.ReadAllText(applicationDescriptionPath);
-
-        }
-
-        return currentAppPath;
     }
 
     private void GetVersions()
@@ -214,7 +188,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         if (message.ShutdownType == ShutdownTypes.ShutdownServices)
         {
             // Shutting Down From the Work Thread may Block
-            Task.Run(() => { AhsokaRuntime.Default.DisconnectAllEndPoints(false, true); });
+            Task.Run(() => { AhsokaRuntime.Default.StopAllEndPoints(false, true); });
         }
         else if (message.ShutdownType == ShutdownTypes.ShutdownApplication)
         {
@@ -455,7 +429,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         string file = Path.Combine(path, "settings.json");
         return file;
     }
-
 
     private void HandleUpdateTouchscreen(AhsokaMessageHeader messageHeader, TouchTuneInfo updateTouchscreen)
     {

@@ -80,6 +80,40 @@ public static class SystemInfo
     }
 
     /// <summary>
+    /// Call to get information about the installed application
+    /// </summary>
+    /// <param name="applicationName"></param>
+    /// <param name="applicationDescription"></param>
+    /// <param name="applicationVersion"></param>
+    /// <param name="sdkVersion"></param>
+    /// <returns></returns>
+    public static string GetApplicationInfo(out string applicationName, out string applicationDescription, out string applicationVersion, out string sdkVersion)
+    {
+        applicationName = Path.GetFileName(Environment.ProcessPath).Replace(".exe", ""); // remove exe from windows exe's
+        var currentAppPath = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
+        sdkVersion = VersionUtility.GetAppVersionString();
+        applicationVersion = applicationDescription = string.Empty;
+
+        if (Environment.ProcessPath.ToLower().StartsWith(currentAppPath.ToLower()))
+        {
+            string appNameFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationName);
+            if (File.Exists(appNameFile))
+                applicationName = File.ReadAllText(appNameFile);
+
+            string applicationVersionPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationVersion);
+            if (File.Exists(applicationVersionPath))
+                applicationVersion = File.ReadAllText(applicationVersionPath);
+
+            string applicationDescriptionPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationDescription);
+            if (File.Exists(applicationDescriptionPath))
+                applicationDescription = File.ReadAllText(applicationDescriptionPath);
+
+        }
+
+        return currentAppPath;
+    }
+
+    /// <summary>
     /// Returns if the Hardware Information can be validated.
     /// </summary>
     /// <returns></returns>
@@ -119,6 +153,15 @@ public static class SystemInfo
         catch { return false; }
 
         return true;
+    }
+
+    /// <summary>
+    /// Returns true for Deskkop Targets
+    /// </summary>
+    /// <returns></returns>
+    public static bool IsDesktop()
+    {
+        return OperatingSystem.IsWindows() || OperatingSystem.IsMacOS() || (OperatingSystem.IsLinux() && RuntimeInformation.OSDescription.Contains("Ubuntu"));
     }
 
     private static HardwareInfo LoadHardwareInformation()

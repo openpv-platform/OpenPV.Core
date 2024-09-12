@@ -99,7 +99,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
 
     public void Close(int result = 0)
     {
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
 
         OnClose(result);
 

@@ -10,11 +10,10 @@
 	<Target Name="Build" />
 	<Target Name="Rebuild" />
 
+	<Import Project="BSP.Targets" />
+
 	<PropertyGroup>
 		<SecretPath>$(appdata)\Microsoft\UserSecrets\$(UserSecretsId)\secrets.json</SecretPath>
-		<OpenViewBSP>3.2024-08-07T132301.openview.kirkstone.91e8420</OpenViewBSP>
-		<OpenViewProBSP>3.2024-08-06T110843.openviewpro.kirkstone.6d309b5</OpenViewProBSP>
-		<Download_Root>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)..\..\..\'))</Download_Root>
 	</PropertyGroup>
 
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
@@ -44,7 +43,7 @@
 	
 	<Target Name="DownloadOpenView" AfterTargets="DownloadBSPs" Condition="!Exists('$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\image.$(OpenViewBSP).zip')">
 		<Copy SourceFiles="OpenView.upgradeinfo.json" DestinationFiles="$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware\OpenView.upgradeinfo.json" />
-		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution Upgrade&quot; $(OpenViewBSP) ota.$(OpenViewBSP).zip" />
+		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution Upgrade&quot; $(OpenViewBSP) upgrade.$(OpenViewBSP).zip" />
 		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewBSP) image.$(OpenViewBSP).zip" />
 	</Target>
 	

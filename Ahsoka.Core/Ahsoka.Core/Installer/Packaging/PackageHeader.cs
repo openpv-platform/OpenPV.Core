@@ -81,7 +81,7 @@ public class PackageComponent
     }
 
 
-    internal Stream Data { get; set; }
+    public Stream Data { get; set; }
 
     internal long DataFileOffset { get; set; }
 }

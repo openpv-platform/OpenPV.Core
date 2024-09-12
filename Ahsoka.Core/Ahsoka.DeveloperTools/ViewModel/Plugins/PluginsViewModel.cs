@@ -408,8 +408,12 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
                 selectedTool.LocalPath = Path.Combine(CustomerToolPaths.GetToolPath("DeveloperTools"), item.Name.Replace(" ", "_")); // Tool Download Path
                 selectedTool.Name = item.Name;
-                selectedTool.Description = item.Description;
-                selectedTool.Version = item.Version;
+                
+                if (string.IsNullOrEmpty(selectedTool.Description))
+                    selectedTool.Description = item.Description;
+                if (string.IsNullOrEmpty(selectedTool.Version))
+                    selectedTool.Version = item.Version;
+
                 if (item.Resources != null)
                     selectedTool.Resources = new List<Resource>(item.Resources);
 
@@ -428,6 +432,8 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         // Download Firmware Items
         tasks.Add(Task.Run(() =>
         {
+            LoadSparkItems(supportInfo, supportInfo.HelpSparkChannelName, "Help", supportInfo.PlatformSupportSparkVersionFilter);
+
             LoadSparkItems(supportInfo, supportInfo.DemoSparkChannelName, "Demos", supportInfo.DemoSparkVersionFilter);
 
             LoadSparkItems(supportInfo, supportInfo.ExtensionSparkChannelName, Extensions.ExtensionsFolder, supportInfo.ExtensionSparkVersionFilter);
@@ -490,6 +496,13 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
                 {
                     ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
                     releases.Add(new PlatformExtensionsTool(token));
+
+                    break; // PUll Latest Demo's and Return;
+                }
+                else if (property == "Help")
+                {
+                    ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(result.ReleaseID, DateTime.Now.AddMinutes(15));
+                    releases.Add(new PlatformHelpTool(token));
 
                     break; // PUll Latest Demo's and Return;
                 }

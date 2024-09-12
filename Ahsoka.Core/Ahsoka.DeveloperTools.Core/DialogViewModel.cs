@@ -8,7 +8,6 @@ namespace Ahsoka.DeveloperTools.ViewModel;
 internal class DialogViewModel : ViewModelBase
 {
     // Dialog
-    private readonly MainViewModel parentViewModel;
     string dialogText;
     string dialogTitle;
     string dialogAcceptText;
@@ -23,7 +22,6 @@ internal class DialogViewModel : ViewModelBase
         get { return dialogText; }
         set { dialogText = value; OnPropertyChanged(); }
     }
-
 
     public string DialogTitle
     {
@@ -56,9 +54,8 @@ internal class DialogViewModel : ViewModelBase
     }
 
     #region Dialog Management
-    public DialogViewModel(MainViewModel parentViewModel)
+    public DialogViewModel()
     {
-        this.parentViewModel = parentViewModel;
     }
 
     internal Task<bool> ShowDialog(string dialogTitle, string dialogText, string dialogAcceptText, string dialogRejectText)

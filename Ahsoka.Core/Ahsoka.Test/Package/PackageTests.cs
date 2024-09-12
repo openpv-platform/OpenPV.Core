@@ -107,7 +107,7 @@ public class PackagingTests : LinearTestBase
         client.SetInstallerUI(new InstallerUIMock());
 
         // Create a Client Only Runtime
-        AhsokaRuntime.Default.ConnectEndPoints(client);
+        AhsokaRuntime.Default.StartEndPoints(client);
 
         // Launch Install Service and Execute Install
         // This will block until its done.
@@ -123,7 +123,7 @@ public class PackagingTests : LinearTestBase
         {
             File.Delete(newTempFile);
 
-            AhsokaRuntime.Default.DisconnectAllEndPoints();
+            AhsokaRuntime.Default.StopAllEndPoints();
         }
     }
 
@@ -154,7 +154,8 @@ public class PackagingTests : LinearTestBase
 
         string packagefile = Path.Combine(appOutputs, "OpenLinuxST.PackageInfo.json");
         PackageInformation package = JsonUtility.Deserialize<PackageInformation>(File.ReadAllText(packagefile));
-        
+        package.OptimizedServiceManager = false;
+
         if (asCodesys)
         {
             package.ApplicationType = ApplicationType.CODESYS;

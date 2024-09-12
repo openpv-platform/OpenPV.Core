@@ -32,7 +32,7 @@ internal static class PackageCommands
         };
 
         var client = new SystemServiceClient(config);
-        AhsokaRuntime.Default.ConnectEndPoints(client);
+        AhsokaRuntime.Default.StartEndPoints(client);
 
        Console.WriteLine($"Connecting to {config.DataURI}...");
 
@@ -63,7 +63,7 @@ internal static class PackageCommands
             }
         }
 
-        AhsokaRuntime.Default.DisconnectAllEndPoints();
+        AhsokaRuntime.Default.StopAllEndPoints();
 
         if (exitCode != 0)
             Environment.Exit(exitCode);
@@ -85,8 +85,9 @@ internal static class PackageCommands
 
     [CommandLineMethod(@"     --Package: Package as an opv file.  Will use info from 'PackageInfo.json
             [WorkingDirectory] Optional - Base Path to use when Executing Packaging
-            [PathToInstallFile] Optional - Specify an alternative 'PackageInfo.json")]
-    private static void Package(string workingDirectory, string packageInfoPath)
+            [PathToInstallFile] Optional - Specify an alternative 'PackageInfo.json
+            [GeneateCustomPackage] Optional - Generate Components for Custom Package(true/false)")]
+    private static void Package(string workingDirectory, string packageInfoPath, string customPackage = "false")
     {
         if (workingDirectory != null)
             Environment.CurrentDirectory = workingDirectory;
@@ -98,15 +99,15 @@ internal static class PackageCommands
         if (packageInfoPath == null)
         {
             foreach (var item in new DirectoryInfo(Environment.CurrentDirectory).GetFiles("*.PackageInfo.json"))
-                ProcessPackage(item.Name);
+                ProcessPackage(item.Name, customPackage?.ToLower() == "true");
         }
         else
         {
-            ProcessPackage(packageInfoPath);
+            ProcessPackage(packageInfoPath, customPackage?.ToLower() == "true");
         }
     }
 
-    private static void ProcessPackage(string packageInfoPath)
+    private static void ProcessPackage(string packageInfoPath, bool customPackage )
     {
         if (!File.Exists(packageInfoPath))
         {
@@ -141,7 +142,7 @@ internal static class PackageCommands
             InstallEngineBase createPackageEngine = InstallEngineBase.GetPackagingEngine(package);
 
             // Package the file.
-            string fileName = createPackageEngine.CreateInstallPackage(signingSignature, progress);
+            string fileName = createPackageEngine.CreateInstallPackage(signingSignature, progress, customPackage);
 
             if (!File.Exists(fileName))
             {

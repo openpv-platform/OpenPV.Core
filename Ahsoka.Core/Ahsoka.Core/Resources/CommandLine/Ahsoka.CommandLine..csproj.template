@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>Ahsoka</RootNamespace>
+		<TrimMode>partial</TrimMode>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<Copyright>Copyright © $([System.DateTime]::UtcNow.Year) Enovation Controls ($([System.DateTime]::UtcNow.ToString("s")))</Copyright>
+		<TargetFramework>net8.0</TargetFramework>
+	
+		<NoDefaultExcludes>true</NoDefaultExcludes>
+		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+		<InvariantGlobalization>true</InvariantGlobalization>
+		<Platforms>AnyCPU</Platforms>
+	</PropertyGroup>
+
+
+	<PropertyGroup Label="Suppress Errors for GPIO Project">
+		<SuppressWindowsPlatformTargetingRequiredError>true</SuppressWindowsPlatformTargetingRequiredError>
+	</PropertyGroup>
+
+
+	<ItemGroup Label="Packages">
+
+	</ItemGroup>
+
+</Project>

@@ -69,7 +69,7 @@ namespace AhsokaServiceFramework
                     long nsecTobeadded = (timeoutInMs % 1000) * 1000000L + tm.tv_nsec;
                     tm.tv_nsec = nsecTobeadded % 1000000000L;
                     tm.tv_sec += (nsecTobeadded / 1000000000L) + (timeoutInMs / 1000);
-                    return sem_timedwait(&semaphore, &tm) == 0 ? true : false;
+                    return sem_clockwait(&semaphore, CLOCK_MONOTONIC, &tm) == 0 ? true : false;
                 }
                 else
                 {

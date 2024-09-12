@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+        mc:Ignorable="d"
+        d:DesignWidth="850"
+        d:DesignHeight="600"
+	    x:Class="Ahsoka.DeveloperTools.Views.ExtensionMainWindow"
+		MinWidth="1100" MinHeight="675">
+
+	<Grid RowDefinitions="50,*" Background="WhiteSmoke">
+		<StackPanel Margin="10" Orientation="Horizontal">
+			<Button Margin="3,3,5,3"
+				HorizontalAlignment="Left"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding OpenConfiguration}">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13" ToolTip.Tip="" Text="Open Project..."/>
+				</StackPanel>
+			</Button>
+			<Button Margin="3,3,5,3"
+						HorizontalAlignment="Left"
+						Height="38"
+						VerticalContentAlignment="Center"
+						Command="{Binding SaveConfiguration}">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13" ToolTip.Tip="" Text="Save Project"/>
+				</StackPanel>
+			</Button>
+			<Button Margin="3,3,5,3"
+				HorizontalAlignment="Left"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding CloseConfiguration}">
+				<StackPanel Orientation="Horizontal">
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13" ToolTip.Tip="" Text="Close Project"/>
+				</StackPanel>
+			</Button>
+		</StackPanel>
+		<Border Child="{Binding UserControl}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			      Grid.Row="1" Background="White" />
+
+		<ContentControl Grid.Row="1"  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+						Content="{Binding PopupUserControl}"/>
+
+		<Grid Row="1"  Background="#33555555" DataContext="{Binding Dialog}"  IsVisible="{Binding DialogVisible, FallbackValue=True}">
+			<Border Padding="30" BoxShadow="5 5 10 2 DarkGray" BorderBrush="SteelBlue" VerticalAlignment="Center"  Width="650"  Grid.RowSpan="2" Background="White" BorderThickness="1,1">
+				<DockPanel LastChildFill="False">
+					<TextBlock FontWeight="Bold" DockPanel.Dock="Top" Foreground="SteelBlue" TextWrapping="Wrap" FontSize="16" Padding="10" Text="{Binding DialogTitle, FallbackValue='TitleText'}"></TextBlock>
+					<ScrollViewer Margin="0,0,0,15" DockPanel.Dock="Top" MaxHeight="450">
+						<TextBlock  Foreground="SteelBlue" TextWrapping="Wrap" FontSize="16" Padding="10" Text="{Binding DialogText, FallbackValue='Text'}"></TextBlock>
+					</ScrollViewer>
+					<DockPanel MinHeight="30" DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+						<Button IsDefault="True"  Content="{Binding DialogAcceptText}" Padding="15,8" Command="{Binding AcceptMessage}"/>
+						<Button IsCancel="True"  Content="{Binding DialogRejectText}"  Padding="15,8" Command="{Binding CancelMessage}" IsVisible="{Binding ShowReject}"/>
+					</DockPanel>
+				</DockPanel>
+			</Border>
+		</Grid>
+
+	</Grid>
+</Window>

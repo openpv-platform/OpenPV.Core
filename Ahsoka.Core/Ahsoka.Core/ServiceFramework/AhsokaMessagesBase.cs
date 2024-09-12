@@ -3,12 +3,23 @@ using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.AccessControl;
 
 namespace Ahsoka.ServiceFramework;
 
 #pragma warning disable CS1591
 
-public abstract class AhsokaMessagesBase
+public interface IHasParameters
+{
+    SystemParameterData GetParameters(PackageInformation info);
+}
+
+public interface IHasEvents
+{
+    SystemEventData GetEvents(PackageInformation info);
+}
+
+public abstract class AhsokaMessagesBase: IHasParameters, IHasEvents
 {
     #region Fields
     private readonly Dictionary<Int32, ServiceMessageInfo> info = new();
@@ -79,16 +90,16 @@ public abstract class AhsokaMessagesBase
     /// Fetch all known values in the Loaded Extensions and Core
     /// </summary>
     /// <returns></returns>
-    public static Dictionary<string, ServiceParameterData> GetAllServiceParameters(PackageInformation info = null)
+    public static Dictionary<string, SystemParameterData> GetAllSystemParameters(PackageInformation info = null)
     {
-        Dictionary<string, ServiceParameterData> allValues = new();
+        Dictionary<string, SystemParameterData> allValues = new();
 
-        foreach (var value in ClassLoader.GetSubclasses(typeof(AhsokaMessagesBase)))
+        foreach (var value in ClassLoader.GetItemsWithInterface(typeof(IHasParameters)))
         {
-            AhsokaMessagesBase service = ClassLoader.CreateType(value, null) as AhsokaMessagesBase;
+            IHasParameters service = ClassLoader.CreateType(value, null) as IHasParameters;
             var values = service.GetParameters(info);
             if (values != null && values.Count > 0)
-                allValues[values.Service] = values;
+                allValues[values.SystemName] = values;
         }
 
         return allValues;
@@ -98,33 +109,18 @@ public abstract class AhsokaMessagesBase
     /// Gets a list of Parameters Available to the System
     /// </summary>
     /// <returns></returns>
-    internal ServiceParameterData GetParameters(PackageInformation info)
+    SystemParameterData IHasParameters.GetParameters(PackageInformation info)
     {
-        var values = new ServiceParameterData();
+        var values = new SystemParameterData();
 
         OnGetParameters(out string service, values, info);
         if(service != string.Empty)
-            AssignKeys(service, values);
+            values.AssignKeys(service);
 
         return values;
     }
 
-    private void AssignKeys(string service, ServiceParameterData values)
-    {
-        values.Service = service;
-
-        foreach (var parameter in values)
-        {
-            if (parameter.SystemUniqueID == 0)
-            {
-                // Generate Key (32bit Hash
-                int value = HashCode32.GetHashCode32(service + parameter.Name);
-                while (values.Any(x => x.SystemUniqueID == value))
-                    value++;
-                parameter.SystemUniqueID = value;
-            }
-        }
-    }
+   
 
     /// <summary>
     /// Pupulate the Parameters Availabe in the System
@@ -136,7 +132,48 @@ public abstract class AhsokaMessagesBase
     {
         service = string.Empty;
     }
-    #endregion  
+    #endregion
+
+    #region Event Values
+    /// <summary>
+    /// Fetch all known event configs in the Loaded Extensions and Core
+    /// </summary>
+    /// <returns></returns>
+    public static Dictionary<string, SystemEventData> GetAllServiceEvents(PackageInformation info = null)
+    {
+        Dictionary<string, SystemEventData> allValues = new();
+
+        foreach (var value in ClassLoader.GetItemsWithInterface(typeof(IHasEvents)))
+        {
+            IHasEvents service = ClassLoader.CreateType(value, null) as IHasEvents;
+            var config = service.GetEvents(info);
+            if (config != null && config.Count > 0)
+                allValues[service.ToString()] = config;
+        }
+
+        return allValues;
+    }
+
+    /// <summary>
+    /// Gets the event config for a service
+    /// </summary>
+    /// <returns></returns>
+    SystemEventData IHasEvents.GetEvents(PackageInformation info)
+    {
+        var values = new SystemEventData();
+
+        OnGetEvents(out string service, values, info);
+        if (service != string.Empty)
+            values.AssignKeys(service);
+
+        return values;
+    }
+
+    protected virtual void OnGetEvents(out string service, List<EventData> values, PackageInformation packageInfo)
+    {
+        service = string.Empty;
+    }
+    #endregion
 }
 
 

@@ -1,7 +1,6 @@
 ﻿using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
@@ -14,7 +13,7 @@ namespace Ahsoka.Installer.InstallEngine;
 
 internal class CodesysInstallerPlugin : InstallerPlugin
 {
-    internal override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
+    public override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
     {
         if (packageInformation.ApplicationType != ApplicationType.CODESYS)
             return;
@@ -58,7 +57,7 @@ internal class CodesysInstallerPlugin : InstallerPlugin
         buildLocation = tempFolder;
     }
 
-    internal override void AddAdditionalApplicationFiles(string buildLocation, 
+    public override void AddAdditionalApplicationFiles(string buildLocation, 
         Dictionary<string, string> attributes, 
         Dictionary<string, byte[]> additionalFiles, 
         PackageInformation info, 
@@ -100,6 +99,14 @@ internal class CodesysInstallerPlugin : InstallerPlugin
             Directory.Delete("/usr/bin/codesys/PlcLogic", true);
 
         File.CreateSymbolicLink("/usr/bin/codesys/PlcLogic", installDirectory);
+
+        // Fix for CAN
+        ProcessUtility.RunProcessScript($"sed -i -r \"s/(BitRate=[0-9]*)/BitRate=250000/g\" /etc/systemd/network/80-can0.network", null, out string stdOut, out string stdErr);
+        ProcessUtility.RunProcessScript($"sed -i -r \"s/(BitRate=[0-9]*)/BitRate=250000/g\" /etc/systemd/network/80-can1.network", null, out stdOut, out stdErr);
+
+        // Add SyncJumpWidth to Network Setup - This (sjw=4) fixes devices who's baud rate clock is not within tolerance of our clock.
+        ProcessUtility.RunProcessScript($"grep -qxF 'SyncJumpWidth=4' /etc/systemd/network/80-can0.network || echo 'SyncJumpWidth=4' >> /etc/systemd/network/80-can0.network", null, out stdOut, out stdErr);
+        ProcessUtility.RunProcessScript($"grep -qxF 'SyncJumpWidth=4' /etc/systemd/network/80-can1.network || echo 'SyncJumpWidth=4' >> /etc/systemd/network/80-can1.network", null, out stdOut, out stdErr);
     }
 
     private static void UpdateAppName(string file, string appName)

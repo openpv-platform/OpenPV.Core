@@ -7,7 +7,10 @@ using System.Threading;
 
 namespace Ahsoka.Installer.InstallEngine;
 
-internal class InstallerPlugin
+/// <summary>
+/// Base Class for Plugins
+/// </summary>
+public class InstallerPlugin
 {
     internal static InstallerPlugin GetApplicationPlugin(ApplicationType applicationType)
     {
@@ -22,11 +25,25 @@ internal class InstallerPlugin
         }
     }
 
-    internal virtual void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token) { }
+    /// <summary>
+    /// Check the App Package for any PreRequisites or Licenses
+    /// </summary>
+    /// <param name="packageInformation"></param>
+    /// <param name="progress"></param>
+    /// <param name="token"></param>
+    public virtual void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token) { }
 
     internal virtual void PrepareApplicationArea(ref string buildLocation, PackageInformation info, IProgress<PackageProgressInfo> progress) { }
 
-    internal virtual void AddAdditionalApplicationFiles(string buildLocation, 
+    /// <summary>
+    /// Add any additional files required by the Application
+    /// </summary>
+    /// <param name="buildLocation"></param>
+    /// <param name="attributes"></param>
+    /// <param name="additionalFiles"></param>
+    /// <param name="info"></param>
+    /// <param name="progress"></param>
+    public virtual void AddAdditionalApplicationFiles(string buildLocation, 
         Dictionary<string, string> attributes, 
         Dictionary<string, byte[]> additionalFiles,
         PackageInformation info, 

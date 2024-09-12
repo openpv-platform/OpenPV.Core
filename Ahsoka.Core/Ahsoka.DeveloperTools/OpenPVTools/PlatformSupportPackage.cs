@@ -12,6 +12,8 @@ internal class PlatformSupportPackage : ViewModelBase
     #endregion
 
     #region Properties
+    public string HelpSparkChannelName { get; set; }
+    
     public string ExtensionSparkChannelName { get; set; }
 
     public string ExtensionSparkVersionFilter { get { return GetCurrentMajorMinor(); } }

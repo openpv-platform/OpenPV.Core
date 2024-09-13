@@ -207,7 +207,7 @@ internal class NewPackageViewModel : ViewModelBase
         if (e.PropertyName == "ConsoleVisible" && !parentViewModel.Console.ConsoleVisible )
         {
             parentViewModel.Dialog.ShowDialog("Project Created", $"Your project is now ready for development at... \r\n\r\n{Path.GetDirectoryName(this.ProjectPath)}", "Ok");
-            parentViewModel.Dialog.PropertyChanged -= ShowFinishedDialog;
+            parentViewModel.Console.PropertyChanged -= ShowFinishedDialog;
         }
     }
 

@@ -7,7 +7,7 @@ namespace Ahsoka.CS.Browser;
 internal class AppModel
 {
     static SystemServiceClient systemClient = null;
-    static UsbInfo lastUsbInfo = null;
+    static int lastBrightness = 50;
     static string lastResult = "No Result";
 
     internal static void StartModel(WebApplication app)
@@ -24,40 +24,28 @@ internal class AppModel
         return systemClient.GetHardwareInformation();
     }
 
-    internal static UsbInfo GetUsbInfo()
+    internal static int GetBrightness()
     {
-        if (lastUsbInfo == null)
-            lastUsbInfo = systemClient.GetUsbInfo();
-
-        return lastUsbInfo;
+        lastBrightness = systemClient.GetBrightness().Percentage;
+        return lastBrightness;
     }
 
-    internal static void ToggleUsbInfo()
+    internal static void BrightnessUp()
     {
-        if (lastUsbInfo.Mode == UsbMode.Device || lastUsbInfo.Mode == UsbMode.Unknown)
-            lastUsbInfo.Mode = UsbMode.Host;
-        else
-            lastUsbInfo.Mode = UsbMode.Device;
+        lastBrightness = systemClient.GetBrightness().Percentage;
+        if (lastBrightness <= 90)
+            lastBrightness += 10;
 
-        AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Swapping USB Role to {lastUsbInfo.Mode}");
-        systemClient.SetUsbInfo(lastUsbInfo);
-
-        // Wait for New Value
-        int max = 0;
-        var usbtemp = systemClient.GetUsbInfo();
-        while (usbtemp.Mode != lastUsbInfo.Mode && max < 10)
-        {
-            Thread.Sleep(100);
-            max++;
-            usbtemp = systemClient.GetUsbInfo();
-        }
-
-        lastResult = $"USB Role Swap Result = {lastUsbInfo.Mode == usbtemp.Mode}";
-        lastUsbInfo = usbtemp;
+        systemClient.SetBrightness(new BrightnessInfo() { Percentage = lastBrightness });
     }
 
-    internal static string GetLastResult()
+    internal static void BrightnessDown()
     {
-        return lastResult;
+        lastBrightness = systemClient.GetBrightness().Percentage;
+        if (lastBrightness >= 10)
+            lastBrightness -= 10;
+
+        systemClient.SetBrightness(new BrightnessInfo() { Percentage = lastBrightness });
     }
+
 }

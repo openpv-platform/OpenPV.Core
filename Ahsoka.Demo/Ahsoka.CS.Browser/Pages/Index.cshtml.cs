@@ -11,10 +11,7 @@ public class IndexModel : PageModel
     public GetHardwareInformationReply HardwareInfo { get; set; }
 
     [BindProperty]
-    public string LastResult { get; set; }
-
-    [BindProperty]
-    public UsbInfo UsbInfo { get; set; }
+    public int Brightness { get; set; }
 
     public IndexModel()
     {
@@ -23,8 +20,7 @@ public class IndexModel : PageModel
     public void OnGet()
     {
         HardwareInfo = AppModel.GetHardwareInformation();
-        UsbInfo = AppModel.GetUsbInfo();
-        LastResult = AppModel.GetLastResult();
+        Brightness = AppModel.GetBrightness();
     }
 
     public PartialViewResult OnGetInfoPartial()
@@ -33,11 +29,17 @@ public class IndexModel : PageModel
         return Partial("CpuPartial", this);
     }
 
-    public PartialViewResult OnGetRolePartial()
+    public PartialViewResult OnGetBrightnessUpPartial()
     {
-        AppModel.ToggleUsbInfo();
-        UsbInfo = AppModel.GetUsbInfo();
-        LastResult = AppModel.GetLastResult();
-        return Partial("RolePartial", this);
+        AppModel.BrightnessUp();
+        Brightness = AppModel.GetBrightness();
+        return Partial("BrightnessPartial", this);
+    }
+
+    public PartialViewResult OnGetBrightnessDownPartial()
+    {
+        AppModel.BrightnessDown();
+        Brightness = AppModel.GetBrightness();
+        return Partial("BrightnessPartial", this);
     }
 }

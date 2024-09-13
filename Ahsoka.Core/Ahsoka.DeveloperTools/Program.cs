@@ -1,8 +1,6 @@
 ﻿using Ahsoka.Utility;
 using Avalonia;
 using Avalonia.Svg.Skia;
-using EnovationCloud.Core.Client;
-using MsBox.Avalonia;
 using System;
 using System.Threading;
 

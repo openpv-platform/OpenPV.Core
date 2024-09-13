@@ -24,6 +24,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     public ObservableCollection<ExtensionViewModel> AllExtensions { get; private set; } = new();
     public ObservableCollection<ExtensionViewModel> SelectedExtensions { get; private set; } = new();
     ExtensionContainerView currentPopup;
+    ExtensionViewModelBase currentViewModel;
 
     public bool AddExtensionsShown
     {
@@ -302,12 +303,18 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     {
         InitExtension(extensionName);
 
-        currentPopup = new ExtensionContainerView() { DataContext = this };
-        var container = currentPopup.FindControl<Border>("Container");
-        var view = extensionUXExtensions[extensionName]?.GetView();
-        container.Child = view;
+        currentViewModel = extensionUXExtensions[extensionName];
+        if (currentViewModel != null)
+        {
+            currentPopup = new ExtensionContainerView() { DataContext = this };
+            var container = currentPopup.FindControl<Border>("Container");
+            var view = extensionUXExtensions[extensionName]?.GetView();
+            container.Child = view;
 
-        ParentViewModel.ParentViewModel.Popup.ShowPopup(currentPopup);
+            currentViewModel.CloseUI();
+
+            ParentViewModel.ParentViewModel.Popup.ShowPopup(currentPopup);
+        }
     }
 
     #region Extension File Handling
@@ -327,7 +334,11 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
     internal void CloseExtension()
     {
+        var container = currentPopup.FindControl<Border>("Container");
+        var view = container.Child;
+        container.Child = null;
         ParentViewModel.ParentViewModel.Popup.DismissPopup(currentPopup);
+       
         currentPopup = null;
     }
 

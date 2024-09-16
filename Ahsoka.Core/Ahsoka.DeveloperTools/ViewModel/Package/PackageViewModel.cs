@@ -212,12 +212,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
-            return PackageInfo.IncludeInstallerUI;
+            return PackageInfo.CustomPackageInfo.IncludeInstallerUI;
         }
 
         set
         {
-            PackageInfo.IncludeInstallerUI = value;
+            PackageInfo.CustomPackageInfo.IncludeInstallerUI = value;
             OnPropertyChanged();
         }
     }
@@ -226,11 +226,11 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
-            return PackageInfo.IncludeBootLogo;
+            return PackageInfo.CustomPackageInfo.IncludeBootLogo;
         }
         set
         {
-            PackageInfo.IncludeBootLogo = value;
+            PackageInfo.CustomPackageInfo.IncludeBootLogo = value;
             OnPropertyChanged();
         }
     }
@@ -239,11 +239,11 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
-            return PackageInfo.IncludeApplication;
+            return PackageInfo.CustomPackageInfo.IncludeApplication;
         }
         set
         {
-            PackageInfo.IncludeApplication = value;
+            PackageInfo.CustomPackageInfo.IncludeApplication = value;
             OnPropertyChanged();
         }
     }
@@ -252,12 +252,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get
         {
-            return PackageInfo.IncludeFirmwareUpdate;
+            return PackageInfo.CustomPackageInfo.IncludeFirmwareUpdate;
         }
 
         set
         {
-            PackageInfo.IncludeFirmwareUpdate = value;
+            PackageInfo.CustomPackageInfo.IncludeFirmwareUpdate = value;
             OnPropertyChanged();
         }
     }
@@ -899,30 +899,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             if (!customInstall)
                 ParentViewModel.RunCommandLineProcess($"{prefix}--Package \"{workingDirectory}\" \"{packageInfoPath}\"", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
             else
-            {
-                string firmwareFolder = "";
-                try { firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily)); }
-                catch { }
-
-                if (!Path.Exists(firmwareFolder))
-                {
-                    firmwareFolder = Path.Combine(CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName),
-                                                    PlatformFamily.ToString() + "_TargetSupport");
-                }
-
-                string fileName = Path.Combine(Path.Combine(firmwareFolder), this.PlatformFamily.ToString() + "_Firmware.zip.customertools.version");
-                if (File.Exists(fileName))
-                    fileName = File.ReadAllText(fileName).TrimEnd();
-
-                if (fileName != null)
-                {
-                    string firmwareLocation = firmwareFolder + "_Firmware";
-                    string imageFile = "upgrade.*." + fileName.Replace("Firmware_", "");
-                    fileName = Directory.EnumerateFiles(firmwareLocation, imageFile, SearchOption.AllDirectories).FirstOrDefault();
-                }
-
-                ParentViewModel.RunCommandLineProcess($"{prefix}--PackageCustom \"{workingDirectory}\" \"{packageInfoPath}\" \"{fileName}\"", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
-            }
+                RunCustomPackage(progress, workingDirectory, packageInfoPath, prefix);
 
             output = itemToGenerate.PackageInfo.GetOutputFullPath(customInstall);
             if (File.Exists(output))
@@ -953,6 +930,49 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                 ParentViewModel.FinishProcess($"OPV Generation Completed: {fileCreated}", fileCreated);
             });
         });
+    }
+
+    private void RunCustomPackage(Progress<CommandLineProgressInfo> progress, string workingDirectory, string packageInfoPath, string prefix)
+    {
+        // Find Firmware File
+        string firmwareFileName = string.Empty;
+        if (IncludeFirmwareUpdate)
+        {
+            string firmwareFolder = "";
+            try { firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily)); }
+            catch { }
+
+            if (!Path.Exists(firmwareFolder))
+                firmwareFolder = Path.Combine(CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName),
+                                                PlatformFamily.ToString() + "_TargetSupport");
+
+            string fileName = Path.Combine(Path.Combine(firmwareFolder), this.PlatformFamily.ToString() + "_Firmware.zip.customertools.version");
+            if (File.Exists(fileName))
+                fileName = File.ReadAllText(fileName).TrimEnd();
+
+            if (fileName != null)
+            {
+                string firmwareLocation = firmwareFolder + "_Firmware";
+                string imageFile = "upgrade.*." + fileName.Replace("Firmware_", "");
+                firmwareFileName = Directory.EnumerateFiles(firmwareLocation, imageFile, SearchOption.AllDirectories).FirstOrDefault();
+            }
+        }
+
+        CustomPackageInfo info = new CustomPackageInfo()
+        {
+            IncludeApplication = IncludeAppComponents,
+            IncludeFirmwareUpdate = IncludeFirmwareUpdate,
+            FirmwareUpgradePath = firmwareFileName,
+            IncludeBootLogo = IncludeBootLogo,
+            IncludeInstallerUI = IncludeInstallerUI,
+        };
+
+        string tempFile = Path.GetTempFileName() + ".CustomInfo.json";   
+        File.WriteAllText(tempFile, JsonUtility.Serialize(info));
+
+        ParentViewModel.RunCommandLineProcess($"{prefix}--PackageCustom \"{workingDirectory}\" \"{packageInfoPath}\" \"{tempFile}\"", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
+
+        File.Delete(tempFile);
     }
 
     public void Cancel()

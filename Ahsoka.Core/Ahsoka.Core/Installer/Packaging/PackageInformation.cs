@@ -30,15 +30,9 @@ public class PackageInformation : PackageHeader
     public string PackageSigningCertFile { get; set; }
     public List<ModuleLicense> Licenses { get; set; } = new();
 
-    public bool IncludeApplication { get; set; } = false;
-
-    public bool IncludeBootLogo { get; set; } = false;
-
-    public bool IncludeInstallerUI { get; set; } = false;
-
-    public bool IncludeFirmwareUpdate { get; set; } = false;
-
     public bool OptimizedServiceManager { get; set; } = true;
+
+    public CustomPackageInfo CustomPackageInfo { get; set; } = new();
 
     public DotNetInformation DotNetInfo { get; set; }
 
@@ -180,4 +174,17 @@ public enum KeyTypes
     DeviceKey,
     PackageSigningKey,
     ServiceKey,
+}
+
+public class CustomPackageInfo
+{
+    public bool IncludeApplication { get; set; } = false;
+
+    public bool IncludeBootLogo { get; set; } = false;
+
+    public bool IncludeInstallerUI { get; set; } = false;
+
+    public bool IncludeFirmwareUpdate { get; set; } = false;
+
+    public string FirmwareUpgradePath { get; set; }
 }

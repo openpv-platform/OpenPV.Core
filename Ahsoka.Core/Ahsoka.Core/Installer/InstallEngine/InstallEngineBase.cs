@@ -117,10 +117,10 @@ public class InstallEngineBase
 
     public string CreateInstallPackage(string pemKey = null,
         IProgress<PackageProgressInfo> progress = null,
-        bool isCustomInstall = false)
+        CustomPackageInfo customInfo = null)
     {
-          bool appUpdate = true;
-
+        bool appUpdate = true;
+        bool isCustomInstall = customInfo != null;
         if (!isCustomInstall)
         {
             // Enable All Exceipt Firmware and Installer UI
@@ -135,17 +135,20 @@ public class InstallEngineBase
             {
                 if (item is BeginInstallEngineComponent or EndInstallEngineComponent or CommandLineComponent) // Required
                     item.IsEnabled = true;
-                else if (item is FirmwareUpdateComponent)
-                    item.IsEnabled = this.PackageInformation.IncludeFirmwareUpdate;
+                else if (item is FirmwareUpdateComponent fw)
+                {
+                    fw.IsEnabled = customInfo.IncludeFirmwareUpdate;
+                    fw.UpdatePath = customInfo.FirmwareUpgradePath;
+                }
                 else if (item is StartLogoComponent)
-                    item.IsEnabled = this.PackageInformation.IncludeBootLogo;
+                    item.IsEnabled = customInfo.IncludeBootLogo;
                 else if (item is InstallerUIComponent)
-                    item.IsEnabled = this.PackageInformation.IncludeInstallerUI;
+                    item.IsEnabled = customInfo.IncludeInstallerUI;
                 else
-                    item.IsEnabled = this.PackageInformation.IncludeApplication;
+                    item.IsEnabled = customInfo.IncludeApplication;
             }
 
-            appUpdate = this.PackageInformation.IncludeApplication;
+            appUpdate = customInfo.IncludeApplication;
         }
 
 

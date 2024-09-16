@@ -21,7 +21,7 @@ internal class InstallerUIComponent : PackageComponentBase
         List<InstallerPlugin> installerPlugins,
         IProgress<PackageProgressInfo> progress)
     {
-        if (info.IncludeInstallerUI)
+        if (IsEnabled)
         {
             return base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
         }

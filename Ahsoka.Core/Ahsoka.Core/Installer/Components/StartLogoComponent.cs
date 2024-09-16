@@ -25,7 +25,7 @@ internal class StartLogoComponent : InstallEngineComponent
        List<InstallerPlugin> installedPlugins,
        IProgress<PackageProgressInfo> progress = null)
     {
-        if (info.StartupLogoPath == null)
+        if (!this.IsEnabled ||info.StartupLogoPath == null)
             return null;
 
         string logoPath = Path.GetFullPath(info.StartupLogoPath, Path.GetDirectoryName(info.GetPackageInfoPath()));

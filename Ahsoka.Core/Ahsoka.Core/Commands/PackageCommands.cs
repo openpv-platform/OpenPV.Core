@@ -107,10 +107,10 @@ internal static class PackageCommands
     }
 
     [CommandLineMethod(@"     --PackageCustom: Package as an opv file.  Will use info from 'PackageInfo.json
-            [WorkingDirectory] Optional - Base Path to use when Executing Packaging
-            [PathToInstallFile] Optional - Specify an alternative 'PackageInfo.json
-            [FirmwarePath] Optional - Path where Firmware Files (image.*.zip, upgrade.*.zip) are stored")]
-    private static void PackageCustom(string workingDirectory, string packageInfoPath, string firmwarePath)
+            [WorkingDirectory] - Base Path to use when Executing Packaging
+            [PathToInstallFile] - Specify an alternative 'PackageInfo.json'
+            [CustomPackagePath] - Path to Customer 'CustomInfo.json'")]
+    private static void PackageCustom(string workingDirectory, string packageInfoPath, string customPackagePath)
     {
         if (workingDirectory != null)
             Environment.CurrentDirectory = workingDirectory;
@@ -122,16 +122,29 @@ internal static class PackageCommands
         if (packageInfoPath == null)
         {
             foreach (var item in new DirectoryInfo(Environment.CurrentDirectory).GetFiles("*.PackageInfo.json"))
-                ProcessPackage(item.Name, true, firmwarePath);
+                ProcessPackage(item.Name, true, customPackagePath);
         }
         else
         {
-            ProcessPackage(packageInfoPath, true, firmwarePath);
+            ProcessPackage(packageInfoPath, true, customPackagePath);
         }
     }
 
-    private static void ProcessPackage(string packageInfoPath, bool customPackage, string firmwarePath = "")
+    private static void ProcessPackage(string packageInfoPath, bool customPackage, string customPackageInfo = "")
     {
+        CustomPackageInfo customInfo = null;
+        if (customPackage)
+        {
+            if (!File.Exists(customPackageInfo))
+            {
+                Console.WriteLine($"Path to Custom Package Info was not found at {customPackageInfo}");
+                return;
+            }
+
+            customInfo = JsonUtility.Deserialize<CustomPackageInfo>(File.ReadAllText(customPackageInfo));
+        }
+
+
         if (!File.Exists(packageInfoPath))
         {
             Console.WriteLine($"Path to PackageInfo was not found {packageInfoPath} in {Environment.CurrentDirectory}");
@@ -153,7 +166,6 @@ internal static class PackageCommands
             }
         }
 
-
         LocalProgress<PackageProgressInfo> progress = new(info =>
         {
             Console.WriteLine(info.Message);
@@ -165,7 +177,7 @@ internal static class PackageCommands
             InstallEngineBase createPackageEngine = InstallEngineBase.GetPackagingEngine(package);
 
             // Package the file.
-            string fileName = createPackageEngine.CreateInstallPackage(signingSignature, progress, customPackage);
+            string fileName = createPackageEngine.CreateInstallPackage(signingSignature, progress, customInfo);
 
             if (!File.Exists(fileName))
             {

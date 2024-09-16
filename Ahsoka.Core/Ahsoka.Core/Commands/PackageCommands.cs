@@ -85,9 +85,8 @@ internal static class PackageCommands
 
     [CommandLineMethod(@"     --Package: Package as an opv file.  Will use info from 'PackageInfo.json
             [WorkingDirectory] Optional - Base Path to use when Executing Packaging
-            [PathToInstallFile] Optional - Specify an alternative 'PackageInfo.json
-            [GeneateCustomPackage] Optional - Generate Components for Custom Package(true/false)")]
-    private static void Package(string workingDirectory, string packageInfoPath, string customPackage = "false")
+            [PathToInstallFile] Optional - Specify an alternative 'PackageInfo.json")]
+    private static void Package(string workingDirectory, string packageInfoPath)
     {
         if (workingDirectory != null)
             Environment.CurrentDirectory = workingDirectory;
@@ -99,15 +98,39 @@ internal static class PackageCommands
         if (packageInfoPath == null)
         {
             foreach (var item in new DirectoryInfo(Environment.CurrentDirectory).GetFiles("*.PackageInfo.json"))
-                ProcessPackage(item.Name, customPackage?.ToLower() == "true");
+                ProcessPackage(item.Name, false);
         }
         else
         {
-            ProcessPackage(packageInfoPath, customPackage?.ToLower() == "true");
+            ProcessPackage(packageInfoPath, false);
         }
     }
 
-    private static void ProcessPackage(string packageInfoPath, bool customPackage )
+    [CommandLineMethod(@"     --PackageCustom: Package as an opv file.  Will use info from 'PackageInfo.json
+            [WorkingDirectory] Optional - Base Path to use when Executing Packaging
+            [PathToInstallFile] Optional - Specify an alternative 'PackageInfo.json
+            [FirmwarePath] Optional - Path where Firmware Files (image.*.zip, upgrade.*.zip) are stored")]
+    private static void PackageCustom(string workingDirectory, string packageInfoPath, string firmwarePath)
+    {
+        if (workingDirectory != null)
+            Environment.CurrentDirectory = workingDirectory;
+
+        string path = Environment.CurrentDirectory;
+        Console.WriteLine($"Packaging Outputs relative to {path}");
+        Console.WriteLine();
+
+        if (packageInfoPath == null)
+        {
+            foreach (var item in new DirectoryInfo(Environment.CurrentDirectory).GetFiles("*.PackageInfo.json"))
+                ProcessPackage(item.Name, true, firmwarePath);
+        }
+        else
+        {
+            ProcessPackage(packageInfoPath, true, firmwarePath);
+        }
+    }
+
+    private static void ProcessPackage(string packageInfoPath, bool customPackage, string firmwarePath = "")
     {
         if (!File.Exists(packageInfoPath))
         {

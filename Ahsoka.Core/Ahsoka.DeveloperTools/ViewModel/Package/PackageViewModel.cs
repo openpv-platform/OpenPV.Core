@@ -1,4 +1,5 @@
 ﻿using Ahsoka.DeveloperTools.Core;
+using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Ahsoka.Spark;
 using Ahsoka.System;
@@ -18,6 +19,8 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static NetMQ.NetMQSelector;
+using static SkiaSharp.HarfBuzz.SKShaper;
 using Path = System.IO.Path;
 
 namespace Ahsoka.DeveloperTools;
@@ -37,6 +40,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     ExtensionsViewModel extensionsViewModel;
     private CppViewModel cppViewModel;
     private Bitmap bitmap;
+    private bool customShown = false; 
     SparkViewModel sparkViewModel;
     DependenciesCheckViewModel deps;
     int selectedTab = 0;
@@ -47,6 +51,15 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get { return selectedTab; }
         set { selectedTab = value; OnPropertyChanged(); }
+    }
+
+    public bool CustomShown
+    {
+        get
+        {
+            return customShown;
+        }
+        set { customShown = value; OnPropertyChanged(); }
     }
 
     public bool IsOpenView
@@ -378,7 +391,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         get { return ApplicationType == ApplicationType.CODESYS ? cppViewModel : null; }
         set { cppViewModel = value; OnPropertyChanged(); }
     }
-
 
     public CppViewModel CppViewModel
     {
@@ -815,7 +827,17 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
        GeneratePackage(false);
     }
 
-    internal  void GenerateCustomPackage()
+    internal void ShowCustomPackage()
+    {
+        CustomShown = true;
+    }
+
+    internal void CancelCustom()
+    {
+        CustomShown = false;
+    }
+
+    internal void GenerateCustomPackage()
     {
         GeneratePackage(true);
     }
@@ -874,7 +896,33 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             if (ParentViewModel.Settings.WaitForDebuggerInCLI)
                 prefix = "--WaitForDebugger ";
 
-            ParentViewModel.RunCommandLineProcess($"{prefix}--Package \"{workingDirectory}\" \"{packageInfoPath}\" {customInstall}", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
+            if (!customInstall)
+                ParentViewModel.RunCommandLineProcess($"{prefix}--Package \"{workingDirectory}\" \"{packageInfoPath}\"", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
+            else
+            {
+                string firmwareFolder = "";
+                try { firmwareFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily)); }
+                catch { }
+
+                if (!Path.Exists(firmwareFolder))
+                {
+                    firmwareFolder = Path.Combine(CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName),
+                                                    PlatformFamily.ToString() + "_TargetSupport");
+                }
+
+                string fileName = Path.Combine(Path.Combine(firmwareFolder), this.PlatformFamily.ToString() + "_Firmware.zip.customertools.version");
+                if (File.Exists(fileName))
+                    fileName = File.ReadAllText(fileName).TrimEnd();
+
+                if (fileName != null)
+                {
+                    string firmwareLocation = firmwareFolder + "_Firmware";
+                    string imageFile = "upgrade.*." + fileName.Replace("Firmware_", "");
+                    fileName = Directory.EnumerateFiles(firmwareLocation, imageFile, SearchOption.AllDirectories).FirstOrDefault();
+                }
+
+                ParentViewModel.RunCommandLineProcess($"{prefix}--PackageCustom \"{workingDirectory}\" \"{packageInfoPath}\" \"{fileName}\"", workingDirectory, progress, source.Token, ParentViewModel.SelectedPackage.GetCommandLinePath());
+            }
 
             output = itemToGenerate.PackageInfo.GetOutputFullPath(customInstall);
             if (File.Exists(output))
@@ -899,12 +947,13 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                 else
                     itemToGenerate.PackageChanged();
 
+                CustomShown = false;
+
                 bool fileCreated = result?.Status == TaskStatus.RanToCompletion && File.Exists(result.Result);
                 ParentViewModel.FinishProcess($"OPV Generation Completed: {fileCreated}", fileCreated);
             });
         });
     }
-
 
     public void Cancel()
     {

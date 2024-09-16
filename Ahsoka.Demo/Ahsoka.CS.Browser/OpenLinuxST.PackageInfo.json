@@ -1,5 +1,5 @@
 {
-  "version": "3.4.1.20011",
+  "version": "3.6.1.10007",
   "applicationType": "Dotnet",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Browser",
@@ -8,9 +8,12 @@
   "applicationVersion": "1.0",
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
-  "includeInstallerUI": false,
-  "includeFirmwareUpdate": false,
   "licenses": [],
+  "includeApplication": false,
+  "includeBootLogo": false,
+  "includeInstallerUI": false,
+  "includeFirmwareUpdate": true,
+  "optimizedServiceManager": true,
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Browser.csproj",
     "publishProfile": "Properties\\PublishProfiles\\FolderProfile.pubxml"

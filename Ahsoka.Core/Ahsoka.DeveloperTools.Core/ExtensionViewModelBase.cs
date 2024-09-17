@@ -40,6 +40,11 @@ public abstract class ExtensionViewModelBase : ViewModelBase
         return OnSave(packageInfoFolder);
     }
 
+    public void CloseUI()
+    {
+        OnCloseUI();
+    }
+
     protected abstract void OnInitExtension(HardwareInfo hardwareInfo, string projectFolder, string configurationPath);
 
     protected abstract string OnSave(string packageInfoFolder);
@@ -49,4 +54,9 @@ public abstract class ExtensionViewModelBase : ViewModelBase
     protected abstract bool OnHasChanges();
 
     protected abstract void OnClose();
+
+    protected virtual void OnCloseUI()
+    {
+
+    }
 }

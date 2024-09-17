@@ -4,6 +4,7 @@ using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     public ObservableCollection<ExtensionViewModel> AllExtensions { get; private set; } = new();
     public ObservableCollection<ExtensionViewModel> SelectedExtensions { get; private set; } = new();
     ExtensionContainerView currentPopup;
+    ExtensionViewModelBase currentViewModel;
 
     public bool AddExtensionsShown
     {
@@ -230,32 +232,43 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
         }).ContinueWith((t) =>
         {
-
-            if (!ParentViewModel.ServiceConfiguration.ExtensionInfo.Any(x => x.ExtensionName == selectedExtension.ExtensionName))
+            Dispatcher.UIThread.InvokeAsync(() =>
             {
-                ParentViewModel.ServiceConfiguration.ExtensionInfo.Add(new() { ExtensionName = selectedExtension.ExtensionName });
-
-                foreach (var serviceConfig in selectedExtension.ExtensionConfiguration.ServiceConfigurations)
+                try
                 {
-                    if (!ParentViewModel.ServiceViewModel.Services.Any(x => x.ServiceName == serviceConfig.ServiceName))
+                    if (!ParentViewModel.ServiceConfiguration.ExtensionInfo.Any(x => x.ExtensionName == selectedExtension.ExtensionName))
                     {
-                        serviceConfig.IsExtension = true;
-                        var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, serviceConfig, selectedExtension);
-                        ParentViewModel.ServiceViewModel.Services.Add(viewModel);
-                        viewModel.IsIncluded = true;
-                    }
-                }
-            }
+                        ParentViewModel.ServiceConfiguration.ExtensionInfo.Add(new() { ExtensionName = selectedExtension.ExtensionName });
 
-            ParentViewModel.NeedsSDKUpdate();
-            SelectedExtensions.Add(selectedExtension);
-          
-            ReloadExtensions();
-           
-            AllExtensions.Remove(selectedExtension);
-         
-            AddExtensionsShown = false;
-            IsWorking = false;
+                        foreach (var serviceConfig in selectedExtension.ExtensionConfiguration.ServiceConfigurations)
+                        {
+                            if (!ParentViewModel.ServiceViewModel.Services.Any(x => x.ServiceName == serviceConfig.ServiceName))
+                            {
+                                serviceConfig.IsExtension = true;
+                                var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, serviceConfig, selectedExtension);
+                                ParentViewModel.ServiceViewModel.Services.Add(viewModel);
+                                viewModel.IsIncluded = true;
+                            }
+                        }
+                    }
+
+                    ParentViewModel.NeedsSDKUpdate();
+                    SelectedExtensions.Add(selectedExtension);
+
+                    ReloadExtensions();
+
+                    AllExtensions.Remove(selectedExtension);
+
+                    AddExtensionsShown = false;
+                    IsWorking = false;
+                }
+                catch
+                {
+                    ParentViewModel.ParentViewModel.Dialog.ShowDialog("Extension Not Available", "This extension not not currently available. This may be due to an incompatiblity with the currently released extension. Contact the extension developer for more information.", "Ok");
+                }
+                
+            });
+            
         });
 
     }
@@ -302,12 +315,18 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     {
         InitExtension(extensionName);
 
-        currentPopup = new ExtensionContainerView() { DataContext = this };
-        var container = currentPopup.FindControl<Border>("Container");
-        var view = extensionUXExtensions[extensionName]?.GetView();
-        container.Child = view;
+        currentViewModel = extensionUXExtensions[extensionName];
+        if (currentViewModel != null)
+        {
+            currentPopup = new ExtensionContainerView() { DataContext = this };
+            var container = currentPopup.FindControl<Border>("Container");
+            var view = extensionUXExtensions[extensionName]?.GetView();
+            container.Child = view;
 
-        ParentViewModel.ParentViewModel.Popup.ShowPopup(currentPopup);
+            currentViewModel.CloseUI();
+
+            ParentViewModel.ParentViewModel.Popup.ShowPopup(currentPopup);
+        }
     }
 
     #region Extension File Handling
@@ -327,7 +346,11 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
     internal void CloseExtension()
     {
+        var container = currentPopup.FindControl<Border>("Container");
+        var view = container.Child;
+        container.Child = null;
         ParentViewModel.ParentViewModel.Popup.DismissPopup(currentPopup);
+       
         currentPopup = null;
     }
 

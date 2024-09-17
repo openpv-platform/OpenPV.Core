@@ -8,7 +8,7 @@
   "hasCommands": "true",
   "hasUx": "true",
   "hasSdkGenerator": "true",
-  "minVersion": "3.7.0",
+  "minVersion": "3.9.0",
   "maxVersion": "4.0.0",
   "requireExactVersion": "false"
 }

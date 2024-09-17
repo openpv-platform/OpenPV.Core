@@ -6,7 +6,7 @@
              xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
              xmlns:material="using:Material.Icons.Avalonia" 
              x:Class="Ahsoka.DeveloperTools.Views.DeviceView">
-		
+
 	<Grid>
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
@@ -25,7 +25,7 @@
 				HorizontalAlignment="Stretch"
 				Height="38"
 				VerticalContentAlignment="Center"
-				Command="{Binding SelectedPackage.GenerateCustomPackage}">
+				Command="{Binding SelectedPackage.ShowCustomPackage}">
 				<StackPanel Orientation="Horizontal">
 					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Webpack"></material:MaterialIcon>
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Create Custom Package"/>
@@ -42,54 +42,15 @@
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Load Custom Package"/>
 				</StackPanel>
 			</Button>
-		
+
 		</StackPanel>
 		<ScrollViewer>
 			<StackPanel DataContext="{Binding SelectedPackage}" HorizontalAlignment="Stretch" >
 				<StackPanel.Styles>
 					<StyleInclude Source="/Styles/UserInputStyles.axaml" />
 				</StackPanel.Styles>
-
-
-				<Border IsVisible="{Binding IsOpenView}" Margin="40,35,40,0" Padding="3" BorderBrush="WhiteSmoke" 
-						BorderThickness="0,1,0,1">
-					<Grid Margin="5,15,5,30" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*,*,">
-						<TextBlock Text="Custom Install Components  " 
-								   ToolTip.Tip="Custom Installs allow you to create installs which include optional features or exclude normally installed features." Background="White" Margin="-10,-30"  FontSize="15"
-								   Foreground="SteelBlue" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"  Grid.Column="0"/>
-
-						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Application:" Grid.Row="1" Margin="5,10" Grid.Column="0"/>
-						<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
-							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeAppComponents}"/>
-							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
-									   Text="Adds All Application Components (Installer, App, Extensions)."
-									   ToolTip.Tip="Checking this checkbox creates a standard install package with only the Application Updaters."/>
-						</StackPanel>
-						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Installer UI:" Grid.Row="2" Margin="5,10" Grid.Column="0"/>
-						<StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3">
-							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeInstallerUI}" />
-							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
-									   Text="Adds a component to updates the Installer UI on the Target" />
-						</StackPanel>
-						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Firmware:" Grid.Row="3" Margin="5,10" Grid.Column="0"/>
-						<StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">
-							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeFirmwareUpdate}"/>
-							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
-									   Text="Adds a delta Firmware Upgrader Component to the installer."
-									   ToolTip.Tip="Adds a delta upgrader component to your install package which upgrades the base image.  This does increase install times as well as require a reboot as part of the install process."/>
-						</StackPanel>
-						<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Boot Logo:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
-						<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
-							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding IncludeBootLogo}"/>
-							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray"
-									   Text="Updates the Boot Logo"
-									   ToolTip.Tip="Boot logos are always included in the default Application but can be excluded from custom packages."/>
-						</StackPanel>
-
-					</Grid>
-				</Border>
 				<Border IsVisible="{Binding IsOpenView}"
-							Margin="40,20,40,40" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+							Margin="40,60,40,40" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
 					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
 						<TextBlock Text="Screen Options " HorizontalAlignment="Left" FontSize="15"
 								 Foreground="SteelBlue"  Margin="-10,-40" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"/>
@@ -99,7 +60,7 @@
 							<TextBlock Text="(Rotates Logo and Installer)" ToolTip.Tip="Orientation is available via the SYSTEM_ORIENTATION environment variable." Grid.Row="1" Grid.Column="0"/>
 						</StackPanel>
 
-					
+
 					</Grid>
 				</Border>
 				<Border IsVisible="{Binding IsOpenView}"
@@ -122,7 +83,71 @@
 				</Border>
 			</StackPanel>
 		</ScrollViewer>
-	
+
+
+		<Border Margin="0,-50,0,0" Background="#00555555" IsVisible="{Binding SelectedPackage.CustomShown}" Grid.ColumnSpan="2"  BorderThickness="0,0,0,0" >
+			<Border  BoxShadow="5 5 10 2 DarkGray" HorizontalAlignment="Center" VerticalAlignment="Center" 
+					 BorderBrush="DarkGray" Background="White" BorderThickness="1">
+				<Grid Margin="50" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*,*,">
+					<TextBlock Text="Custom Install Components  "
+							   ToolTip.Tip="Custom Installs allow you to create installs which include optional features or exclude normally installed features." Background="White" Margin="-10,-30"  FontSize="15"
+							   Foreground="SteelBlue" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"  Grid.Column="0"/>
+
+					<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Application:" Grid.Row="1" Margin="5,10" Grid.Column="0"/>
+					<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
+						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding SelectedPackage.IncludeAppComponents}"/>
+						<TextBlock VerticalAlignment="Center" IsVisible="{Binding SelectedPackage.IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+								   Text="Adds All Application Components (Installer, App, Extensions)."
+								   ToolTip.Tip="Checking this checkbox creates a standard install package with only the Application Updaters."/>
+					</StackPanel>
+					<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Installer UI:" Grid.Row="2" Margin="5,10" Grid.Column="0"/>
+					<StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3">
+						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding SelectedPackage.IncludeInstallerUI}" />
+						<TextBlock VerticalAlignment="Center" IsVisible="{Binding SelectedPackage.IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+								   Text="Adds a component to updates the Installer UI on the Target" />
+					</StackPanel>
+					<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Firmware:" Grid.Row="3" Margin="5,10" Grid.Column="0"/>
+					<StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">
+						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding SelectedPackage.IncludeFirmwareUpdate}"/>
+						<TextBlock VerticalAlignment="Center" IsVisible="{Binding SelectedPackage.IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+								   Text="Adds a delta Firmware Upgrader Component to the installer."
+								   ToolTip.Tip="Adds a delta upgrader component to your install package which upgrades the base image.  This does increase install times as well as require a reboot as part of the install process."/>
+					</StackPanel>
+					<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Boot Logo:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
+					<StackPanel Orientation="Horizontal" 
+								Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
+						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding SelectedPackage.IncludeBootLogo}"/>
+						<TextBlock VerticalAlignment="Center" IsVisible="{Binding SelectedPackage.IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+								   Text="Updates the Boot Logo"
+								   ToolTip.Tip="Boot logos are always included in the default Application but can be excluded from custom packages."/>
+					</StackPanel>
+					<StackPanel Margin="0,20,-30,-30" Grid.Row="5" Grid.Column="3" HorizontalAlignment="Right"
+								 Grid.ColumnSpan="2" Orientation="Horizontal">
+						<Button 
+								Margin="10,0,0,0"
+								HorizontalAlignment="Right"
+								Height="38"
+								VerticalContentAlignment="Center"
+								Command="{Binding SelectedPackage.GenerateCustomPackage}">
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Webpack"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Generate Package"/>
+							</StackPanel>
+						</Button>
+						<Button Margin="10,0,0,0"
+								HorizontalAlignment="Right"
+								Height="38"
+								VerticalContentAlignment="Center"
+								Command="{Binding SelectedPackage.CancelCustom}">
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Cancel"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Cancel Generation"/>
+							</StackPanel>
+						</Button>
+					</StackPanel>
+				</Grid>
+			</Border>
+		</Border>
 	</Grid>
 </UserControl>
 

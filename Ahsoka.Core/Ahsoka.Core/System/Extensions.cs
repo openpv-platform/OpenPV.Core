@@ -257,7 +257,7 @@ public class Extensions
         CreateProject(info, project, info.ServiceInfo.RuntimeConfiguration.ExtensionInfo);
 
         progress.Report(new CommandOutput() { Data = "Restoring Nuget Packages" });
-        ProcessUtility.RunProcessAsync("dotnet", "restore", path, progress, CancellationToken.None);
+        ProcessUtility.RunProcessAsync("dotnet", "restore --no-cache", path, progress, CancellationToken.None);
         progress.Report(new CommandOutput() { Data = " " });
 
         progress.Report(new CommandOutput() { Data = "Creating Optimized Service Executable" });

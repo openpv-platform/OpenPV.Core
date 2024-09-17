@@ -129,7 +129,24 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         var valid = ValidateLicenses(context, item);
         if (!valid)
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"One or more licenses were not valid." });
-        
+
+
+        // Remove Previous Backup Path
+        string backupPath = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.BackupRoot);
+        if (Directory.Exists(backupPath))
+        {
+            Directory.Delete(backupPath, true);
+            context.Log.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Backup Path Deleted at {backupPath}" });
+        }
+
+        string currentPath = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
+        if (Directory.Exists(currentPath))
+        {
+            Directory.Move(currentPath, backupPath);
+            context.Log.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Application Backed Up from {currentPath}" });
+        }
+
+
         var result = base.OnInstallComponent(context, item);
 
         if (OperatingSystem.IsLinux())

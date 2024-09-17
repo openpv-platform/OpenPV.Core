@@ -51,21 +51,6 @@ internal class BeginInstallEngineComponent : InstallEngineComponent
             context.Log.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Removing Local App Data @ {appDataPath}" });
         }
 
-        // Remove Previous Backup Path
-        string backupPath = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.BackupRoot);
-        if (Directory.Exists(backupPath))
-        {
-            Directory.Delete(backupPath, true);
-            context.Log.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Backup Path Deleted at {backupPath}" });
-        }
-
-        string currentPath = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
-        if (Directory.Exists(currentPath))
-        {
-            Directory.Move(currentPath, backupPath);
-            context.Log.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Application Backed Up from {currentPath}" });
-        }
-
         string dependencyRoot = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.DependencyRoot);
         if (!Directory.Exists(dependencyRoot))
         {

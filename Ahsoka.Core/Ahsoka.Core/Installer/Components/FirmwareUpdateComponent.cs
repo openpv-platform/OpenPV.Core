@@ -18,19 +18,18 @@ internal class FirmwareUpdateComponent : FileSystemComponentBase
     public override Guid ComponentType => new("171A5303-F6BC-403E-B123-19792F1FE3E2");
     public override string ComponentName => PackageName;
 
+    public string UpdatePath { get; internal set; }
+
     protected override PackageComponent OnCreateFilePackageStream(string buildLocation,
         PackageInformation info,
         Dictionary<string, byte[]> additionalFiles,
         List<InstallerPlugin> installerPlugins,
         IProgress<PackageProgressInfo> progress)
     {
-        if (info.IncludeFirmwareUpdate)
+        if (this.IsEnabled)
         {
-            // Find BSP Upgrade and OTA Boot Files File
-            string path = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(info.PlatformFamily), "Firmware");
-            string otaPath = Directory.GetFiles(path, "upgrade.*.zip", SearchOption.AllDirectories).FirstOrDefault();
-
-            if (otaPath == null)
+           
+            if (UpdatePath == null || !File.Exists(UpdatePath))
             {
                 string error = $"Could not find an appropriate firmware upgrade file for {info.PlatformFamily}.";
                 throw new ApplicationException(error);
@@ -39,7 +38,7 @@ internal class FirmwareUpdateComponent : FileSystemComponentBase
             return new PackageComponent()
             {
                 ComponentType = ComponentType,
-                Data = new FileStream(otaPath, FileMode.Open),
+                Data = new FileStream(UpdatePath, FileMode.Open),
                 Version = VersionUtility.GetAppVersionString()
             };
         }

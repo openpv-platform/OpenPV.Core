@@ -5,6 +5,7 @@ assembly-informational-format: '{InformationalVersion}'
 assembly-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNumber}'
 assembly-file-versioning-format: '{Major}.{Minor}.{Patch}.{WeightedPreReleaseNumber}'
 
+#Bump to 4.0
 mode: ContinuousDeployment
 continuous-delivery-fallback-tag: ''
 tag-pre-release-weight: 0

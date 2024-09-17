@@ -142,8 +142,11 @@ public class InstallEngineBase
                 }
                 else if (item is StartLogoComponent)
                     item.IsEnabled = customInfo.IncludeBootLogo;
-                else if (item is InstallerUIComponent)
-                    item.IsEnabled = customInfo.IncludeInstallerUI;
+                else if (item is InstallerUIComponent installerUI)
+                {
+                    installerUI.IsEnabled = customInfo.IncludeInstallerUI;
+                    installerUI.InstallerPath = customInfo.InstallerUpgradePath;
+                }
                 else
                     item.IsEnabled = customInfo.IncludeApplication;
             }

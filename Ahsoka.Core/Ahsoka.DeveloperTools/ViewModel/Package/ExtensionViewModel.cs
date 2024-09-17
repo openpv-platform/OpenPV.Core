@@ -4,6 +4,7 @@ using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Avalonia.Controls;
+using Avalonia.Threading;
 using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
@@ -231,32 +232,43 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
         }).ContinueWith((t) =>
         {
-
-            if (!ParentViewModel.ServiceConfiguration.ExtensionInfo.Any(x => x.ExtensionName == selectedExtension.ExtensionName))
+            Dispatcher.UIThread.InvokeAsync(() =>
             {
-                ParentViewModel.ServiceConfiguration.ExtensionInfo.Add(new() { ExtensionName = selectedExtension.ExtensionName });
-
-                foreach (var serviceConfig in selectedExtension.ExtensionConfiguration.ServiceConfigurations)
+                try
                 {
-                    if (!ParentViewModel.ServiceViewModel.Services.Any(x => x.ServiceName == serviceConfig.ServiceName))
+                    if (!ParentViewModel.ServiceConfiguration.ExtensionInfo.Any(x => x.ExtensionName == selectedExtension.ExtensionName))
                     {
-                        serviceConfig.IsExtension = true;
-                        var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, serviceConfig, selectedExtension);
-                        ParentViewModel.ServiceViewModel.Services.Add(viewModel);
-                        viewModel.IsIncluded = true;
-                    }
-                }
-            }
+                        ParentViewModel.ServiceConfiguration.ExtensionInfo.Add(new() { ExtensionName = selectedExtension.ExtensionName });
 
-            ParentViewModel.NeedsSDKUpdate();
-            SelectedExtensions.Add(selectedExtension);
-          
-            ReloadExtensions();
-           
-            AllExtensions.Remove(selectedExtension);
-         
-            AddExtensionsShown = false;
-            IsWorking = false;
+                        foreach (var serviceConfig in selectedExtension.ExtensionConfiguration.ServiceConfigurations)
+                        {
+                            if (!ParentViewModel.ServiceViewModel.Services.Any(x => x.ServiceName == serviceConfig.ServiceName))
+                            {
+                                serviceConfig.IsExtension = true;
+                                var viewModel = new ServiceConfigurationViewModel(ParentViewModel.ServiceViewModel, serviceConfig, selectedExtension);
+                                ParentViewModel.ServiceViewModel.Services.Add(viewModel);
+                                viewModel.IsIncluded = true;
+                            }
+                        }
+                    }
+
+                    ParentViewModel.NeedsSDKUpdate();
+                    SelectedExtensions.Add(selectedExtension);
+
+                    ReloadExtensions();
+
+                    AllExtensions.Remove(selectedExtension);
+
+                    AddExtensionsShown = false;
+                    IsWorking = false;
+                }
+                catch
+                {
+                    ParentViewModel.ParentViewModel.Dialog.ShowDialog("Extension Not Available", "This extension not not currently available. This may be due to an incompatiblity with the currently released extension. Contact the extension developer for more information.", "Ok");
+                }
+                
+            });
+            
         });
 
     }

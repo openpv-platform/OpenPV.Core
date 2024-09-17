@@ -936,6 +936,8 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         // Find Firmware File
         string firmwareFileName = string.Empty;
+        string installerFolder = string.Empty;
+
         if (IncludeFirmwareUpdate)
         {
             string firmwareFolder = "";
@@ -958,6 +960,18 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             }
         }
 
+        if (IncludeInstallerUI)
+        {
+            try { installerFolder = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily)); }
+            catch { }
+
+            if (!Path.Exists(installerFolder))
+                installerFolder = Path.Combine(CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName),
+                                                PlatformFamily.ToString() + "_TargetSupport");
+
+            installerFolder = Path.Combine(installerFolder, "InstallerUI");
+        }
+
         CustomPackageInfo info = new CustomPackageInfo()
         {
             IncludeApplication = IncludeAppComponents,
@@ -965,6 +979,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             FirmwareUpgradePath = firmwareFileName,
             IncludeBootLogo = IncludeBootLogo,
             IncludeInstallerUI = IncludeInstallerUI,
+            InstallerUpgradePath = installerFolder,
         };
 
         string tempFile = Path.GetTempFileName() + ".CustomInfo.json";   

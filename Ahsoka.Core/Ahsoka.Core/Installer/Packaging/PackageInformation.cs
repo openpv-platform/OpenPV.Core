@@ -187,4 +187,6 @@ public class CustomPackageInfo
     public bool IncludeFirmwareUpdate { get; set; } = false;
 
     public string FirmwareUpgradePath { get; set; }
+
+    public string InstallerUpgradePath { get; set; }
 }

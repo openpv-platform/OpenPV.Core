@@ -15,6 +15,13 @@ internal class InstallerUIComponent : PackageComponentBase
 
     public override string ComponentName => PackageName;
 
+    public string InstallerPath { get; internal set; }
+
+    protected override string GetPackagingPath(string buildLocation, PackageInformation info)
+    {
+        return InstallerPath;
+    }
+
     protected override PackageComponent OnCreateFilePackageStream(string buildLocation,
         PackageInformation info,
         Dictionary<string, byte[]> additionalFiles,

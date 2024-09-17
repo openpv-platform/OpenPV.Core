@@ -8,7 +8,6 @@ internal class AppModel
 {
     static SystemServiceClient systemClient = null;
     static int lastBrightness = 50;
-    static string lastResult = "No Result";
 
     internal static void StartModel(WebApplication app)
     {

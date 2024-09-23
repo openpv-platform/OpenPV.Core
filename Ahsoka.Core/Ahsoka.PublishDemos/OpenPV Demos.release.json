@@ -54,6 +54,12 @@
       "DownloadToken": null,
       "SizeInBytes": 0,
       "Hash": null
+    },
+    {
+      "Path": "Ahsoka_CPP_Services.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
     }
   ],
   "Dependencies": null

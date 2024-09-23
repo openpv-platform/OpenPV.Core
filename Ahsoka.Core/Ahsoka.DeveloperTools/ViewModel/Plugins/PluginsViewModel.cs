@@ -53,7 +53,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
     public bool  HideOpenViewPro
     {
-        get { return parentViewModel.Settings.HideOpenViewPro; }
+        get { return true; /*( return parentViewModel.Settings.HideOpenViewPro;*/ }
         set { parentViewModel.Settings.HideOpenViewPro = value; LoadProfileTools();
         }
     }
@@ -526,7 +526,8 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     private void AddDependencyItems(PlatformSupportPackage platformSupport, List<OpenPVToolBase> releases, ReleaseDTO token)
     {
         foreach (var item in token.Contents)
-            releases.Add(new PlatformSupportTool(token, item));
+            if (!item.Path.StartsWith("Firmware_")) // Firmware is part of the Platform Support Package
+                releases.Add(new PlatformSupportTool(token, item));
     }
 
     internal void ShowSupportSite()

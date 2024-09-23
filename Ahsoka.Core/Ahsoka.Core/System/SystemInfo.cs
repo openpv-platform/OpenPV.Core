@@ -107,7 +107,6 @@ public static class SystemInfo
             string applicationDescriptionPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationDescription);
             if (File.Exists(applicationDescriptionPath))
                 applicationDescription = File.ReadAllText(applicationDescriptionPath);
-
         }
 
         return currentAppPath;

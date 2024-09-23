@@ -213,7 +213,7 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
 
         if (isAppCert)
         {
-            type = KeyTypes.PackageSigningKey;
+            type = Path.GetExtension(certFilePath).ToLower() == ".appcert" ?  KeyTypes.PackageSigningKey : KeyTypes.ServiceKey;
             bool isAppCertLocal = Path.GetDirectoryName(fileInfo) == certFilePath;
            
             if (!isAppCertLocal)

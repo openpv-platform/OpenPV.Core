@@ -51,6 +51,9 @@ public static class PlatformSupportPathInfo
             rootPath = new DirectoryInfo(rootPath).Parent?.FullName;
         }
 
+        if (string.IsNullOrEmpty(rootPath) && folderName.ToLower().Contains("support"))
+            return GetDeveloperPlatformSupportPath();
+
         return string.Empty;
     }
 

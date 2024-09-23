@@ -31,7 +31,6 @@ public partial class TargetPathInfo
             RootPaths.CloudRoot => GetAhsokaPath("cloud"),
             RootPaths.ApplicationRoot => GetAhsokaPath("current"),
             RootPaths.BackupRoot => GetAhsokaPath("backup"),
-            RootPaths.DependencyRoot => GetAhsokaPath("dependency"),
             RootPaths.TempRoot => GetAhsokaPath("tmp"),
             RootPaths.FactoryRoot => GetAhsokaPath("factory"),
             RootPaths.FieldRoot => GetAhsokaPath("field"),
@@ -339,11 +338,6 @@ public enum RootPaths
     ///  Path to the last Installed Customer Application Backup
     /// </summary>
     BackupRoot,
-
-    /// <summary>
-    ///  Path to any Dependencies installed for a Development Platform.
-    /// </summary>
-    DependencyRoot,
 
     /// <summary>
     ///  Path to the Temp Files used by the System.

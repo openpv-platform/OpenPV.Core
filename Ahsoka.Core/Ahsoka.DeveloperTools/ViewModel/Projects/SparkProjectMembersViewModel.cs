@@ -207,7 +207,10 @@ internal partial class SparkProjectMembersViewModel : ChildViewModelBase<SparkPr
         var memberList = TeamMembers.ToArray();
         var member = SelectedTeamMember;
 
-        if (!ParentViewModel.IsOwner)
+        if (!ParentViewModel.IsAdmin)
+            return;
+
+        if (SelectedTeamMember.IsOwner)
             return;
 
         var teamVM = FindParent<SparkProjectEditorViewModel>();

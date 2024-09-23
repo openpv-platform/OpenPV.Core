@@ -5,7 +5,6 @@
       "serviceName": "InstallService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5000,
       "behaviors": "AutoStart"
     },
@@ -14,7 +13,6 @@
       "serviceName": "SystemService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5001,
       "behaviors": "AutoStart"
     },
@@ -23,7 +21,6 @@
       "serviceName": "SparkService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5002,
       "behaviors": "AutoStart"
     },
@@ -32,7 +29,6 @@
       "serviceName": "NetworkService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5003,
       "behaviors": "AutoStart"
     },
@@ -41,7 +37,6 @@
       "serviceName": "IotService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5005,
       "behaviors": "AutoStart"
     },
@@ -50,7 +45,6 @@
       "serviceName": "SecurityService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5007,
       "behaviors": "AutoStart"
     }

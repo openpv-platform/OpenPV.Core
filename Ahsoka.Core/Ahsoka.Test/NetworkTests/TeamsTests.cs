@@ -156,10 +156,18 @@ public class SparkTeamsTests : LinearTestBase
 
         try
         {
+            // Pass Null DeviceInfo
+            SparkCustomerTools.PreProvisionDevices(null, sparkLogin, subInfo, progress, null);
+          
             SparkCustomerTools.PreProvisionDevices(null, sparkLogin, subInfo, progress, items);
             var device = SparkAccountClient.SharedSparkClient.GetTeamDevices(team.TeamID.ToString(), null).Devices.FirstOrDefault(x => x.DeviceID == newFactoryInfo.DeviceID) ;
 
             SparkAccountClient.SharedSparkClient.DeleteTeamDevice(device,team);
+
+            subInfo.ApplicationId = Guid.NewGuid();
+            SparkCustomerTools.PreProvisionDevices(null, sparkLogin, subInfo, progress, items);
+
+
         }
         catch { }
 

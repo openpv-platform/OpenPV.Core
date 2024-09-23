@@ -3,12 +3,14 @@ using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
 namespace Ahsoka.Commands;
 
+[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class ServiceCommands
 {

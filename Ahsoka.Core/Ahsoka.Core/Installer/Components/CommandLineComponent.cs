@@ -38,7 +38,7 @@ internal class CommandLineComponent : PackageComponentBase
     {
         PackageComponent componentData = null;
 
-        if (info.CanUseOptimizerdServiceManager())
+        if (info.OptimizedServiceManager && info.CanUseOptimizerdServiceManager())
         {
             progress.Report(new PackageProgressInfo() { Message = " " });
             progress.Report(new PackageProgressInfo() { Message = "      Generating Optimized Service Manager" });

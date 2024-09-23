@@ -108,7 +108,7 @@ internal class PlatformSupportTool : SparkToolBase
         {
             string firmwareFolder = localPath + "_Firmware";
             string imageFile = "image.*." + firmwareFileName.Replace("Firmware_","");
-            string fileName = Directory.EnumerateFiles(firmwareFolder, imageFile).FirstOrDefault();
+            string fileName = Directory.EnumerateFiles(firmwareFolder, imageFile, SearchOption.AllDirectories).FirstOrDefault();
             string versionNumber = this.Version;
 
             if (File.Exists(fileName))

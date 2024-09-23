@@ -41,8 +41,6 @@ internal class EndInstallEngineComponent : InstallEngineComponent
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)
     {
-
-
         return InstallResult.Success;
     }
     #endregion

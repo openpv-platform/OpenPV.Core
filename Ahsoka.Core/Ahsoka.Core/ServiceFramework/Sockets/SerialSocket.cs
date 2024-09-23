@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 #pragma warning disable CS1591
 
@@ -9,6 +10,7 @@ namespace Ahsoka.ServiceFramework;
 /// <summary>
 /// Socket to adapt Ahsoka Messages to Serial Interfacees.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public abstract class SerialSocket : IAhsokaSocket
 {
     public byte[] SocketID { get; } = Guid.NewGuid().ToByteArray();

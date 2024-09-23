@@ -205,7 +205,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                     ServiceName = defaultValues.ServiceName,
                     TcpConnectionAddress = defaultValues.TcpConnectionAddress,
                     TcpListenAddress = defaultValues.TcpListenAddress,
-                    BleServiceUuidBase = defaultValues.BleServiceUuidBase,
                     DataChannel = defaultValues.DataChannel,
                     IsExtension = defaultValues.IsExtension,
                     Behaviors = defaultValues.Behaviors,
@@ -221,7 +220,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
 
             OnPropertyChanged();
             OnPropertyChanged(nameof(ServicePort)); 
-            OnPropertyChanged(nameof(ServiceUUID));
         }
     }
 
@@ -294,22 +292,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
         set
         {
             SetPort(CurrentServiceConfiguration, value);
-            OnPropertyChanged();
-        }
-    }
-
-    public string ServiceUUID
-    {
-        get
-        {
-            if (CurrentServiceConfiguration != null)
-                return CurrentServiceConfiguration.BleServiceUuidBase;
-            else
-                return Guid.Empty.ToString();
-        }
-        set
-        {
-            CurrentServiceConfiguration.BleServiceUuidBase = value;
             OnPropertyChanged();
         }
     }

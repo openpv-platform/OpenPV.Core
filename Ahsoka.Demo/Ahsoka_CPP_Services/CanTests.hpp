@@ -119,7 +119,7 @@ class CanTests
             client.CloseCommunicationChannel();
         }
 
-        TestMessage CreateTestViewModel()
+        AhsokaCan::TestMessage CreateTestViewModel()
         {
             AhsokaCan::TestMessage model;
             model.SetTestSigned(64);

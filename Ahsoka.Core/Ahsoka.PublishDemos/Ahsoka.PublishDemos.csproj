@@ -57,7 +57,6 @@
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\.vs\" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Services\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Services.zip" />
 
-		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)Ahsoka.Demo\Ahsoka_CPP_Services" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka_CPP_Services.zip" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)Ahsoka.Demo\Ahsoka_QT_Demo" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka_QT_Demo.zip" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)Ahsoka.Demo\Ahsoka_QT_Blank" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka_QT_Blank.zip" />
 		

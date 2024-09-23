@@ -22,11 +22,9 @@
 		<EmbeddedResource Remove="publish\**" />
 		<None Remove="publish\**" />
 	</ItemGroup>
-
-	<Import Label="Ahsoka Local Build Properties" Condition="Exists('../Demo.Build.props')" Project="../Demo.Build.props" />
-
-	<ItemGroup Label="Reference to Ahsoka Nuget Packages" Condition="!Exists('../Demo.Build.props')">
-		<PackageReference Include="Ahsoka.Core" Version="3.*-*" />
-	</ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="Ahsoka.Core" Version="3.*-*" />
+  </ItemGroup>
 
 </Project>

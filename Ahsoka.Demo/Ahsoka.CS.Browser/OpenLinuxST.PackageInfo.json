@@ -5,7 +5,7 @@
   "execCommand": "Ahsoka.CS.Browser",
   "packageName": "Ahsoka.CS.Browser",
   "packageDescription": "Browser Project with Razor / WebAPI Backend",
-  "applicationVersion": "3.0",
+  "applicationVersion": "1.0",
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
   "licenses": [],

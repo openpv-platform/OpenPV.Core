@@ -3,12 +3,10 @@ using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Ahsoka.Commands;
 
-[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class DisplayProvisioningCommands
 {

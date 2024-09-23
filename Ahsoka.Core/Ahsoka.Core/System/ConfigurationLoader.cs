@@ -177,12 +177,20 @@ public partial class ServiceConfiguration : ICanDeserializeBase
             this.TcpListenAddress = value;
         else if (propertyName == "tcpConnectionAddress")
             this.TcpConnectionAddress = value;
+        else if (propertyName == "bleServiceUuidBase")
+            this.BleServiceUuidBase = value;
         else if (propertyName == "socketType")
             this.SocketType = Enum.Parse<TransportSocketTypes>(value, true);
         else if (propertyName == "isExtension")
             this.IsExtension = bool.Parse(value);
         else if (propertyName == "behaviors")
             this.Behaviors = Enum.Parse<EndPointBehaviors>(value, true);
+    }
+
+    [Obsolete("Use Extension Info.Configuration Path Instead")]
+    internal string ConfigurationFile
+    {
+        get;set;
     }
 
     /// <summary>
@@ -211,4 +219,31 @@ public partial class ServiceConfiguration : ICanDeserializeBase
         }
     }
 
+    /// <summary>
+    /// Produces the UUID that is used by the BLE service that is going to house the characteristic hosting the socket
+    /// used by a service.
+    /// </summary>
+    [Newtonsoft.Json.JsonIgnore]
+    public string BLEServiceUUID
+    {
+        get
+        {
+            return this.BleServiceUuidBase;
+        }
+    }
+
+    /// <summary>
+    /// Produces the UUID that is used by the BLE characteristic that is hosting the socket used by a service.
+    /// </summary>
+    [Newtonsoft.Json.JsonIgnore]
+    public string BLECharacteristicUUID
+    {
+        get
+        {
+            if (!String.IsNullOrEmpty(this.BleServiceUuidBase))
+                return this.BleServiceUuidBase.Remove(4, 4).Insert(4, this.DataChannel.ToString("x4"));
+            else
+                return "";
+        }
+    }
 }

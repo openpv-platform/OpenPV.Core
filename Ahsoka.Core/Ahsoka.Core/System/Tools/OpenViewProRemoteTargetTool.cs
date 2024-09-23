@@ -22,6 +22,24 @@ internal class OpenViewProRemoteTargetTool : LinuxRemoteTargetTool
     protected override SshCommand InstallDependencies(HardwareInfo info,
                           SshClient sshClient, ScpClient scpClient)
     {
+        string ahsokaDepFolder = info.TargetPathInfo.GetRootPaths(RootPaths.DependencyRoot);
+        string ahsokaDepExe = ahsokaDepFolder + "/dotnet/dotnet";
+
+        progress.Report($"Remove Ahsoka Dependencies");
+        var commandResult = sshClient.RunCommand($"rm -r {ahsokaDepFolder}");
+        if (commandResult.Result != string.Empty)
+            throw new Exception(commandResult.Result);
+
+        string depPath = Path.Combine(InstallerToolPaths.GetTargetRootPath(info.PlatformFamily), "Dependency");
+
+        if (!Directory.Exists(depPath))
+            throw new Exception($"Path to Ahsoka dependencies was not found {depPath}");
+
+        // Upload Dependencies (dotnet)
+        PushFactoryExecutable(info, sshClient, scpClient,
+                depPath,
+                ahsokaDepFolder,
+                ahsokaDepExe);
         
         // Temp Fixes for Platform
         string appProfile = Encoding.UTF8.GetString(Properties.Resources.LinuxAppProfile).Replace("wayland-1", "/run/wayland-0");
@@ -36,8 +54,12 @@ internal class OpenViewProRemoteTargetTool : LinuxRemoteTargetTool
         sshClient.RunCommand($"systemctl disable gplv3-notice");
         sshClient.RunCommand($"systemctl disable strongswan-starter");
         sshClient.RunCommand($"systemctl disable systemd-bootchart.service");
-        var result = sshClient.RunCommand($"systemctl disable tee-supplicant");
+        sshClient.RunCommand($"systemctl disable tee-supplicant");
 
-        return result;
+
+
+
+
+        return commandResult;
     }
 }

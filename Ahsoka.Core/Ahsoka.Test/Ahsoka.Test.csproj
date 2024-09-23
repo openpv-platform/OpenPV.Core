@@ -26,7 +26,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Ahsoka.Core\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj" />
-		<ProjectReference Include="..\Ahsoka.Extension.Test\Ahsoka.Extension.Test.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -48,13 +47,6 @@
 		</Compile>
 	</ItemGroup>
 
-
-	<Target Name="ControlBuild" AfterTargets="PostBuildEvent">
-		<Message Text="Copy Files to Extensions Folder @ $(UxPath)" Importance="high" />
-		<Copy SourceFiles="$(SolutionDir)\Ahsoka.Core\Ahsoka.Test\bin\$(Configuration)\$(TargetFramework)\Ahsoka.Extension.Test.dll" DestinationFiles="$(SolutionDir)\Ahsoka.Core\Ahsoka.Test\bin\$(Configuration)\$(TargetFramework)\ExtensionTests\Test Extension\lib\Ahsoka.Extension.Test.dll" />
-	</Target>
-
-
 	<ItemGroup>
 		<EmbeddedResource Update="Properties\Resources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
@@ -74,15 +66,6 @@
 		</None>
 		<None Update="BuildFolder\ApplicationOutput\TestOutput.txt">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="BuildFolder\OpenLinuxST.PackageInfo.json">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="BuildFolder\STDemoPackage.1.cancalibration.json">
-		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-		</None>
-		<None Update="ExtensionTests\Ahsoka.Extensions.Core.extensioninfo.json">
-		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
 

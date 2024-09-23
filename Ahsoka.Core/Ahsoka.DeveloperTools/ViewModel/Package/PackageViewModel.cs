@@ -12,12 +12,15 @@ using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static NetMQ.NetMQSelector;
+using static SkiaSharp.HarfBuzz.SKShaper;
 using Path = System.IO.Path;
 
 namespace Ahsoka.DeveloperTools;
@@ -79,15 +82,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         {
             packageInfo.OptimizedServiceManager = value;
             OnPropertyChanged();
-        }
-    }
-
-
-    public bool SupportsOptimized
-    {
-        get
-        {
-            return OperatingSystem.IsWindows();
         }
     }
 
@@ -814,23 +808,10 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         var family = this.PlatformFamily;
         var tools = ParentViewModel.Plugins.SupportInfo;
         OpenPVToolBase launchTool = null;
-        if (ApplicationType == ApplicationType.Cpp)
-        {
-            if (CppViewModel.ProjectType == CPPProjectType.QT)
-            {
-                if (family == PlatformFamily.OpenViewLinux)
-                    launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewQT5ContainerTool);
-                else if (family == PlatformFamily.OpenViewLinuxPro)
-                    launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewProQT5ContainerTool);
-            }
-            else if (CppViewModel.ProjectType == CPPProjectType.VSCode)
-            {
-                if (family == PlatformFamily.OpenViewLinux)
-                    launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewSDKContainerTool);
-                else if (family == PlatformFamily.OpenViewLinuxPro)
-                    launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewProSDKContainerTool);
-            }
-        }
+        if (family == PlatformFamily.OpenViewLinux)
+            launchTool = tools?.Downloads.FirstOrDefault(x =>  x is OpenViewQT5ContainerTool);
+        else if (family == PlatformFamily.OpenViewLinuxPro)
+            launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewProQT5ContainerTool);
 
         if (launchTool == null || !launchTool.IsDownloaded)
         {

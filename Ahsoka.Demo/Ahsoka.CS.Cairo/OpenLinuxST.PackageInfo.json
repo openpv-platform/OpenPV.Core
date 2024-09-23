@@ -6,7 +6,7 @@
   "execCommand": "Ahsoka.CS.Cairo",
   "packageName": "Ahsoka.CS.Cairo",
   "packageDescription": "Drawing and Touch With Cairo using Ahsoka DrawingAPI",
-  "applicationVersion": "3.0",
+  "applicationVersion": "1.0",
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
   "startupLogoPath": "EnovLogo.png",

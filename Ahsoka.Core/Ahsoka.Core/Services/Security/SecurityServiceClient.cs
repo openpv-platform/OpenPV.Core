@@ -85,13 +85,11 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     {
         if (messageHeader.TransportId == SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt() && message is Token token)
         {
-
+          
             // Accept Challenge Token and Release WaitEvent
             lock (requests)
-            {
-                if (token.RequestId != null)
-                    requests[token.RequestId.ToGuid()] = token;
-            }
+                requests[token.RequestId.ToGuid()] = token;
+
             waitForChallengeAccept.Set();
         }
 

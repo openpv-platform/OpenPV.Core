@@ -7,14 +7,12 @@ using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 #pragma warning disable IDE0051 // Remove unused private members
 
 namespace Ahsoka.Commands;
 
-[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class PackageCommands
 {

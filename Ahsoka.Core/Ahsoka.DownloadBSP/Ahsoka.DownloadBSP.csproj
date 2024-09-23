@@ -47,8 +47,8 @@
 		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinux_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewBSP) image.$(OpenViewBSP).zip" />
 	</Target>
 	
-	<Target  Name="DownloadOpenViewPro" AfterTargets="DownloadBSPs" Condition="!Exists('$(Download_Root)FirmwareDownload\OpenViewLinuxPro_TargetSupport\Firmware\image.$(OpenViewProBSP).zip')">
-		<Exec Condition="false" WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinuxPro_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewProBSP) image.$(OpenViewProBSP).zip" />
+	<Target Name="DownloadOpenViewPro" AfterTargets="DownloadBSPs" Condition="!Exists('$(Download_Root)FirmwareDownload\OpenViewLinuxPro_TargetSupport\Firmware\image.$(OpenViewProBSP).zip')">
+		<Exec WorkingDirectory="$(Download_Root)" Command="EnovationCloud.CommandLine --DownloadFromSpark  sparkserviceprod.azurewebsites.net $(SparkLogin) &quot;$(SparkPassword)&quot; &quot;$(Download_Root)FirmwareDownload\OpenViewLinuxPro_TargetSupport\Firmware&quot; &quot;OpenPV Distribution&quot; $(OpenViewProBSP) image.$(OpenViewProBSP).zip" />
 	</Target>
 
 	<ItemGroup>

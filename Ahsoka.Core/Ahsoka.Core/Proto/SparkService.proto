@@ -101,6 +101,5 @@ enum SparkTrack
 
 enum AppChangesEnum
 {
-	NO_CHANGES = 0;
-	UPDATE_RELEASE = 1;
+	UpdateRelease = 1;
 }

@@ -3,11 +3,9 @@ using Ahsoka.Services.Network.Platform;
 using Ahsoka.Services.System.Platform;
 using Ahsoka.System;
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Ahsoka.Commands;
 
-[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class TestCommands
 {

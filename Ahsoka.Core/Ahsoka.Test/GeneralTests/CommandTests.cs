@@ -12,6 +12,7 @@ public class CommandTests : LinearTestBase
    
     public TestContext TestContext { get; set; }
 
+
     [TestMethod]
     public void TestClientCodeGenerator()
     {

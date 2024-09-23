@@ -31,6 +31,7 @@ message ServiceConfiguration
     string service_name = 2;
     string tcp_listen_address = 3;
     string tcp_connection_address = 4;
+    string ble_service_uuid_base = 5;
     int32 data_channel = 6;
     bool is_extension = 8;
     EndPointBehaviors behaviors = 10; 

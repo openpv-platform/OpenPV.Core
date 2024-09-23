@@ -47,6 +47,22 @@
       "DevelopmentPlatform": "Windows64"
     },
     {
+      "Name": "OpenViewPro SDK Container",
+      "Version": "3.2024-08-06T110843.openviewpro.kirkstone.6d309b5",
+      "Description": "OpenViewPro SDK Container",
+      "BaseClass": "Ahsoka.DeveloperTools.OpenViewProSDKContainerTool",
+      "CanLaunch": true,
+      "DevelopmentPlatform": "Windows64"
+    },
+    {
+      "Name": "OpenViewPro QT5 Container",
+      "Version": "3.2024-08-06T110843.openviewpro.kirkstone.6d309b5",
+      "Description": "OpenViewPro QT5 Container",
+      "BaseClass": "Ahsoka.DeveloperTools.OpenViewProQT5ContainerTool",
+      "CanLaunch": true,
+      "DevelopmentPlatform": "Windows64"
+    },
+    {
       "Name": "OpenViewPro Flash Tools",
       "Description": "Flash Tool for OpenView Pro Series",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewProFlashTool",

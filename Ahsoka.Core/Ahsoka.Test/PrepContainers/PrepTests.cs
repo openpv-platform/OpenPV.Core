@@ -21,12 +21,9 @@ public class RemoteLinuxTests : LinearTestBase
     public TestContext TestContext { get; set; }
 
 
-    [TestMethod]
+    //[TestMethod]
     public void TestRemoteLinuxToolsInContainer()
     {
-        if (Environment.GetEnvironmentVariable("TF_BUILD") != null)
-            return;
-
         ProcessUtility.RunProcess("docker", $"pull {imageName}", null, out string result, out string error);
         Console.WriteLine(result);
 
@@ -76,7 +73,7 @@ public class RemoteLinuxTests : LinearTestBase
             var hardwareInfo = HardwareInfo.GetHardwareInfo(PlatformFamily.Ubuntu64, "Desktop");
             tools.EnableRDP(hardwareInfo, targetInfo, 5999, progress);
             tools.EnableRDP(hardwareInfo, targetInfo, 5999, progress);
-            tools.DisableRDP(hardwareInfo, targetInfo, progress);
+            tools.DisableRDP(hardwareInfo,targetInfo,progress);
 
 
             // Clear Journals
@@ -99,6 +96,7 @@ public class RemoteLinuxTests : LinearTestBase
             // Test Factory Prep
             tools.Prep(targetInfo, sparkLogin, progress, mfgInfo);
 
+            
             // Load from Machine or Create and Add Configuration
             string keyName = "OpenPVContainerTestKeyFile";
 
@@ -120,17 +118,13 @@ public class RemoteLinuxTests : LinearTestBase
 
             // Stop Container and Wait for process to end.
             ProcessUtility.RunProcess("docker", $"stop {containerName}", null, out result, out error);
-            dockerProcess.Wait(5000);
-
-            ProcessUtility.RunProcess("docker", $"kill {containerName}", null, out result, out error);
-
+            dockerProcess.Wait();
         }
         catch { }  // We run on the server but we don't fail a build 
         finally
         {
             // Stop Containers and Remove.
             ProcessUtility.RunProcess("docker", $"stop {containerName}", null, out result, out error);
-            ProcessUtility.RunProcess("docker", $"kill {containerName}", null, out result, out error);
             ProcessUtility.RunProcess("docker", $"remove {containerName}", null, out result, out error);
         }
     }

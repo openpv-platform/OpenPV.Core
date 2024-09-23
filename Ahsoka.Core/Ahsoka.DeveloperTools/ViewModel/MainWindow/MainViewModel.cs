@@ -8,6 +8,7 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,8 +17,12 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using static NetMQ.NetMQSelector;
+using static NuGet.Packaging.PackagingConstants;
+using SystemConsole = System.Console;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -287,7 +292,34 @@ internal class MainViewModel : ViewModelBase
 
         if (UseInternalCommandLine)
         {
-            LocalCommandLine.RunWithLocalConsole(processArgs, workingDirectory, progressString);
+            var currentDirectory = Environment.CurrentDirectory;
+            if (workingDirectory != null)
+                Environment.CurrentDirectory = workingDirectory;
+
+            using var localConsole = new LocalConsoleWriter();
+            EventHandler<LocalConsoleWriterEventArgs> handler = (sender, e) =>
+            {
+                progressString.Report(new CommandLineProgressInfo() { IsWriteLine = e.IsWriteLine, Message = e.Value });
+            };
+
+            localConsole.WriteLineEvent += handler;
+            localConsole.WriteEvent += handler;
+
+            SystemConsole.SetOut(localConsole);
+
+            /// Split Arguments
+            var args = new List<string>();
+            args.AddRange(Regex.Matches(processArgs, @"[\""].+?[\""]|[^ ]+")
+                            .Cast<Match>()
+                            .Select(m => m.Value.Trim('"'))
+                            .ToList());
+
+            CommandLine.Execute(args.ToArray());
+
+            localConsole.WriteLineEvent -= handler;
+            localConsole.WriteEvent += handler;
+            if (workingDirectory != null)
+                Environment.CurrentDirectory = currentDirectory;
         }
         else
         {

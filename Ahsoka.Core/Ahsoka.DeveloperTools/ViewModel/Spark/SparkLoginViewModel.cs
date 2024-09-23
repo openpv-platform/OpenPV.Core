@@ -5,12 +5,9 @@ using Avalonia.Threading;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Security;
-using Microsoft.IdentityModel.Tokens;
-using NuGet.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -150,9 +147,6 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
             if (ParentViewModel.IsOffline)
             {
-                // TODO: TEMP CODE Until Spark Fixed.   Without it IsRefresh will crash.
-                SparkAccountClient.SharedSparkClient.CurrentAuthorization = authDTO;
-
                 var result = SparkAccountClient.SharedSparkClient.IsRefreshTokenStillValid(authDTO);
                 if (result)
                 {

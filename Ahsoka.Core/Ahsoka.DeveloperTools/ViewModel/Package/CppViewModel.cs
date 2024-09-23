@@ -42,24 +42,6 @@ internal class CppViewModel : ViewModelBase
         }
     }
 
-    public CPPProjectType ProjectType
-    {
-        get { return packageInfo.CppInfo.ProjectType; }
-        set
-        {
-            packageInfo.CppInfo.ProjectType = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public CPPProjectType[] ProjectTypes
-    {
-        get
-        {
-            return Enum.GetValues<CPPProjectType>().ToArray();
-        }
-    }
-
     public string ProjectPath
     {
         get { return packageInfo.CppInfo.ProjectPath; }

@@ -32,6 +32,12 @@
       "Hash": null
     },
     {
+      "Path": "OpenViewLinuxPro_TargetSupport.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
       "Path": "MacOSARM64_TargetSupport.zip",
       "DownloadToken": null,
       "SizeInBytes": 0,
@@ -45,6 +51,12 @@
     },
     {
       "Path": "Firmware_openview.*.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Firmware_openviewpro.*.zip",
       "DownloadToken": null,
       "SizeInBytes": 0,
       "Hash": null

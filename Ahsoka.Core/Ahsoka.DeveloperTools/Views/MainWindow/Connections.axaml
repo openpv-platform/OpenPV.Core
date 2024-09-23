@@ -196,7 +196,7 @@
 					</TabItem.Header>
 					<DockPanel Margin="10" HorizontalAlignment="Stretch" LastChildFill="False" >
 						<Border DockPanel.Dock="Top"  Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
-							<Grid Margin="5" ColumnDefinitions="130,330" RowDefinitions="*,*,*,*,*,*,*,auto,*,*,auto" >
+							<Grid Margin="5" ColumnDefinitions="130,330" RowDefinitions="*,*,*,*,*,*,*,*" >
 
 								<TextBlock Text="Platform Family:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
 								<ComboBox Height="32" Grid.Row="0" 
@@ -216,16 +216,6 @@
 
 								<TextBlock FontSize="12" Text="* The Service Port is used to communicate with a System Service running on the target to get information about the system. (Default = 5001)"
 										   Grid.Row="7" Foreground="Gray" Grid.Column="1" VerticalAlignment="Center" Margin="5" TextWrapping="Wrap"/>
-
-								<TextBlock Text="Security Port:" Grid.Row="8" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-								<TextBox HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.SecurityServicePort}" Grid.Row="8" Grid.Column="1" Margin="5" Width="50" />
-
-								<TextBlock Text="API Key:" Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
-								<TextBox HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.APIKey}" Grid.Row="9" Grid.Column="1" Margin="5" Width="350" />
-
-								<TextBlock FontSize="12" Text="* The Security Port is used to communicate with a Security Service running on the target if secure services are being used. (Default = 5007)"
-										   Grid.Row="10" Foreground="Gray" Grid.Column="1" VerticalAlignment="Center" Margin="5" TextWrapping="Wrap"/>
-
 							</Grid>
 						</Border>
 						<Border DockPanel.Dock="Bottom" Margin="20" Padding="10" BorderBrush="Gainsboro" BorderThickness="1" Background="WhiteSmoke">
@@ -242,7 +232,7 @@
 					</TabItem.Header>
 					<DockPanel Margin="10" HorizontalAlignment="Stretch" LastChildFill="False" >
 						<Border DockPanel.Dock="Top"  Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
-							<Grid Margin="5" ColumnDefinitions="130,330" RowDefinitions="*,*,*,*,*,*,*,*,*,*" >
+							<Grid Margin="5" ColumnDefinitions="130,330" RowDefinitions="*,*,*,*,*,*,*,*,*" >
 
 								<TextBlock Text="Host Name / IP:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" Margin="5"/>
 								<TextBox HorizontalAlignment="Left" Text="{Binding EditConfigurationInfo.HostName}" Grid.Row="2" Grid.Column="1" Margin="5" Width="200"/>
@@ -273,8 +263,6 @@
 								   Grid.Row="6" Foreground="Gray" Grid.Column="1" VerticalAlignment="Center" Margin="5" TextWrapping="Wrap"/>
 								<TextBlock FontSize="12" Text="* To create an app signing key, use the Project Editor to generate a SigningKey"
 											Grid.Row="8" Foreground="Gray" Grid.Column="1" VerticalAlignment="Center" Margin="5" TextWrapping="Wrap"/>
-
-								
 
 
 							</Grid>

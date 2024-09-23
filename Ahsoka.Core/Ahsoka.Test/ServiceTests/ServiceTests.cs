@@ -1,4 +1,3 @@
-using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Dispatch;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services;
@@ -189,6 +188,43 @@ public class ServiceTests : LinearTestBase
     }
 
 
+    [TestMethod]
+    public void TestBaseServiceExternalComponents()
+    {
+        // Test Configuration Builder
+        RuntimeConfiguration config = new();
+        var systemItem = ConfigurationLoader.GetServiceConfig("SystemService");
+        systemItem.Behaviors = EndPointBehaviors.NoBehavior; // Don't AutoStart
+        config.Services.Add(systemItem);
+       
+        string commandLine = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily.Windows64), "CommandLine", "Ahsoka.CommandLine.exe");
+      
+        // Create Client Runtime and Add Services
+        SystemServiceClient systemClient = new(systemItem);
+        systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
+        systemClient.Start();
+
+        AhsokaRuntime.StartProcessExecutable(commandLine, [systemClient]);
+
+        
+        // Run Sample Test Code
+        var task = Task.Run(() =>
+        {
+            ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
+            ServiceSelfTests.PrintServerMetrics(systemClient);
+
+            // Request Service Shutdown
+            systemClient.RequestServiceShutdown();
+        });
+
+        var result = task.Wait(10000);
+
+        // Stop the Runtimes
+        AhsokaRuntime.Default.StopAllEndPoints();
+
+        Assert.IsTrue(result,"The test process did not complete");
+    }
+
     private void ApplicationServiceClient_NotificationReceived(object sender, NotificationEventArgs<SystemMessageTypes.Ids> e)
     {
         if (e.TransportId == SystemMessageTypes.Ids.RequestShutdown)
@@ -198,7 +234,10 @@ public class ServiceTests : LinearTestBase
     [TestMethod]
     public void TestWindowsPrep()
     {
-        var progress = new Progress<string>(Console.WriteLine);
+        var progress = new Progress<string>(info =>
+        {
+            Console.WriteLine(info);
+        });
 
         var prep = RemoteTargetToolFactory.GetToolsForPlatform(PlatformFamily.Windows64);
 

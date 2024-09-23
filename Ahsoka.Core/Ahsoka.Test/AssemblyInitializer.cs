@@ -14,11 +14,6 @@ public class TestInitializer : LinearTestBase
    [AssemblyInitialize]
     public static void AssemblyInit(TestContext context)
     {
-        var extTests = new ExtensionTests();
-        extTests.TestExtensions();
-
-        JsonUtility.IsTesting = true;
-
         // Remove Any Existing Ahsoka Folders
         string ahsokaFolder = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/Ahsoka";
         if (Directory.Exists(ahsokaFolder)) 

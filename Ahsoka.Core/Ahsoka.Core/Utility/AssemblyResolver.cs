@@ -1,7 +1,6 @@
 using Ahsoka.ServiceFramework;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
@@ -10,7 +9,6 @@ namespace Ahsoka.Utility;
 /// <summary>
 /// Allows Assemblys with Matching Major / Minor to load with the current running runtime system.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public class AssemblyResolver
 {
     /// <summary>

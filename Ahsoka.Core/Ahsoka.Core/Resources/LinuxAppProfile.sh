@@ -1,3 +1,7 @@
+# DotNet 
+export DOTNET_ROOT=/usr/local/Ahsoka/dependency/dotnet
+export PATH=$PATH:$DOTNET_ROOT
+
 export XDG_RUNTIME_DIR=/tmp/xdg-runtime-dir
 export WAYLAND_DISPLAY="wayland-1"
 export WESTON_USER=root

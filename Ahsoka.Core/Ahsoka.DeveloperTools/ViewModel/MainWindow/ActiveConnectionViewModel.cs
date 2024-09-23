@@ -1,6 +1,5 @@
 ﻿using Ahsoka.DeveloperTools.Views;
 using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Security;
 using Ahsoka.Services.System;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
@@ -24,7 +23,6 @@ internal class ActiveConnectionViewModel : ViewModelBase
     readonly object syncRoot = new();
     GetHardwareInformationReply hardwareInfo;
     SystemServiceClient client;
-    SecurityServiceClient securityClient;
     ConnectionInfo selectedInfo;
     bool isConnected = false;
     bool isInited = false;
@@ -120,18 +118,10 @@ internal class ActiveConnectionViewModel : ViewModelBase
                 TcpConnectionAddress = value.HostName,
                 DataChannel = value.SystemServicePort,
             };
-            var securityConfig = new ServiceConfiguration()
-            {
-                ServiceName = "SecurityService",
-                TcpConnectionAddress = value.HostName,
-                DataChannel = value.SecurityServicePort,
-            };
 
             if (client == null)
             {
                 client = new(config);
-                securityClient = new(securityConfig);
-
                 UpdateConnectedDescription();
                 AhsokaRuntime.Default.StartEndPoints(client);
             }
@@ -141,8 +131,6 @@ internal class ActiveConnectionViewModel : ViewModelBase
                 AhsokaRuntime.Default.StopEndPoints(client);
 
                 client = new(config);
-                securityClient = new(securityConfig);
-
                 AhsokaRuntime.Default.StartEndPoints(client);
             }
         }
@@ -167,38 +155,29 @@ internal class ActiveConnectionViewModel : ViewModelBase
 
             lock (syncRoot)
             {
-                AttemptGetHardware();
+                ConnectedHardwareInfo = client.GetHardwareInformation(2000);
+
+                // Clear any Line Endings
+                if (ConnectedHardwareInfo != null)
+                {
+                    var items = ConnectedHardwareInfo.VersionInfoes.ToArray();
+                    ConnectedHardwareInfo.VersionInfoes.Clear();
+                    foreach (var item in items)
+                        ConnectedHardwareInfo.VersionInfoes[item.Key] = item.Value.ReplaceLineEndings("");
+                }
+
+                IsConnected = hardwareInfo != null;
+                IsInstaller = hardwareInfo != null && hardwareInfo.IsInstaller;
 
                 // Failed Message....Atttempt to Reconnect.
                 if (hardwareInfo == null)
                     Reconnect(Connection);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            if (ex.Message.Contains("InvalidToken"))
-            {
-                var request = securityClient.RequestToken(new TokenRequestInfo()
-                {
-                    ApiKey = Connection.APIKey,
-                    ClientIds = { ((IAhsokaClientEndPoint)client).GetClientId() },
-                    ClientDescription = "OpenPV Desktop"
-                });
-
-                // Waits for Accepted Token to be Recieved
-                var systemServiceToken = securityClient.WaitForToken(request.RequestId);
-                if (systemServiceToken == null || !systemServiceToken.TokenIsValid)
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, "The token was not valid");
-                else
-                    client.SetToken(systemServiceToken);
-
-                AttemptGetHardware();
-            }
-            else
-            {
-                Debug.WriteLine(e.ToString());
-                IsConnected = AttemptGetHardware();
-            }
+            Debug.WriteLine(e.ToString());
+            IsConnected = false;
         }
         finally
         {
@@ -206,24 +185,6 @@ internal class ActiveConnectionViewModel : ViewModelBase
         }
     }
 
-    private bool AttemptGetHardware()
-    {
-        ConnectedHardwareInfo = client.GetHardwareInformation(2000);
-
-        // Clear any Line Endings
-        if (ConnectedHardwareInfo != null)
-        {
-            var items = ConnectedHardwareInfo.VersionInfoes.ToArray();
-            ConnectedHardwareInfo.VersionInfoes.Clear();
-            foreach (var item in items)
-                ConnectedHardwareInfo.VersionInfoes[item.Key] = item.Value.ReplaceLineEndings("");
-        }
-
-        IsConnected = hardwareInfo != null;
-        IsInstaller = hardwareInfo != null && hardwareInfo.IsInstaller;
-
-        return IsConnected;
-    }
 
     internal GetHardwareInformationReply GetHardwareInformation(int timeoutInMs = 2000)
     {

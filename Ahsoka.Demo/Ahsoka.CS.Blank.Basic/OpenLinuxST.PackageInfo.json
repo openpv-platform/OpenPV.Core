@@ -6,7 +6,7 @@
   "execCommand": "Ahsoka.CS.Blank.Basic",
   "packageName": "Ahsoka.CS.Blank.Basic",
   "packageDescription": "Basic Ahsoka Starter Project",
-  "applicationVersion": "3.0",
+  "applicationVersion": "1.0",
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
   "includeInstallerUI": false,

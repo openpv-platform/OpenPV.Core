@@ -16,7 +16,6 @@
   "nodes": [
     {
       "idValid": 0,
-      "port": 1,
       "id": 0,
       "name": "TestNode",
       "comment": "",
@@ -59,6 +58,7 @@
       "rollCountLength": 0,
       "crcType": "None",
       "crcBit": 0,
+      "setAddressOnSend": true,
       "timeoutMs": 0,
       "filterReceipts": false,
       "userDefined": true,
@@ -70,8 +70,6 @@
         -1,
         -1
       ],
-      "overrideSourceAddress": false,
-      "overrideDestinationAddress": false,
       "signals": [
         {
           "muxGroupValid": 0,
@@ -194,5 +192,5 @@
   "generatorNamespace": "AhsokaCan",
   "generatorOutputFile": "Generated/CanModels.Generated.h",
   "generatorBaseClass": "CanViewModelBase",
-  "version": "3.7.3.30007"
+  "version": "3.0.1.20064"
 }

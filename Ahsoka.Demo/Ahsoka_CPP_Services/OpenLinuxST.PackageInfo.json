@@ -1,35 +1,26 @@
 {
-  "version": "3.7.3.30007",
+  "version": "3.0.1.10075",
   "applicationType": "Cpp",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CPP.Services",
   "packageName": "Ahsoka.CPP.Services",
   "packageDescription": "Project demonstating Service usage in C++",
-  "applicationVersion": "3.0",
+  "applicationVersion": "1.0",
   "packageApplicationFolder": "Outputs",
   "packageOutputDirectory": "..\\PackageOutput",
   "startupLogoPath": "Assets\\Background.png",
+  "includeInstallerUI": false,
+  "includeFirmwareUpdate": false,
   "licenses": [],
-  "optimizedServiceManager": true,
-  "customPackageInfo": {
-    "includeApplication": false,
-    "includeBootLogo": false,
-    "includeInstallerUI": false,
-    "includeFirmwareUpdate": false
-  },
   "cppInfo": {
-    "projectPath": ".",
-    "projectType": "VSCode"
+    "projectPath": "."
   },
   "serviceInfo": {
     "runtimeConfiguration": {
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
-      "extensionInfo": [
-        {
-          "extensionName": "CAN Service Extension",
-          "configurationFile": "CANServiceConfiguration.json"
-        }
+      "extensions": [
+        "CAN Service Extension"
       ],
       "startupDelay": 3,
       "requireChallenge": "NotRequired",
@@ -42,7 +33,8 @@
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "isExtension": false,
-          "behaviors": "AutoStart"
+          "behaviors": "AutoStart",
+          "configurationFile": ""
         },
         {
           "socketType": "TcpSocket",
@@ -52,7 +44,8 @@
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5002,
           "isExtension": false,
-          "behaviors": "AutoStart"
+          "behaviors": "AutoStart",
+          "configurationFile": ""
         },
         {
           "socketType": "TcpSocket",
@@ -62,7 +55,8 @@
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5003,
           "isExtension": false,
-          "behaviors": "AutoStart"
+          "behaviors": "AutoStart",
+          "configurationFile": ""
         },
         {
           "socketType": "TcpSocket",
@@ -72,7 +66,8 @@
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5005,
           "isExtension": false,
-          "behaviors": "AutoStart"
+          "behaviors": "AutoStart",
+          "configurationFile": ""
         },
         {
           "socketType": "TcpSocket",
@@ -82,7 +77,8 @@
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5107,
           "isExtension": true,
-          "behaviors": "AutoStart"
+          "behaviors": "AutoStart",
+          "configurationFile": "CanService.cancalibration.json"
         }
       ]
     },

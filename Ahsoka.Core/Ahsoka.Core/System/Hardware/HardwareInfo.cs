@@ -1,5 +1,4 @@
 ﻿using Ahsoka.Utility;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 
@@ -35,29 +34,26 @@ public partial class HardwareInfo : ICanDeserializeBase
     /// Information about the Platform and Factory Defined Information such as Serial Number / Part Number. 
     /// </summary>
     public FactoryInfo FactoryInfo { get; set; }
-
-    /// <summary>
-    /// Information about the supported Bluetooth Modules on the system.
-    /// </summary>
-    [JsonProperty]
-    internal BluetoothHardwareInfo BluetoothInfo { get; set; }
-
+    
     /// <summary>
     /// Information about the supported Network Interfaces on the system.
     /// </summary>
     public NetworkHardwareInfo NetworkInfo { get; set; }
 
-    /// <summary>
+    /*/// <summary>
+    /// Information about the supported Bluetooth Modules on the system.
+    /// </summary>
+    public BluetoothHardwareInfo BluetoothInfo { get; set; }
+
+   /// <summary>
     /// Information about the support Raw IO for the system.
     /// </summary>
-    [JsonProperty]
-    internal IOHardwareInfo IOInfo { get; set; }
+    public IOHardwareInfo IOInfo { get; set; }
 
     /// <summary>
     /// Information about the support Raw IO for the system.
     /// </summary>
-    [JsonProperty]
-    internal CANHardwareInfo CANInfo { get; set; }
+    public CANHardwareInfo CANInfo { get; set; }*/
 
     /// <summary>
     /// Information about the support Raw IO for the system.
@@ -122,6 +118,12 @@ public partial class HardwareInfo : ICanDeserializeBase
             return FactoryInfo = new();
         else if (propertyName == "networkInfo")
             return NetworkInfo = new();
+        /*else if (propertyName == "bluetoothInfo")
+            return BluetoothInfo = new();
+        else if (propertyName == "ioInfo")
+            return IOInfo = new();
+        else if (propertyName == "canInfo")
+            return CANInfo = new();*/
         else if (propertyName == "screenInfo")
             return ScreenInfo = new();
 

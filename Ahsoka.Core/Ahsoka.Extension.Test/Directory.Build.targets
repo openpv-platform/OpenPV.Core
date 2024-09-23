@@ -1,7 +1,0 @@
-﻿<Project TreatAsLocalProperty="IGNORE_PREREQS">
-
-	<PropertyGroup>
-		<DemoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..\'))</DemoRoot>
-	</PropertyGroup>
-
-</Project>

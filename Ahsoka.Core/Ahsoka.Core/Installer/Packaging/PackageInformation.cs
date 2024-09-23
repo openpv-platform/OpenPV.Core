@@ -133,11 +133,8 @@ public class PackageInformation : PackageHeader
 
     internal bool CanUseOptimizerdServiceManager()
     {
-        if (!OperatingSystem.IsWindows())
-            return false;
-            
         ProcessUtility.RunProcess("dotnet", "--list-sdks", null, out string result, out string error);
-        return result.Contains("8.0.") && OptimizedServiceManager && (PlatformFamily is PlatformFamily.Windows64 or PlatformFamily.OpenViewLinux or PlatformFamily.OpenViewLinuxPro);
+        return result.Contains("8.0.") && OptimizedServiceManager && (PlatformFamily is PlatformFamily.OpenViewLinux or PlatformFamily.OpenViewLinuxPro);
     }
 }
 
@@ -150,13 +147,6 @@ public class DotNetInformation
 public class CppInformation
 {
     public string ProjectPath { get; set; }
-    public CPPProjectType ProjectType { get; set; }
-}
-
-public enum CPPProjectType
-{
-    QT,
-    VSCode
 }
 
 public class ServiceInfo

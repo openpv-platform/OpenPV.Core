@@ -3,12 +3,10 @@ using Ahsoka.System;
 using Ahsoka.Utility;
 using EnovationCloud.Core.Utilities;
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Ahsoka.Commands;
 
-[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class SparkCommands
 {

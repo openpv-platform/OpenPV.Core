@@ -53,7 +53,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
     public bool  HideOpenViewPro
     {
-        get { return true; /*( return parentViewModel.Settings.HideOpenViewPro;*/ }
+        get { return parentViewModel.Settings.HideOpenViewPro; }
         set { parentViewModel.Settings.HideOpenViewPro = value; LoadProfileTools();
         }
     }

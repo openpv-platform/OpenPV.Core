@@ -3,10 +3,12 @@ using Ahsoka.Services.Iot;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
+using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace Ahsoka.Services.Security;
@@ -85,11 +87,13 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     {
         if (messageHeader.TransportId == SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt() && message is Token token)
         {
-          
+
             // Accept Challenge Token and Release WaitEvent
             lock (requests)
-                requests[token.RequestId.ToGuid()] = token;
-
+            {
+                if (token.RequestId != null)
+                    requests[token.RequestId.ToGuid()] = token;
+            }
             waitForChallengeAccept.Set();
         }
 
@@ -130,7 +134,10 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Generating Client Secret for Local Security Client");
             try
             {
-                return RSAEncryption.GetSignatureWithKey(((IAhsokaClientEndPoint)this).GetClientId(), File.ReadAllText(path));
+                var data = AesEncryption.DecryptFile(path, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+                string key = Encoding.UTF8.GetString(data.ToArray());
+
+                return RSAEncryption.GetSignatureWithKey(((IAhsokaClientEndPoint)this).GetClientId(), key);
             }
             catch {}
         }

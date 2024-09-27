@@ -46,7 +46,7 @@
 
 		</StackPanel >
 		<StackPanel Margin="20" Grid.Column="3" Grid.RowSpan="99" HorizontalAlignment="Center" VerticalAlignment="Bottom">
-			<CheckBox Foreground="DimGray" FontSize="12" IsChecked="{Binding HideOpenViewPro}" Content="Hide OpenView Pro"/>
+			<CheckBox Foreground="DimGray" FontSize="12" IsChecked="{Binding HideOpenViewPro}" IsVisible="false" Content="Hide OpenView Pro"/>
 			<CheckBox Foreground="DimGray" FontSize="12" IsChecked="{Binding HideOpenView}" Content="Hide Openview Select"/>
 		</StackPanel>
 

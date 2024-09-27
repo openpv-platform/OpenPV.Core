@@ -1,5 +1,6 @@
 ﻿using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Utility;
 using System.Threading.Tasks;
 
@@ -10,7 +11,6 @@ internal class WiFiSetupState : InstallerUIStateBase
     const string refreshAction = "RefreshWiFiList";
     const string alreadyConnected = "AleadyConnected";
     bool isConnecting = false;
-    bool autoConnectAttempted = false;
     bool isAutoConnecting = false;
 
     public WiFiSetupState()
@@ -35,15 +35,14 @@ internal class WiFiSetupState : InstallerUIStateBase
         }
         else
         {
-            if (InstallerDrawingManager.Default.WiFiViewModel.SelectedNetworkProfile != null && autoConnectAttempted == false)
-                InstallerDrawingManager.Default.HandleAction("AutoConnect",out bool handled);
-            else
-                DrawSelectNetwork(drawingApi, width, height);
+            DrawSelectNetwork(drawingApi, width, height);
         }
     }
 
     protected override InstallerUIStateBase OnHandleAction(string action)
     {
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "WiFi - " + action);
+
         if (action == "Up")
             InstallerDrawingManager.Default.WiFiViewModel.MoveUp();
         else if (action == "Down")
@@ -54,25 +53,30 @@ internal class WiFiSetupState : InstallerUIStateBase
             return new SparkConnectionState();
         else if (action == "AutoConnect")
         {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Attempting AutoConnect");
             isConnecting = true;
             isAutoConnecting = true;
-            autoConnectAttempted = true;
             Task.Run(() =>
             {
-                InstallerDrawingManager.Default.WiFiViewModel.AttemptAutoConnect();
-                isAutoConnecting = false;
+                try { InstallerDrawingManager.Default.WiFiViewModel.AttemptAutoConnect(); }
+                finally { isAutoConnecting = false; }
             });
             return this;
         }
         else if (action == "Return")
         {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Exiting WiFi");
             isConnecting = false;
+            isAutoConnecting = false;
             return new StartState();
         }
         else if (action == refreshAction)
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Discovering Networks");
             InstallerDrawingManager.Default.WiFiViewModel.DiscoverNetworks();
+        }
 
-        if (action == "Select")
+        else if (action == "Select")
         {
             // No Profile so Open Keyboard and allow it to issue the connect.
             if (InstallerDrawingManager.Default.WiFiViewModel.SelectedNetworkProfile == null)
@@ -82,6 +86,7 @@ internal class WiFiSetupState : InstallerUIStateBase
             }
             else
             {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Attemping to Connect");
                 isConnecting = true;
                 Task.Run(() =>
                 {

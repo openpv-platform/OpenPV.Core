@@ -330,17 +330,18 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareInformationFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(factoryFileData)));
 
        
-        // Add Keys to List - NOTE THIS IS TO SUPPORT PRE 2.0 Hardware Prep
-        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(privateKey)));
-        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(publicKey)));
+        // BACK COMPATIBILITY Add Keys to List - NOTE THIS IS TO SUPPORT PRE 2.0 Hardware Prep
+        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(privateKey)));
+        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlPublicKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(publicKey)));
 
         // Create 
-        privateKey = RSAEncryption.ConvertXMLToPrivatePEM(privateKey);
-        publicKey = RSAEncryption.ConvertXMLToPublicPEM(publicKey);
+        var aesKey = AesEncryption.KeyFromDeviceId(info.FactoryInfo.DeviceId);
+        var privateKeyData = AesEncryption.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(RSAEncryption.ConvertXMLToPrivatePEM(privateKey))),aesKey.Key, aesKey.IV);
+        var publicKeyData = AesEncryption.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(RSAEncryption.ConvertXMLToPublicPEM(publicKey))), aesKey.Key, aesKey.IV);
 
         // Add Keys to List - SUPPORTS 2.0+
-        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(privateKey)));
-        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(publicKey)));
+        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile), privateKeyData);
+        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile), publicKeyData);
 
         // Create Manifest FileInfo
         FactoryManifest manifest = new()
@@ -611,14 +612,19 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         if (commandResult.Result != string.Empty)
             throw new Exception(commandResult.Result);
 
+        string dropBearPath = "/usr/sbin/dropbearkey";
+        bool isContainer = sshClient.ConnectionInfo.Host == "127.0.0.1";
+        if (isContainer)
+            dropBearPath = "dropbearkey"; // Matches Container
+
         commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ecdsa_host_key");
-        commandResult = sshClient.RunCommand($"/usr/sbin/dropbearkey -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key");
-        if (!commandResult.Result.Contains("Fingerprint:"))
+        commandResult = sshClient.RunCommand($"{dropBearPath} -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key");
+        if (!commandResult.Result.Contains("Fingerprint:") && !isContainer)
             throw new Exception(commandResult.Result);
 
         commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ed25519_host_key");
-        commandResult = sshClient.RunCommand($"/usr/sbin/dropbearkey -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key");
-        if (!commandResult.Result.Contains("Fingerprint:"))
+        commandResult = sshClient.RunCommand($"{dropBearPath} -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key");
+        if (!commandResult.Result.Contains("Fingerprint:") && !isContainer)
             throw new Exception(commandResult.Result);
 
         progress.Report($"Securing SSH Communication");
@@ -632,29 +638,10 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
     protected virtual SshCommand InstallDependencies(HardwareInfo info,
                           SshClient sshClient, ScpClient scpClient)
     {
-        string ahsokaDepFolder = info.TargetPathInfo.GetRootPaths(RootPaths.DependencyRoot);
-        string ahsokaDepExe = ahsokaDepFolder + "/dotnet/dotnet";
-
-        progress.Report($"Remove Ahsoka Dependencies");
-        var commandResult = sshClient.RunCommand($"rm -r {ahsokaDepFolder}");
-        if (commandResult.Result != string.Empty)
-            throw new Exception(commandResult.Result);
-
-        string depPath = Path.Combine(InstallerToolPaths.GetTargetRootPath(info.PlatformFamily), "Dependency");
-
-        if (!Directory.Exists(depPath))
-            throw new Exception($"Path to Ahsoka dependencies was not found {depPath}");
-
-        // Upload Dependencies (dotnet)
-        PushFactoryExecutable(info, sshClient, scpClient,
-                depPath,
-                ahsokaDepFolder,
-                ahsokaDepExe);
-
         scpClient.Upload(new MemoryStream(Properties.Resources.LinuxAppProfile), "/etc/profile.d/app_profile.sh");
 
         progress.Report($"Remove systemd generators");
-        commandResult = sshClient.RunCommand($"rm -f /lib/systemd/system-generators/system-generator-alsa-*");
+        var commandResult = sshClient.RunCommand($"rm -f /lib/systemd/system-generators/system-generator-alsa-*");
         if (commandResult.Result != string.Empty)
             throw new Exception(commandResult.Result);
 
@@ -686,12 +673,6 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         scpClient.Upload(new MemoryStream(Properties.Resources.JournalOverride), pathToJournalOverride);
 
         return commandResult;
-    }
-
-    protected bool IsProvisioned(SshClient client)
-    {
-        var commandResult = client.RunCommand("ls /usr/local/Ahsoka/");
-        return commandResult.Error == string.Empty;
     }
 
     public bool EnableRDP(HardwareInfo hardwareInfo, IConnectionInfo info, int rdpPort, IProgress<string> progressString)
@@ -971,6 +952,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         catch { return "Command Was Not Successful"; }
     }
 
+    [ExcludeFromCodeCoverage]
     public GetHardwareInformationReply ReturnToInstaller(TargetConnectionInfo connectionInfo, SystemServiceClient client, CancellationTokenSource source, IProgress<string> progressString)
     {
         progressString.Report("The target is currently running an application...Rebooting to Installer.\r\n");

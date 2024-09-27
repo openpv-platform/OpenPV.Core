@@ -5,6 +5,7 @@ using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 
 namespace Ahsoka.Services.Security;
 
@@ -41,7 +42,10 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
     {
         var deviceSecurityFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.ServiceSecurityFile);
         if (File.Exists(deviceSecurityFile))
-            configuration = JsonUtility.Deserialize<SecurityConfiguration>(File.ReadAllText(deviceSecurityFile));
+        {
+            var data = AesEncryption.DecryptFile(deviceSecurityFile,SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+            configuration = JsonUtility.Deserialize<SecurityConfiguration>(Encoding.UTF8.GetString(data.ToArray()));
+        }
 
         TokenSource.RegisterTokenSource(new AppKeyTokenSource(configuration));
     }
@@ -80,12 +84,12 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
             return false;
 
         // We sign with the device Signature here to prove we are local.
-        var path = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile);
-        if (File.Exists(path))
+        var key = SystemInfo.HardwareInfo.GetDeviceSigningKey(false);
+        if (!string.IsNullOrEmpty(key))
         {
             try
             {
-                return RSAEncryption.VerifyDataSignature(clientIdSigned, clientId, File.ReadAllText(path));
+                return RSAEncryption.VerifyDataSignature(clientIdSigned, clientId, key);
             }
             catch 
             {

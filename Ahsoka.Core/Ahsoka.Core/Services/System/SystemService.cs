@@ -1,5 +1,6 @@
 #pragma warning disable CS1591
 using Ahsoka.Installer;
+using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System.Platform;
 using Ahsoka.System;
@@ -438,8 +439,23 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
     private void HandleSetBootLogo(AhsokaMessageHeader messageHeader, BootLogoInfo bootLogoInfo)
     {
+        string tempFile = Path.GetTempFileName() + Path.GetExtension(bootLogoInfo.Path);
+        if (bootLogoInfo.Rotation != BootLogoRotation.NoRotation)
+        {
+            if (File.Exists(bootLogoInfo.Path))
+            {
+               using var ms = new MemoryStream(File.ReadAllBytes(bootLogoInfo.Path));
+               var data = ImageUtility.RotateImage((Orientation)(int)bootLogoInfo.Rotation, ms);
+               File.WriteAllBytes(tempFile, data.ToArray());
+               bootLogoInfo.Path = tempFile;
+            }
+        }
+
         coreInterop.SetBootLogo(bootLogoInfo.Path);
         SendMessageInternal(messageHeader);
+
+        if (File.Exists(tempFile))
+            File.Delete(tempFile);
     }
 
     #endregion

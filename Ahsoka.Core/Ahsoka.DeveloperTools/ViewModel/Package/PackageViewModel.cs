@@ -12,15 +12,12 @@ using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static NetMQ.NetMQSelector;
-using static SkiaSharp.HarfBuzz.SKShaper;
 using Path = System.IO.Path;
 
 namespace Ahsoka.DeveloperTools;
@@ -85,6 +82,14 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
     }
 
+    public bool SupportsOptimized
+    {
+        get
+        {
+            return OperatingSystem.IsWindows();
+        }
+    }
+
     public DependenciesCheckViewModel Deps
     {
         get
@@ -111,7 +116,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
 
     public bool IsLaunchCompatible
     {
-        get { return ApplicationType == ApplicationType.Cpp; }
+        get { return OperatingSystem.IsWindows() && ( ApplicationType == ApplicationType.Cpp || ApplicationType == ApplicationType.Dotnet); }
         set { }
     }
 
@@ -197,7 +202,28 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             UpdateApplicationViewModel();
             OnPropertyChanged();
             OnPropertyChanged(nameof(IsLaunchCompatible));
+            OnPropertyChanged(nameof(IsDotNet));
+            OnPropertyChanged(nameof(IsCODESYS));
+            OnPropertyChanged(nameof(IsCPP));
         }
+    }
+
+    public bool IsDotNet
+    {
+        get { return ApplicationType == ApplicationType.Dotnet; }
+        set { }
+    }
+
+    public bool IsCODESYS
+    {
+        get { return ApplicationType == ApplicationType.CODESYS; }
+        set { }
+    }
+
+    public bool IsCPP
+    {
+        get { return ApplicationType == ApplicationType.Cpp; }
+        set { }
     }
 
     public List<ModuleLicense> Licenses
@@ -418,7 +444,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     #endregion
 
     #region Package Changed
-
     public void PackageChanged()
     {
         OnPropertyChanged(nameof(OutputRelative));
@@ -772,9 +797,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                 // Cancel will stop if needed.
                 var result = ParentViewModel.ActiveConnection.LoadApplicationAsync(stream, true, progressFileInfo);
                 var resultValue = result.GetAwaiter().GetResult();
-
              
-
                 // Watch for Result
                 if (!source.IsCancellationRequested)
                     if (IsOpenView)
@@ -808,10 +831,36 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         var family = this.PlatformFamily;
         var tools = ParentViewModel.Plugins.SupportInfo;
         OpenPVToolBase launchTool = null;
-        if (family == PlatformFamily.OpenViewLinux)
-            launchTool = tools?.Downloads.FirstOrDefault(x =>  x is OpenViewQT5ContainerTool);
-        else if (family == PlatformFamily.OpenViewLinuxPro)
-            launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewProQT5ContainerTool);
+        if (ApplicationType == ApplicationType.Cpp)
+        {
+            if (CppViewModel.ProjectType == CPPProjectType.QT)
+            {
+                if (family == PlatformFamily.OpenViewLinux)
+                    launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewQT5ContainerTool);
+                else if (family == PlatformFamily.OpenViewLinuxPro)
+                    launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewProQT5ContainerTool);
+            }
+            else if (CppViewModel.ProjectType == CPPProjectType.VSCode)
+            {
+                if (family == PlatformFamily.OpenViewLinux)
+                    launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewSDKContainerTool);
+                else if (family == PlatformFamily.OpenViewLinuxPro)
+                    launchTool = tools?.Downloads.FirstOrDefault(x => x is OpenViewProSDKContainerTool);
+            }
+        }
+        else if (ApplicationType == ApplicationType.Dotnet && OperatingSystem.IsWindows())
+        {
+            string projectFolder = Path.GetDirectoryName(PackageInfoPath);
+            string projectFile = Path.Combine(projectFolder, DotNetViewModel.ProjectPath);
+            if (Path.Exists(projectFile))
+            {
+                ProcessUtility.RunProcess("cmd", $"/c {projectFile}", projectFolder, out string result, out string error);
+                return;
+            }
+            else
+                ParentViewModel.Dialog.ShowDialog("Missing Project", $"The Project Path was not found.", "OK");
+
+        }
 
         if (launchTool == null || !launchTool.IsDownloaded)
         {

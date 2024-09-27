@@ -239,7 +239,7 @@ internal class SshUtility
         };
     }
 
-    public static string AddApplicationKey(IConnectionInfo info, string keyFile, string targetPath)
+    public static string AddApplicationKey(IConnectionInfo info, string keyFile, string targetPath, Guid deviceId)
     {
         // Connect to Device
         SshClient sshClient = SshUtility.CreateSshClient(info);
@@ -253,8 +253,10 @@ internal class SshUtility
 
         try
         {
-            using FileStream key = new FileStream(keyFile, FileMode.Open);
-            scpClient.Upload(key, targetPath);
+            var data = File.ReadAllBytes(keyFile);
+            var key = AesEncryption.KeyFromDeviceId(deviceId);
+            var keyData = AesEncryption.Encrypt(new MemoryStream(data), key.Key, key.IV);
+            scpClient.Upload(keyData, targetPath);
         }
         catch (ScpException) { } // File Doesn't Exist.
 

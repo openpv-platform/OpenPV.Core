@@ -7,6 +7,7 @@ using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
+using NuGet.Configuration;
 using Renci.SshNet;
 using System;
 using System.Collections.Generic;
@@ -189,8 +190,9 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                         PrivateKey = item.PrivateKey,
                         PrivateAppKey = item.PrivateAppKey,
                         UserName = item.UserName,
-                        IsFavorite = item.IsFavorite
-
+                        IsFavorite = item.IsFavorite,
+                        SecurityServicePort = item.SecurityServicePort,
+                        APIKey = item.APIKey,
                     };
 
                     ConnectionList.Add(newItem);
@@ -208,6 +210,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                 PlatformFamily = PlatformFamily.OpenViewLinux,
                 PlatformQualifier = "S50",
                 SystemServicePort = 5001,
+                SecurityServicePort = 5007,
                 UserName = "root",
             });
 
@@ -218,6 +221,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                 PlatformFamily = PlatformFamily.OpenViewLinuxPro,
                 PlatformQualifier = "GenericArm64",
                 SystemServicePort = 5001,
+                SecurityServicePort = 5007,
                 UserName = "root",
             });
 
@@ -226,6 +230,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                 Description = "This Machine",
                 HostName = "localhost",
                 SystemServicePort = 5001,
+                SecurityServicePort = 5007,
                 UserName = "root",
             });
 
@@ -237,6 +242,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                 PlatformFamily = PlatformFamily.PowerVision,
                 PlatformQualifier = "Any",
                 SystemServicePort = 5001,
+                SecurityServicePort = 5007,
                 UserName = "root",
             });
 
@@ -291,12 +297,25 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             ParentViewModel.Console.AddConsoleLine(info);
         });
 
+      
         var prepItem = RemoteTargetToolFactory.GetToolsForPlatform(this.EditConfigurationInfo.PlatformFamily);
 
         ParentViewModel.StartProcess();
 
         await Task.Run(() =>
         {
+            if (ParentViewModel.ActiveConnection.Connection != EditConfigurationInfo)
+            {
+                ParentViewModel.Console.AddConsoleLine("Selected Connection does not match Active Connection");
+                throw new Exception("Incorrect Device Connection");
+            }
+            if (!ParentViewModel.ActiveConnection.IsConnected)
+            {
+                ParentViewModel.Console.AddConsoleLine("No Active Connection Found");
+                throw new Exception("Incorrect Device Connection");
+            }
+
+
             string keyName = string.Empty;
             KeyFileInfo keyFileInfo = null;
 
@@ -329,10 +348,12 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             // Add Key To Display
             if (File.Exists(editInfo.PrivateAppKeyFile))
             {
+                var hardwareID = Guid.Parse( ParentViewModel.ActiveConnection.ConnectedHardwareInfo.DeviceId);
+
                 var info = HardwareInfo.GetHardwareInfo(editInfo.PlatformFamily, editInfo.PlatformQualifier);
                 var targetSigningKey = info.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
-              
-                result += SshUtility.AddApplicationKey(this.EditConfigurationInfo, this.editInfo.PrivateAppKeyFile, targetSigningKey);
+
+                result += SshUtility.AddApplicationKey(this.EditConfigurationInfo, this.editInfo.PrivateAppKeyFile, targetSigningKey , hardwareID);
             }
 
 
@@ -649,6 +670,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             Description = "New Item",
             HostName = "localhost",
             SystemServicePort = 5001,
+            SecurityServicePort = 5007,
             UserName = "root",
         };
 
@@ -842,10 +864,12 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
     string qualifier;
     string hostName;
     int port;
+    int securityPort;
     bool isFavorite;
     string userName;
     string privateKey;
     string privateAppKey;
+    string apiKey;
     PlatformFamily family;
 
     public bool IsFavorite
@@ -968,6 +992,17 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
         }
     }
 
+
+    public int SecurityServicePort
+    {
+        get { return securityPort; }
+        set
+        {
+            securityPort = value;
+            OnPropertyChanged();
+        }
+    }
+
     public string UserName
     {
         get { return userName; }
@@ -1036,6 +1071,20 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
         set
         {
             privateAppKey = value;
+            OnPropertyChanged();
+        }
+    }
+
+
+    public string APIKey
+    {
+        get
+        {
+            return apiKey;
+        }
+        set
+        {
+            apiKey = value;
             OnPropertyChanged();
         }
     }

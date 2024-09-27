@@ -7,7 +7,7 @@
   "ReleaseName": "OpenPV Demos",
   "ContainerName": "OpenPV",
   "ContainerVersion": "1.0.0",
-  "ReleaseNotes": null,
+  "ReleaseNotes": "ReleaseNotes.html",
   "InstallCommand": null,
   "UnInstallCommand": null,
   "SizeInBytes": 0,
@@ -51,6 +51,12 @@
     },
     {
       "Path": "Ahsoka_QT_Demo.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "Ahsoka_CPP_Services.zip",
       "DownloadToken": null,
       "SizeInBytes": 0,
       "Hash": null

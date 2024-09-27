@@ -1,0 +1,5 @@
+{
+  "keyTypes": "ServiceKey",
+  "publicKey": "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEvFpgXHPBSVcUh8PTqFQvsA4+/Tlc\nsV91WG3GcTUeMKyZ0mDdYnJ+/n572PnreH5sMUTiRIA16boz8rztgbT+DQ==\n-----END PUBLIC KEY-----",
+  "privateKey": "-----BEGIN PRIVATE KEY-----\nMIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQghzkHnSbrGL9QCv7z\nPtMGrY2ExWmYgM+e7/Ccuu96aEWhRANCAAS8WmBcc8FJVxSHw9OoVC+wDj79OVyx\nX3VYbcZxNR4wrJnSYN1icn7+fnvY+et4fmwxROJEgDXpujPyvO2BtP4N\n-----END PRIVATE KEY-----"
+}

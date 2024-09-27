@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading;
 
 namespace Ahsoka.Test;
@@ -222,9 +223,11 @@ public class SecurityServiceTests : LinearTestBase
         var appDir = Path.GetDirectoryName(configurationFile);
         if (!Directory.Exists(appDir))
             Directory.CreateDirectory(appDir);
-        
+
         // Write Key File
-        File.WriteAllText(configurationFile, JsonUtility.Serialize(config));
+        var aesKey = AesEncryption.KeyFromDeviceId(SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+        var data = AesEncryption.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(JsonUtility.Serialize(config))),aesKey.Key,aesKey.IV);
+        File.WriteAllBytes(configurationFile, data.ToArray());
 
         return config;
     }

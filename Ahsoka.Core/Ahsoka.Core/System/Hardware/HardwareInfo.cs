@@ -1,6 +1,9 @@
 ﻿using Ahsoka.Utility;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace Ahsoka.System.Hardware;
 
@@ -34,26 +37,29 @@ public partial class HardwareInfo : ICanDeserializeBase
     /// Information about the Platform and Factory Defined Information such as Serial Number / Part Number. 
     /// </summary>
     public FactoryInfo FactoryInfo { get; set; }
-    
+
+    /// <summary>
+    /// Information about the supported Bluetooth Modules on the system.
+    /// </summary>
+    [JsonProperty]
+    internal BluetoothHardwareInfo BluetoothInfo { get; set; }
+
     /// <summary>
     /// Information about the supported Network Interfaces on the system.
     /// </summary>
     public NetworkHardwareInfo NetworkInfo { get; set; }
 
-    /*/// <summary>
-    /// Information about the supported Bluetooth Modules on the system.
-    /// </summary>
-    public BluetoothHardwareInfo BluetoothInfo { get; set; }
-
-   /// <summary>
+    /// <summary>
     /// Information about the support Raw IO for the system.
     /// </summary>
-    public IOHardwareInfo IOInfo { get; set; }
+    [JsonProperty]
+    internal IOHardwareInfo IOInfo { get; set; }
 
     /// <summary>
     /// Information about the support Raw IO for the system.
     /// </summary>
-    public CANHardwareInfo CANInfo { get; set; }*/
+    [JsonProperty]
+    internal CANHardwareInfo CANInfo { get; set; }
 
     /// <summary>
     /// Information about the support Raw IO for the system.
@@ -84,9 +90,35 @@ public partial class HardwareInfo : ICanDeserializeBase
     /// <returns></returns>
     internal string GetDeviceSigningKey(bool publicKeyOnly = true)
     {
+        var key = AesEncryption.KeyFromDeviceId(SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+
+        // Check for Key Upgrade (Name Changed in 3.0)
+        string publicPEMPathEnc = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile);
+        string privatePEMPathEnc = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile);
+
+        // Execute the Upgrade to Encrypted Keys (Note this is only Select as Pro would 
+        // use Encrypted Keys from the start.
+        if (SystemInfo.HardwareInfo.PlatformFamily == PlatformFamily.OpenViewLinux)
+            if (!File.Exists(privatePEMPathEnc) || !File.Exists(publicPEMPathEnc))
+                UpgradeKeys(privatePEMPathEnc, publicPEMPathEnc);
+
+        // Fetch Correct Key
+        var deviceFile = publicKeyOnly ? publicPEMPathEnc : privatePEMPathEnc;
+
+        if (File.Exists(deviceFile))
+        {
+            var data = AesEncryption.DecryptFile(deviceFile, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+            return Encoding.UTF8.GetString(data.ToArray());
+        }
+        else
+            return null;
+    }
+
+    private void UpgradeKeys(string privatePEMPathEnc, string publicPEMPathEnc)
+    {
         // Convert Public Keys to PEM if Not Available
-        string publicPEMPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile);
-        string publicXMLPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyFile);
+        string publicPEMPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile).Replace(".enc",""); // Old PEM Name
+        string publicXMLPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlPublicKeyFile);
         if (!File.Exists(publicPEMPath) && File.Exists(publicXMLPath))
         {
             string data = File.ReadAllText(publicXMLPath);
@@ -94,21 +126,21 @@ public partial class HardwareInfo : ICanDeserializeBase
         }
 
         // Convert PRivate Keys to PEM if Not Available
-        string privatePEMPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile);
-        string privateXMLPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyFile);
+        string privatePEMPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile).Replace(".enc", ""); // Old PEM Name
+        string privateXMLPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlKeyFile);
         if (!File.Exists(privatePEMPath) && File.Exists(privateXMLPath))
         {
-            string data = File.ReadAllText(TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyFile));
+            string data = File.ReadAllText(TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlKeyFile));
             File.WriteAllText(privatePEMPath, RSAEncryption.ConvertXMLToPrivatePEM(data));
         }
 
-        // Fetch Correct Key
-        var deviceFile = publicKeyOnly ? publicPEMPath : privatePEMPath;
+        // Encrypt Private Key File
+        var file = AesEncryption.EncryptFile(privatePEMPath, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+        File.WriteAllBytes(privatePEMPathEnc, file.ToArray());
 
-        if (File.Exists(deviceFile))
-            return File.ReadAllText(deviceFile);
-        else
-            return null;
+        // Encrypt Private Key File
+        file = AesEncryption.EncryptFile(publicPEMPath, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+        File.WriteAllBytes(publicPEMPathEnc, file.ToArray());
     }
 
     /// <inheritdoc />
@@ -118,12 +150,6 @@ public partial class HardwareInfo : ICanDeserializeBase
             return FactoryInfo = new();
         else if (propertyName == "networkInfo")
             return NetworkInfo = new();
-        /*else if (propertyName == "bluetoothInfo")
-            return BluetoothInfo = new();
-        else if (propertyName == "ioInfo")
-            return IOInfo = new();
-        else if (propertyName == "canInfo")
-            return CANInfo = new();*/
         else if (propertyName == "screenInfo")
             return ScreenInfo = new();
 

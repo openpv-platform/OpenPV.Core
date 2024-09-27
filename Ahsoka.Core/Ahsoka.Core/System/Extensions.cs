@@ -190,7 +190,7 @@ public class Extensions
                 if (currentList == null)
                 {
                     Assembly asm = null;
-                    if (OperatingSystem.IsWindows())
+                    if (SystemInfo.IsDesktop())
                     {
                         using var fs = new FileStream(item, FileMode.Open);
                         asm = currentLoadContext.LoadFromStream(fs);

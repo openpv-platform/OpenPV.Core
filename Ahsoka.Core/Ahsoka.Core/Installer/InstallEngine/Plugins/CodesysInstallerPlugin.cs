@@ -19,6 +19,17 @@ internal class CodesysInstallerPlugin : InstallerPlugin
             return;
 
         base.CheckPrerequisites(packageInformation, progress, token);
+
+        if (packageInformation.ServiceInfo.RuntimeConfiguration.StartupDelay < 3)
+        {
+            progress.Report(new PackageProgressInfo() { Message = "CODESYS PreReqs: Overriding Startup Delay to 3s" });
+            packageInformation.ServiceInfo.RuntimeConfiguration.StartupDelay = 3;
+        }
+        if (packageInformation.ServiceInfo.RuntimeConfiguration.ReleaseOption != System.StartOptions.AfterApplicationStart)
+        {
+            progress.Report(new PackageProgressInfo() { Message = "CODESYS PreReqs: Overriding Auto-Release to After App Start" });
+            packageInformation.ServiceInfo.RuntimeConfiguration.ReleaseOption = System.StartOptions.AfterApplicationStart;
+        }
         if (!packageInformation.Licenses.Any(x => x.LicenseName == "CODESYS Runtime") 
             && packageInformation.PlatformFamily.ToString().StartsWith("OpenView"))
         {

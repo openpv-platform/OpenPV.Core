@@ -17,7 +17,7 @@ public partial class HardwareInfo
     {
         LoadHardwareInfo();
     }
-   
+
     /// <summary>
     ///  Load Hardware Definitions from the specified path (or default path if null)
     /// </summary>
@@ -30,27 +30,36 @@ public partial class HardwareInfo
         {
             // Load Files in Hardware Folders
             string path = Path.Exists(PlatformSupportPathInfo.PlatformSupportRootFolder) ? PlatformSupportPathInfo.PlatformSupportRootFolder : fallbackPath;
-            if (Directory.Exists(path))
+            LoadDefs(path);
+
+            // Attempt to fallback to Local Developer Folder
+            if (hardwareDefinitions.Count == 0)
+                LoadDefs(PlatformSupportPathInfo.GetDeveloperPlatformSupportPath());
+        }
+        else { return; } // Running on a target...Don't Load Anything.
+    }
+
+    private static void LoadDefs(string path)
+    {
+        if (!Path.Exists(path))
+            return;
+
+        foreach (var pathToAppSupport in Directory.GetDirectories(path))
+        {
+            string hwPath = Path.Combine(pathToAppSupport, "Hardware");
+            if (Directory.Exists(hwPath))
             {
-                foreach (var pathToAppSupport in Directory.GetDirectories(path))
+                foreach (var hardwareDef in Directory.EnumerateFiles(hwPath, "*HardwareConfiguration.json"))
                 {
-                    string hwPath = Path.Combine(pathToAppSupport, "Hardware");
-                    if (Directory.Exists(hwPath))
+                    try
                     {
-                        foreach (var hardwareDef in Directory.EnumerateFiles(hwPath, "*HardwareConfiguration.json"))
-                        {
-                            try
-                            {
-                                string fileText = File.ReadAllText(hardwareDef);
-                                var hd = JsonUtility.Deserialize<HardwareInfo>(fileText);
-                                AddHardwareInfo(hd);
-                            }
-                            catch { Console.WriteLine($"Failed to load HardwareConfiguration at {hardwareDef}"); }
-                        }
+                        string fileText = File.ReadAllText(hardwareDef);
+                        var hd = JsonUtility.Deserialize<HardwareInfo>(fileText);
+                        AddHardwareInfo(hd);
                     }
+                    catch { Console.WriteLine($"Failed to load HardwareConfiguration at {hardwareDef}"); }
                 }
             }
-            else { return; } // Running on a target...Don't Load Anything.
         }
     }
 
@@ -60,8 +69,7 @@ public partial class HardwareInfo
     /// <param name="hd"></param>
     public static void AddHardwareInfo(HardwareInfo hd)
     {
-        if (!hardwareDefinitions.ContainsKey(hd.PlatformDescription))
-            hardwareDefinitions.Add(hd.FactoryInfo.PlatformDescription, hd);
+        hardwareDefinitions[hd.FactoryInfo.PlatformDescription] = hd;
     }
 
     /// <summary>

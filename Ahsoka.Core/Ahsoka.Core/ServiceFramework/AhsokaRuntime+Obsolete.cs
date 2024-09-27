@@ -2,6 +2,7 @@
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.ServiceModel.Description;
 using System.Threading;
@@ -9,6 +10,7 @@ using System.Threading;
 #pragma warning disable CS0618 
 namespace Ahsoka.ServiceFramework;
 
+[ExcludeFromCodeCoverage]
 public partial class AhsokaRuntime
 {
 

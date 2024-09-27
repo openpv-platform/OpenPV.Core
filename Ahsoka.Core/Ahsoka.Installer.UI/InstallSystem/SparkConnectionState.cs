@@ -77,6 +77,11 @@ internal class SparkConnectionState : InstallerUIStateBase
 
             InstallerDrawingManager.Default.Refresh();
         }
+        else if (e.TransportId == SparkMessageTypes.Ids.AppChangeNotification)
+        {
+            Console.WriteLine("App Notification Recieved");
+            FetchPackages();
+        }
     }
 
     private void WiFiViewModel_ConnectionStateChanged(object sender, EventArgs e)
@@ -211,6 +216,7 @@ internal class SparkConnectionState : InstallerUIStateBase
         Task.Run(() =>
         {
             var result = client.GetAvailableReleases();
+            client.SubscribeToAppChanges();
             Console.WriteLine($"Received {result.Releases.Count}");
             return result;
 

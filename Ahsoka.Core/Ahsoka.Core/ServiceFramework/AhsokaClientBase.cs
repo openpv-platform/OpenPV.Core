@@ -72,8 +72,17 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
     }
 
-    byte[] IAhsokaClientEndPoint.GetClientId() { return clientId; }
-    byte[] IAhsokaClientEndPoint.GetNotificationId() { return notificationClientId; }
+    /// <summary>
+    /// Unique ID for this Clients Message Channel
+    /// </summary>
+    /// <returns></returns>
+    public byte[] GetClientId() { return clientId; }
+
+    /// <summary>
+    /// Unique ID for this Clients Notification Channel
+    /// </summary>
+    /// <returns></returns>
+    public byte[] GetNotificationId() { return notificationClientId; }
 
     protected override void OnEndPointConnecting()
     {

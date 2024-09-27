@@ -15,6 +15,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using static Ahsoka.Utility.AesEncryption;
 using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.Installer.InstallEngine;
@@ -49,19 +50,30 @@ public class InstallEngineBase
 
     public static InstallEngineBase GetInstallEngine(Stream fileStream, string privateKey = null)
     {
-        string appKey = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
-        if (File.Exists(appKey))
+        try
         {
-            DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(File.ReadAllText(appKey));
-            privateKey = info.PrivateKey;
-            Console.WriteLine($"Using Private Device Key ({Path.GetFileName(appKey)}) to Read Package");
+            string appKey = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
+            if (File.Exists(appKey))
+            {
+                Console.WriteLine($"Decrypting Key Information");
+
+                // Decrypt Device App Key
+                var data = File.ReadAllBytes(appKey);
+                var key = AesEncryption.KeyFromDeviceId(SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+                var descriptedKey = AesEncryption.Decrypt(new MemoryStream(data), key.Key, key.IV);
+
+                DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(Encoding.UTF8.GetString(descriptedKey.ToArray()));
+                privateKey = info.PrivateKey;
+                Console.WriteLine($"Using Private Device Key ({Path.GetFileName(appKey)}) to Read Package");
+            }
+
+            privateKey ??= PrivateSigningkey;
+
+            PackageContents packageContents = PackageContents.ReadPackageContents(fileStream, privateKey);
+            var type = SelectInstallEngine(packageContents.PlatformFamily, packageContents.PlatformQualifier);
+            return Activator.CreateInstance(type, packageContents) as InstallEngineBase;
         }
-
-        privateKey ??= PrivateSigningkey;
-
-        PackageContents packageContents = PackageContents.ReadPackageContents(fileStream, privateKey);
-        var type = SelectInstallEngine(packageContents.PlatformFamily, packageContents.PlatformQualifier);
-        return Activator.CreateInstance(type, packageContents) as InstallEngineBase;
+        catch(Exception ex) { Console.WriteLine(ex.Message); return null; }
     }
     #endregion
 
@@ -279,14 +291,13 @@ public class InstallEngineBase
 
     private List<InstallerPlugin> RunInstallerPreReqs(IProgress<PackageProgressInfo> progress)
     {
-        List<InstallerPlugin> installedPlugins = new List<InstallerPlugin>();
-
-        // Add App Plugins Last
-        installedPlugins.Add(InstallerPlugin.GetApplicationPlugin(PackageInformation.ApplicationType));
-        installedPlugins.Add(new StartupInstallerPlugin()); // Generates Start Scripts.
-
-        foreach (var item in Extensions.GetExtensions<InstallerPlugin>())
-            installedPlugins.Add(item);
+        List<InstallerPlugin> installedPlugins =
+        [
+            // Add App Plugins Last
+            InstallerPlugin.GetApplicationPlugin(PackageInformation.ApplicationType),
+            new StartupInstallerPlugin(), // Generates Start Scripts.
+            .. Extensions.GetExtensions<InstallerPlugin>(),
+        ];
 
         // Remove Nulls
         installedPlugins = installedPlugins.Where(x => x != null).ToList();
@@ -294,6 +305,7 @@ public class InstallEngineBase
         // Run Prerequisite Checks
         foreach (var item in installedPlugins)
             item.CheckPrerequisites(PackageInformation, progress, cancelToken.Token);
+
         return installedPlugins;
     }
 

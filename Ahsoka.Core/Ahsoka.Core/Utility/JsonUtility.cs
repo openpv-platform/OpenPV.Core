@@ -14,6 +14,8 @@ namespace Ahsoka.Utility;
 /// </summary>
 public static class JsonUtility
 {
+    internal static bool IsTesting { get; set; }
+
     /// <summary>
     /// Intialize All JsonConvert callse to resolve CamelCase for compatibility with 
     /// Javascript / Proto naming.
@@ -37,11 +39,14 @@ public static class JsonUtility
     /// <returns></returns>
     public static T Deserialize<T>(string json) where T : class, new()
     {
-        if (typeof(ICanDeserializeBase).IsAssignableFrom(typeof(T)))
+        if (OperatingSystem.IsLinux() || IsTesting)
         {
-            T value = new();
-            DeserializeWithReader<T>(json, value);
-            return value;
+            if (typeof(ICanDeserializeBase).IsAssignableFrom(typeof(T)))
+            {
+                T value = new();
+                DeserializeWithReader<T>(json, value);
+                return value;
+            }
         }
 
         return JsonConvert.DeserializeObject<T>(json);

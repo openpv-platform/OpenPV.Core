@@ -42,9 +42,9 @@ public class PackagingTests : LinearTestBase
     }
 
     [TestMethod]
-    public void TestPackagesInProc()
+    public void TestPackages()
     {
-        RunPackageTest(true, "AhsokaCairo", "S70", PlatformFamily.OpenViewLinux);
+        RunPackageTest(false, "AhsokaCairo", "S70", PlatformFamily.OpenViewLinux);
     }
 
     [TestMethod]
@@ -55,16 +55,18 @@ public class PackagingTests : LinearTestBase
     }
 
     [TestMethod]
-    public void TestPackagesOutProc()
+    public void TestPackagesOptimized()
     {
-        RunPackageTest(false);
+        RunPackageTest(true);
     }
 
-    private static void RunPackageTest(bool runInProc, string packageToTest = "", string qualifier = "Desktop", PlatformFamily family = PlatformFamily.Windows64)
+    private static void RunPackageTest(bool optimize, string packageToTest = "", string qualifier = "Desktop", PlatformFamily family = PlatformFamily.Windows64)
     {
         PackageInformation package = packageToTest == "" ?
-                    CreatePackage(out string tempFilePath) :
-                    CreatePackage(out tempFilePath, family, qualifier, packageToTest);
+                    CreatePackage(out string tempFilePath, PlatformFamily.Windows64, "Desktop", "AhsokaCairo", false, optimize) :
+                    CreatePackage(out tempFilePath, family, qualifier, packageToTest, false, optimize);
+
+        package.OptimizedServiceManager = optimize;
 
         // Open the File to Read Data
         using (FileStream stream = new(tempFilePath, FileMode.Open))
@@ -117,7 +119,7 @@ public class PackagingTests : LinearTestBase
 
         try
         {
-            var result = client.StartServiceAndInstall(newTempFile, "PassCode", runInProc);
+            var result = client.StartServiceAndInstall(newTempFile, "PassCode", true);
         }
         finally
         {
@@ -128,11 +130,11 @@ public class PackagingTests : LinearTestBase
     }
 
     static Orientation nextOrientation = Orientation.DefaultOrientation;
-    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo", bool asCodesys = false)
+    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo", bool asCodesys = false, bool optimized = false)
     {
         string key = family.ToString() + qualifier + packageToTest;
 
-        if (!asCodesys)
+        if (!asCodesys && !optimized)
             if (packageInfo.TryGetValue(key, out PackageInformation info))
             {
                 path = info.GetOutputFullPath();
@@ -154,7 +156,7 @@ public class PackagingTests : LinearTestBase
 
         string packagefile = Path.Combine(appOutputs, "OpenLinuxST.PackageInfo.json");
         PackageInformation package = JsonUtility.Deserialize<PackageInformation>(File.ReadAllText(packagefile));
-        package.OptimizedServiceManager = false;
+        package.OptimizedServiceManager = optimized;
 
         if (asCodesys)
         {
@@ -195,15 +197,31 @@ public class PackagingTests : LinearTestBase
         package = PackageInformation.LoadPackageInformation(packagefile);
 
         // Capture the values to our cache.
-        if (!asCodesys)
+        if (!asCodesys && !optimized)
             packageInfo.Add(key, package);
+
+        CustomPackageInfo customPackageInfo = null;
+        if (optimized)
+        {
+            string firmwareFile = Path.Combine(tempPath, "image.test.zip");
+            File.WriteAllText(firmwareFile, "Test");
+            customPackageInfo = new CustomPackageInfo()
+            {
+                IncludeApplication = true,
+                IncludeBootLogo = true,
+                IncludeInstallerUI = true,
+                IncludeFirmwareUpdate = true,
+                FirmwareUpgradePath = firmwareFile,
+                InstallerUpgradePath = tempPath
+            };
+        }
 
         // Get an Engine and Create the Package File
         InstallEngineBase createPackageEngine = InstallEngineBase.GetPackagingEngine(package);
         path = createPackageEngine.CreateInstallPackage(null, new Progress<PackageProgressInfo>(info =>
         {
             Console.WriteLine(info.Message);
-        }));
+        }), customPackageInfo);
         
         return package;
     }

@@ -118,7 +118,7 @@
 					Command="{Binding SelectedPackage.LaunchDevTool}" >
 				<StackPanel Orientation="Horizontal">
 					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Launch"></material:MaterialIcon>
-					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch Container"/>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch Project"/>
 				</StackPanel>
 			</Button>
 
@@ -173,7 +173,8 @@
 
 						<TextBlock IsVisible="{Binding IsOpenView}" Text="Optimize Services:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
 						<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
-							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding GenerateOptimizedServiceManager}" />
+							<CheckBox IsEnabled="{Binding SupportsOptimized}" IsVisible="{Binding IsOpenView}" 
+									  IsChecked="{Binding GenerateOptimizedServiceManager}" ToolTip.Tip="Currently only supported on Windows Compiles" />
 							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray" 
 									   Text="Generates an optimized service manager executable (requires SDK)"
 									   ToolTip.Tip="Compiles an optimized executable which includes your extensions. This improves boot times and performance of services however you should disable this option if you need to remotely debug services"/>

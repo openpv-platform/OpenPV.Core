@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text;
 
 namespace Ahsoka.Installer.Components;
@@ -216,6 +217,16 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to enable Ahsoka.Application.service" });
             else
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Enabled Ahsoka.Application.service" });
+
+            // Get Version of Installed Software
+            // Encrypt the Service Key
+            string file = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.ServiceSecurityFile);
+            if (File.Exists(file))
+            {
+                context.Log.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Encrypting Service Key" });
+                var data = AesEncryption.EncryptFile(file, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+                File.WriteAllBytes(file,data.ToArray());
+            }
         }
 
 

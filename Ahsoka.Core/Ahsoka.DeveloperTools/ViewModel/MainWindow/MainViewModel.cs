@@ -8,7 +8,6 @@ using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
-using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,12 +16,8 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using static NetMQ.NetMQSelector;
-using static NuGet.Packaging.PackagingConstants;
-using SystemConsole = System.Console;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -292,34 +287,7 @@ internal class MainViewModel : ViewModelBase
 
         if (UseInternalCommandLine)
         {
-            var currentDirectory = Environment.CurrentDirectory;
-            if (workingDirectory != null)
-                Environment.CurrentDirectory = workingDirectory;
-
-            using var localConsole = new LocalConsoleWriter();
-            EventHandler<LocalConsoleWriterEventArgs> handler = (sender, e) =>
-            {
-                progressString.Report(new CommandLineProgressInfo() { IsWriteLine = e.IsWriteLine, Message = e.Value });
-            };
-
-            localConsole.WriteLineEvent += handler;
-            localConsole.WriteEvent += handler;
-
-            SystemConsole.SetOut(localConsole);
-
-            /// Split Arguments
-            var args = new List<string>();
-            args.AddRange(Regex.Matches(processArgs, @"[\""].+?[\""]|[^ ]+")
-                            .Cast<Match>()
-                            .Select(m => m.Value.Trim('"'))
-                            .ToList());
-
-            CommandLine.Execute(args.ToArray());
-
-            localConsole.WriteLineEvent -= handler;
-            localConsole.WriteEvent += handler;
-            if (workingDirectory != null)
-                Environment.CurrentDirectory = currentDirectory;
+            LocalCommandLine.RunWithLocalConsole(processArgs, workingDirectory, progressString);
         }
         else
         {
@@ -547,10 +515,15 @@ internal class MainViewModel : ViewModelBase
             return;
         }
 
+        ShowHelpPath(helpFile, true);
+    }
+
+    internal void ShowHelpPath(string helpFile, bool isLocal)
+    {
         using var myProcess = new Process();
         string command = "explorer.exe";
         string args = $"\"{helpFile}\"";
-        string folder = Path.Combine(Path.GetDirectoryName(helpFile));
+        string folder = isLocal ? Path.Combine(Path.GetDirectoryName(helpFile)) : Environment.CurrentDirectory;
 
         if (OperatingSystem.IsLinux())
             command = "xdg-open";

@@ -1,5 +1,7 @@
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.OpenPVTools;
 using Ahsoka.DeveloperTools.Spark;
+using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
@@ -20,6 +22,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
@@ -101,6 +104,9 @@ public class GeneralTests : LinearTestBase
         // Serialize a Hardware Info from both Manual and Auto and compare 
         // should find if someone missed a property
         var info1 = JsonConvert.DeserializeObject<HardwareInfo>(jsonText);
+        info1.CANInfo = null; // No longer supported
+        info1.IOInfo = null;// No longer supported
+        info1.BluetoothInfo = null;// No longer supported
         var info2 = JsonUtility.Deserialize<HardwareInfo>(jsonText);
 
         string newText1 = JsonConvert.SerializeObject(info1);
@@ -233,12 +239,12 @@ public class GeneralTests : LinearTestBase
 
         StringBuilder builder = new();
         CancellationTokenSource source = new();
-        var progress = new LocalProgress<CommandOutput>(info =>
+        var progress = new LocalProgress<CommandLineProgressInfo>(info =>
         {
-            builder.AppendLine(info.Data);
+            builder.AppendLine(info.Message);
         });
 
-        ProcessUtility.RunProcessAsync(commandLine, "InvalidArgs", null, progress, source.Token);
+        LocalCommandLine.RunWithLocalConsole("InvalidArgs", null, progress);
 
         string results = builder.ToString();
 
@@ -296,6 +302,27 @@ public class GeneralTests : LinearTestBase
     }
 
     [TestMethod]
+    public void EncryptionAESTest()
+    {
+        string stringData = "Hello, World!";
+        MemoryStream plaintext =  new(UTF8Encoding.UTF8.GetBytes(stringData));
+        Console.WriteLine(plaintext);
+        // Generate a random key and IV
+        
+        var data = AesEncryption.KeyFromDeviceId(Guid.NewGuid());
+
+        // Encrypt / Decrypt
+        var ciphertext = AesEncryption.Encrypt(plaintext, data.Key, data.IV);
+        var decryptedText = AesEncryption.Decrypt(ciphertext, data.Key, data.IV);
+
+        var resultString = Encoding.UTF8.GetString(decryptedText.ToArray());
+      
+        Assert.AreEqual(stringData, resultString);
+
+    }
+
+
+    [TestMethod]
     public void TestUpgradeInfo()
     {
         FirmwareUpdateInfo info = JsonUtility.Deserialize<FirmwareUpdateInfo>(Properties.Resources.OpenView_upgradeinfo);
@@ -325,6 +352,20 @@ public class GeneralTests : LinearTestBase
 
     }
 
+    [TestMethod]
+    public void TestProjectUpgrade()
+    {
+        string folder = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+        string file = Path.Combine(folder,"BuildFolder","OpenLinuxST.PackageInfo.json");
+        if (File.Exists(file))
+            file = Path.GetFullPath(file);
+
+        var packageInfo = PackageInformation.LoadPackageInformation(file);
+
+        file = Path.Combine(folder, "BuildFolder", "STDemoPackage.1.cancalibration.json");
+
+        string result = UpgradeEngine.ExecuteUpgrade(file);
+    }
 
     public class TestViewModelParent : ViewModelBase
     {

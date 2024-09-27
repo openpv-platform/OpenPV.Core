@@ -30,11 +30,10 @@
 					Command="{Binding LaunchDevTool}" >
 				<StackPanel Orientation="Horizontal">
 					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Launch"></material:MaterialIcon>
-					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch Container"/>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch Project"/>
 				</StackPanel>
 			</Button>
 		</StackPanel>
-
 	
 		<StackPanel Margin="-10,10,6,0" Orientation="Vertical" Grid.Row="1" Grid.ColumnSpan="2">
 			<Grid ColumnDefinitions="175,*" RowDefinitions="*,*"
@@ -45,9 +44,9 @@
 							ItemsSource="{Binding ApplicationTypes}"/>
 			</Grid>
 
-			<CustomerTools:DotNetView IsVisible="{Binding DotNetViewModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
-			<CustomerTools:CodesysView IsVisible="{Binding CodesysViewModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
-			<CustomerTools:CppView IsVisible="{Binding CppViewModel, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"/>
+			<CustomerTools:DotNetView IsVisible="{Binding IsDotNet}"/>
+			<CustomerTools:CodesysView IsVisible="{Binding IsCODESYS}"/>
+			<CustomerTools:CppView IsVisible="{Binding IsCPP}"/>
 		</StackPanel>
 
 		<Border IsVisible="False" BorderBrush="Gainsboro" Margin="20,12,30,12"  Grid.Row="2" BorderThickness="0,1,0,0" Height="2"/>

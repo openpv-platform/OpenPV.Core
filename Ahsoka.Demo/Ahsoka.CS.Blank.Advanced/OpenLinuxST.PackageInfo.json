@@ -1,39 +1,56 @@
 {
-  "version": "3.0.1.10015",
+  "version": "3.7.5.0",
   "applicationType": "Dotnet",
-  "userInterfaceType": "None",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Blank.Advanced",
   "packageName": "Ahsoka.CS.Blank.Advanced",
   "packageDescription": "Advanced Ahsoka Starter Project",
-  "applicationVersion": "1.0",
+  "applicationVersion": "3.0",
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
-  "includeInstallerUI": false,
+  "packageSigningCertFile": "No Value",
   "licenses": [],
+  "optimizedServiceManager": true,
+  "customPackageInfo": {
+    "includeApplication": false,
+    "includeBootLogo": false,
+    "includeInstallerUI": false,
+    "includeFirmwareUpdate": false
+  },
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Blank.Advanced.csproj",
     "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensionInfo": [],
+      "startupDelay": 3,
+      "serviceKey": "ServiceKey",
+      "requireChallenge": "NotRequired",
       "services": [
         {
+          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
           "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "isExtension": false,
-          "dataKeyValues": [],
-          "configurationFile": ""
+          "behaviors": 3
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "SecurityService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
+          "dataChannel": 5007,
+          "isExtension": false,
+          "behaviors": "AutoStart"
         }
-      ],
-      "customServiceEnabled": "Enabled",
-      "serviceStartup": "NoAutoStart",
-      "releaseOption": "NoAutoStart",
-      "extensions": [],
-      "startupDelay": 3
+      ]
     },
     "environmentValues": []
   },
@@ -42,6 +59,6 @@
   "platformFamily": "OpenViewLinux",
   "platformQualifier": "S70",
   "securityMode": "None",
-  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "applicationId": "6e05ae42-c6be-40df-ae8f-d138273ba3f7",
   "components": []
 }

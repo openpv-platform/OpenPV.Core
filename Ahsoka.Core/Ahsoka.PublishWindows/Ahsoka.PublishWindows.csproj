@@ -23,6 +23,7 @@
 		<!-- Copy Installer Json Files...assumes they were built to this folder -->
 		<Copy SourceFiles="OpenPV for Windows.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV for Windows.release.json" />
 		<Copy SourceFiles="WindowsHardwareConfiguration.json" DestinationFiles="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\Hardware\WindowsHardwareConfiguration.json" />
+		<Copy SourceFiles="ReleaseNotes.html" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\ReleaseNotes.html" />
 
 		<!-- Prep SDK Folder -->
 		<Delete Files="$(PlatformSupportRoot)\BuildOutputs\SDK\Windows64\bin\Ahsoka.Client.Test.pdb" />

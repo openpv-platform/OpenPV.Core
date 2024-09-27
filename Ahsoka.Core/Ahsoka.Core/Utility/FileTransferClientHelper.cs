@@ -22,6 +22,7 @@ internal class FileTransferClientHelper
 
     public MessageReplyStatus LoadFile(Stream stream, bool autoload, IProgress<FileTransmitProgressInfo> progress)
     {
+        bool didFinish = false;
         cancellationTokenSource = new CancellationTokenSource();
 
         LoadApplication loadAppBegin = new()
@@ -61,8 +62,16 @@ internal class FileTransferClientHelper
                             MessageData = buffer
                         };
 
-                        var result = client.SendNotificationWithResponse<LoadApplicationDataReply>(SystemMessageTypes.Ids.LoadApplicationData, data);
-                        finalResult = result.ReplyStatus;
+                        var result = client.SendNotificationWithResponse<LoadApplicationDataReply>(SystemMessageTypes.Ids.LoadApplicationData, data, 10000);
+                        if (result == null || result.ReplyStatus is MessageReplyStatus.Cancelled or MessageReplyStatus.Undetermined or MessageReplyStatus.Error)
+                        {
+                            if (result != null)
+                                finalResult = result.ReplyStatus;
+
+                            throw new TimeoutException();
+                        }
+                        else
+                            finalResult = result.ReplyStatus;
                     }
 
                     int percentComplete = (int)(stream.Position / (float)stream.Length * 100);
@@ -73,16 +82,23 @@ internal class FileTransferClientHelper
                         lastPercent = percentComplete;
                     }
                 }
+
+                didFinish = true;
             }
         }
         catch (OperationCanceledException)
         {
             // Ignore Cancellation and Handle in Finally
         }
+        catch (TimeoutException)
+        {
+            progress.Report(new FileTransmitProgressInfo() { Message = $"Timed out sending Application Data to Target", PercentComplete = 99 });
+            throw;
+        }
         finally
         {
             // Notify Of Cancellation
-            if (cancellationTokenSource.IsCancellationRequested)
+            if (!didFinish)
             {
                 LoadApplicationCancelled cancelNotification = new()
                 {
@@ -90,7 +106,7 @@ internal class FileTransferClientHelper
                 };
 
                 // Notify Service to Cancel the Upload
-                client.SendNotificationWithResponse<LoadApplicationDataReply>(SystemMessageTypes.Ids.LoadApplicationCancelled, cancelNotification);
+                client.SendNotificationWithResponse<LoadApplicationDataReply>(SystemMessageTypes.Ids.LoadApplicationCancelled, cancelNotification, 1000);
             }
 
             progress.Report(new FileTransmitProgressInfo() { Message = $"\nFinished File Transfer for File:{loadAppBegin.FileName} with Result:{finalResult}\n", PercentComplete = 100 });

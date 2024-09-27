@@ -45,7 +45,6 @@ internal class WindowsTargetTools : OpenViewRemoteTargetTool
         Dictionary<string, MemoryStream> filesToLoad = new();
 
         // Assign Hardware Serial Number and Generate DeviceID
-        info.FactoryInfo.DeviceId = Guid.NewGuid();
         string hardwareID = info.FactoryInfo.DeviceId.ToString(); // Returns the SN.
 
         // Add Factory Hardware Folder
@@ -66,17 +65,22 @@ internal class WindowsTargetTools : OpenViewRemoteTargetTool
         var publicKey = result.Value;
 
         // Add Spark Keys to List
-        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(privateKey)));
-        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(publicKey)));
+        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(privateKey)));
+        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlPublicKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(publicKey)));
 
         // Create 
         var resultPEM = RSAEncryption.GenerateNewKeyPair(true);
         privateKey = resultPEM.Key;
         publicKey = resultPEM.Value;
 
-        // Add Spark Keys to List
-        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(privateKey)));
-        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(publicKey)));
+        // Create 
+        var aesKey = AesEncryption.KeyFromDeviceId(info.FactoryInfo.DeviceId);
+        var privateKeyData = AesEncryption.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(privateKey)), aesKey.Key, aesKey.IV);
+        var publicKeyData = AesEncryption.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(publicKey)), aesKey.Key, aesKey.IV);
+
+        // Add Keys to List - SUPPORTS 2.0+
+        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningKeyPEMFile), privateKeyData);
+        filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile), publicKeyData);
 
         // Create Manifest FileInfo
         FactoryManifest manifest = new()

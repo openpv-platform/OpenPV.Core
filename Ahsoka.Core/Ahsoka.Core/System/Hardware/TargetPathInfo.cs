@@ -31,7 +31,6 @@ public partial class TargetPathInfo
             RootPaths.CloudRoot => GetAhsokaPath("cloud"),
             RootPaths.ApplicationRoot => GetAhsokaPath("current"),
             RootPaths.BackupRoot => GetAhsokaPath("backup"),
-            RootPaths.DependencyRoot => GetAhsokaPath("dependency"),
             RootPaths.TempRoot => GetAhsokaPath("tmp"),
             RootPaths.FactoryRoot => GetAhsokaPath("factory"),
             RootPaths.FieldRoot => GetAhsokaPath("field"),
@@ -55,8 +54,7 @@ public partial class TargetPathInfo
         switch (path)
         {
             case InstallerPaths.ApplicationSigningKeyPath:
-                return $"{fieldRoot}/signing_key.appcert";
-
+                return $"{factoryRoot}/signing_key.appcert";
 
             case InstallerPaths.WatchFolder:
                 return $"{GetAhsokaPath("watcher")}";
@@ -152,14 +150,16 @@ public partial class TargetPathInfo
         {
             FactoryPaths.HardwareRoot => factoryHardwareRoot,
             FactoryPaths.HardwareInformationFile => $"{factoryHardwareRoot}/HardwareConfiguration.json",
-            FactoryPaths.HardwareDeviceSigningKeyFile => $"{factoryHardwareRoot}/DeviceKey.cert",
-            FactoryPaths.HardwareDeviceSigningKeyPEMFile => $"{factoryHardwareRoot}/DeviceKeyPEM.cert",
-            FactoryPaths.HardwareDeviceSigningPublicKeyFile => $"{factoryHardwareRoot}/DevicePublicKey.cert",
-            FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile => $"{factoryHardwareRoot}/DevicePublicKeyPEM.cert",
+            FactoryPaths.HardwareDeviceSigningKeyPEMFile => $"{factoryHardwareRoot}/DeviceKeyPEM.cert.enc",
+            FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile => $"{factoryHardwareRoot}/DevicePublicKeyPEM.cert.enc",
             FactoryPaths.HardwareManifestFile => $"{factoryHardwareRoot}/Manifest.info",
             FactoryPaths.HardwareManifestSignatureFile => $"{factoryHardwareRoot}/Manifest.sig",
             FactoryPaths.ModuleLicenseFile => $"{factoryHardwareRoot}/ModuleLicenseInfo.pbuff",
-            _ => factoryRoot,
+
+            // Legacy XML Files
+            FactoryPaths.HardwareDeviceSigningXmlKeyFile => $"{factoryHardwareRoot}/DeviceKey.cert",
+            FactoryPaths.HardwareDeviceSigningXmlPublicKeyFile => $"{factoryHardwareRoot}/DevicePublicKey.cert",
+             _ => factoryRoot,
         };
     }
 
@@ -341,11 +341,6 @@ public enum RootPaths
     BackupRoot,
 
     /// <summary>
-    ///  Path to any Dependencies installed for a Development Platform.
-    /// </summary>
-    DependencyRoot,
-
-    /// <summary>
     ///  Path to the Temp Files used by the System.
     /// </summary>
     TempRoot,
@@ -410,7 +405,7 @@ public enum FactoryPaths
     /// <summary>
     /// Path to the Hardware Device Signing Key
     /// </summary>
-    HardwareDeviceSigningKeyFile,
+    HardwareDeviceSigningXmlKeyFile,
 
     /// <summary>
     /// Path to the Hardware Device Signing Key
@@ -440,7 +435,7 @@ public enum FactoryPaths
     /// <summary>
     /// Path to the Hardware Public Key file used for encrypting packages.
     /// </summary>
-    HardwareDeviceSigningPublicKeyFile,
+    HardwareDeviceSigningXmlPublicKeyFile,
 
     /// <summary>
     /// Path to the Hardware Public Key file used for encrypting packages.

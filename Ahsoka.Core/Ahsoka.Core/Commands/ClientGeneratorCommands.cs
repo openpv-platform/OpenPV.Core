@@ -3,10 +3,12 @@ using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace Ahsoka.Commands;
 
+[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class ClientGeneratorCommands
 {

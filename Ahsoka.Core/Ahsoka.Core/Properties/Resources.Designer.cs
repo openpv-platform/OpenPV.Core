@@ -390,7 +390,7 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;flamencist@mail.ru&quot;],&quot;Description&quot;:&quot;Doxygen.exe for build documentation.&quot;,&quot;LicenseUrl&quot;:&quot;&quot;,&quot;LicenseType&quot;:&quot;&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;EnovationCloud.Core&quot;,&quot;PackageVersion&quot;:&quot;4.6.0&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;EnovationCloud.Core&quot;],&quot;Description&quot;:&quot;Package Description&quot;,&quot;LicenseUrl&quot;:&quot;https://www.nuget.org/packages/EnovationCloud.Core/4.6.0/License&quot;,&quot;LicenseType&quot;:&quot;LICEN [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;flamencist@mail.ru&quot;],&quot;Description&quot;:&quot;Doxygen.exe for build documentation.&quot;,&quot;LicenseUrl&quot;:&quot;&quot;,&quot;LicenseType&quot;:&quot;&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;EnovationCloud.Core&quot;,&quot;PackageVersion&quot;:&quot;4.8.0&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;EnovationCloud.Core&quot;],&quot;Description&quot;:&quot;Package Description&quot;,&quot;LicenseUrl&quot;:&quot;https://www.nuget.org/packages/EnovationCloud.Core/4.8.0/License&quot;,&quot;LicenseType&quot;:&quot;LICEN [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Licenses {
             get {
@@ -442,7 +442,6 @@ namespace Ahsoka.Properties {
         ///      &quot;serviceName&quot;: &quot;InstallService&quot;,
         ///      &quot;tcpListenAddress&quot;: &quot;*&quot;,
         ///      &quot;tcpConnectionAddress&quot;: &quot;localhost&quot;,
-        ///      &quot;bleServiceUuidBase&quot;: &quot;96730000-8f5d-4cef-8289-744c8faa1a66&quot;,
         ///      &quot;dataChannel&quot;: 5000,
         ///      &quot;behaviors&quot;: &quot;AutoStart&quot;
         ///    },
@@ -451,7 +450,12 @@ namespace Ahsoka.Properties {
         ///      &quot;serviceName&quot;: &quot;SystemService&quot;,
         ///      &quot;tcpListenAddress&quot;: &quot;*&quot;,
         ///      &quot;tcpConnectionAddress&quot;: &quot;localhost&quot;,
-        ///      &quot;bleServiceUuidBase&quot;: &quot;96730000-8f5d [rest of string was truncated]&quot;;.
+        ///      &quot;dataChannel&quot;: 5001,
+        ///      &quot;behaviors&quot;: &quot;AutoStart&quot;
+        ///    },
+        ///    {
+        ///      &quot;socketType&quot;: &quot;TcpSocket&quot;,
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OPVServicesConfiguration {
             get {
@@ -471,7 +475,7 @@ namespace Ahsoka.Properties {
         ///    {
         ///        Console.WriteLine(DateTime.Now.ToString(&quot;hh:mm:ss.fff&quot;));
         ///
-        ///        /*ClassLoaderAdds*/
+        ////*ClassLoaderAdds*/
         ///
         ///        CommandLine.Execute(args);
         ///    }
@@ -645,6 +649,16 @@ namespace Ahsoka.Properties {
         internal static string UntrustedPublicKeyPEM {
             get {
                 return ResourceManager.GetString("UntrustedPublicKeyPEM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] VideoService {
+            get {
+                object obj = ResourceManager.GetObject("VideoService", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

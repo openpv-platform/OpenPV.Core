@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace Ahsoka.DeveloperTools;
+
 internal class STMFlashTool : OpenPVToolBase
 {
     public STMFlashTool()

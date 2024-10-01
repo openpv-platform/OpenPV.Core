@@ -1,8 +1,11 @@
 ﻿using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Video;
 using Ahsoka.System;
+using Azure.Storage.Blobs;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.Services.System.Platform;
 
@@ -124,5 +127,64 @@ internal class SystemTests
         }
 
         Console.WriteLine("Completed UpdateTouchscreen in SystemService");
+    }
+
+    static AutoResetEvent resetEvent = new AutoResetEvent(false);
+    internal static void TestVideo(string videoPath)
+    {
+        // Start SystemService
+        Console.WriteLine($"Starting Runtimes for SystemService Test");
+
+        // Start client for NetworkService
+        var client = new VideoServiceClient();
+        client.NotificationReceived += (o,e) => 
+        {
+            if (e.TransportId == VideoMessageTypes.Ids.StatusUpdated)
+            {
+                VideoStatus status = (VideoStatus)e.NotificationObject;
+                Console.WriteLine($"Video Playback {status.VideoPlayerID}  State:{status.IsPlaying} VideoElapsed: {status.PositionInMs / 1000}s of {status.TotalTimeInMs / 1000}s");
+
+                // Video 1 Finished
+                if (!status.IsPlaying && status.VideoPlayerID == 1)
+                    resetEvent.Set();
+            }
+        };
+
+        client.Start();
+
+        client.PlayVideo(new VideoPlaybackRequest()
+        {
+            PlayFullScreen = true,
+            StatusUpdateInMs = 1000,
+            VideoURL = videoPath,
+            VideoPlayerID = 0,
+            VideoHeight = 200,
+            VideoWidth = 300,
+        });
+
+        Thread.Sleep(10000);
+
+        client.PlayVideo(new VideoPlaybackRequest()
+        {
+            PlayFullScreen = true,
+            StatusUpdateInMs = 1000,
+            VideoURL = videoPath,
+            VideoPlayerID = 1,
+            VideoHeight = 200,
+            VideoWidth = 300,
+        });
+
+
+        Thread.Sleep(10000);
+
+        client.StopVideo(new VideoPlayer() { VideoPlayerID = 0 });
+
+
+        Console.WriteLine($"Waiting for End of Video");
+        resetEvent.WaitOne();
+
+
+        // Stop the Runtimes
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 }

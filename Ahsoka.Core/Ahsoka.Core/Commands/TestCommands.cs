@@ -29,6 +29,8 @@ internal static class TestCommands
                 NetworkTests.TestNetworkServiceAP();
             else if (args[0] == "SystemService")
                 SystemTests.TestSystemService();
+            else if (args[0] == "VideoTest")
+                SystemTests.TestVideo(args[1]);
             else
                 Console.WriteLine($"Unrecognized test: {args[0]}");
     }

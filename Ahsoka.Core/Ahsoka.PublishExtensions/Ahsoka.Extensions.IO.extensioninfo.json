@@ -1,6 +1,8 @@
 ﻿{
   "extensionName": "IO Service Extension",
   "packageName": "Ahsoka.Extensions.IO",
+  "uxpackageName": "Ahsoka.Extensions.IO.UX",
+  "uxViewModelName": "IOSetupViewModel",
   "serviceConfigurations": [
     {
       "socketType": "TcpSocket",
@@ -12,7 +14,7 @@
     }
   ],
   "hasCommands": "true",
-  "hasUx": "false",
+  "hasUx": "true",
   "hasSdkGenerator": "true",
   "minVersion": "4.0.0",
   "maxVersion": "5.0.0",

@@ -9,7 +9,7 @@
       "serviceName": "IOService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "dataChannel": 5006,
+      "dataChannel": 6106,
       "behaviors": "AutoStart"
     }
   ],

@@ -3,11 +3,11 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project (Ahsoka.WiFi.ST)
+project (Ahsoka.WiFi.OpenViewLinux)
 
 IF (${AHSOKA_BUILD_OUTPUTS} MATCHES "OpenViewLinux_TargetSupport/SDK$")
 
-    add_custom_target(Ahsoka.WiFi.ST ALL COMMAND make WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
+    add_custom_target(Ahsoka.WiFi.OpenViewLinux ALL COMMAND make WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} )
     
 ENDIF()
 

@@ -5,7 +5,7 @@
 
 #VisualGDB: AutoSourceFiles		#<--- remove this line to disable auto-updating of SOURCEFILES and EXTERNAL_LIBS
 
-TARGETNAME := Ahsoka.Wifi.ST.so
+TARGETNAME := Ahsoka.Wifi.OpenViewLinux.so
 #TARGETTYPE can be APP, STATIC or SHARED
 TARGETTYPE := SHARED
 

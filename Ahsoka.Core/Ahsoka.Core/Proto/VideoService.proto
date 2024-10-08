@@ -10,10 +10,13 @@ message VideoMessageTypes
 		NONE = 0;
 		GetVideoPlayers = 1;
 		PlayVideo = 2;
-	    StopVideo = 3;
-		RequestStatus = 4;
+	 	PauseVideo = 3;
+	    ResumeVideo = 4;
+	    PositionVideo = 5;
+	    StopVideo = 6;
+		RequestStatus = 7;
 
-		StatusUpdated = 5; // Notification if Configured
+		StatusUpdated = 10; // Notification if Configured
 	}
 }
 
@@ -43,10 +46,25 @@ message VideoPlayer
 	int32 VideoPlayerID = 1;
 }
 
+message VideoPosition
+{
+	int32 VideoPlayerID = 1;
+	int32 PositionInMs = 2;
+}
+
+
 message VideoStatus
 {
 	int32 VideoPlayerID = 1;
-	bool IsPlaying = 2;
+	PlaybackState VideoState = 2;
 	int32 TotalTimeInMs = 3;
 	int32 PositionInMs = 4;
+}
+
+enum PlaybackState
+{
+	Ready = 1;
+	Paused = 2;
+	Playing = 4;
+	Stopped = 8;
 }

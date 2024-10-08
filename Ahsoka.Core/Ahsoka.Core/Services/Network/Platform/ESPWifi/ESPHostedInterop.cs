@@ -132,7 +132,7 @@ internal class ESPInterop
     //     int esp_ota_begin();
     //     int esp_ota_write(uint8_t* ota_data, uint32_t ota_data_len);
     //     int esp_ota_end();
-    const string NativeLibraryName = "AhsokaLib/Ahsoka.Wifi.ST.so";
+    const string NativeLibraryName = "AhsokaLib/Ahsoka.Wifi.OpenViewLinux.so";
 
     [DllImport(NativeLibraryName)]
     static extern int wifi_get_mode(out int mode);

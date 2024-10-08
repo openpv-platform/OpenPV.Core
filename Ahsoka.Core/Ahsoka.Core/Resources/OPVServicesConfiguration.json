@@ -47,6 +47,14 @@
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5007,
       "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "VideoService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 5008,
+      "behaviors": "AutoStart"
     }
   ]
 }

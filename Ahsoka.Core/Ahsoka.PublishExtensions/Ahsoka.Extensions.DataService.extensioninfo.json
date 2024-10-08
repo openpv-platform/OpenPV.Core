@@ -9,7 +9,7 @@
       "serviceName": "DataService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "dataChannel": 5109,
+      "dataChannel": 6109,
       "behaviors": "AutoStart"
     }
   ],

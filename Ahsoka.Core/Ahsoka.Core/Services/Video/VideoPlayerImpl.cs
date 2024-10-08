@@ -28,13 +28,12 @@ internal class VideoPlayerImpl
             currentVideoStatus = OnStopVideo();
 
             // Wait for Timer Cancel
-            if (!currentVideoStatus.IsPlaying && !timerTask.IsCompleted)
+            if (timerTask != null && !timerTask.IsCompleted)
                 cancellationTokenSource.Cancel();
 
             return currentVideoStatus;
         }
     }
-
 
     internal VideoStatus PlayVideo(VideoPlaybackRequest videoPlaybackRequest)
     {
@@ -48,9 +47,28 @@ internal class VideoPlayerImpl
         }
     }
 
-    private void StartPlaybackTimer(VideoPlaybackRequest videoPlaybackRequest)
+    internal VideoStatus ResumeVideo(VideoPlayer player)
     {
-        if (currentVideoStatus.IsPlaying && videoPlaybackRequest.StatusUpdateInMs > 0)
+        lock (syncRoot)
+            return OnResumeVideo();
+    }
+
+    internal VideoStatus PauseVideo(VideoPlayer player)
+    {
+        lock (syncRoot)
+            return OnPauseVideo();
+    }
+
+    internal VideoStatus PositionVideo(VideoPosition position)
+    {
+        lock (syncRoot)
+            return OnPositionVideo(position);
+    }
+
+
+    protected virtual void StartPlaybackTimer(VideoPlaybackRequest videoPlaybackRequest)
+    {
+        if (currentVideoStatus.VideoState == PlaybackState.Playing && videoPlaybackRequest.StatusUpdateInMs > 0)
         {
             cancellationTokenSource = new CancellationTokenSource();
             timerTask = VideoTimer.Run(() =>
@@ -65,21 +83,28 @@ internal class VideoPlayerImpl
         }
     }
 
-    protected virtual VideoStatus OnStartVideo(VideoPlaybackRequest videoPlaybackRequest) { return new VideoStatus() { IsPlaying = true }; }
-    protected virtual VideoStatus OnStopVideo() { return new VideoStatus() { IsPlaying = false }; }
-    protected virtual VideoStatus OnGetVideoStatus() { return new VideoStatus() { IsPlaying = false }; }
+    protected virtual VideoStatus OnStartVideo(VideoPlaybackRequest videoPlaybackRequest) { return new VideoStatus() { VideoState = PlaybackState.Playing }; }
+    protected virtual VideoStatus OnStopVideo() { return new VideoStatus() {  VideoState =  PlaybackState.Stopped }; }
+    protected virtual VideoStatus OnGetVideoStatus() { return new VideoStatus() { VideoState = PlaybackState.Playing }; }
+    protected virtual VideoStatus OnPauseVideo() { return new VideoStatus() { VideoState = PlaybackState.Paused }; }
+    protected virtual VideoStatus OnResumeVideo() { return new VideoStatus() { VideoState = PlaybackState.Paused }; }
+    protected virtual VideoStatus OnPositionVideo(VideoPosition position) { return new VideoStatus() { VideoState = PlaybackState.Playing }; }
 
     public class VideoTimer
     {
         public static async Task Run(Action action, TimeSpan period, CancellationToken cancellationToken)
         {
-            while (!cancellationToken.IsCancellationRequested)
+            try
             {
-                await Task.Delay(period, cancellationToken);
+                while (!cancellationToken.IsCancellationRequested)
+                {
+                    await Task.Delay(period, cancellationToken);
 
-                if (!cancellationToken.IsCancellationRequested)
-                    action();
+                    if (!cancellationToken.IsCancellationRequested)
+                        action();
+                }
             }
+            catch (TaskCanceledException) { }
 
         }
 

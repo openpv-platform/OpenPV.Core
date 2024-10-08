@@ -60,6 +60,37 @@ public class VideoServiceClient : AhsokaClientBase<VideoMessageTypes.Ids>
     }
 
     /// <summary>
+    /// Pause Video Playback on the Video Player
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public VideoStatus PauseVideo(VideoPlayer player)
+    {
+        return SendNotificationWithResponse<VideoStatus>(VideoMessageTypes.Ids.PauseVideo, player);
+    }
+
+    /// <summary>
+    /// Pause Video Playback on the Video Player
+    /// </summary>
+    /// <param name="player"></param>
+    /// <returns></returns>
+    public VideoStatus ResumeVideo(VideoPlayer player)
+    {
+        return SendNotificationWithResponse<VideoStatus>(VideoMessageTypes.Ids.ResumeVideo, player);
+    }
+
+    /// <summary>
+    /// Position / Scrub Video to the Specified Position
+    /// </summary>
+    /// <param name="position"></param>
+    /// <returns></returns>
+    public VideoStatus PositionVideo(VideoPosition position)
+    {
+        return SendNotificationWithResponse<VideoStatus>(VideoMessageTypes.Ids.PositionVideo, position);
+    }
+
+
+    /// <summary>
     /// Stops Video on the VideoPlayer
     /// </summary>
     /// <param name="player"></param>

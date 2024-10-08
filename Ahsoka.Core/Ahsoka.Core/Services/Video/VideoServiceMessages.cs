@@ -15,6 +15,9 @@ public class VideoServiceMessages : AhsokaMessagesBase
         this.RegisterServiceRequest(VideoMessageTypes.Ids.GetVideoPlayers, typeof(EmptyNotification), typeof(VideoPlayerInfo));
         this.RegisterServiceRequest(VideoMessageTypes.Ids.PlayVideo, typeof(VideoPlaybackRequest), typeof(VideoStatus));
         this.RegisterServiceRequest(VideoMessageTypes.Ids.StopVideo, typeof(VideoPlayer), typeof(VideoStatus));
+        this.RegisterServiceRequest(VideoMessageTypes.Ids.PauseVideo, typeof(VideoPlayer), typeof(VideoStatus));
+        this.RegisterServiceRequest(VideoMessageTypes.Ids.ResumeVideo, typeof(VideoPlayer), typeof(VideoStatus));
+        this.RegisterServiceRequest(VideoMessageTypes.Ids.PositionVideo, typeof(VideoPosition), typeof(VideoStatus));
         this.RegisterServiceRequest(VideoMessageTypes.Ids.RequestStatus, typeof(VideoPlayer), typeof(VideoStatus));
         this.RegisterServiceNotification(VideoMessageTypes.Ids.StatusUpdated, typeof(VideoStatus));
     }

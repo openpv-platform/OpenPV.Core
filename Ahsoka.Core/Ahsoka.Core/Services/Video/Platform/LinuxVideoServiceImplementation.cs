@@ -1,5 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
-using System.Threading;
+
 using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Video;
@@ -11,7 +11,7 @@ internal class LinuxVideoServiceImplementation : VideoPlayerImpl
     static object syncRoot = new object();
     Gst.Element videoElement;
 
-    bool isPlayingStatus = false;
+    PlaybackState playbackState =  PlaybackState.Ready;
     ulong totalMs = 0;
     ulong positionMs = 0;
 
@@ -22,30 +22,70 @@ internal class LinuxVideoServiceImplementation : VideoPlayerImpl
 
     protected override VideoStatus OnStartVideo(VideoPlaybackRequest videoPlaybackRequest)
     {
-        isPlayingStatus = true;
-
-        AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Starting Video at {videoPlaybackRequest.VideoURL}");
-
-        if (Loop == null)
+        // Handle Play Video
+        if (playbackState != PlaybackState.Playing)
         {
-             Loop = new GLib.MainLoop();
-             Gst.Application.Init();
+            playbackState = PlaybackState.Playing;
+
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Starting Video at {videoPlaybackRequest.VideoURL}");
+
+            if (Loop == null)
+            {
+                Loop = new GLib.MainLoop();
+                Gst.Application.Init();
+            }
+
+            string args;
+
+            if (videoPlaybackRequest.PlayFullScreen)
+                args = $" ! decodebin ! videoconvert ! videoscale  ! waylandsink display=wayland-1 fullscreen=true";
+            else
+                args = $" ! decodebin ! videoconvert ! videoscale  ! video/x-raw ,width={videoPlaybackRequest.VideoWidth},height={videoPlaybackRequest.VideoHeight} ! waylandsink display=wayland-1";
+
+
+            videoElement = Gst.Parse.Launch($"playbin uri={videoPlaybackRequest.VideoURL} {args}");
+            videoElement.Bus.AddSignalWatch();
+            videoElement.Bus.Message += Handle;
+            videoElement.SetState(Gst.State.Playing);
+
+            // Start Run Loop for Video
+            if (playCount == 0)
+                StartRunLoop();
+
+            playCount++;
+        }
+        
+        return CreateStatus();
+        
+    }
+
+    protected override VideoStatus OnPauseVideo()
+    {
+        // Advance To End
+        lock (syncRoot)
+        {
+            playbackState = PlaybackState.Paused;
+            videoElement.SetState(Gst.State.Paused);
         }
 
-        //! decodebin ! clockoverlay font-desc=\"Sans, 48\" ! videoconvert ! autovideosink
-       
-        videoElement = Gst.Parse.Launch($"playbin uri={videoPlaybackRequest.VideoURL}");
-        videoElement.Bus.AddSignalWatch();
-        videoElement.Bus.Message += Handle;
-        videoElement.SetState(Gst.State.Playing);
+        return CreateStatus();
+    }
 
-        // Start Run Loop for Video
-        if (playCount == 0)
-            StartRunLoop();
-
-        playCount++;
+    protected override VideoStatus OnResumeVideo()
+    {
+        // Advance To End
+        lock (syncRoot)
+        {
+            playbackState = PlaybackState.Playing;
+            videoElement.SetState(Gst.State.Playing);
+        }
 
         return CreateStatus();
+    }
+
+    protected override VideoStatus OnPositionVideo(VideoPosition position)
+    {
+        return base.OnPositionVideo(position);
     }
 
     private static void StartRunLoop()
@@ -63,7 +103,7 @@ internal class LinuxVideoServiceImplementation : VideoPlayerImpl
     protected override VideoStatus OnStopVideo()
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Stopping Playback");
-        isPlayingStatus = false;
+        playbackState =  PlaybackState.Playing;
 
         // Last Stopped Video Shuts down Loop
         lock (syncRoot)
@@ -100,7 +140,7 @@ internal class LinuxVideoServiceImplementation : VideoPlayerImpl
 
         return new VideoStatus()
         {
-            IsPlaying = isPlayingStatus,
+            VideoState = playbackState,
             TotalTimeInMs = (int)totalMs,
             PositionInMs = (int)positionMs,
             VideoPlayerID = this.PlayerID
@@ -158,11 +198,11 @@ internal class LinuxVideoServiceImplementation : VideoPlayerImpl
                 videoElement.SetState(Gst.State.Null);
                 videoElement = null;
 
-                isPlayingStatus = false;
+                playbackState =  PlaybackState.Stopped;
                 break;
             case Gst.MessageType.Eos:
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, "[Eos] Playback has ended. Exiting!");
-                isPlayingStatus = false;
+                playbackState = PlaybackState.Stopped;
                 
                 videoElement.SetState(Gst.State.Null);
                 videoElement = null;

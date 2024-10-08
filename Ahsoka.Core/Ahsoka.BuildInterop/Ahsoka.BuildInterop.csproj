@@ -20,7 +20,7 @@
 		<RemoveDir Directories="$(InteropSource_Root)\BuildOutputs\StoryboardLib" />
 	</Target>
 	
-	<Target Name="BuildInteropLibs" AfterTargets="PostBuildEvent" Condition="!Exists('$(InteropSource_Root)\BuildOutputs\Ahsoka.Services\Ahsoka.Services.ST.so')">
+	<Target Name="BuildInteropLibs" AfterTargets="PostBuildEvent" Condition="!Exists('$(InteropSource_Root)\BuildOutputs\Ahsoka.Services\Ahsoka.Services.OpenViewLinux.so')">
 
 		<Message Text="Stopping Containers" Importance="high" />
 		<Exec ContinueOnError="true" IgnoreExitCode="true" WorkingDirectory="$(InteropSource_Root)" Command="docker kill Ahsoka.CoreBuilder" />

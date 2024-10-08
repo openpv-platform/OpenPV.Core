@@ -12,7 +12,7 @@ internal class TICairoWindow : LinuxCairoWindow
     class TICairoDrawingImplementation : CairoDrawingImplementation
     {
         #region Native Interop
-        public const string NativeLibraryName = "AhsokaLib/Ahsoka.Cairo.OpenViewPro.so";
+        public const string NativeLibraryName = "AhsokaLib/Ahsoka.Cairo.OpenViewLinuxPro.so";
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern int InitWindowInterop(int x, int y, int w, int h, bool fullscreen);

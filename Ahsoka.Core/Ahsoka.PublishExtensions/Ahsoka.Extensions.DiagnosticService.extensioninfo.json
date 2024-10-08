@@ -9,7 +9,7 @@
       "serviceName": "DiagnosticService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "dataChannel": 5106,
+      "dataChannel": 6106,
       "behaviors": "AutoStart"
     }
   ],

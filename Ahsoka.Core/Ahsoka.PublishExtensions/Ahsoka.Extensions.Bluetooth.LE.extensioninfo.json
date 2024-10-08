@@ -7,7 +7,7 @@
       "serviceName": "BLEService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "dataChannel": 5108,
+      "dataChannel": 6108,
       "behaviors": "AutoStart"
     }
   ],

@@ -23,7 +23,7 @@ public class VideoService : AhsokaServiceBase<VideoMessageTypes.Ids>
         {
             case PlatformFamily.OpenViewLinux:
             case PlatformFamily.OpenViewLinuxPro:
-                return new LinuxVideoServiceImplementation()
+                return new LinuxVideoOuOfProcServiceImplementation()
                 {
                     PlayerID = id,
                     VideoStatusChanged = SendStatusNotification
@@ -71,6 +71,15 @@ public class VideoService : AhsokaServiceBase<VideoMessageTypes.Ids>
             case VideoMessageTypes.Ids.PlayVideo:
                 HandlePlayVideo(messageHeader, message as VideoPlaybackRequest);
                 break;
+            case VideoMessageTypes.Ids.PauseVideo:
+                HandlePauseVideo(messageHeader, message as VideoPlayer);
+                break;
+            case VideoMessageTypes.Ids.ResumeVideo:
+                HandleResumeVideo(messageHeader, message as VideoPlayer);
+                break;
+            case VideoMessageTypes.Ids.PositionVideo:
+                HandlePositionVideo(messageHeader, message as VideoPosition);
+                break;
             case VideoMessageTypes.Ids.StopVideo:
                 HandleStopVideo(messageHeader, message as VideoPlayer);
                 break;
@@ -99,19 +108,44 @@ public class VideoService : AhsokaServiceBase<VideoMessageTypes.Ids>
         SendMessageInternal(messageHeader, status);
     }
 
- 
     private void HandlePlayVideo(AhsokaMessageHeader messageHeader, VideoPlaybackRequest videoPlaybackRequest)
     {
-        VideoStatus status = new VideoStatus() { IsPlaying = false };
+        VideoStatus status = new VideoStatus() { VideoState =  PlaybackState.Playing };
         if (players.TryGetValue(videoPlaybackRequest.VideoPlayerID, out VideoPlayerImpl value))
             status = value.PlayVideo(videoPlaybackRequest);
 
         SendMessageInternal(messageHeader, status);
     }
 
+    private void HandlePauseVideo(AhsokaMessageHeader messageHeader, VideoPlayer player)
+    {
+        VideoStatus status = new VideoStatus() { VideoState = PlaybackState.Paused };
+        if (players.TryGetValue(player.VideoPlayerID, out VideoPlayerImpl value))
+            status = value.PauseVideo(player);
+
+        SendMessageInternal(messageHeader, status);
+    }
+    private void HandleResumeVideo(AhsokaMessageHeader messageHeader, VideoPlayer player)
+    {
+        VideoStatus status = new VideoStatus() { VideoState = PlaybackState.Playing };
+        if (players.TryGetValue(player.VideoPlayerID, out VideoPlayerImpl value))
+            status = value.ResumeVideo(player);
+
+        SendMessageInternal(messageHeader, status);
+    }
+
+    private void HandlePositionVideo(AhsokaMessageHeader messageHeader, VideoPosition position)
+    {
+        VideoStatus status = new VideoStatus() { VideoState = PlaybackState.Playing };
+        if (players.TryGetValue(position.VideoPlayerID, out VideoPlayerImpl value))
+            status = value.PositionVideo(position);
+
+        SendMessageInternal(messageHeader, status);
+    }
+
     private void HandleStopVideo(AhsokaMessageHeader messageHeader, VideoPlayer videoPlayer)
     {
-        VideoStatus status = new VideoStatus() { IsPlaying = false };
+        VideoStatus status = new VideoStatus() { VideoState = PlaybackState.Stopped };
         if (players.TryGetValue(videoPlayer.VideoPlayerID, out VideoPlayerImpl value))
             status = value.StopVideo();
 

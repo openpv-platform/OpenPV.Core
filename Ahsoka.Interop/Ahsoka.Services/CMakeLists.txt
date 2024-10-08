@@ -16,7 +16,7 @@ IF (${AHSOKA_BUILD_OUTPUTS} MATCHES "OpenViewLinux_TargetSupport/SDK$")
 
     add_Library(Ahsoka.Services SHARED ${sources})
 
-    set_target_properties(Ahsoka.Services PROPERTIES OUTPUT_NAME Ahsoka.Services.ST)
+    set_target_properties(Ahsoka.Services PROPERTIES OUTPUT_NAME Ahsoka.Services.OpenViewLinux)
 
     set_target_properties(Ahsoka.Services PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS}/../../../Ahsoka.Services/)
     set_target_properties(Ahsoka.Services PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS}/../../../Ahsoka.Services/)

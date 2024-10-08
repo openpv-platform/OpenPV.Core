@@ -10,7 +10,7 @@
       "serviceName": "CanService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "dataChannel": 5107,
+      "dataChannel": 6107,
       "configurationFile": "CanService.cancalibration.json",
       "behaviors": "AutoStart"
     }

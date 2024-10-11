@@ -56,7 +56,7 @@
 			<Visible>true</Visible>
 		</Content>
 
-		<Content Condition="false" Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.VideoPlayer.OpenViewLinuxPro">
+		<Content Condition="true" Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.VideoPlayer.OpenViewLinuxPro">
 			<Link>AhsokaLib\Ahsoka.VideoPlayer.OpenViewLinuxPro</Link>
 			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.VideoPlayer.OpenViewLinuxPro</PackagePath>
 			<PackageCopyToOutput>true</PackageCopyToOutput>

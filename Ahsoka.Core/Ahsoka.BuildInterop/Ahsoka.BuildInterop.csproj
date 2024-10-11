@@ -33,9 +33,9 @@
 		
 		
 		<Message Text="Building OpenViewPro Interop Libraries at $(InteropSource_Root)" Importance="high" />
-		<Exec Condition="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openviewpro_sdk_3_0" />
+		<Exec Condition="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openviewpro_sdk_4_0" />
 		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(InteropSource_Root)/Ahsoka.Interop/build_setup_pro.sh" />
-		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Interop/build_setup_pro.sh&quot; --name Ahsoka.CoreBuilderPro openpv/openviewpro_sdk_3_0" />
+		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Interop/build_setup_pro.sh&quot; --name Ahsoka.CoreBuilderPro openpv/openviewpro_sdk_4_0" />
 
 	</Target>
 	

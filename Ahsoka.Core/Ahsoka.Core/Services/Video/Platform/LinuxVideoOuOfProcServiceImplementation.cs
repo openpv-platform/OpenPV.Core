@@ -58,12 +58,16 @@ internal class LinuxVideoOuOfProcServiceImplementation : VideoPlayerImpl
     private void StartPlaybackProcess(VideoPlaybackRequest videoPlaybackRequest)
     { 
         string args = string.Empty;
-        if (videoPlaybackRequest.PlayFullScreen)
-            args = $" ! decodebin ! videoconvert ! videoscale  ! waylandsink display=wayland-1 fullscreen=true";
-        else
-            args = $" ! decodebin ! videoconvert ! videoscale  ! video/x-raw ,width={videoPlaybackRequest.VideoWidth},height={videoPlaybackRequest.VideoHeight} ! waylandsink display=wayland-1";
+        if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
+        {
+            args = $" ! decodebin ! videoconvert ! videoscale ! waylandsink fullscreen=true";
+            args = $"filesrc location={videoPlaybackRequest.VideoURL} {args}";
 
-        args = $"filesrc location={videoPlaybackRequest.VideoURL} {args}";
+        }
+        else
+        {
+            args = $"playbin uri=file://{videoPlaybackRequest.VideoURL} video-sink=waylandsink";
+        }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"PLAYER {this.PlayerID} SETUP: {args}");
 

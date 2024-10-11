@@ -40,8 +40,8 @@ IF (${AHSOKA_BUILD_OUTPUTS} MATCHES "OpenViewLinux_TargetSupport/SDK$")
     add_subdirectory ("Ahsoka.VideoPlayer")
 ENDIF()
 IF (${AHSOKA_BUILD_OUTPUTS} MATCHES "OpenViewLinuxPro_TargetSupport/SDK$")
-    add_subdirectory ("Ahsoka.Cairo.GLES")
-    #add_subdirectory ("Ahsoka.VideoPlayer") // TODO When Pro Supports.
+    #add_subdirectory ("Ahsoka.Cairo.GLES")
+    add_subdirectory ("Ahsoka.VideoPlayer") 
 ENDIF()
 
 

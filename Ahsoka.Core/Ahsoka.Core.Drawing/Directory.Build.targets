@@ -12,7 +12,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>true</Visible>
 		</Content>
-		<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Cairo.OpenViewLinuxPro.so">
+		<Content Condition="false" Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Cairo.OpenViewLinuxPro.so">
 			<Link>AhsokaLib\Ahsoka.Cairo.OpenViewLinuxPro.so</Link>
 			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Cairo.OpenViewLinuxPro.so</PackagePath>
 			<PackageCopyToOutput>true</PackageCopyToOutput>

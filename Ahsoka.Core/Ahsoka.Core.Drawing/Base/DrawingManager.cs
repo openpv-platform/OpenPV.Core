@@ -71,16 +71,16 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
 
     protected void DrawFrame()
     {
-        bool noClip = OperatingSystem.IsMacOS() || OperatingSystem.IsWindows();
+        //bool noClip = OperatingSystem.IsMacOS() || OperatingSystem.IsWindows();
 
         // Desktop Doesn't Preserve Backbuffer
-        if (IsTouched && noClip == false) // Handle Touching a Button
+        /*if (IsTouched && noClip == false) // Handle Touching a Button
         {
             // Find the Touched Rectangle...this is all we will draw
             var ItemTouched = TouchAreas.Values.FirstOrDefault(x => x.Rect.Contains((float)TouchX, (float)TouchY));
             if (ItemTouched != null)
                 DrawingApi.SetClip(ItemTouched.Rect);
-        }
+        }*/
 
 
         // Prepare Drawing Data
@@ -94,7 +94,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
         CurrentState.DrawState(DrawingApi, DrawingApi.ScreenWidth, ScreenHeightWithoutStatus);
         DrawActions();
 
-        DrawingApi.ClearClip();
+        //DrawingApi.ClearClip();
     }
 
     public void Close(int result = 0)

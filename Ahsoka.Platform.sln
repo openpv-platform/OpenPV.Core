@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "~OtherItems", "~OtherItems"
 		Ahsoka.Platform.yml = Ahsoka.Platform.yml
 		CMakePresets.json = CMakePresets.json
 		Ahsoka.Core\codecoverage.runsettings = Ahsoka.Core\codecoverage.runsettings
-		Demo.Build.props = Demo.Build.props
+		Ahsoka.Demo\Demo.Build.props = Ahsoka.Demo\Demo.Build.props
 		Ahsoka.Core\Directory.Build.props = Ahsoka.Core\Directory.Build.props
 		GitVersion.yml = GitVersion.yml
 		Ahsoka.Core\nuget.config = Ahsoka.Core\nuget.config
@@ -66,7 +66,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PreRequisites", "PreRequisi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.BuildEsp32", "Ahsoka.Core\Ahsoka.BuildEsp32\Ahsoka.BuildEsp32.csproj", "{6D377BC6-C5F8-46C6-9368-79E4B5D85548}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.CS.Cairo", "Ahsoka.Demo\Ahsoka.CS.Cairo\Ahsoka.CS.Cairo.csproj", "{610E0930-B0D2-4D79-933B-C12FAEC54BB8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.CS.Drawing", "Ahsoka.Demo\Ahsoka.CS.Drawing\Ahsoka.CS.Drawing.csproj", "{610E0930-B0D2-4D79-933B-C12FAEC54BB8}"
 	ProjectSection(ProjectDependencies) = postProject
 		{772641A0-D341-4B6A-B55F-0AA6BDF2A986} = {772641A0-D341-4B6A-B55F-0AA6BDF2A986}
 	EndProjectSection

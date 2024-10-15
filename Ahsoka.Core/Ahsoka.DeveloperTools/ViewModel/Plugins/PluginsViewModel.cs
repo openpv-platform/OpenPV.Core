@@ -190,7 +190,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         {
             ProfileName = "C# Developer Profile",
             ProfileTag = profileCSharp,
-            ProfileDescription = "Develop in C# for Storyboard, GTK, Cairo and other User Interfaces.  Includes the OpenView Distribution along with Target and Development Support Plugins"
+            ProfileDescription = "Develop in C# for Storyboard, GTK, Skia and other User Interfaces.  Includes the OpenView Distribution along with Target and Development Support Plugins"
         });
         ProfileDefinitions.Add(new ProfileDefinition()
         {

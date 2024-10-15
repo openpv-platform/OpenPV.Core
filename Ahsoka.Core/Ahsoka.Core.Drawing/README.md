@@ -1,7 +1,7 @@
 ﻿# OpenPV - Ahsoka.Core.Drawing
 
 Ahsoka.Core.Drawing contains a high level drawing api allowing applications
-to be created that use simple button based designs.  It natively uses Cairo on OpenGL
+to be created that use simple button based designs.  It natively uses SKIA on OpenGL
 to provide a fast boot and high quality drawing on many systems. Ahsoka.InstallerUI 
 is constructed on this Library.
 

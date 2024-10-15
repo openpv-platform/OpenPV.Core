@@ -7,7 +7,6 @@
 #include "weston-platform.h"
 #include "wayland-util.h"
 
-
 #define BTN_RIGHT		0x111
 #define BTN_LEFT		0x110
 
@@ -36,8 +35,11 @@ static void touch_handle_down(void *data, struct wl_touch *wl_touch,
 	touch_xi = xi;
 	touch_yi = yi;
 
-	if (CAIRO_DEBUG)  printf("Touch Down: X[%i] Y[%i] ID[%i]\r\n", xi, yi, id);
+	if (CAIRO_DEBUG)  
+		printf("Touch Down: X[%i] Y[%i] ID[%i]\r\n", xi, yi, id);
+	
 	enqueue(&t);
+	
 	// popup windows that can be dragged and dropped need to use xdg move below
 	// xdg_toplevel_move(w->xdg_toplevel, d->seat, serial);
 }
@@ -179,8 +181,7 @@ static int get_seat(OpenPvDisplay *d, struct wl_seat *seat)
 static void seat_handle_capabilities(void *data, struct wl_seat *seat,
 			 enum wl_seat_capability caps)
 {
-	if (CAIRO_DEBUG) printf("-- Handling Seat Capabilities  CAP:[%i]\r\n", caps);
-	if (CAIRO_DEBUG) printf("                              SEAT:[%i]\r\n", seat);
+	if (CAIRO_DEBUG) printf("-- Handling Seat Capabilities   SEAT:[%i] CAP:[%i] \r\n", seat, caps);
 
 	OpenPvDisplay *d = (OpenPvDisplay *) data;
 	

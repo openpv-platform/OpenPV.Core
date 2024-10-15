@@ -1,9 +1,11 @@
 #ifndef OPENPVGLESCONTEXT_H_
 #define OPENPVGLESCONTEXT_H_
 
-#include <cairo/cairo.h>
-#include <cairo/cairo-gl.h>
+//#include <cairo/cairo.h>
+//#include <cairo/cairo-gl.h>
 #include "XdgTouch.h"
+#include <GLES2/gl2.h>
+#include <EGL/egl.h>
 
 #ifdef  __cplusplus
 extern "C" {
@@ -12,12 +14,13 @@ extern "C" {
 int InitWindowInterop(int x, int y, int w, int h, bool fullScreen);
 void DestoryWindowContext();
 
-cairo_surface_t *GetCairoSurface();
-cairo_t 		*GetCairoContext();
+void * GetFunction(const char *str);
 
-void GLSwapBuffers(cairo_surface_t *surface);
+void GLSwapBuffers();
 bool GetTouchData(TouchEvent *data, int timeoutInMs);
 void GetWindowDimensions(int *w, int *h);
+void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format);
+
 bool UpdateSwapInterval(int interval);
 
 #ifdef  __cplusplus

@@ -1,6 +1,6 @@
 ﻿using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing.Cairo;
+using Ahsoka.Core.Drawing.Skia;
 using Ahsoka.Installer.UI.InstallSystem;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Ahsoka.Installer.UI;
 
-internal class InstallerDrawingManager : CairoDrawingManager
+internal class InstallerDrawingManager : SkiaDrawingManager
 {
     #region Singleton
     public static InstallerDrawingManager Default { get; } = new();

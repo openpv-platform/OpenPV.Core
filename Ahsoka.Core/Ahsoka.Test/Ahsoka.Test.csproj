@@ -30,7 +30,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\..\Ahsoka.Demo\Ahsoka.CS.Cairo\**\*.*" Exclude="..\..\Ahsoka.Demo\Ahsoka.CS.Cairo\bin\**\*.*;..\..\Ahsoka.Demo\Ahsoka.CS.Cairo\obj\**\*.*">
+		<None Include="..\..\Ahsoka.Demo\Ahsoka.CS.Drawing\**\*.*" Exclude="..\..\Ahsoka.Demo\Ahsoka.CS.Drawing\bin\**\*.*;..\..\Ahsoka.Demo\Ahsoka.CS.Drawing\obj\**\*.*">
 			<Link>AhsokaCairo\%(RecursiveDir)%(Filename)%(Extension)</Link>
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>

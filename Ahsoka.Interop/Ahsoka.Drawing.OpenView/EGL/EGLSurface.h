@@ -8,6 +8,12 @@
 extern "C" {
 #endif
 
+typedef struct
+{
+    OpenPvDisplay   *display;
+    OpenPvWindow    *window;
+} OpenPvGLContext;
+
 int InitEGL(OpenPvDisplay *display, OpenPvWindow *window);
 int CreateXdgLayer(OpenPvDisplay *display, OpenPvWindow *window);
 int CreateEglWindow(OpenPvDisplay *display, OpenPvWindow *window);

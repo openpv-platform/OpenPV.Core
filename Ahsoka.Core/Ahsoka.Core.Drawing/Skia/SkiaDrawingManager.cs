@@ -1,17 +1,17 @@
 ﻿using Ahsoka.Core.Drawing.Base;
+using Ahsoka.Core.Drawing.Skia;
 using TouchEventArgs = Ahsoka.Core.Drawing.Base.TouchEventArgs;
 
-namespace Ahsoka.Core.Drawing.Cairo;
+namespace Ahsoka.Core.Drawing.Skia;
 
-
-public abstract class CairoDrawingManager : DrawingManager<CairoDrawingApi>, IDrawingManager
+public abstract class SkiaDrawingManager : DrawingManager<SkiaDrawingApi>, IDrawingManager
 {
     #region Fields
-    CairoDrawingWindow ahsokaWindow;
+    SkiaDrawingWindow ahsokaWindow;
     #endregion
 
     #region Methods
-    public CairoDrawingManager()
+    public SkiaDrawingManager()
     {
 
     }
@@ -23,8 +23,8 @@ public abstract class CairoDrawingManager : DrawingManager<CairoDrawingApi>, IDr
 
     void IDrawingManager.PrepareDrawingApi()
     {
-        ahsokaWindow = new CairoDrawingWindow(OperatingSystem.IsLinux());
-        DrawingApi = new CairoDrawingApi(ahsokaWindow.Bounds);
+        ahsokaWindow = new SkiaDrawingWindow(OperatingSystem.IsLinux());
+        DrawingApi = new SkiaDrawingApi(ahsokaWindow.Bounds);
 
         float screenWidth = ahsokaWindow.Bounds.Width;
         float screenHeight = ahsokaWindow.Bounds.Height;
@@ -34,7 +34,7 @@ public abstract class CairoDrawingManager : DrawingManager<CairoDrawingApi>, IDr
 
             int x = args.X;
             int y = args.Y;
-            DrawingApi.DeviceToScreen(ref x, ref y);
+            //DrawingApi.DeviceToScreen(ref x, ref y);
 
             var inputTouchEvent = new TouchEventArgs()
             {
@@ -50,11 +50,11 @@ public abstract class CairoDrawingManager : DrawingManager<CairoDrawingApi>, IDr
 
         ahsokaWindow.DrawFrame += (o, args) =>
         {
-            DrawingApi.StartFrame(args.Context);
+            DrawingApi.StartFrame(args);
 
             DrawFrame();
 
-            DrawingApi.EndFrame();
+            DrawingApi.FinishFrame();
         };
     }
 
@@ -73,6 +73,6 @@ public abstract class CairoDrawingManager : DrawingManager<CairoDrawingApi>, IDr
     {
         ahsokaWindow?.Close();
     }
-
     #endregion
+
 }

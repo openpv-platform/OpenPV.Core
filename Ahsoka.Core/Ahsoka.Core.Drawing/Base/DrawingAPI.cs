@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Core.Drawing.Base;
+using Ahsoka.Core.Drawing.Skia;
 
 namespace Ahsoka.Core.Drawing;
 
@@ -20,6 +21,9 @@ public interface IDrawingApi : IDrawingInfo
     #region DrawingAPI 
     T GetNativeApi<T>() where T : class;
 
+    void StartFrame(DrawFrameArgs drawFrameData);
+    void FinishFrame();
+    
     // DrawingFunctions
     void Clear(DrawingColor color);
     void DrawRectangle(DrawingRect rectangle, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
@@ -40,7 +44,7 @@ public interface IDrawingApi : IDrawingInfo
 
 public abstract class DrawingApiBase<Context> : IDrawingApi where Context : class
 {
-    public Context CurrentContext { get; private set; }
+    public Context CurrentContext { get; protected set; }
 
     public int ScreenWidth { get; protected set; }
     public int ScreenHeight { get; protected set; }
@@ -50,19 +54,8 @@ public abstract class DrawingApiBase<Context> : IDrawingApi where Context : clas
         return this as T;
     }
 
-    public void StartFrame(Context context)
-    {
-        CurrentContext = context;
-        OnStartFrame(CurrentContext);
-    }
-
-    public void EndFrame()
-    {
-        OnEndFrame();
-    }
-
-    protected abstract void OnStartFrame(Context context);
-    protected abstract void OnEndFrame();
+    public abstract void StartFrame(DrawFrameArgs frameArgs);
+    public abstract void FinishFrame();
 
     public abstract void SetClip(DrawingRect rect);
     public abstract void ClearClip();

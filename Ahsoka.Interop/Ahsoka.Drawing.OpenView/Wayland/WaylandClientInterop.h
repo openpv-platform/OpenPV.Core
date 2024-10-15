@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 #define MAX_SEATS 10
-#define CAIRO_DEBUG 0
+#define CAIRO_DEBUG 1
 
 typedef struct 
 {

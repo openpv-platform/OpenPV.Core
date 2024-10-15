@@ -3,13 +3,15 @@
 
 #include "OpenPvGLESContext.h"
 #include "WaylandClientInterop.h"
-#include "CairoContext.h"
 #include "EGLSurface.h"
+#include <GLES2/gl2.h>
+#include <EGL/egl.h>
 #include "weston-platform.h"
+#include <dlfcn.h>
 
 static OpenPvDisplay 		display = { 0 };
 static OpenPvWindow 		window  = { 0 };
-static OpenPvCairoContext 	context = { 0 };
+static OpenPvGLContext 	context = { 0 };
 
 void GetWindowDimensions(int *w, int *h)
 {
@@ -25,6 +27,17 @@ void GetWindowDimensions(int *w, int *h)
 	}
 }
 
+void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format)
+{
+	int val = 0;
+	eglGetConfigAttrib(display.egl.dpy, display.egl.conf, EGL_SAMPLES, &val);
+	*samples = val;
+
+	eglGetConfigAttrib(display.egl.dpy, display.egl.conf, EGL_STENCIL_SIZE, &val);
+	*stencilBits = val;
+
+	*gl_format = (int)0x8058; // GL_RGBA8 
+}
 
 bool GetTouchData(TouchEvent *data, int timeoutInMs)
 {
@@ -58,13 +71,12 @@ int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
 		display.seats[i].keyboard = 0;
 		display.seats[i].touch = 0;
 	}
-		
 
 	if (fullScreen)
 		window.fullscreen = 1;
+
 	window.req_width = w;
 	window.req_height = h;
-		
 	
 	ret = InitWaylandClient(&display, &window);
 	if (ret != 0)
@@ -85,10 +97,7 @@ int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
 
 	context.display = &display;
 	context.window = &window;
-	ret = InitCairoFW(&context);
-	if (ret != 0)
-		return -1;
-
+	
 	// start the touch input queue
 	createXdgTouchQueue();
 
@@ -104,21 +113,11 @@ int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
 	return 0;
 }
 
-cairo_surface_t* GetCairoSurface()
+void * GetFunction(const char *name)
 {
-	if (!context.cairo_surface)
-		return NULL;
-
-	return context.cairo_surface;
-}
-
-
-cairo_t* GetCairoContext()
-{
-	if (!context.cr)
-		return NULL;
-
-	return context.cr;
+	void * symbol = eglGetProcAddress(name);
+	//printf("FOUND FUNCTION - %s %p\r\n", name,symbol);
+	return symbol;
 }
 
 OpenPvDisplay* GetOpenPvDisplay()
@@ -129,31 +128,27 @@ OpenPvDisplay* GetOpenPvDisplay()
 	return &display;
 }
 
-
-void GLSwapBuffers(cairo_surface_t *surface)
+EGLDisplay GetGLDisplay()
 {
-	cairo_gl_surface_swapbuffers(surface);
+	if (!display.egl.dpy)
+		return NULL;
+	
+	return display.egl.dpy;
 }
 
+void GLSwapBuffers()
+{
+	eglSwapBuffers(display.egl.dpy, window.egl_surface);
+}
 
 bool UpdateSwapInterval(int interval)
 {
 	return eglSwapInterval(display.egl.dpy, interval);
 }
 
-
-
 void DestoryWindowContext()
 {
-	// Start from the top down with Cairo
-	cairo_device_destroy(context.cairo_device);
-	cairo_device_finish(context.cairo_device);
-
-	cairo_surface_destroy(context.cairo_surface);
-	cairo_surface_finish(context.cairo_surface);
-
-	eglMakeCurrent(display.egl.dpy, EGL_NO_SURFACE, EGL_NO_SURFACE,
-		       EGL_NO_CONTEXT);
+	eglMakeCurrent(display.egl.dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
 	weston_platform_destroy_egl_surface(display.egl.dpy,
 					    window.egl_surface);

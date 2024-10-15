@@ -1,69 +1,76 @@
 ﻿using Ahsoka.Core.Drawing.Base;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
+using SkiaSharp;
 using System.Runtime.InteropServices;
-using Context = Cairo.Context;
 using DateTime = System.DateTime;
 using TouchEventArgs = Ahsoka.Core.Drawing.Base.TouchEventArgs;
 
-namespace Ahsoka.Core.Drawing.Cairo;
+namespace Ahsoka.Core.Drawing.Skia;
 
 /// <summary>
-///  Interface for Cross Plaform Cairo Window Implementations.
+///  Interface for Cross Plaform SKIA Window Implementations.
 /// </summary>
-internal interface ICairoWindow
+internal interface IDrawingWindow
 {
     void Close();
-    void CreateWindow(CairoDrawingWindow apiWindow, ref DrawingRect bounds, bool fullScreen);
+    void CreateWindow(SkiaDrawingWindow apiWindow, ref DrawingRect bounds, bool fullScreen);
     void QueueInvoke(EventHandler handler);
     void RequestDraw(DrawingRect bounds);
     void ShowAndRun();
 }
 
-
 /// <summary>
-/// Class to manage an Accelerated Cairo Window and Drawing Context
+/// Class to manage an Accelerated Window and Drawing Context
 /// </summary>
-public class CairoDrawingWindow
+public class SkiaDrawingWindow
 {
     #region Fields
     int frameCount = 0;
     const int frameSeconds = 10;
     DateTime nextPrintTime = DateTime.Now.AddSeconds(frameSeconds);
     readonly DrawingRect bounds;
-    readonly ICairoWindow nativeWindow;
+    readonly IDrawingWindow nativeWindow;
+    readonly IDrawingApi api;
     #endregion
 
     #region Events
     public event EventHandler<TouchEventArgs> TouchReceived;
-    public event EventHandler<CairoDrawFrameArgs> DrawFrame;
+    public event EventHandler<DrawFrameArgs> DrawFrame;
     #endregion
 
     #region Properties
+    public IDrawingApi GetApi() 
+    { 
+        return api; 
+    }
+
     public DrawingRect Bounds { get => bounds; }
     #endregion
 
     #region Methods
-    public CairoDrawingWindow(bool fullScreen = false, int x = 0, int y = 0, int width = 800, int height = 480)
+    public SkiaDrawingWindow(bool fullScreen = false, int x = 0, int y = 0, int width = 800, int height = 480)
     {
         bounds = new DrawingRect(x, y, width, height);
 
         if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or
             PlatformFamily.MacosArm64)
         {
-            nativeWindow = new DesktopCairoWindow();
+            nativeWindow = new DesktopWindow();
             nativeWindow.CreateWindow(this, ref bounds, fullScreen);
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux) 
         {
-            nativeWindow = new STCairoWindow();
+            nativeWindow = new STWindow();
             nativeWindow.CreateWindow(this, ref bounds, fullScreen);
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
         {
-            nativeWindow = new TICairoWindow();
+            nativeWindow = new TIWindow();
             nativeWindow.CreateWindow(this, ref bounds, fullScreen);
         }
+
+        api = new SkiaDrawingApi(bounds) ;
     }
 
     public void Close()
@@ -83,7 +90,7 @@ public class CairoDrawingWindow
         if (nextPrintTime < DateTime.Now)
         {
             nextPrintTime = DateTime.Now.AddSeconds(frameSeconds);
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Framerate {frameCount}: {frameCount / frameSeconds} ");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Framerate {frameCount}: {frameCount / frameSeconds} ");
             frameCount = 0;
         }
     }
@@ -98,10 +105,11 @@ public class CairoDrawingWindow
         TouchReceived?.Invoke(this, touchData);
     }
 
-    internal void RaiseDrawEvent(CairoDrawFrameArgs drawFrameData)
+    internal void RaiseDrawEvent(DrawFrameArgs drawFrameData)
     {
+        api.StartFrame(drawFrameData);
         DrawFrame?.Invoke(this, drawFrameData);
-
+        api.FinishFrame();
         PrintFrameCount();
     }
 
@@ -111,13 +119,12 @@ public class CairoDrawingWindow
         nativeWindow.QueueInvoke(handler);
     }
 
-
     #endregion
 }
 
-public class CairoDrawFrameArgs
+public class DrawFrameArgs
 {
-    public Context Context { get; set; }
+    public SKSurface Surface { get; set; }
     public int Width { get; set; }
     public int Height { get; set; }
 }

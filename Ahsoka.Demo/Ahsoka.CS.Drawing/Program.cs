@@ -1,5 +1,5 @@
 ﻿using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing.Cairo;
+using Ahsoka.Core.Drawing.Skia;
 using Ahsoka.Dispatch;
 using Ahsoka.Services.System;
 
@@ -19,9 +19,9 @@ internal class Program
     {
         SystemServiceClient client = new();
 
-        // Create the Ahsoka Cairo Drawing API and matching Window
-        CairoDrawingWindow window = new(OperatingSystem.IsLinux());
-        CairoDrawingApi api = new(window.Bounds);
+        // Create the Ahsoka Drawing API and matching Window
+        SkiaDrawingWindow window = new(OperatingSystem.IsLinux());
+        var api = window.GetApi();
 
         // Setup Drawing Objects and Values
         var cloudTemp = api.CreateImage("Cloud.png");
@@ -61,9 +61,6 @@ internal class Program
         // Handle the Draw Frame.
         window.DrawFrame += (o, args) =>
         {
-            // Initialize the API for each Frame
-            api.StartFrame(args.Context);
-
             // Clear Background
             api.Clear(backgroundColor);
 
@@ -87,6 +84,7 @@ internal class Program
             float x = cloudPosition.X + (velocity * (float)Math.Cos(angle * Math.PI / 180f));
             float y = cloudPosition.Y + velocity * (float)Math.Sin(angle * Math.PI / 180f);
 
+            
             // Collision Detection.
             if (x < 0 || x > api.ScreenWidth - cloudPosition.Height)
                 angle = 180 - angle;
@@ -95,10 +93,8 @@ internal class Program
 
             cloudPosition = new DrawingRect(x, y, cloudPosition.Width, cloudPosition.Height);
 
-            api.EndFrame();
 
-
-            //Normally we would only draw if there is a change to our model or data
+            // Normally we would only draw if there is a change to our model or data
             // however here we are simply drawing at max framerate to bound our ball around
             // the screen similar to many game loops
             window.RequestDraw();

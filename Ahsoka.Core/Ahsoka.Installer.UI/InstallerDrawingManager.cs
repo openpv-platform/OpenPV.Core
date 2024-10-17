@@ -1,6 +1,6 @@
 ﻿using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing.Skia;
+using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Installer.UI.InstallSystem;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
@@ -71,16 +71,16 @@ internal class InstallerDrawingManager : SkiaDrawingManager
 
             ((StartState)CurrentState).Init(true);
 
-            Refresh();
+            Invalidate();
 
             CheckForInternalAutoload();
 
         }).ContinueWith((result) =>
         {
             wifiViewModel.Init(networkClient);
-            wifiViewModel.NetworkListChanged += (o, e) => { Refresh(); };
-            wifiViewModel.ConnectionStateChanged += (o, e) => { Refresh(); };
-            wifiViewModel.SelectedNetworkChanged += (o, e) => { Refresh(); };
+            wifiViewModel.NetworkListChanged += (o, e) => { Invalidate(); };
+            wifiViewModel.ConnectionStateChanged += (o, e) => { Invalidate(); };
+            wifiViewModel.SelectedNetworkChanged += (o, e) => { Invalidate(); };
         });
     }
 
@@ -92,7 +92,6 @@ internal class InstallerDrawingManager : SkiaDrawingManager
     private void SystemService_AutoLoadReceived(object sender, LoadApplicationCompleteEventArgs e)
     {
         CurrentState = new InstallingState(e.FileName);
-        RequestDrawFrame();
     }
 
     private void CheckForInternalAutoload()
@@ -101,14 +100,12 @@ internal class InstallerDrawingManager : SkiaDrawingManager
         if (File.Exists(autoloadFile))
         {
             CurrentState = new InstallingState(autoloadFile);
-            RequestDrawFrame();
         }
 
         autoloadFile = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.WatchFolder), "autoload.pvx1");
         if (File.Exists(autoloadFile))
         {
             CurrentState = new InstallingState(autoloadFile);
-            RequestDrawFrame();
         }
     }
     #endregion
@@ -134,7 +131,6 @@ internal class InstallerDrawingManager : SkiaDrawingManager
                 DrawingApi.DrawText($"WiFi: {wifiViewModel.SelectedNetwork?.Ssid}", width - 10, height - 8, textInfo);
             else
                 DrawingApi.DrawText($"WiFi: None", width - 10, height - 8, textInfo);
-
         }
     }
 

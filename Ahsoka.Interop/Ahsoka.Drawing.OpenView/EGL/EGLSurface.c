@@ -154,8 +154,12 @@ int CreateEglWindow(OpenPvDisplay *display, OpenPvWindow *window)
 
 	window->egl_surface = weston_platform_create_egl_surface(display->egl.dpy, display->egl.conf, window->native, NULL);
 	wl_surface_commit(window->surface);
-	eglMakeCurrent(window->display->egl.dpy, window->egl_surface, window->egl_surface, window->display->egl.ctx);
 	
+     // Keep Front Buffer for Dirty Rectangles
+    eglSurfaceAttrib(display->egl.dpy, window->egl_surface, EGL_SWAP_BEHAVIOR, EGL_BUFFER_PRESERVED);
+  
+    // Prepare for Drawing (we only use one surface currently)
+    eglMakeCurrent(window->display->egl.dpy, window->egl_surface, window->egl_surface, window->display->egl.ctx);
 	eglSwapInterval(display->egl.dpy, 1);
 
 	return 0;

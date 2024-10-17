@@ -1,38 +1,132 @@
-﻿using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing;
+﻿using Ahsoka.Core.Drawing;
+using Ahsoka.Core.Drawing.Base;
+using Ahsoka.Installer;
+using Ahsoka.ServiceFramework;
+using Ahsoka.System;
+using GLib;
+using Gst;
+using Silk.NET.SDL;
 using SkiaSharp;
-using Ahsoka.Core.Drawing.Skia;
+using System.Drawing.Drawing2D;
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
 public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 {
+    private SKMatrix matrix = SKMatrix.CreateIdentity();
+    public Orientation CurrentOrientation { get; init; }
+
     #region Drawing
+    DrawFrameArgs frameArgs;
+    SKPaint clipRectanglePaint;
 
-    public SkiaDrawingApi(DrawingRect bounds)
+    public SkiaDrawingApi(DrawingRect drawingSize, SKSurface surface, Orientation? drawingOrientation = null)
     {
-        this.ScreenWidth  = (int)bounds.Width;
-        this.ScreenHeight = (int)bounds.Height;
+        drawingOrientation ??= SystemInfo.HardwareInfo.ScreenInfo.CurrentOrientation;
+
+        bool isPortrait = drawingOrientation is Orientation.Rotate90 or Orientation.Rotate270;
+        ScreenHeight = isPortrait ? (int)drawingSize.Width : (int)drawingSize.Height;
+        ScreenWidth = isPortrait ? (int)drawingSize.Height : (int)drawingSize.Width;
+
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Orientation Set to {drawingOrientation}");
+        CurrentOrientation = drawingOrientation.Value;
+
+        InitMatrix((int)drawingSize.Width, (int)drawingSize.Height);
+
+        this.CurrentContext = surface;
+
+        clipRectanglePaint = new SKPaint() { Color = SKColors.Red, Style = SKPaintStyle.Stroke, StrokeWidth = 1f };
+        frameArgs = new DrawFrameArgs() { DrawingApi = this, Height = (int)ScreenHeight, Width = (int)ScreenWidth, Events = new(), ClipRegions = new() };
     }
 
-    public override void StartFrame(DrawFrameArgs frameArgs)
+    internal DrawFrameArgs StartFrame()
     {
-        CurrentContext = frameArgs.Surface;
+        CurrentContext.Canvas.Save();
+        CurrentContext.Canvas.SetMatrix(matrix);
+
+        frameArgs.ClipRegions.Clear();
+        frameArgs.Events.Clear();
+        return frameArgs;
     }
 
-    public override void FinishFrame()
+    internal void FinishFrame(DrawFrameArgs args)
     {
-        //CurrentContext.Flush();
+        CurrentContext.Canvas.Restore();
     }
 
-    public override void SetClip(DrawingRect rect)
+    public override void PushClip(List<DrawingRect> rects)
     {
-        CurrentContext.Canvas.ClipRect(rect.AsSKRect());
+        CurrentContext.Canvas.Save();
+        CurrentContext.Canvas.ClipRegion(rects.AsSKRegion(), SKClipOperation.Intersect);
     }
 
-    public override void ClearClip()
+    public override void PushClip(DrawingRect rects)
     {
-        CurrentContext.Canvas.ClipRect(SKRect.Empty);
+        CurrentContext.Canvas.Save();
+        CurrentContext.Canvas.ClipRect(rects.AsSKRect(), SKClipOperation.Intersect);
+    }
+
+    public override void PopClip()
+    {
+        if (ShowClipRectangles)
+            CurrentContext.Canvas.DrawRegion(frameArgs.ClipRegions.AsSKRegion(), clipRectanglePaint);
+      
+        CurrentContext.Canvas.Restore();
+    }
+
+    public override void DeviceToScreen(ref int x, ref int y)
+    {
+        int origX = x;
+        int origY = y;
+
+        switch (CurrentOrientation)
+        {
+            case Orientation.DefaultOrientation:
+            default:
+                x = origX;
+                y = origY;
+                break;
+
+            case Orientation.Rotate180:
+                x = ScreenWidth - 1 - origX;
+                y = ScreenHeight - 1 - origY;
+                break;
+
+            case Orientation.Rotate90:
+                x = origY;
+                y = ScreenHeight - origX - 1;
+                break;
+
+            case Orientation.Rotate270:
+                x = ScreenWidth - origY - 1;
+                y = origX;
+                break;
+
+        }
+    }
+
+
+    protected void InitMatrix(int width, int height)
+    {
+        switch (CurrentOrientation)
+        {
+            case Orientation.DefaultOrientation:
+            default:
+                break;
+
+            case Orientation.Rotate180:
+                matrix = SKMatrix.Concat(SKMatrix.CreateTranslation(width, height),SKMatrix.CreateRotation((float)Math.PI));
+                break;
+
+            case Orientation.Rotate90:
+                matrix = SKMatrix.Concat(SKMatrix.CreateTranslation(width, 0), SKMatrix.CreateRotation((float)Math.PI / 2));
+                break;
+
+            case Orientation.Rotate270:
+                matrix = SKMatrix.Concat(SKMatrix.CreateTranslation(0, height), SKMatrix.CreateRotation(3 * (float)Math.PI / 2));
+                break;
+        }
+
     }
 
     public override void Clear(DrawingColor color)
@@ -62,7 +156,6 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
             CurrentContext.Canvas.DrawRoundRect(rect, paint);
         }
     }
-
 
     public override void DrawRectangle(DrawingRect rectangle, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth = 1)
     {
@@ -96,7 +189,6 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 
     public override void DrawText(string text, float x, float y, DrawingTextInfo textInfo)
     {
-
         var paint = new SKPaint
         {
             Color = textInfo.Color.AsSKColor(),
@@ -144,6 +236,7 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
         return new DrawingTypeface(SKTypeface.FromFile("Assets/Font.ttf"), typefaceName);
     }
 
+
     #endregion
 }
 
@@ -152,6 +245,22 @@ internal static class SkiaExtensions
     internal static SKRect AsSKRect(this DrawingRect value)
     {
         return new SKRect(value.X, value.Y, value.X + value.Width, value.Y + value.Height);
+    }
+
+    internal static SKRegion AsSKRegion(this List<DrawingRect> value)
+    {
+        List<SKRectI> list = new();
+        foreach (var item in value)
+            list.Add(item.AsSKRectI());
+
+        SKRegion region = new SKRegion();
+        region.SetRects(new ReadOnlySpan<SKRectI>(list.ToArray()));
+        return region;
+    }
+
+    internal static SKRectI AsSKRectI(this DrawingRect value)
+    {
+        return new SKRectI((int)value.X, (int)value.Y, (int)(value.X + value.Width), (int)(value.Y + value.Height));
     }
 
     internal static SKColor AsSKColor(this DrawingColor value)

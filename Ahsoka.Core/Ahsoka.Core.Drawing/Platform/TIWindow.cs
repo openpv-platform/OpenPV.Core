@@ -1,7 +1,7 @@
-﻿using Ahsoka.Core.Drawing.Skia;
+﻿using Ahsoka.Core.Drawing.Platform;
 using System.Runtime.InteropServices;
 
-namespace Ahsoka.Core.Drawing.Skia;
+namespace Ahsoka.Core.Drawing.Platform;
 
 internal class TIWindow : LinuxWindow
 {
@@ -10,7 +10,7 @@ internal class TIWindow : LinuxWindow
 
     }
 
-    class TIDrawingImplementation : DrawingImplementation
+    class TIDrawingImplementation : LinuxDrawingImplementation
     {
         #region Native Interop
         public const string NativeLibraryName = "AhsokaLib/Ahsoka.Drawing.OpenViewLinuxPro.so";

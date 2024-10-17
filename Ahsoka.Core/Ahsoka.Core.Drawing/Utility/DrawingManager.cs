@@ -1,10 +1,10 @@
-﻿
+﻿using Ahsoka.Core.Drawing.Base;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System.Reflection;
 
-namespace Ahsoka.Core.Drawing.Base;
+namespace Ahsoka.Core.Drawing.Utility;
 
 public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDrawingApi
 {
@@ -16,13 +16,14 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
     private const int BorderMargin = 20;
     private const int StatusBarHeight = 26;
 
-    private bool IsTouched = false;
+    private bool invalidateFrame = true; // Draw First Frame
+    private bool isTouched = false;
     private double TouchX = 0;
     private double TouchY = 0;
     #endregion
 
     #region Static
-    public static readonly string RefreshAction = "Refresh";
+    public static readonly string InvalidateAction = "Invalidate";
     #endregion
 
     #region Properties
@@ -45,7 +46,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
 
     protected UIStateBase<IDrawingApi> CurrentState { get; set; }
 
-    protected DrawingAPI DrawingApi { get; set; }
+    protected IDrawingApi DrawingApi { get; set; }
     #endregion
 
     #region Methods
@@ -59,30 +60,40 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
         catch { }
     }
 
-    public void Refresh()
-    {
-        HandleAction(RefreshAction, out bool _);
+    public void Invalidate()
+    {   
+        HandleAction(InvalidateAction, out bool _);
+        invalidateFrame = true;
     }
 
-    protected void RequestDrawFrame()
+    protected void PrepareFrame(DrawFrameArgs args)
     {
-        OnRequestDraw();
-    }
+        args.Height = ScreenHeightWithoutStatus;
 
-    protected void DrawFrame()
-    {
-        //bool noClip = OperatingSystem.IsMacOS() || OperatingSystem.IsWindows();
-
-        // Desktop Doesn't Preserve Backbuffer
-        /*if (IsTouched && noClip == false) // Handle Touching a Button
+        foreach (var eventItem in args.Events)
         {
-            // Find the Touched Rectangle...this is all we will draw
-            var ItemTouched = TouchAreas.Values.FirstOrDefault(x => x.Rect.Contains((float)TouchX, (float)TouchY));
-            if (ItemTouched != null)
-                DrawingApi.SetClip(ItemTouched.Rect);
-        }*/
+            int x = eventItem.X;
+            int y = eventItem.Y;
 
+            DrawingApi.DeviceToScreen(ref x, ref y);
 
+            var inputTouchEvent = new TouchEventArgs()
+            {
+                Event = eventItem.Event,
+                Index = 1,
+                X = x,
+                Y = y,
+            };
+
+            HandleInputEvent(inputTouchEvent);
+        }
+
+        // Should Render
+        args.ShouldRender = invalidateFrame || args.Events.Count > 0; // Touch Events
+    }
+
+    protected void DrawFrame(DrawFrameArgs args)
+    {
         // Prepare Drawing Data
         foreach (var item in TouchAreas.Values)
             item.Bitmap?.Dispose();
@@ -91,10 +102,10 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
 
         // Draw Layers
         DrawBackground();
-        CurrentState.DrawState(DrawingApi, DrawingApi.ScreenWidth, ScreenHeightWithoutStatus);
+        CurrentState.DrawState(args);
         DrawActions();
 
-        //DrawingApi.ClearClip();
+        invalidateFrame = false;
     }
 
     public void Close(int result = 0)
@@ -127,7 +138,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
         DrawingColor strokeColor = new(0xFF444444);
         DrawingColor fillColor;
 
-        if (action.Rect.Contains((int)TouchX, (int)TouchY) && IsTouched)
+        if (action.Rect.Contains((int)TouchX, (int)TouchY) && isTouched)
             fillColor = DrawingColors.DodgerBlue;
         else
             fillColor = action.Color != DrawingColor.Empty ? action.Color : DrawingColors.Gainsboro;
@@ -198,7 +209,6 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
 
     #region Abstract
     protected abstract DrawingTypeface OnCreateTypeFace();
-    protected abstract void OnRequestDraw();
     protected virtual void OnDrawBackground() { }
     protected abstract void OnInit();
     protected abstract void OnClose(int result);
@@ -214,34 +224,31 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
 
         if (args.Event == TouchEvent.Pressed)
         {
-            IsTouched = true;
+            isTouched = true;
         }
         else if (args.Event == TouchEvent.Released) // Handle Button Release if still in hit rectangle
         {
             // Get Flags
             foreach (var action in TouchAreas)
             {
-                if (action.Value.Rect.Contains(args.X, args.Y) && IsTouched)
+                if (action.Value.Rect.Contains(args.X, args.Y) && isTouched)
                 {
                     HandleAction(action.Key, out handled);
                 }
             }
 
-            IsTouched = false;
+            isTouched = false;
         }
 
-        CurrentState.HandleTouch(args);
-
         if (!handled)
-            RequestDrawFrame();
+            CurrentState.HandleTouch(args);
     }
 
     public void HandleAction(string action, out bool handled)
     {
         CurrentState = CurrentState.HandleAction(action);
         handled = true;
-
-        RequestDrawFrame();
+       
     }
 
     public DrawingRect GetActionPosition(int buttonPosition, int buttonSize)

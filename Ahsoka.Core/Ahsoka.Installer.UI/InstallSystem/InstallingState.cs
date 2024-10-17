@@ -70,8 +70,12 @@ internal class InstallingState : InstallerUIStateBase, IInstallerUI
     }
 
 
-    protected override void OnDrawState(IDrawingApi drawingApi, int width, int height)
+    protected override void OnDrawState(DrawFrameArgs args)
     {
+        IDrawingApi drawingApi = args.DrawingApi;
+        int width = args.Width;
+        int height = args.Height;
+
         if (keyboardShown)
         {
             DrawPasswordScreen(drawingApi, width, height);
@@ -91,9 +95,9 @@ internal class InstallingState : InstallerUIStateBase, IInstallerUI
 
         drawingApi.DrawRoundRectangle(new DrawingRect(left, top, completeBarSizeInPixels, rectHeight), 5f, DrawingColors.DarkGray, DrawingColors.Gainsboro, 1);
 
-        drawingApi.SetClip(new DrawingRect(left, top, rectWidth, rectHeight));
+        drawingApi.PushClip(new DrawingRect(left, top, rectWidth, rectHeight));
         drawingApi.DrawRoundRectangle(new DrawingRect(left, top, completeBarSizeInPixels, rectHeight), 5f, DrawingColors.Transparent, DrawingColors.DodgerBlue, 0);
-        drawingApi.ClearClip();
+        drawingApi.PopClip();
 
         var textPaint = new DrawingTextInfo
         {
@@ -169,7 +173,7 @@ internal class InstallingState : InstallerUIStateBase, IInstallerUI
             if (!string.IsNullOrEmpty(inputPassword))
                 inputPassword = inputPassword.Remove(inputPassword.Length - 1);
         }
-        else if (action == InstallerDrawingManager.RefreshAction)
+        else if (action == InstallerDrawingManager.InvalidateAction)
         {
             return this;
         }
@@ -181,7 +185,7 @@ internal class InstallingState : InstallerUIStateBase, IInstallerUI
         else if (action == "Enter Password")
         {
             keyboardShown = false;
-            InstallerDrawingManager.Default.Refresh();
+            InstallerDrawingManager.Default.Invalidate();
             ExecuteInstall();
         }
         else if (action == "Cancel")
@@ -210,7 +214,7 @@ internal class InstallingState : InstallerUIStateBase, IInstallerUI
         if (!info.UpdatePercentOnly)
             Message = info.Message;
 
-        InstallerDrawingManager.Default.Refresh();
+        InstallerDrawingManager.Default.Invalidate();
         AhsokaLogging.LogMessage(AhsokaVerbosity.High, info.PercentComplete.ToString());
     }
 
@@ -227,7 +231,7 @@ internal class InstallingState : InstallerUIStateBase, IInstallerUI
             Password = String.Empty;
             keyboardShown = true;
 
-            InstallerDrawingManager.Default.Refresh();
+            InstallerDrawingManager.Default.Invalidate();
         }
         else
         {
@@ -235,7 +239,7 @@ internal class InstallingState : InstallerUIStateBase, IInstallerUI
             keyboardShown = false;
             this.info = info;
             InstallerDrawingManager.Default.HandleAction("Complete", out bool _);
-            InstallerDrawingManager.Default.Refresh();
+            InstallerDrawingManager.Default.Invalidate();
         }
     }
     #endregion

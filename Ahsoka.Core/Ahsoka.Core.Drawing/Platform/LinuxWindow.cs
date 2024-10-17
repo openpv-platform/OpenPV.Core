@@ -1,36 +1,38 @@
 ﻿using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing.Skia;
+using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.ServiceFramework;
 using SkiaSharp;
 using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using Task = System.Threading.Tasks.Task;
-using TouchEventArgs = Ahsoka.Core.Drawing.Base.TouchEventArgs;
+using TouchEventArgs = Ahsoka.Core.Drawing.Utility.TouchEventArgs;
 
-namespace Ahsoka.Core.Drawing.Skia;
+namespace Ahsoka.Core.Drawing.Platform;
 
 internal class LinuxWindow : IDrawingWindow
 {
-    DrawingImplementation impl;
+    LinuxDrawingImplementation impl;
     int sampleCount = 0;
     int stencilBits = 0;
     uint gl_format = 0x8058;
     DrawingRect windowSize;
 
     readonly CancellationTokenSource cancelTokenSource = new();
-    readonly BlockingCollection<object> eventQueue = new();
-    SkiaDrawingWindow apiWindow;
+    readonly BlockingCollection<EventHandler> eventQueue = new();
+
+    DrawingWindow drawingWindow;
     SKSurface surface;
     GRContext context;
 
     // Embedded Context
     Task touchHandler;
 
-    protected LinuxWindow(DrawingImplementation impl)
+    protected LinuxWindow(LinuxDrawingImplementation impl)
     {
         this.impl = impl;
     }
 
-    void IDrawingWindow.CreateWindow(SkiaDrawingWindow apiWindow, ref DrawingRect rect, bool fullScreen)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, ref DrawingRect rect, bool fullScreen)
     {
         InitWindow(apiWindow, ref rect, fullScreen);
 
@@ -43,7 +45,7 @@ internal class LinuxWindow : IDrawingWindow
                 {
                     if (impl.UpdateTouchData(ref data, 1000))
                     {
-                        eventQueue.Add(new TouchEventArgs()
+                        apiWindow.AddTouchEvent(new TouchEventArgs()
                         {
                             Event = data.Event,
                             Index = data.Index,
@@ -57,11 +59,13 @@ internal class LinuxWindow : IDrawingWindow
             }, cancelTokenSource.Token);
         }
         catch (OperationCanceledException) { }
+
+        return new SkiaDrawingApi(rect, surface);
     }
 
-    private void InitWindow(SkiaDrawingWindow apiWindow, ref DrawingRect rect, bool fullScreen)
+    private void InitWindow(DrawingWindow apiWindow, ref DrawingRect rect, bool fullScreen)
     {
-        this.apiWindow = apiWindow;
+        this.drawingWindow = apiWindow;
 
         int i = impl.InitWindow(0, 0, (int)rect.Width, (int)rect.Height, fullScreen);
         if (i != 0)
@@ -104,57 +108,29 @@ internal class LinuxWindow : IDrawingWindow
         // TODO: Add destroyContext() call to clean up and reclaim weston / egl memory
     }
 
-    void IDrawingWindow.QueueInvoke(EventHandler handler)
+    public void ShowAndRun()
+    {
+        // Main Run Loop
+        while(!cancelTokenSource.IsCancellationRequested)
+        {
+            while (eventQueue.Count > 0)
+                eventQueue.Take().Invoke(this,EventArgs.Empty);
+           
+            // Reset Context
+            if (drawingWindow.HandleFrame())
+                context.Flush(true, false);
+            
+            impl.SwapBuffers();
+        }
+    }
+
+    void IDrawingWindow.HandleEvent(EventHandler handler)
     {
         eventQueue.Add(handler);
     }
-
-    void IDrawingWindow.RequestDraw(DrawingRect bounds)
-    {
-        eventQueue.Add(new DrawFrameArgs()
-        {
-            Surface = surface,
-            Height = (int)bounds.Height,
-            Width = (int)bounds.Width
-        });
-    }
-
-    public void ShowAndRun()
-    {
-        // Show (First Draw)
-        apiWindow.RequestDraw();
-
-        try
-        {
-            while (eventQueue.TryTake(out object messageData, -1, cancelTokenSource.Token))
-            {
-                if (messageData is TouchEventArgs touchData)
-                {
-                    apiWindow.RaiseTouchEvent(touchData);
-
-                    touchData.Handled = true;
-                }
-                else if (messageData is DrawFrameArgs frameData)
-                {
-                    // Reset Context
-                    apiWindow.RaiseDrawEvent(frameData);
-
-                    context.Flush(true, true);
-
-                    // GL Swap Buffers
-                    impl.SwapBuffers();
-                }
-                else if (messageData is EventHandler handler)
-                {
-                    handler.Invoke(this, EventArgs.Empty);
-                }
-            }
-        }
-        catch (OperationCanceledException) { }
-    }
 }
 
-public abstract class DrawingImplementation
+public abstract class LinuxDrawingImplementation
 {
     internal abstract int InitWindow(int x, int y, int w, int h, bool fullscreen);
 
@@ -173,3 +149,18 @@ public abstract class DrawingImplementation
     internal abstract void DestroyContext();
 }
 
+[StructLayout(LayoutKind.Explicit, Pack = 1)]
+internal struct TouchData
+{
+    [FieldOffset(0)]
+    public TouchEvent Event;
+
+    [FieldOffset(4)]
+    public int X;
+
+    [FieldOffset(8)]
+    public int Y;
+
+    [FieldOffset(12)]
+    public int Index;
+}

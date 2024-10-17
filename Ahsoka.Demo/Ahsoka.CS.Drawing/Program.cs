@@ -1,5 +1,6 @@
-﻿using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing.Skia;
+﻿using Ahsoka.Core.Drawing;
+using Ahsoka.Core.Drawing.Base;
+using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Dispatch;
 using Ahsoka.Services.System;
 
@@ -17,10 +18,12 @@ internal class Program
     /// <param name="args"></param>
     private static void Main(string[] args)
     {
+        // Add For Communication with Display
         SystemServiceClient client = new();
+        Dispatcher.Default.AddStartupItem(client);
 
         // Create the Ahsoka Drawing API and matching Window
-        SkiaDrawingWindow window = new(OperatingSystem.IsLinux());
+        DrawingWindow window = new(OperatingSystem.IsLinux());
         var api = window.GetApi();
 
         // Setup Drawing Objects and Values
@@ -48,18 +51,45 @@ internal class Program
         float angle = (float)Math.PI * 4;
         bool touched = false;
 
-        // Handle the Touch Recieved Event
-        // here we will simply change the color of the background on the touch
-        window.TouchReceived += (o, args) =>
+        window.PrepareFrame += (o, args) =>
         {
-            if (args.Event == TouchEvent.Pressed)
-                touched = true;
-            else if (args.Event == TouchEvent.Released)
-                touched = false;
+            // Handle Events for Frame
+            foreach(var eventItem in args.Events)
+            {
+                if (eventItem.Event == TouchEvent.Pressed)
+                    touched = true;
+                else if (eventItem.Event == TouchEvent.Released)
+                    touched = false;
+            }
+
+            // Push Previous Frames Cloud Position since we moved the cloud.
+            // This is to tell the render pass to draw over the last frames region
+            // We inflate by 4 to account for Stroke
+            args.ClipRegions.Add(cloudPosition.GetInflatedRectangle(4, 4));
+
+            // Calculate new Cloud Position
+            float x = cloudPosition.X + (velocity * (float)Math.Cos(angle * Math.PI / 180f));
+            float y = cloudPosition.Y + velocity * (float)Math.Sin(angle * Math.PI / 180f);
+
+            // Collision Detection.
+            if (x < 0 || x > api.ScreenWidth - cloudPosition.Height)
+                angle = 180 - angle;
+            else if (y < 0 || y > api.ScreenHeight - cloudPosition.Height)
+                angle = 360 - angle;
+
+            cloudPosition = new DrawingRect(x, y, cloudPosition.Width, cloudPosition.Height);
+
+            // Push New Cloud Position since we moved the cloud.
+            // This is to tell the render pass to include this frames Rectangle in th eDraw
+            args.ClipRegions.Add(cloudPosition.GetInflatedRectangle(4, 4));
+
+            // Enable Clipping and Drawing
+            args.ShouldClip = true ;
+            args.ShouldRender = true;
         };
 
         // Handle the Draw Frame.
-        window.DrawFrame += (o, args) =>
+        window.RenderFrame += (o, args) =>
         {
             // Clear Background
             api.Clear(backgroundColor);
@@ -79,25 +109,6 @@ internal class Program
                 cloudPosition.X + cloudPosition.Width / 2,
                 cloudPosition.Y + cloudPosition.Height / 2 + 32,
                 textInfo);
-
-            // Calculate new Cloud Position
-            float x = cloudPosition.X + (velocity * (float)Math.Cos(angle * Math.PI / 180f));
-            float y = cloudPosition.Y + velocity * (float)Math.Sin(angle * Math.PI / 180f);
-
-            
-            // Collision Detection.
-            if (x < 0 || x > api.ScreenWidth - cloudPosition.Height)
-                angle = 180 - angle;
-            else if (y < 0 || y > api.ScreenHeight - cloudPosition.Height)
-                angle = 360 - angle;
-
-            cloudPosition = new DrawingRect(x, y, cloudPosition.Width, cloudPosition.Height);
-
-
-            // Normally we would only draw if there is a change to our model or data
-            // however here we are simply drawing at max framerate to bound our ball around
-            // the screen similar to many game loops
-            window.RequestDraw();
         };
 
         // Start Dispatcher for System with Our Window Invoker

@@ -75,7 +75,7 @@ internal class SparkConnectionState : InstallerUIStateBase
                 percentComplete = notificationResult.PercentCompleted;
             }
 
-            InstallerDrawingManager.Default.Refresh();
+            InstallerDrawingManager.Default.Invalidate();
         }
         else if (e.TransportId == SparkMessageTypes.Ids.AppChangeNotification)
         {
@@ -87,11 +87,15 @@ internal class SparkConnectionState : InstallerUIStateBase
     private void WiFiViewModel_ConnectionStateChanged(object sender, EventArgs e)
     {
         // Refresh Screen
-        InstallerDrawingManager.Default.Refresh();
+        InstallerDrawingManager.Default.Invalidate();
     }
 
-    protected override void OnDrawState(IDrawingApi drawingApi, int width, int height)
+    protected override void OnDrawState(DrawFrameArgs args)
     {
+        IDrawingApi drawingApi = args.DrawingApi;
+        int width = args.Width;
+        int height = args.Height;
+
         var cancel = drawingApi.CreateImage("Assets/ArrowLeft.png");
         InstallerDrawingManager.Default.AddAction("Cancel", InstallerDrawingManager.Default.GetActionPosition(4, cancel.Width), cancel);
 
@@ -191,9 +195,9 @@ internal class SparkConnectionState : InstallerUIStateBase
 
         drawingApi.DrawRoundRectangle(new DrawingRect(left, top, completeBarSizeInPixels, rectHeight), 5f, DrawingColors.DarkGray, DrawingColors.Gainsboro, 1);
 
-        drawingApi.SetClip(new DrawingRect(left, top, rectWidth, rectHeight));
+        drawingApi.PushClip(new DrawingRect(left, top, rectWidth, rectHeight));
         drawingApi.DrawRoundRectangle(new DrawingRect(left, top, completeBarSizeInPixels, rectHeight), 5f, DrawingColors.Transparent, DrawingColors.DodgerBlue, 0);
-        drawingApi.ClearClip();
+        drawingApi.PopClip();
 
 
         var textInfo = new DrawingTextInfo
@@ -211,7 +215,7 @@ internal class SparkConnectionState : InstallerUIStateBase
     {
         // Change State While we execute the Download
         state = SparkState.CheckingForDownloads;
-        InstallerDrawingManager.Default.Refresh();
+        InstallerDrawingManager.Default.Invalidate();
 
         Task.Run(() =>
         {
@@ -230,19 +234,19 @@ internal class SparkConnectionState : InstallerUIStateBase
 
                 Console.WriteLine("Successful Download");
                 state = SparkState.DisplayingDownloads;
-                InstallerDrawingManager.Default.Refresh();
+                InstallerDrawingManager.Default.Invalidate();
             }
             else if (releases.IsCompletedSuccessfully)
             {
                 Console.WriteLine("No Releases Available");
                 state = SparkState.NoPackages;
-                InstallerDrawingManager.Default.Refresh();
+                InstallerDrawingManager.Default.Invalidate();
             }
             else
             {
                 Console.WriteLine("Error During Release Check");
                 state = SparkState.Error;
-                InstallerDrawingManager.Default.Refresh();
+                InstallerDrawingManager.Default.Invalidate();
             }
         });
     }
@@ -251,7 +255,7 @@ internal class SparkConnectionState : InstallerUIStateBase
     {
         // Change State While we execute the Download
         state = SparkState.DownloadingPackage;
-        InstallerDrawingManager.Default.Refresh();
+        InstallerDrawingManager.Default.Invalidate();
 
         installPath = SystemInfo.HardwareInfo.TargetPathInfo.GetTempFileName();
         Console.WriteLine($"Requesting Download to {installPath}");
@@ -271,7 +275,7 @@ internal class SparkConnectionState : InstallerUIStateBase
                 // Status Completed
                 state = SparkState.PackageReady;
 
-                InstallerDrawingManager.Default.Refresh();
+                InstallerDrawingManager.Default.Invalidate();
 
             }
         });

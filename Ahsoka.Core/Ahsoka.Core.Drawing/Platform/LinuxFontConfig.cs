@@ -1,7 +1,7 @@
 ﻿using Ahsoka.ServiceFramework;
 using System.Runtime.InteropServices;
 
-namespace Ahsoka.Core.Drawing.Skia;
+namespace Ahsoka.Core.Drawing.Platform;
 
 internal static class LinuxFontConfig
 {

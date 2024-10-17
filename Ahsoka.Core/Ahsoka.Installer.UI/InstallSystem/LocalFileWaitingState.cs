@@ -28,7 +28,7 @@ internal class LocalFileWaitingState : InstallerUIStateBase
         fileList = new InstallerFileList();
         fileList.FileChanged += (o, e) =>
         {
-            InstallerDrawingManager.Default.Refresh();
+            InstallerDrawingManager.Default.Invalidate();
         };
 
         fileList.Listen = true;
@@ -47,8 +47,11 @@ internal class LocalFileWaitingState : InstallerUIStateBase
         }
     }
 
-    protected override void OnDrawState(IDrawingApi drawingApi, int width, int height)
+    protected override void OnDrawState(DrawFrameArgs args)
     {
+        IDrawingApi drawingApi = args.DrawingApi;
+        int width = args.Width;
+        int height = args.Height;
         if (!fileList.HasInstallPackage)
         {
             DrawWaitingForUsbFile(drawingApi, width, height);

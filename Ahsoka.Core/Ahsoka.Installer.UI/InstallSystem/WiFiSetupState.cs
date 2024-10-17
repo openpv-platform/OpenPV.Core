@@ -18,8 +18,12 @@ internal class WiFiSetupState : InstallerUIStateBase
 
     }
 
-    protected override void OnDrawState(IDrawingApi drawingApi, int width, int height)
+    protected override void OnDrawState(DrawFrameArgs args)
     {
+        IDrawingApi drawingApi = args.DrawingApi;
+        int width = args.Width;
+        int height = args.Height;
+
         if (InstallerDrawingManager.Default.WiFiViewModel.ConnectionState == Services.Network.WirelessConnectionState.ClientConnected)
         {
             // Draw Waiting for TimeSync

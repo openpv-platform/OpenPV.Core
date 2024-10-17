@@ -68,8 +68,12 @@ internal class StartState : InstallerUIStateBase
         });
     }
 
-    protected override void OnDrawState(IDrawingApi drawingApi, int width, int height)
+    protected override void OnDrawState(DrawFrameArgs args)
     {
+        IDrawingApi drawingApi = args.DrawingApi;
+        int width = args.Width;
+        int height = args.Height;
+
         if (isReady && !showHelp && !showResetOptions && !isDeleting)
         {
             timer.Start();
@@ -170,7 +174,7 @@ internal class StartState : InstallerUIStateBase
                 ApplicationDataPaths.ClearAppData(true, true);
             }
 
-            InstallerDrawingManager.Default.Refresh();
+            InstallerDrawingManager.Default.Invalidate();
 
 
         }

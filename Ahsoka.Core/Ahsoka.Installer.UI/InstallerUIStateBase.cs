@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Core.Drawing;
+using Ahsoka.Core.Drawing.Utility;
 
 namespace Ahsoka.Installer.UI;
 

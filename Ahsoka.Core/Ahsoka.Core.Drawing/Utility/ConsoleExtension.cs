@@ -1,18 +1,18 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Drawing.Utility;
 
 public static class ConsoleExtension
 {
     const int SW_HIDE = 0;
     const int SW_SHOW = 5;
-    readonly static IntPtr handle = GetConsoleWindow();
+    readonly static nint handle = GetConsoleWindow();
 
     [DllImport("kernel32.dll")]
-    static extern IntPtr GetConsoleWindow();
+    static extern nint GetConsoleWindow();
 
     [DllImport("user32.dll")]
-    static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+    static extern bool ShowWindow(nint hWnd, int nCmdShow);
 
     public static void Hide()
     {

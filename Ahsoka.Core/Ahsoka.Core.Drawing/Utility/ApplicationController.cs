@@ -1,6 +1,6 @@
 ﻿using Ahsoka.Utility;
 
-namespace Ahsoka.Core.Drawing;
+namespace Ahsoka.Core.Drawing.Utility;
 
 public class ApplicationController
 {

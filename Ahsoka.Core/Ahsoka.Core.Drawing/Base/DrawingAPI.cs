@@ -1,64 +1,19 @@
 ﻿using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing.Skia;
 
 namespace Ahsoka.Core.Drawing;
-
-public interface IDrawingManager
-{
-    void PrepareDrawingApi();
-    void Init();
-    void ShowAndRun();
-}
-
-public interface IDrawingInfo
-{
-    int ScreenWidth { get; }
-    int ScreenHeight { get; }
-}
-
-public interface IDrawingApi : IDrawingInfo
-{
-    #region DrawingAPI 
-    T GetNativeApi<T>() where T : class;
-
-    void StartFrame(DrawFrameArgs drawFrameData);
-    void FinishFrame();
-    
-    // DrawingFunctions
-    void Clear(DrawingColor color);
-    void DrawRectangle(DrawingRect rectangle, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
-    void DrawRoundRectangle(DrawingRect rectangle, float cornerRadius, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
-    void DrawCircle(float centerX, float centerY, float radius, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
-    void DrawBitmap(DrawingImage image, DrawingRect rect);
-    void DrawText(string text, float x, float y, DrawingTextInfo textInfo);
-    float MeasureText(string text, DrawingTextInfo textInfo);
-
-    // Constructors
-    DrawingImage CreateImage(string fileName);
-    DrawingImage CreateImage(byte[] data);
-    DrawingTypeface LoadTypeface(string fileName, string typefaceName);
-    void SetClip(DrawingRect drawingRect);
-    void ClearClip();
-    #endregion
-}
 
 public abstract class DrawingApiBase<Context> : IDrawingApi where Context : class
 {
     public Context CurrentContext { get; protected set; }
 
+    public bool ShowClipRectangles { get; set; }
+
     public int ScreenWidth { get; protected set; }
     public int ScreenHeight { get; protected set; }
 
-    public T GetNativeApi<T>() where T : class
-    {
-        return this as T;
-    }
-
-    public abstract void StartFrame(DrawFrameArgs frameArgs);
-    public abstract void FinishFrame();
-
-    public abstract void SetClip(DrawingRect rect);
-    public abstract void ClearClip();
+    public abstract void PushClip(List<DrawingRect> rects);
+    public abstract void PushClip(DrawingRect rect);
+    public abstract void PopClip();
 
     public abstract void Clear(DrawingColor color);
     public abstract DrawingImage CreateImage(string fileName);
@@ -72,4 +27,6 @@ public abstract class DrawingApiBase<Context> : IDrawingApi where Context : clas
     public abstract void DrawRectangle(DrawingRect rectangle, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
     public abstract void DrawRoundRectangle(DrawingRect rectangle, float cornerRadius, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
     public abstract void DrawText(string text, float x, float y, DrawingTextInfo textInfo);
+
+    public abstract void DeviceToScreen(ref int x, ref int y);
 }

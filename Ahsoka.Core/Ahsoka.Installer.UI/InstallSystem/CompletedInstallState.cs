@@ -17,8 +17,12 @@ internal class CompletedInstallState : InstallerUIStateBase
         this.info = info;
     }
 
-    protected override void OnDrawState(IDrawingApi drawingApi, int width, int height)
+    protected override void OnDrawState(DrawFrameArgs args)
     {
+        IDrawingApi drawingApi = args.DrawingApi;
+        int width = args.Width;
+        int height = args.Height;
+
         DrawingImage installImage;
 
         if (info.Result == Services.Install.InstallResult.Success)
@@ -60,7 +64,7 @@ internal class CompletedInstallState : InstallerUIStateBase
 
         if (count > 0)
         {
-            InstallerDrawingManager.Default.Refresh();
+            InstallerDrawingManager.Default.Invalidate();
             count--;
         }
         else
@@ -72,7 +76,7 @@ internal class CompletedInstallState : InstallerUIStateBase
 
     protected override InstallerUIStateBase OnHandleAction(string action)
     {
-        if (action == InstallerDrawingManager.RefreshAction)
+        if (action == InstallerDrawingManager.InvalidateAction)
         {
             return this;
         }

@@ -1,7 +1,7 @@
-﻿using Ahsoka.Core.Drawing.Skia;
+﻿using Ahsoka.Core.Drawing.Platform;
 using System.Runtime.InteropServices;
 
-namespace Ahsoka.Core.Drawing.Skia;
+namespace Ahsoka.Core.Drawing.Platform;
 
 internal class STWindow : LinuxWindow
 {
@@ -10,7 +10,7 @@ internal class STWindow : LinuxWindow
 
     }
 
-    class STDrawingImplementation : DrawingImplementation
+    class STDrawingImplementation : LinuxDrawingImplementation
     {
         #region Native Interop
         public const string NativeLibraryName = "AhsokaLib/Ahsoka.Drawing.OpenViewLinux.so";

@@ -1,5 +1,7 @@
 ﻿using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
+using Ahsoka.System;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -15,6 +17,23 @@ internal class CompletedInstallState : InstallerUIStateBase
     public CompletedInstallState(Services.Install.InstallCompleteInfo info)
     {
         this.info = info;
+
+        Task.Run(() =>
+        {
+            while (count > 0)
+            {
+                Task.Delay(1000).Wait();
+                InstallerDrawingManager.Default.Invalidate();
+                count--;
+            }
+            InstallerDrawingManager.Default.SystemClient.RequestServiceShutdown(Services.System.ShutdownTypes.Reboot);
+            if (SystemInfo.IsDesktop())
+            {
+                ApplicationContext.Exit();
+                Environment.Exit(0);
+            }
+        
+        });
     }
 
     protected override void OnDrawState(DrawFrameArgs args)
@@ -59,18 +78,6 @@ internal class CompletedInstallState : InstallerUIStateBase
         int result = (int)info.Result;
 
         drawingApi.DrawText(result.ToString(), installImagePosition.X + 92, installImagePosition.Y + 30, textInfo);
-
-        Task.Delay(1000).Wait();
-
-        if (count > 0)
-        {
-            InstallerDrawingManager.Default.Invalidate();
-            count--;
-        }
-        else
-        {
-            InstallerDrawingManager.Default.SystemClient.RequestServiceShutdown(Services.System.ShutdownTypes.Reboot);
-        }
 
     }
 

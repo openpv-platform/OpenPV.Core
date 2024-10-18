@@ -4,7 +4,7 @@ namespace Ahsoka.Core.Drawing;
 
 public abstract class DrawingApiBase<Context> : IDrawingApi where Context : class
 {
-    public Context CurrentContext { get; protected set; }
+    internal Context CurrentContext { get; set; }
 
     public bool ShowClipRectangles { get; set; }
 

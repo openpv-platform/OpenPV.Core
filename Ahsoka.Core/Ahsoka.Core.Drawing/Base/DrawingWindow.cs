@@ -1,6 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.System;
-using Silk.NET.SDL;
 using SkiaSharp;
 using DateTime = System.DateTime;
 using TouchEventArgs = Ahsoka.Core.Drawing.Utility.TouchEventArgs;
@@ -31,6 +30,11 @@ public class DrawingWindow
 
     #region Properties
     public IDrawingApi GetApi()
+    {
+        return api;
+    }
+
+    public SkiaDrawingApi GetSkiaApi()
     {
         return api;
     }

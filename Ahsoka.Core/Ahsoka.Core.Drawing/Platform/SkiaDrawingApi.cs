@@ -3,13 +3,7 @@ using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
-using GLib;
-using Gst;
-using Silk.NET.SDL;
 using SkiaSharp;
-using System.Drawing.Drawing2D;
-
-#pragma warning disable CS0618 // Type or member is obsolete
 
 public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 {
@@ -19,6 +13,11 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
     #region Drawing
     DrawFrameArgs frameArgs;
     SKPaint clipRectanglePaint;
+
+    public SKSurface GetSurface()
+    {
+        return CurrentContext;
+    }
 
     public SkiaDrawingApi(DrawingRect drawingSize, SKSurface surface, Orientation? drawingOrientation = null)
     {
@@ -189,20 +188,25 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 
     public override void DrawText(string text, float x, float y, DrawingTextInfo textInfo)
     {
+        var font = new SKFont()
+        {
+            Size = textInfo.TextSize,
+            Typeface = textInfo.Typeface.AsSKTypeface(),
+            Embolden = textInfo.TextWeight == DrawingTextWeight.Bold,
+        };
+
         var paint = new SKPaint
         {
             Color = textInfo.Color.AsSKColor(),
-            TextSize = textInfo.TextSize,
-            Typeface = textInfo.Typeface.AsSKTypeface(),
-            FakeBoldText = textInfo.TextWeight == DrawingTextWeight.Bold,
-            TextAlign = textInfo.Alignment == DrawingTextAlignment.Left ? SKTextAlign.Left :
-                                                textInfo.Alignment == DrawingTextAlignment.Center ? SKTextAlign.Center :
-                                                SKTextAlign.Right,
             BlendMode = SKBlendMode.Multiply,
-            IsAntialias = true
+            IsAntialias = true,
         };
 
-        CurrentContext.Canvas.DrawText(text, x, y, paint);
+        var alignment = textInfo.Alignment == DrawingTextAlignment.Left ? SKTextAlign.Left :
+                                                textInfo.Alignment == DrawingTextAlignment.Center ? SKTextAlign.Center :
+                                                SKTextAlign.Right;
+
+        CurrentContext.Canvas.DrawText(text, x, y, alignment, font, paint);
     }
 
 
@@ -220,23 +224,21 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 
     public override float MeasureText(string text, DrawingTextInfo textInfo)
     {
-        var paint = new SKPaint()
+
+        var font = new SKFont()
         {
-            TextSize = textInfo.TextSize,
-            Color = textInfo.Color.AsSKColor(),
+            Size = textInfo.TextSize,
             Typeface = textInfo.Typeface.AsSKTypeface(),
-            FakeBoldText = textInfo.TextWeight == DrawingTextWeight.Bold,
+            Embolden = textInfo.TextWeight == DrawingTextWeight.Bold,
         };
 
-        return paint.MeasureText(text);
+        return font.MeasureText(text);
     }
 
     public override DrawingTypeface LoadTypeface(string fileName, string typefaceName)
     {
         return new DrawingTypeface(SKTypeface.FromFile("Assets/Font.ttf"), typefaceName);
     }
-
-
     #endregion
 }
 

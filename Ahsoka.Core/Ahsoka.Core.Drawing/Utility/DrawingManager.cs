@@ -16,7 +16,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
     private const int BorderMargin = 20;
     private const int StatusBarHeight = 26;
 
-    private bool invalidateFrame = true; // Draw First Frame
+    private int invalidateFrame = 1; // Draw First Frame
     private bool isTouched = false;
     private double TouchX = 0;
     private double TouchY = 0;
@@ -63,7 +63,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
     public void Invalidate()
     {   
         HandleAction(InvalidateAction, out bool _);
-        invalidateFrame = true;
+        invalidateFrame++;
     }
 
     protected void PrepareFrame(DrawFrameArgs args)
@@ -89,7 +89,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
         }
 
         // Should Render
-        args.ShouldRender = invalidateFrame || args.Events.Count > 0; // Touch Events
+        args.ShouldRender = invalidateFrame > 0 || args.Events.Count > 0; // Touch Events
     }
 
     protected void DrawFrame(DrawFrameArgs args)
@@ -105,7 +105,8 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
         CurrentState.DrawState(args);
         DrawActions();
 
-        invalidateFrame = false;
+        if (invalidateFrame > 0)
+            invalidateFrame--;
     }
 
     public void Close(int result = 0)

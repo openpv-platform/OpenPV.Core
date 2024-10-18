@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Core.Drawing.Base;
+using SkiaSharp;
 
 namespace Ahsoka.Core.Drawing;
 
@@ -18,15 +19,29 @@ public abstract class DrawingApiBase<Context> : IDrawingApi where Context : clas
     public abstract void Clear(DrawingColor color);
     public abstract DrawingImage CreateImage(string fileName);
     public abstract DrawingImage CreateImage(byte[] data);
-    public abstract DrawingTypeface LoadTypeface(string fileName, string typefaceName);
 
-    public abstract float MeasureText(string text, DrawingTextInfo textInfo);
 
     public abstract void DrawBitmap(DrawingImage image, DrawingRect rect);
+
+    public abstract void DrawCircle(float centerX, float centerY, float radius, DrawingPaint paint);
     public abstract void DrawCircle(float centerX, float centerY, float radius, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
+   
+    public abstract void DrawRectangle(DrawingRect rectangle, DrawingPaint paint);
     public abstract void DrawRectangle(DrawingRect rectangle, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
+
+    public abstract void DrawRoundRectangle(DrawingRect rectangle, float cornerRadius, DrawingPaint paint);
     public abstract void DrawRoundRectangle(DrawingRect rectangle, float cornerRadius, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
+
+    public abstract DrawingTypeface LoadTypeface(string fileName, string typefaceName);
+    public abstract float MeasureText(string text, DrawingTextInfo textInfo);
     public abstract void DrawText(string text, float x, float y, DrawingTextInfo textInfo);
+
+    public abstract void PushMatrix(params DrawingMatrix[] matrices);
+    public abstract void PopMatrix();
+    public abstract DrawingMatrix CreateIdentityMatrix();
+    public abstract DrawingMatrix CreateRotationMatrix(float radians);
+    public abstract DrawingMatrix CreateTranslateMatrix(float x, float y);
+    public abstract DrawingMatrix CreateScaleMatrix(float x, float y);
 
     public abstract void DeviceToScreen(ref int x, ref int y);
 }

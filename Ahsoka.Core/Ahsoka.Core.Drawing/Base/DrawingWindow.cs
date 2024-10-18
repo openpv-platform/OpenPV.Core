@@ -12,6 +12,7 @@ namespace Ahsoka.Core.Drawing.Base;
 public class DrawingWindow
 {
     #region Fields
+    bool firstFrame  = true;
     int frameCount = 0;
     const int frameSeconds = 10;
     DateTime nextPrintTime = DateTime.Now.AddSeconds(frameSeconds);
@@ -113,16 +114,26 @@ public class DrawingWindow
 
         PrepareFrame?.Invoke(this, frameArgs);
 
+        // Render First Frame Always
+        if (firstFrame)
+        {
+            frameArgs.ShouldClip = false; 
+            frameArgs.ShouldRender = true;
+            frameArgs.ClipRegions.Clear();
+        }
+
         if (frameArgs.ShouldRender)
         {
             // Push Frame Clipping Rectangles
-            if (frameArgs.ShouldClip && frameCount > 0)
+            if (frameArgs.ShouldClip)
                 api.PushClip(frameArgs.ClipRegions);
 
             RenderFrame?.Invoke(this, frameArgs);
 
-            if (frameArgs.ShouldClip && frameCount > 0)
+            if (frameArgs.ShouldClip)
                 api.PopClip();
+
+            firstFrame = false;
         }
 
         api.FinishFrame(frameArgs);

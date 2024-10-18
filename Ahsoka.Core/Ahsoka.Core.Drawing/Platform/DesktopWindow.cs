@@ -85,10 +85,7 @@ internal class DesktopWindow : IDrawingWindow
             
             // Handle the Frame (Prepare, Render) returns if New Render was Don
             if (apiWindow.HandleFrame())
-            {
                 context?.Flush(true, true);
-                Console.WriteLine("DidDraw");
-            }
 
             window.GLContext.SwapBuffers();
 

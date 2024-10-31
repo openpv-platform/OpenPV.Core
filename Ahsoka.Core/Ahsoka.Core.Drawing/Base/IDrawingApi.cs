@@ -25,6 +25,9 @@ public interface IDrawingApi
     void DrawText(string text, float x, float y, DrawingTextInfo textInfo);
     float MeasureText(string text, DrawingTextInfo textInfo);
 
+    DrawingPath CreatePath(string svgPathData);
+    void DrawPath(DrawingPath path, DrawingPaint paint);
+
     DrawingImage CreateImage(string fileName);
     DrawingImage CreateImage(byte[] data);
     DrawingTypeface LoadTypeface(string fileName, string typefaceName);

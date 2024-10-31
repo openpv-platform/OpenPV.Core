@@ -53,6 +53,8 @@ internal class Program
         var circlePaintTouched = new DrawingPaint(colorStroke, 2, colorFillTouched);
         var checkerPaint = new DrawingPaint(DrawingColors.Empty, 0, DrawingColors.DarkGray);
 
+        // Create a simple Path (Just a square using the SVG Syntax
+        var path = api.CreatePath("M20.388,10.918L32,12.118l-8.735,7.749L25.914,31.4l-9.893-6.088L6.127,31.4l2.695-11.533L0,12.118 l11.547-1.2L16.026,0.6L20.388,10.918z");
 
         // Create a Text Info to describe our font / text attributes
         DrawingTextInfo textInfo = new()
@@ -124,6 +126,11 @@ internal class Program
                     if (!args.ShouldClip || args.ClipRegions.IntersectsRectangle(rectangle))
                         api.DrawRectangle(rectangle, checkerPaint);
                 }
+
+            // Translate to our Star
+            api.PushMatrix(api.CreateTranslateMatrix(60,60));
+            api.DrawPath(path, circlePaint);
+            api.PopMatrix();
 
             // Translate to our Circle Position
             api.PushMatrix(api.CreateTranslateMatrix(cloudPosition.X, cloudPosition.Y));

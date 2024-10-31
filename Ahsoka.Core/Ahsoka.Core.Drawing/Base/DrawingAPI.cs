@@ -20,6 +20,8 @@ public abstract class DrawingApiBase<Context> : IDrawingApi where Context : clas
     public abstract DrawingImage CreateImage(string fileName);
     public abstract DrawingImage CreateImage(byte[] data);
 
+    public abstract DrawingPath CreatePath(string svgPathData);
+    public abstract void DrawPath(DrawingPath path, DrawingPaint paint);
 
     public abstract void DrawBitmap(DrawingImage image, DrawingRect rect);
 

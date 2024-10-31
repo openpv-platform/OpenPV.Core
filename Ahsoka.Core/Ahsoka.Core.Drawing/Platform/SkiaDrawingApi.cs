@@ -4,6 +4,7 @@ using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using SkiaSharp;
+using System.IO;
 
 public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 {
@@ -197,7 +198,6 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 
     public override float MeasureText(string text, DrawingTextInfo textInfo)
     {
-
         var font = new SKFont()
         {
             Size = textInfo.TextSize,
@@ -211,6 +211,21 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
     public override DrawingTypeface LoadTypeface(string fileName, string typefaceName)
     {
         return new DrawingTypeface(SKTypeface.FromFile("Assets/Font.ttf"), typefaceName);
+    }
+
+    public override DrawingPath CreatePath(string svgPathData)
+    {
+        SKPath path = SKPath.ParseSvgPathData(svgPathData);
+        return new DrawingPath() { NativeObject = path};
+    }
+
+    public override void DrawPath(DrawingPath path, DrawingPaint paint)
+    {
+        if (paint.IsFill)
+            CurrentContext.Canvas.DrawPath(path.AsSKPath(), paint.AsFillPaint());
+
+        if (paint.IsStroke)
+            CurrentContext.Canvas.DrawPath(path.AsSKPath(), paint.AsStrokePaint());
     }
     #endregion
 
@@ -250,7 +265,6 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
     {
         return new DrawingMatrix(SKMatrix.CreateScale(x, y));
     }
-
     #endregion
 
     #region Private Methods
@@ -297,6 +311,11 @@ public static class DrawingExtensions
 
 internal static class SkiaExtensions
 {
+    internal static SKPath AsSKPath(this DrawingPath value)
+    {
+        return value.NativeObject as SKPath;
+    }
+
     internal static SKRect AsSKRect(this DrawingRect value)
     {
         return new SKRect(value.X, value.Y, value.X + value.Width, value.Y + value.Height);

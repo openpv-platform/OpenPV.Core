@@ -13,8 +13,8 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
     RouterSocket socket; 
 
     IAhsokaEndPoint endPoint;
-    object socketSyncRoot = new(); // Protects Socket Send/Receive
     NetMQPoller socketPoller = new();
+    NetMQQueue<NetMQMessage> sendQueue = new();
     List<byte[]> validClientIds = new ();
     
     public bool IsConnected { get; private set; }
@@ -33,11 +33,18 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
             socket.Options.Linger = TimeSpan.FromSeconds(1);
             socket.Bind(endPoint.ServiceConfig.DataListenURI);
             socketPoller.Add(socket);
+            socketPoller.Add(sendQueue);
             IsConnected = true;
            
             socket.ReceiveReady += (o, e) =>
             {
                 endPoint.ReceiveMessage(false); // Services Don't Care Really
+            };
+
+            sendQueue.ReceiveReady += (o, e) =>
+            {
+                while (sendQueue.Count > 0)
+                    socket.TrySendMultipartMessage(sendQueue.Dequeue());
             };
 
             socketPoller.RunAsync($"{endPoint.ServiceConfig.ServiceName}_Handler");
@@ -64,6 +71,7 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
             socketPoller.StopAsync();
 
         socketPoller.RemoveAndDispose(socket);
+        socketPoller.RemoveAndDispose(sendQueue);
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
 
@@ -91,20 +99,20 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 
         IEnumerable<byte[]> clients = sendAsNotification ? 
                                     validClientIds : 
-                                    new List<byte[]>() { clientId };
-
-        NetMQMessage message = new();
+                                    new List<byte[]>() { clientId }; 
 
         foreach (var client in clients)
         {
+            NetMQMessage message = new();
+
             message.Append(client);
             message.Append(header);
             message.Append(data);
 
-            lock (socketSyncRoot) // Protect Socket Recieves and Sends (mostly for Notifications)
+            if (sendAsNotification)
+                sendQueue.Enqueue(message);
+            else
                 socket.TrySendMultipartMessage(message);
-
-            message.Clear();
         }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Sending Service {(sendAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");
@@ -120,13 +128,12 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 
         // Note that Services use a Single Socket But we lock here to prevent sending notifications
         // at the same time as we are receiving a message.
-        lock (socketSyncRoot)
-            if (socket.TryReceiveMultipartMessage(ref message, 3))
-            {
-                clientId = message.Pop().Buffer;
-                header = message.Pop().Buffer;
-                data = message.Pop().Buffer;
-            }
+        if (socket.TryReceiveMultipartMessage(ref message, 3))
+        {
+            clientId = message.Pop().Buffer;
+            header = message.Pop().Buffer;
+            data = message.Pop().Buffer;
+        }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Recieved Service Message on {endPoint.ServiceConfig.ServiceName} ");
 

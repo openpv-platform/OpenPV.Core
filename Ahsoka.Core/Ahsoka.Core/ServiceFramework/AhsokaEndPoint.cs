@@ -166,7 +166,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
                 using (MemoryStream objectData = new(messageData))
                     messageObject = ProtoBuf.Serializer.Deserialize(GetReceiptType(messageInfo), objectData);
 
-            OnReceiveMessage(messageHeader, messageObject, messageInfo);
+            OnReceiveMessage(messageHeader, messageObject, messageInfo);         
         }
     }
 

@@ -11,6 +11,7 @@ internal sealed class TCPClientSocket : IAhsokaSocket
 
     NetMQPoller socketPoller = new();
     DealerSocket socket;
+    NetMQQueue<NetMQMessage> sendQueue = new();
     DealerSocket notificationSocket;
 
     public bool IsConnected { get; private set; }
@@ -32,11 +33,18 @@ internal sealed class TCPClientSocket : IAhsokaSocket
             socket.Options.Linger = TimeSpan.FromSeconds(1);
             socket.Connect(this.endPoint.ServiceConfig.DataURI);
             socketPoller.Add(socket);
+            socketPoller.Add(sendQueue);
 
             // Listen to Messages
             socket.ReceiveReady += (o, e) =>
             {
                 this.endPoint.ReceiveMessage(false);
+            };
+
+            sendQueue.ReceiveReady += (o, e) =>
+            {
+                while (sendQueue.Count > 0)
+                    socket.TrySendMultipartMessage(sendQueue.Dequeue());
             };
 
             // Notification Socket
@@ -75,6 +83,7 @@ internal sealed class TCPClientSocket : IAhsokaSocket
                 notificationSocket.Disconnect(endPoint.ServiceConfig.DataURI);
                 socketPoller.StopAsync();
                 socketPoller.RemoveAndDispose(socket);
+                socketPoller.RemoveAndDispose(sendQueue);
                 socketPoller.RemoveAndDispose(notificationSocket);
 
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
@@ -92,8 +101,7 @@ internal sealed class TCPClientSocket : IAhsokaSocket
         message.Append(header);
         message.Append(data);
 
-        lock (socket)
-            socket.SendMultipartMessage(message);
+        sendQueue.Enqueue(message);
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client {(sendAsNotification ? "Notification" : "Message")} Completed from {endPoint.ServiceConfig.ServiceName} ");
     }

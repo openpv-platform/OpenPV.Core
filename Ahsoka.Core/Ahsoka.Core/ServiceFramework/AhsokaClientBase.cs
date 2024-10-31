@@ -2,6 +2,7 @@
 using Ahsoka.Services.Security;
 using Ahsoka.System;
 using Ahsoka.Utility;
+using Azure.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -239,7 +240,9 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         var cancelTime = DateTime.Now.Add(TimeSpan.FromMilliseconds(timeoutInMs));
 
         // We found our Message or Timed out Waiting for Messages
-        while (responseHeader?.TransportId != requestHeader.TransportId && cancelTime > DateTime.Now)
+        while (responseHeader?.TransportId != requestHeader.TransportId 
+                && responseHeader?.ClientMessageId != requestHeader.ClientMessageId 
+                && cancelTime > DateTime.Now)
         {
             if (incomingMessages.TryTake(out var message, timeoutInMs))
             {

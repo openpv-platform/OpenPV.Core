@@ -124,18 +124,21 @@ namespace AhsokaServiceFramework
 			T * WaitForResponse(AhsokaMessageHeader& requestHeader, int timeoutInMs = INT_MAX)
 			{
 				int responseTransportId = -1;
+				int responseClientId = -1;
 				T * returnObject = 0;
 
 				auto expireTime = std::chrono::steady_clock::now().time_since_epoch() + std::chrono::milliseconds(timeoutInMs);
 				
 				// We found our Message or Timed out Waiting for Messages
 				while (responseTransportId != requestHeader.transport_id()
+					&& responseClientId != requestHeader.client_message_id()
 					&& expireTime > std::chrono::steady_clock::now().time_since_epoch())
 				{
 					MessagePair pair;
 					if (incomingMessages.PopWithTimeOut(1000, pair))
 					{
 						responseTransportId = pair.header->transport_id();
+						responseClientId = pair.header->client_message_id();
 
 						// Not our Wait Message...send to Async Handler
 						if (responseTransportId != requestHeader.transport_id())
@@ -162,7 +165,7 @@ namespace AhsokaServiceFramework
 				ClientRegistration registration;
 				registration.set_client_id(AhsokaBaseEndPoint<TTransportID>::socket.GetNotificationClientId()); // Note use of Notification ClientID
 
-				AhsokaBaseEndPoint<TTransportID>::SendNotificationInternal(header, &registration);
+				AhsokaBaseEndPoint<TTransportID>::SendNotificationInternal(header, &registration, false);
 			}
 
 			void Listen()

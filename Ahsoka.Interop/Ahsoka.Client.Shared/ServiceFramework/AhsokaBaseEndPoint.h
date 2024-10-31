@@ -51,7 +51,7 @@ namespace AhsokaServiceFramework
 				currentRuntime = 0;
 			}
 
-			void SendNotificationInternal(AhsokaMessageHeader& messageHeader, AhsokaMessage_t messageObject = 0)
+			void SendNotificationInternal(AhsokaMessageHeader& messageHeader, AhsokaMessage_t messageObject = 0, bool expectResponse = true)
 			{
 				if (socket.GetIsConnected())
 				{
@@ -59,7 +59,7 @@ namespace AhsokaServiceFramework
 						messageObject = new EmptyNotification();
 
 					messageHeader.set_client_id(socket.GetClientId());
-					socket.SendMessage(messageHeader.SerializeAsString(), messageObject->SerializeAsString(), false);
+					socket.SendMessage(messageHeader.SerializeAsString(), messageObject->SerializeAsString(), expectResponse);
 
 					messageSendCount++;
 				}

@@ -13,10 +13,19 @@
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 #include "IAhsokaEndPoint.h"
+#include "BlockingQueue.h"
 
 namespace AhsokaServiceFramework
 {
-    
+    class SocketMessage
+	{
+		public:
+
+			std::string message;
+			std::string header;
+            bool expectResponse;
+	};
+
     class AhsokaSocket
     {
         private:
@@ -29,7 +38,7 @@ namespace AhsokaServiceFramework
             void SetEndPoint(IAhsokaEndPoint* endpoint);       
             void Connect(zmq::context_t& context);
             void Disconnect();
-            void SendMessage(const std::string& header, const std::string& data, bool isOutOfBand);
+            void SendMessage(std::string header, std::string data, bool expectResponse);
             bool ReceiveMessage(std::string& header, std::string& data, bool isOutOfBand, int timeoutInMs = INT_MAX);
             std::string GetClientId();
             std::string GetNotificationClientId();
@@ -48,9 +57,14 @@ namespace AhsokaServiceFramework
             
             IAhsokaEndPoint* endPoint;
             std::thread* listenerThread;
+            std::thread* senderThread;
+
+            AhsokaServiceFramework::BlockingQueue<SocketMessage> outgoingMessages;
 
             zmq::context_t& GetContext();
-            void ManageSocket();           
+            void ManageListener();  
+            void ManageSender();       
+            void SendMessage(const std::string& header, const std::string& data);  
  			std::string CreateGUID();
     };
 }

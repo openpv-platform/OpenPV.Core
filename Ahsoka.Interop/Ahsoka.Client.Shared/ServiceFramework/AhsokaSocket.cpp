@@ -7,10 +7,12 @@ namespace AhsokaServiceFramework
     
     bool IsConnected = false;
     bool IsListening = false;
+    bool IsSending = false;
 
     zmq::socket_t* socket;
     IAhsokaEndPoint* endPoint;
     std::thread* listenerThread = 0;
+    std::thread* senderThread = 0;
 
     std::string AhsokaSocket::dataChannel() {
         return "tcp://" + endPoint->GetRuntimeConfiguration().tcp_connection_address() + ":" + std::to_string(endPoint->GetRuntimeConfiguration().data_channel());
@@ -45,7 +47,8 @@ namespace AhsokaServiceFramework
             notificationSocket->set(zmq::sockopt::routing_id, notificationClientId.c_str());
             notificationSocket->connect(dataChannel());
 
-            listenerThread = new std::thread(&AhsokaSocket::ManageSocket, this);
+            listenerThread = new std::thread(&AhsokaSocket::ManageListener, this);
+            senderThread = new std::thread(&AhsokaSocket::ManageSender, this);
             
             IsConnected = true;
         }
@@ -64,18 +67,26 @@ namespace AhsokaServiceFramework
             listenerThread = 0;
         }
 
+        if (senderThread != 0)
+        {
+            IsSending = false;
+            senderThread->join();
+            senderThread = 0;
+        }
+
         socket->disconnect(dataChannel());
         socket->close();
               
         IsConnected = false;
     }
 
-    void AhsokaSocket::SendMessage(const std::string& header, const std::string& data, bool isOutOfBand)
+    void AhsokaSocket::SendMessage(std::string header, std::string data, bool expectResponse)
     {
-        zmq::multipart_t message;
-        message.add(zmq::message_t(header));
-        message.add(zmq::message_t(data));
-        message.send(*socket, 0);
+        SocketMessage message;
+        message.header = header;
+        message.message = data;
+        message.expectResponse = expectResponse;
+        outgoingMessages.Push(message);
     }
 
     bool AhsokaSocket::ReceiveMessage(std::string& header, std::string& data, bool isOutOfBand, int timeoutInMs)
@@ -91,11 +102,11 @@ namespace AhsokaServiceFramework
             // Receive Data
             zmq::multipart_t received;
             if (received.recv(*socketToHandle, 0))
-            {
+            {               
                 header = received.popstr();
                 data = received.popstr();
                 return true;
-            };
+            }
         }
         catch(...)
         {
@@ -113,32 +124,55 @@ namespace AhsokaServiceFramework
         return *context;
     }
 
-    
-    void AhsokaSocket::ManageSocket()
+    void AhsokaSocket::SendMessage(const std::string& header, const std::string& data)
+    {
+        zmq::multipart_t message;
+        message.add(zmq::message_t(header));
+        message.add(zmq::message_t(data));
+        message.send(*socket, 0);
+    }
+
+    void AhsokaSocket::ManageSender()
+    {
+        std::cout << "Client Sender Started" << std::endl;
+
+        IsSending = true;
+        while (IsSending)
+        {
+            SocketMessage message;
+            if(outgoingMessages.PopWithTimeOut(1000, message))
+            {
+                SendMessage(message.header, message.message);
+
+                if(message.expectResponse)
+                    endPoint->ClientDataReady(false);          
+            }
+        }
+
+        std::cout << "Client Sender Shutdown Successfully" << std::endl;
+    }
+
+    void AhsokaSocket::ManageListener()
     {
         std::cout << "Client Listener Started" << std::endl;
         
         // Create "array" of items to Poll...Note that ZMQ requires you to cast to Void*
-        // Listen to Message and Notification Sockets
+        // Listen to Notification Socket
         zmq::pollitem_t items[] = 
         { 
-            { static_cast<void*>(*socket), 0, ZMQ_POLLIN, 0 },
-            { static_cast<void*>(*notificationSocket), 0, ZMQ_POLLIN, 0 } 
+            { static_cast<void*>(*notificationSocket), 0, ZMQ_POLLIN, 0 } ,
         };
 
         IsListening = true;
         while (IsListening)
         {
-            int value = zmq::poll(items, 2, 1000);
+            int value = zmq::poll(items, 1, 1000);
             if (value != 0)
             {
-                // Message Received
-                if (items [0].revents & ZMQ_POLLIN) 
-                    endPoint->ClientDataReady(false);
-
                 // Notificaiton Received
-                if (items [1].revents & ZMQ_POLLIN) 
+                if (items [0].revents & ZMQ_POLLIN) {
                     endPoint->ClientDataReady(true);
+                }
             }
         }
         

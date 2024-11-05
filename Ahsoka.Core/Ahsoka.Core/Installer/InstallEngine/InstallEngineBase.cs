@@ -230,7 +230,11 @@ public class InstallEngineBase
             // Write File
             WriteOutputPackage(PackageInformation, fs, data.Values.ToList(), pemKey);
         }
-        catch { throw; }
+        catch (Exception ex)
+        {
+            progress?.Report(new PackageProgressInfo() { Message = $"Package Error\r\n{ex.Message}\r\n{ex.StackTrace}" });
+            throw; 
+        }
         finally
         {
             // Run Cleanup Processes.

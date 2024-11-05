@@ -23,11 +23,6 @@ internal class OpenViewProRemoteTargetTool : LinuxRemoteTargetTool
                           SshClient sshClient, ScpClient scpClient)
     {
         
-        // Temp Fixes for Platform
-        string appProfile = Encoding.UTF8.GetString(Properties.Resources.LinuxAppProfile).Replace("wayland-1", "/run/wayland-0");
-        scpClient.Upload(new MemoryStream(Encoding.UTF8.GetBytes(appProfile)), "/etc/profile.d/app_profile.sh");
-
-
         progress.Report($"Remove Unused Services");
         sshClient.RunCommand($"systemctl disable containerd");
         sshClient.RunCommand($"systemctl disable docker.socket");

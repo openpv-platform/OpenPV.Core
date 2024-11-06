@@ -41,6 +41,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     SparkViewModel sparkViewModel;
     DependenciesCheckViewModel deps;
     int selectedTab = 0;
+    bool hasScreen = true;
     #endregion
 
     #region Properties
@@ -66,6 +67,20 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             return PlatformFamily != PlatformFamily.PowerVision;
         }
         set { }
+    }
+
+    public bool HasScreen
+    {
+        get
+        {
+            return hasScreen;
+        }
+
+        set
+        {
+            hasScreen = value;
+            OnPropertyChanged();
+        }
     }
 
     public bool GenerateOptimizedServiceManager
@@ -352,7 +367,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                     HandleHardwareInfoChanges();
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsOpenView));
-
                 }
             }
         }
@@ -627,6 +641,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         var hardwareInfo = HardwareInfo.GetHardwareInfo(PackageInfo.PlatformFamily, PackageInfo.PlatformQualifier);
         if (hardwareInfo != null)
         {
+            HasScreen = hardwareInfo.ScreenInfo.ScreenWidth > 0;
         }
     }
 

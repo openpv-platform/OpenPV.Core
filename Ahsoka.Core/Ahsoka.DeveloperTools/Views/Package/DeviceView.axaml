@@ -49,7 +49,15 @@
 				<StackPanel.Styles>
 					<StyleInclude Source="/Styles/UserInputStyles.axaml" />
 				</StackPanel.Styles>
-				<Border IsVisible="{Binding IsOpenView}"
+				<Border IsVisible="{Binding !HasScreen}"
+							Margin="40,60,40,40" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
+					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
+						<TextBlock Text="Selected Platform has no Screen" HorizontalAlignment="Left" FontSize="15"
+								 Foreground="SteelBlue"  Margin="-10,-40" Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0"/>
+					</Grid>
+				</Border>
+				
+				<Border IsVisible="{Binding HasScreen}"
 							Margin="40,60,40,40" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
 					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
 						<TextBlock Text="Screen Options " HorizontalAlignment="Left" FontSize="15"
@@ -63,7 +71,7 @@
 
 					</Grid>
 				</Border>
-				<Border IsVisible="{Binding IsOpenView}"
+				<Border IsVisible="{Binding HasScreen}"
 							Margin="40,20,40,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
 					<Grid Margin="5" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
 						<TextBlock Text="Boot Logo Setup " HorizontalAlignment="Left" FontSize="15"

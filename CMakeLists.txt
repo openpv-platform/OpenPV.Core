@@ -18,7 +18,7 @@ IF (WIN32)
     set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
     
 ELSE()
-    
+
     # Include sub-projects.
     set(CMAKE_TOOLCHAIN_FILE ${OE_CMAKE_TOOLCHAIN_FILE})
     set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS}/lib)

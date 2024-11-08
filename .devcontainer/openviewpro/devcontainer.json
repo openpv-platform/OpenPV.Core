@@ -3,7 +3,7 @@
 {
 	"name": "OpenPV Pro Base",
 
-	"image": "openpv/openviewpro_sdk_3_0",
+	"image": "openpv/openviewpro_sdk_4_0",
 	// Build from Docker File
 	//"build": {
 	//	"dockerfile": "Dockerfile"

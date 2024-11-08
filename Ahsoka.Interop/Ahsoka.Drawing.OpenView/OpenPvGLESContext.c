@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
+
+
 #include "OpenPvGLESContext.h"
 #include "WaylandClientInterop.h"
 #include "EGLSurface.h"
@@ -9,22 +11,21 @@
 #include "weston-platform.h"
 #include <dlfcn.h>
 
+#ifdef ISPRO
+#include "ilm/ilm_client.h"
+#include "ilm/ilm_control.h"
+#include "ilm/ilm_types.h"
+#include <ilm/ivi-application-client-protocol.h>
+#endif
+
 static OpenPvDisplay 		display = { 0 };
 static OpenPvWindow 		window  = { 0 };
-static OpenPvGLContext 	context = { 0 };
+static OpenPvGLContext 		context = { 0 };
 
 void GetWindowDimensions(int *w, int *h)
 {
-	if (window.fullscreen)
-	{
-		*w = window.toplevel_w;
-		*h = window.toplevel_h;
-	}
-	else
-	{
-		*w = window.req_width;
-		*h = window.req_height;
-	}
+	*w = window.req_width;
+	*h = window.req_height;
 }
 
 void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format)
@@ -72,11 +73,28 @@ int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
 		display.seats[i].touch = 0;
 	}
 
-	if (fullScreen)
-		window.fullscreen = 1;
-
 	window.req_width = w;
 	window.req_height = h;
+
+	if (fullScreen)
+	{	
+		window.fullscreen = 1;
+	
+#ifdef ISPRO
+		ilm_init();
+		t_ilm_display screenid = 0;
+		struct ilmScreenProperties screenProperties;
+
+		ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screenid, &screenProperties);
+		if (ILM_SUCCESS == callResult)
+		{
+			window.req_width = screenProperties.screenWidth;
+			window.req_height = screenProperties.screenHeight;
+		}
+
+		ilm_destroy();
+#endif
+	}
 	
 	ret = InitWaylandClient(&display, &window);
 	if (ret != 0)
@@ -89,9 +107,6 @@ int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
 	ret = CreateXdgLayer(&display, &window);
 	if (ret != 0)
 		return -1;
-
-	// roundtrip to wait for any pending requests
-	wl_display_roundtrip(display.display);
 
 	CreateEglWindow(&display, &window);
 
@@ -108,15 +123,16 @@ int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
 	ret = pthread_create(&dispatch_thread, NULL, &wayland_dispatch_thread, NULL);
 	if (ret != 0)
 		return -1;
-
+	
 	if (CAIRO_DEBUG) printf("-- Dispatch thread created successfully...\r\n");
+	
 	return 0;
 }
 
 void * GetFunction(const char *name)
 {
-	void * symbol = eglGetProcAddress(name);
 	//printf("FOUND FUNCTION - %s %p\r\n", name,symbol);
+	void * symbol = eglGetProcAddress(name);
 	return symbol;
 }
 
@@ -158,6 +174,7 @@ void DestoryWindowContext()
 		xdg_toplevel_destroy(window.xdg_toplevel);
 	if (window.xdg_surface)
 		xdg_surface_destroy(window.xdg_surface);
+
 	wl_surface_destroy(window.surface);
 
 	if (window.callback)

@@ -1,11 +1,16 @@
 #include "WaylandClientInterop.h"
 
+
 #include <EGL/eglext.h>
 #include <limits.h>
 
 #include "weston-egl-ext.h"
 #include "weston-platform.h"
 #include "wayland-util.h"
+
+#ifdef ISPRO
+#include <ilm/ivi-application-client-protocol.h>
+#endif
 
 #define BTN_RIGHT		0x111
 #define BTN_LEFT		0x110
@@ -113,7 +118,6 @@ static void pointer_handle_motion(void *data, struct wl_pointer *wl_pointer, uin
 		if (CAIRO_DEBUG) printf("MOUSE MOVED: X[%i] Y[%i] \r\n", mouse_xi, mouse_yi);
 	}
 }
-
 
 static void pointer_handle_button(void *data, struct wl_pointer *pointer,
 		uint32_t serial, uint32_t time, uint32_t button, uint32_t state) 
@@ -231,7 +235,6 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 	
 	if (CAIRO_DEBUG > 1) printf("-- %s [%i]\r\n", interface, name );
 	
-	
 	if (strcmp(interface, "wl_compositor") == 0)
 		d->compositor = wl_registry_bind(registry, name, (&wl_compositor_interface), 1);
 	else if (strcmp(interface, "xdg_wm_base") == 0)
@@ -239,6 +242,12 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 		d->wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
 		xdg_wm_base_add_listener(d->wm_base, &wm_base_listener, d);
 	}
+#ifdef ISPRO 
+	else if (strcmp(interface, "ivi_application") == 0) 
+	{
+        d->ivi_app =  wl_registry_bind(registry, name, &ivi_application_interface, 1);
+    }
+#endif
     else if (strcmp(interface, "wl_seat") == 0)
     {
 		// Find a Seat Slot

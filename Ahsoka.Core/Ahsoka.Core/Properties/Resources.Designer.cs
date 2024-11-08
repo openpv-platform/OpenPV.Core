@@ -199,6 +199,41 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Unit]
+        ///Description=Ahsoka Layer Manager Service for IVI Shell
+        ///Wants=ahsoka-early.target
+        ///
+        ///[Service]
+        ///Type=forking
+        ///ExecStart=/usr/local/Ahsoka/factory/layer_manager_start.sh
+        ///
+        ///[Install]
+        ///WantedBy=multi-user.target
+        ///.
+        /// </summary>
+        internal static string Ahsoka_LayerManager {
+            get {
+                return ResourceManager.GetString("Ahsoka_LayerManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #!/bin/sh
+        ///echo &quot;Layer Manager Start Time&quot; $(date +%T.%3N)
+        ///. /etc/profile.d/app_profile.sh
+        ///
+        ///sleep 1
+        ///
+        ////usr/bin/stdbuf -oL /usr/bin/layer-add-surfaces -l 1000 -s 1000 &amp;
+        ///.
+        /// </summary>
+        internal static string Ahsoka_LayerManagerStart {
+            get {
+                return ResourceManager.GetString("Ahsoka_LayerManagerStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] CMakeLists {
@@ -659,6 +694,38 @@ namespace Ahsoka.Properties {
             get {
                 object obj = ResourceManager.GetObject("VideoService", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [core]
+        ///shell=ivi-shell.so
+        ///modules=ivi-controller.so
+        ///
+        ///[ivi-shell]
+        ///ivi-id-agent-module=ivi-id-agent.so
+        ///
+        ///[keyboard]
+        ///keymap_layout=us
+        ///
+        ///# [screen-share]
+        ///# command=/usr/bin/weston --backend=rdp-backend.so --shell=fullscreen-shell.so --no-clients-resize
+        ///
+        ///[desktop-app-default]
+        ///default-surface-id=5000
+        ///default-surface-id-max=6000
+        ///
+        ///[desktop-app]
+        ///surface-id=1000
+        ///app-title=Ahsoka.Installer
+        ///app-id=Ahsoka.Installer
+        ///
+        ///
+        ///.
+        /// </summary>
+        internal static string weston_ini {
+            get {
+                return ResourceManager.GetString("weston_ini", resourceCulture);
             }
         }
         

@@ -578,6 +578,52 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
                           ScpClient scpClient)
     {
         progress.Report("");
+
+        // Add Ahsoka Services
+        SshCommand commandResult = AddServices(sshClient, scpClient);
+
+        progress.Report($"Refresh Services");
+        commandResult = sshClient.RunCommand($"systemctl daemon-reload");
+        if (commandResult.Result != string.Empty)
+            throw new Exception(commandResult.Result);
+
+        // Enable Ahsoka Services
+        commandResult = EnableServices(sshClient);
+
+        string dropBearPath = "/usr/sbin/dropbearkey";
+        bool isContainer = sshClient.ConnectionInfo.Host == "127.0.0.1";
+        if (isContainer)
+            dropBearPath = "dropbearkey"; // Matches Container
+
+        commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ecdsa_host_key");
+        commandResult = sshClient.RunCommand($"{dropBearPath} -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key");
+        if (!commandResult.Result.Contains("Fingerprint:") && !isContainer)
+            throw new Exception(commandResult.Result);
+
+        commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ed25519_host_key");
+        commandResult = sshClient.RunCommand($"{dropBearPath} -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key");
+        if (!commandResult.Result.Contains("Fingerprint:") && !isContainer)
+            throw new Exception(commandResult.Result);
+
+        progress.Report($"Securing SSH Communication");
+        string unitFile = $"/lib/systemd/system/dropbear@.service";
+        using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(Properties.Resources.dropbear)))
+            scpClient.Upload(memoryStream, unitFile);
+    }
+
+    protected virtual SshCommand EnableServices(SshClient sshClient)
+    {
+        SshCommand commandResult;
+        progress.Report($"Enable System Service");
+        commandResult = sshClient.RunCommand($"systemctl enable Ahsoka.Installer.service");
+        if (commandResult.Result != string.Empty)
+            throw new Exception(commandResult.Result);
+
+        return commandResult;
+    }
+
+    protected virtual SshCommand AddServices(SshClient sshClient, ScpClient scpClient)
+    {
         progress.Report($"Disable Ahsoka Services");
         var commandResult = sshClient.RunCommand($"systemctl disable Ahsoka.Application.service");
         if (commandResult.Result != string.Empty)
@@ -601,36 +647,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         commandResult = sshClient.RunCommand($"chmod 644 {unitFilePath}");
         if (commandResult.Result != string.Empty)
             throw new Exception(commandResult.Result);
-
-        progress.Report($"Refresh Services");
-        commandResult = sshClient.RunCommand($"systemctl daemon-reload");
-        if (commandResult.Result != string.Empty)
-            throw new Exception(commandResult.Result);
-
-        progress.Report($"Enable System Service");
-        commandResult = sshClient.RunCommand($"systemctl enable Ahsoka.Installer.service");
-        if (commandResult.Result != string.Empty)
-            throw new Exception(commandResult.Result);
-
-        string dropBearPath = "/usr/sbin/dropbearkey";
-        bool isContainer = sshClient.ConnectionInfo.Host == "127.0.0.1";
-        if (isContainer)
-            dropBearPath = "dropbearkey"; // Matches Container
-
-        commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ecdsa_host_key");
-        commandResult = sshClient.RunCommand($"{dropBearPath} -t ecdsa -f /etc/dropbear/dropbear_ecdsa_host_key");
-        if (!commandResult.Result.Contains("Fingerprint:") && !isContainer)
-            throw new Exception(commandResult.Result);
-
-        commandResult = sshClient.RunCommand($"rm /etc/dropbear/dropbear_ed25519_host_key");
-        commandResult = sshClient.RunCommand($"{dropBearPath} -t ed25519 -f /etc/dropbear/dropbear_ed25519_host_key");
-        if (!commandResult.Result.Contains("Fingerprint:") && !isContainer)
-            throw new Exception(commandResult.Result);
-
-        progress.Report($"Securing SSH Communication");
-        string unitFile = $"/lib/systemd/system/dropbear@.service";
-        using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(Properties.Resources.dropbear)))
-            scpClient.Upload(memoryStream, unitFile);
+        return commandResult;
     }
 
     // Platform Specific logic.

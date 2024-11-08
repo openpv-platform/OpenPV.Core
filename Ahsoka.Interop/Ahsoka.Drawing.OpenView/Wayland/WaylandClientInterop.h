@@ -12,6 +12,9 @@
 #include "xdg-shell-client-protocol.h"
 #include "XdgTouch.h"
 
+#ifdef ISPRO
+#include <ilm/ivi-application-client-protocol.h>
+#endif
 
 #ifdef  __cplusplus
 extern "C" {
@@ -36,11 +39,14 @@ typedef struct {
 	struct wl_registry *registry;
 	struct wl_compositor *compositor;
 	struct xdg_wm_base *wm_base;
+	struct ivi_application *ivi_app;
 	OpenPvSeat seats[MAX_SEATS];
 	struct wl_shm *shm;
 	struct wl_cursor_theme *cursor_theme;
 	struct wl_cursor *default_cursor;
 	struct wl_surface *cursor_surface;
+	struct wl_output *output;
+
 	struct {
 		EGLDisplay dpy;
 		EGLContext ctx;
@@ -63,7 +69,6 @@ typedef struct OpenPvWindow {
 	bool wait_for_configure;
 
 	int req_width, req_height;	// Requested Dimensions by User
-	int toplevel_w, toplevel_h;	// Xdg toplevel Dimensions if fullscreen
 	bool initialized;
 
 } OpenPvWindow;

@@ -355,6 +355,11 @@ internal class MainViewModel : ViewModelBase
 
         // Run Machine / Tools Downloads
         string pathToKits = CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName);
+        
+        // Run Local Command Line for Tests
+        if (Debugger.IsAttached && Directory.Exists(PlatformSupportPathInfo.PlatformSupportRootFolder))
+            pathToKits = PlatformSupportPathInfo.PlatformSupportRootFolder;
+
         pathToCommand = Path.Combine(pathToKits, PlatformSupportPathInfo.GetPlatformFolderName(SystemInfo.CurrentPlatform), "CommandLine", "Ahsoka.CommandLine");
 
         if (Environment.OSVersion.Platform == PlatformID.Win32NT)

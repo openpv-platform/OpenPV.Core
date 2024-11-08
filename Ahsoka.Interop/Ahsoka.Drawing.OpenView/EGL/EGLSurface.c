@@ -95,9 +95,11 @@ static void handle_toplevel_configure(void *data, struct xdg_toplevel *toplevel,
 			  int32_t width, int32_t height,
 			  struct wl_array *states)
 {
+#ifndef ISPRO
 	OpenPvWindow *window = (OpenPvWindow *)data;
-	window->toplevel_w = width;
-	window->toplevel_h = height;
+	window->req_width = width;
+	window->req_height = height;
+#endif
 }
 
 static void handle_toplevel_close(void *data, struct xdg_toplevel *xdg_toplevel)
@@ -122,35 +124,36 @@ static void handle_surface_configure(void *data, struct xdg_surface *surface,
 	window->wait_for_configure = false;
 }
 
-static const struct xdg_surface_listener xdg_surface_listener = {
+static const struct xdg_surface_listener xdg_surface_listener = 
+{
 	handle_surface_configure
 };
 
 int CreateXdgLayer(OpenPvDisplay *display, OpenPvWindow *window)
 {
-	window->surface = wl_compositor_create_surface(display->compositor);
-	window->xdg_surface = xdg_wm_base_get_xdg_surface(display->wm_base, window->surface);
-	xdg_surface_add_listener(window->xdg_surface, &xdg_surface_listener, window);
+    window->surface = wl_compositor_create_surface(display->compositor);
 
-	window->xdg_toplevel = xdg_surface_get_toplevel(window->xdg_surface);
-	xdg_toplevel_add_listener(window->xdg_toplevel, &xdg_toplevel_listener, window);
+    window->xdg_surface = xdg_wm_base_get_xdg_surface(display->wm_base, window->surface);
+    xdg_surface_add_listener(window->xdg_surface, &xdg_surface_listener, window);
 
-	xdg_toplevel_set_title(window->xdg_toplevel, "Ahsoka-EGL");
-	xdg_toplevel_set_app_id(window->xdg_toplevel, "org.Ahsoka.EGL");
+    window->xdg_toplevel = xdg_surface_get_toplevel(window->xdg_surface);
+    xdg_toplevel_add_listener(window->xdg_toplevel, &xdg_toplevel_listener, window);
 
-	window->wait_for_configure = true;
-	if (window->fullscreen)
-		xdg_toplevel_set_fullscreen(window->xdg_toplevel, NULL);
+    xdg_toplevel_set_title(window->xdg_toplevel, "Ahsoka.Installer");
+    xdg_toplevel_set_app_id(window->xdg_toplevel, "Ahsoka.Installer");
+        
+    if (window->fullscreen)
+        xdg_toplevel_set_fullscreen(window->xdg_toplevel, NULL);
+
+	// roundtrip to wait for any pending requests
+	wl_display_roundtrip(display->display);
 
 	return 0;
 }
 
 int CreateEglWindow(OpenPvDisplay *display, OpenPvWindow *window)
 {
-	if (window->fullscreen)
-		window->native = wl_egl_window_create(window->surface, window->toplevel_w, window->toplevel_h);
-	else
-		window->native = wl_egl_window_create(window->surface, window->req_width, window->req_height);
+	window->native = wl_egl_window_create(window->surface, window->req_width, window->req_height);
 
 	window->egl_surface = weston_platform_create_egl_surface(display->egl.dpy, display->egl.conf, window->native, NULL);
 	wl_surface_commit(window->surface);

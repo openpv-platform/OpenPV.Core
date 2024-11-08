@@ -119,16 +119,12 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
         RunCommand(dfuName, $"-a tiboot3.bin -d {vidPid} -D ./tiboot3.bin -w", firmwareDir, toolModel);
 
         toolModel.MainViewModel.Console.AddConsoleLine($" ");
-        toolModel.MainViewModel.Console.AddConsoleLine($"Loading tispl.bin to NOR");
-        RunCommand(dfuName, $"-a tispl.bin -d {vidPid} -D ./tispl.bin -w", firmwareDir, toolModel);
-
-        toolModel.MainViewModel.Console.AddConsoleLine($" ");
-        toolModel.MainViewModel.Console.AddConsoleLine($"Loading u-boot.img to NOR");
-        RunCommand(dfuName, $"-R -a u-boot.img -d {vidPid} -D ./u-boot.img -w", firmwareDir, toolModel);
+        toolModel.MainViewModel.Console.AddConsoleLine($"Loading fitImage to NOR");
+        RunCommand(dfuName, $"-R -a tispl.bin -d {vidPid} -D ./fitImage -w", firmwareDir, toolModel);
 
         toolModel.MainViewModel.Console.AddConsoleLine($" ");
         toolModel.MainViewModel.Console.AddConsoleLine($"Loading rootfs to EMMC");
-        RunCommand(dfuName, $"-R -a rootfs -d {vidPid} -D ./hlio-image-openviewpro-base-j722s-evm.ext4 -w", firmwareDir, toolModel);
+        RunCommand(dfuName, $"-R -a rootfs -d {vidPid} -D ./hlio-image-openviewpro-base-j722s-evm.rootfs.ext4 -w", firmwareDir, toolModel);
 
         return "Firmware Installed";
     }

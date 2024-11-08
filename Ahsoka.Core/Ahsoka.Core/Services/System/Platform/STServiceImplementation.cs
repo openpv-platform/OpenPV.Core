@@ -23,7 +23,7 @@ internal class STServiceImplementation : IServiceImplementation
     readonly string[] logoFileTypes = { ".png", ".jpg" };
 
     #region NativeLibrary
-    public const string NativeLibraryName = "AhsokaLib/Ahsoka.Services.ST.so";
+    public const string NativeLibraryName = "AhsokaLib/Ahsoka.Services.OpenViewLinux.so";
     private const string firmwareModelNumberPath = "/sys/firmware/devicetree/base/model";
     private const string firmwareSerialNumberPath = "/sys/firmware/devicetree/base/serial-number";
     private const string backlightDriverPath = "/sys/devices/platform/panel_backlight/backlight/panel_backlight";

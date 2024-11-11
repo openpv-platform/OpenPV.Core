@@ -16,7 +16,7 @@ public class DrawingWindow
     int frameCount = 0;
     const int frameSeconds = 10;
     DateTime nextPrintTime = DateTime.Now.AddSeconds(frameSeconds);
-    readonly DrawingRect bounds;
+    readonly DrawingSize size;
     readonly IDrawingWindow nativeWindow;
     readonly SkiaDrawingApi api;
 
@@ -40,7 +40,7 @@ public class DrawingWindow
         return api;
     }
 
-    public DrawingRect Bounds { get => bounds; }
+    public DrawingSize Size { get => size; }
 
     public bool FrameRateEnabled { get; set; } = true;
     public bool ShowClipRectangles { get; set; } = true;
@@ -49,24 +49,24 @@ public class DrawingWindow
     #endregion
 
     #region Methods
-    public DrawingWindow(bool fullScreen = false, int x = 0, int y = 0, int width = 800, int height = 480)
+    public DrawingWindow(string appId = "DrawingWindow", bool fullScreen = false, int width = 800, int height = 480)
     {
-        bounds = new DrawingRect(x, y, width, height);
+        size = new (width, height);
 
         if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacosArm64 or PlatformFamily.Ubuntu64)
         {
             nativeWindow = new Platform.DesktopWindow();
-            api = nativeWindow.CreateWindow(this, ref bounds, fullScreen) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, size, fullScreen, appId) as SkiaDrawingApi;
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
         {
             nativeWindow = new Platform.STWindow();
-            api = nativeWindow.CreateWindow(this, ref bounds, fullScreen) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, size, fullScreen, appId) as SkiaDrawingApi;
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
         {
             nativeWindow = new Platform.TIWindow();
-            api = nativeWindow.CreateWindow(this, ref bounds, fullScreen) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, size, fullScreen, appId) as SkiaDrawingApi;
         }
     }
 

@@ -1,15 +1,14 @@
 #include <stdio.h>
 #include <unistd.h>
 
-
-
-#include "OpenPvGLESContext.h"
+#include "OpenPVWindow.h"
 #include "WaylandClientInterop.h"
 #include "EGLSurface.h"
 #include <GLES2/gl2.h>
 #include <EGL/egl.h>
 #include "weston-platform.h"
 #include <dlfcn.h>
+#include <stdlib.h>
 
 #ifdef ISPRO
 #include "ilm/ilm_client.h"
@@ -24,8 +23,8 @@ static OpenPvGLContext 		context = { 0 };
 
 void GetWindowDimensions(int *w, int *h)
 {
-	*w = window.req_width;
-	*h = window.req_height;
+	*w = window.width;
+	*h = window.height;
 }
 
 void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format)
@@ -47,6 +46,7 @@ bool GetTouchData(TouchEvent *data, int timeoutInMs)
 	return result;
 }
 
+
 void* wayland_dispatch_thread()
 {
 	// Background thread to call dispatch and block until incoming events are processed
@@ -57,7 +57,7 @@ void* wayland_dispatch_thread()
 	return NULL;
 }
 
-int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
+int InitWindowInterop(int w, int h, bool fullScreen, char* appId)
 {
 	pthread_t dispatch_thread;
 	int ret = 0;
@@ -73,27 +73,34 @@ int InitWindowInterop(int x, int y, int w, int h, bool fullScreen)
 		display.seats[i].touch = 0;
 	}
 
-	window.req_width = w;
-	window.req_height = h;
+	// Grab AppID / AppName
+	window.appId = (char*)malloc(strlen(appId));
+	strcpy(appId,window.appId);
+
+	// Grab Requested Size
+	window.width = w;
+	window.height = h;
 
 	if (fullScreen)
 	{	
 		window.fullscreen = 1;
-	
-#ifdef ISPRO
-		ilm_init();
-		t_ilm_display screenid = 0;
-		struct ilmScreenProperties screenProperties;
+		
+		#ifdef ISPRO
 
-		ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screenid, &screenProperties);
-		if (ILM_SUCCESS == callResult)
-		{
-			window.req_width = screenProperties.screenWidth;
-			window.req_height = screenProperties.screenHeight;
-		}
+			//Ask the IVI Shell for the Window Size
+			ilm_init();
+			t_ilm_display screenid = 0;
+			struct ilmScreenProperties screenProperties;
 
-		ilm_destroy();
-#endif
+			ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screenid, &screenProperties);
+			if (ILM_SUCCESS == callResult)
+			{
+				window.width = screenProperties.screenWidth;
+				window.height = screenProperties.screenHeight;
+			}
+
+			ilm_destroy();
+		#endif
 	}
 	
 	ret = InitWaylandClient(&display, &window);

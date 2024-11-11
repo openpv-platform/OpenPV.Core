@@ -40,7 +40,9 @@ typedef struct {
 	struct wl_compositor *compositor;
 	struct xdg_wm_base *wm_base;
 	struct ivi_application *ivi_app;
+	
 	OpenPvSeat seats[MAX_SEATS];
+	
 	struct wl_shm *shm;
 	struct wl_cursor_theme *cursor_theme;
 	struct wl_cursor *default_cursor;
@@ -52,6 +54,7 @@ typedef struct {
 		EGLContext ctx;
 		EGLConfig conf;
 	} egl;
+
 	bool initialized;
 	struct OpenPvWindow *window;
 } OpenPvDisplay;
@@ -67,8 +70,8 @@ typedef struct OpenPvWindow {
 	struct wl_callback *callback;
 	int fullscreen, opaque, buffer_size, frame_sync, delay;
 	bool wait_for_configure;
-
-	int req_width, req_height;	// Requested Dimensions by User
+	char* appId;
+	int width, height;
 	bool initialized;
 
 } OpenPvWindow;

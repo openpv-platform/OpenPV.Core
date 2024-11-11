@@ -73,6 +73,11 @@ public static class PlatformSupportPathInfo
         return Path.Combine(GetPlatformSupportPath(platform), "Resources");
     }
 
+    public static string GetPlatformAppsPath(PlatformFamily platform)
+    {
+        return Path.Combine(GetPlatformSupportPath(platform), "Apps");
+    }
+
     /// <summary>
     ///  Returns the path for the Customer Tools Support Folder (Desktops Only)
     /// </summary>

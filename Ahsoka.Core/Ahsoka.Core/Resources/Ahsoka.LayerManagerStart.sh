@@ -4,4 +4,5 @@ echo "Layer Manager Start Time" $(date +%T.%3N)
 
 sleep 1
 
-/usr/bin/stdbuf -oL /usr/bin/layer-add-surfaces -l 1000 -s 1000 &
+chmod +x /usr/local/Ahsoka/factory/weston/Ahsoka.LayerManager
+/usr/bin/stdbuf -oL /usr/local/Ahsoka/factory/weston/Ahsoka.LayerManager &

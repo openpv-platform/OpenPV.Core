@@ -1,8 +1,6 @@
 #ifndef OPENPVGLESCONTEXT_H_
 #define OPENPVGLESCONTEXT_H_
 
-//#include <cairo/cairo.h>
-//#include <cairo/cairo-gl.h>
 #include "XdgTouch.h"
 #include <GLES2/gl2.h>
 #include <EGL/egl.h>
@@ -11,7 +9,7 @@
 extern "C" {
 #endif
 
-int InitWindowInterop(int x, int y, int w, int h, bool fullScreen);
+int InitWindowInterop(int w, int h, bool fullScreen, char* appId);
 void DestoryWindowContext();
 
 void * GetFunction(const char *str);

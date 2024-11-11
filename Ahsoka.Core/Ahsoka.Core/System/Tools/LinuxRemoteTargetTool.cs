@@ -580,7 +580,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         progress.Report("");
 
         // Add Ahsoka Services
-        SshCommand commandResult = AddServices(sshClient, scpClient);
+        SshCommand commandResult = AddServices(info, sshClient, scpClient);
 
         progress.Report($"Refresh Services");
         commandResult = sshClient.RunCommand($"systemctl daemon-reload");
@@ -588,7 +588,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
             throw new Exception(commandResult.Result);
 
         // Enable Ahsoka Services
-        commandResult = EnableServices(sshClient);
+        commandResult = EnableServices(info, sshClient);
 
         string dropBearPath = "/usr/sbin/dropbearkey";
         bool isContainer = sshClient.ConnectionInfo.Host == "127.0.0.1";
@@ -611,7 +611,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
             scpClient.Upload(memoryStream, unitFile);
     }
 
-    protected virtual SshCommand EnableServices(SshClient sshClient)
+    protected virtual SshCommand EnableServices(HardwareInfo info, SshClient sshClient)
     {
         SshCommand commandResult;
         progress.Report($"Enable System Service");
@@ -622,7 +622,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         return commandResult;
     }
 
-    protected virtual SshCommand AddServices(SshClient sshClient, ScpClient scpClient)
+    protected virtual SshCommand AddServices(HardwareInfo info, SshClient sshClient, ScpClient scpClient)
     {
         progress.Report($"Disable Ahsoka Services");
         var commandResult = sshClient.RunCommand($"systemctl disable Ahsoka.Application.service");

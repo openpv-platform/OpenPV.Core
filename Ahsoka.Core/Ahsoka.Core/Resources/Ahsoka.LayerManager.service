@@ -4,7 +4,7 @@ Wants=ahsoka-early.target
 
 [Service]
 Type=forking
-ExecStart=/usr/local/Ahsoka/factory/layer_manager_start.sh
+ExecStart=/usr/local/Ahsoka/factory/weston/layer_manager_start.sh
 
 [Install]
 WantedBy=multi-user.target

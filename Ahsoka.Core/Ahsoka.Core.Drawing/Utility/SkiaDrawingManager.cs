@@ -6,12 +6,13 @@ public abstract class SkiaDrawingManager : DrawingManager<SkiaDrawingApi>, IDraw
 {
     #region Fields
     DrawingWindow ahsokaWindow;
+    string appId;
     #endregion
 
     #region Methods
-    public SkiaDrawingManager()
+    public SkiaDrawingManager(string appid = "AhsokaDrawingWindow")
     {
-
+        this.appId = appid;
     }
 
     void IDrawingManager.Init()
@@ -21,11 +22,11 @@ public abstract class SkiaDrawingManager : DrawingManager<SkiaDrawingApi>, IDraw
 
     void IDrawingManager.PrepareDrawingApi()
     {
-        ahsokaWindow = new DrawingWindow(OperatingSystem.IsLinux()) { FrameRateEnabled = false };
+        ahsokaWindow = new DrawingWindow(appId, OperatingSystem.IsLinux()) { FrameRateEnabled = false };
         DrawingApi = ahsokaWindow.GetApi();
 
-        float screenWidth = ahsokaWindow.Bounds.Width;
-        float screenHeight = ahsokaWindow.Bounds.Height;
+        float screenWidth = ahsokaWindow.Size.Width;
+        float screenHeight = ahsokaWindow.Size.Height;
 
         ahsokaWindow.PrepareFrame += (o, args) =>
         {

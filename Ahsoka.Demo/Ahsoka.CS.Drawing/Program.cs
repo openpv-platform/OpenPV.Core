@@ -29,7 +29,7 @@ internal class Program
         Dispatcher.Default.AddStartupItem(client);
 
         // Create the Ahsoka Drawing API and matching Window
-        DrawingWindow window = new(OperatingSystem.IsLinux());
+        DrawingWindow window = new("AhsokaDrawingWindow",OperatingSystem.IsLinux());
         var api = window.GetApi();
 
         // Setup Drawing Objects and Values

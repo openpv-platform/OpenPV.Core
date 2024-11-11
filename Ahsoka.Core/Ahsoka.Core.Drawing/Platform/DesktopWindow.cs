@@ -18,18 +18,12 @@ internal class DesktopWindow : IDrawingWindow
     GRContext context;
     GL gl;
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, ref DrawingRect bounds, bool fullScreen)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid)
     {
-        int height = (int)bounds.Height;
-        int width = (int)bounds.Width;
-
-        Assembly assembly = Assembly.GetEntryAssembly();
-        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-        var productName = fvi.ProductName;
-
+     
         WindowOptions options = WindowOptions.Default;
-        options.Size = new Vector2D<int>((int)bounds.Width, (int)bounds.Height);
-        options.Title = productName;
+        options.Size = new Vector2D<int>((int)size.Width, (int)size.Height);
+        options.Title = appid;
         options.IsContextControlDisabled = true;
      
         window = Silk.NET.Windowing.Window.Create(options);
@@ -94,15 +88,15 @@ internal class DesktopWindow : IDrawingWindow
             gl.ReadBuffer(GLEnum.Front);
             gl.DrawBuffer(GLEnum.Back);
             gl.Disable(GLEnum.ScissorTest);
-            gl.BlitFramebuffer(0, 0, width, height,
-                               0, 0, width, height, (int)GLEnum.ColorBufferBit, GLEnum.Nearest);
+            gl.BlitFramebuffer(0, 0, (int)size.Width, (int)size.Height,
+                               0, 0, (int)size.Width, (int)size.Height, (int)GLEnum.ColorBufferBit, GLEnum.Nearest);
         };
 
         window.Initialize();
 
         InitWindow();
 
-        return new SkiaDrawingApi(bounds, surface);
+        return new SkiaDrawingApi(size, surface);
     }
 
     private void InitWindow()

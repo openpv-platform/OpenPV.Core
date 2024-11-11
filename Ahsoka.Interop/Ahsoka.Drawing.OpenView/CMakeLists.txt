@@ -26,7 +26,7 @@ include_directories( EGL Wayland Touch)
 
 # add the target Library
 add_library(${PROJECT_NAME} SHARED
-            OpenPvGLESContext.c
+            OpenPVWindow.c
             EGL/EGLSurface.c
             Wayland/WaylandClientInterop.c
             Wayland/xdg-shell-client-protocol.c

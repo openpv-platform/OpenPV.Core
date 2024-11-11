@@ -97,8 +97,8 @@ static void handle_toplevel_configure(void *data, struct xdg_toplevel *toplevel,
 {
 #ifndef ISPRO
 	OpenPvWindow *window = (OpenPvWindow *)data;
-	window->req_width = width;
-	window->req_height = height;
+	window->width = width;
+	window->height = height;
 #endif
 }
 
@@ -139,8 +139,8 @@ int CreateXdgLayer(OpenPvDisplay *display, OpenPvWindow *window)
     window->xdg_toplevel = xdg_surface_get_toplevel(window->xdg_surface);
     xdg_toplevel_add_listener(window->xdg_toplevel, &xdg_toplevel_listener, window);
 
-    xdg_toplevel_set_title(window->xdg_toplevel, "Ahsoka.Installer");
-    xdg_toplevel_set_app_id(window->xdg_toplevel, "Ahsoka.Installer");
+    xdg_toplevel_set_title(window->xdg_toplevel, window->appId);
+    xdg_toplevel_set_app_id(window->xdg_toplevel, window->appId);
         
     if (window->fullscreen)
         xdg_toplevel_set_fullscreen(window->xdg_toplevel, NULL);
@@ -153,7 +153,7 @@ int CreateXdgLayer(OpenPvDisplay *display, OpenPvWindow *window)
 
 int CreateEglWindow(OpenPvDisplay *display, OpenPvWindow *window)
 {
-	window->native = wl_egl_window_create(window->surface, window->req_width, window->req_height);
+	window->native = wl_egl_window_create(window->surface, window->width, window->height);
 
 	window->egl_surface = weston_platform_create_egl_surface(display->egl.dpy, display->egl.conf, window->native, NULL);
 	wl_surface_commit(window->surface);

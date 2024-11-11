@@ -20,7 +20,7 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
         return CurrentContext;
     }
 
-    public SkiaDrawingApi(DrawingRect drawingSize, SKSurface surface, Orientation? drawingOrientation = null)
+    public SkiaDrawingApi(DrawingSize drawingSize, SKSurface surface, Orientation? drawingOrientation = null)
     {
         drawingOrientation ??= SystemInfo.HardwareInfo.ScreenInfo.CurrentOrientation;
 

@@ -205,7 +205,7 @@ namespace Ahsoka.Properties {
         ///
         ///[Service]
         ///Type=forking
-        ///ExecStart=/usr/local/Ahsoka/factory/layer_manager_start.sh
+        ///ExecStart=/usr/local/Ahsoka/factory/weston/layer_manager_start.sh
         ///
         ///[Install]
         ///WantedBy=multi-user.target
@@ -224,7 +224,8 @@ namespace Ahsoka.Properties {
         ///
         ///sleep 1
         ///
-        ////usr/bin/stdbuf -oL /usr/bin/layer-add-surfaces -l 1000 -s 1000 &amp;
+        ///chmod +x /usr/local/Ahsoka/factory/weston/Ahsoka.LayerManager
+        ////usr/bin/stdbuf -oL /usr/local/Ahsoka/factory/weston/Ahsoka.LayerManager &amp;
         ///.
         /// </summary>
         internal static string Ahsoka_LayerManagerStart {
@@ -369,6 +370,35 @@ namespace Ahsoka.Properties {
             get {
                 object obj = ResourceManager.GetObject("Functions", resourceCulture);
                 return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #!/bin/sh
+        ///
+        ///echo &quot;Running custom init.&quot;
+        ///
+        ///# weston environment variables when weston is launched pre-systemd
+        ///export XDG_RUNTIME_DIR=/tmp/xdg-runtime-dir
+        ///export WAYLAND_DISPLAY=&quot;wayland-1&quot;
+        ///export WESTON_USER=root
+        ///export WL_EGL_GBM_FENCE=0
+        ///export XDG_CONFIG_DIRS=/usr/local/Ahsoka/current:/usr/local/Ahsoka/factory:/etc/xdg/weston
+        ///
+        ///# Needed for Xwayland
+        ///export DISPLAY=:0
+        ///
+        ///# udevd may be necessary for touchscreen
+        ///udevd &amp;
+        ///UDEV=$!
+        ///
+        ///# Prep all needed weston mount points
+        ///mount -t proc none /proc
+        ///mount -t sysfs none /s [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string hlio_early {
+            get {
+                return ResourceManager.GetString("hlio_early", resourceCulture);
             }
         }
         
@@ -705,12 +735,6 @@ namespace Ahsoka.Properties {
         ///[ivi-shell]
         ///ivi-id-agent-module=ivi-id-agent.so
         ///
-        ///[keyboard]
-        ///keymap_layout=us
-        ///
-        ///# [screen-share]
-        ///# command=/usr/bin/weston --backend=rdp-backend.so --shell=fullscreen-shell.so --no-clients-resize
-        ///
         ///[desktop-app-default]
         ///default-surface-id=5000
         ///default-surface-id-max=6000
@@ -720,8 +744,10 @@ namespace Ahsoka.Properties {
         ///app-title=Ahsoka.Installer
         ///app-id=Ahsoka.Installer
         ///
-        ///
-        ///.
+        ///[desktop-app]
+        ///surface-id=1001
+        ///app-title=AhsokaDrawingWindow
+        ///app-id=AhsokaDrawingWindow.
         /// </summary>
         internal static string weston_ini {
             get {

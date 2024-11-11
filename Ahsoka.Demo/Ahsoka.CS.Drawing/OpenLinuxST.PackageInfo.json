@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10013",
+  "version": "4.0.1.20018",
   "applicationType": "Dotnet",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Drawing",
@@ -10,7 +10,7 @@
   "packageOutputDirectory": "../PackageOutput",
   "startupLogoPath": "EnovLogo.png",
   "licenses": [],
-  "optimizedServiceManager": true,
+  "optimizedServiceManager": false,
   "customPackageInfo": {
     "includeApplication": false,
     "includeBootLogo": false,
@@ -19,7 +19,7 @@
   },
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Drawing.csproj",
-    "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
+    "publishProfile": "Properties\\PublishProfiles\\LinuxProfilePro.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
@@ -44,8 +44,8 @@
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
-  "platformFamily": "OpenViewLinux",
-  "platformQualifier": "S70",
+  "platformFamily": "OpenViewLinuxPro",
+  "platformQualifier": "GenericArm64",
   "securityMode": "None",
   "applicationId": "00000000-0000-0000-0000-000000000000",
   "components": []

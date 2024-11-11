@@ -15,7 +15,7 @@ internal class LinuxWindow : IDrawingWindow
     int sampleCount = 0;
     int stencilBits = 0;
     uint gl_format = 0x8058;
-    DrawingRect windowSize;
+    DrawingSize windowSize;
 
     readonly CancellationTokenSource cancelTokenSource = new();
     readonly BlockingCollection<EventHandler> eventQueue = new();
@@ -32,9 +32,9 @@ internal class LinuxWindow : IDrawingWindow
         this.impl = impl;
     }
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, ref DrawingRect rect, bool fullScreen)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid)
     {
-        InitWindow(apiWindow, ref rect, fullScreen);
+        InitWindow(apiWindow, size, fullScreen, appid);
 
         try
         {
@@ -60,14 +60,15 @@ internal class LinuxWindow : IDrawingWindow
         }
         catch (OperationCanceledException) { }
 
-        return new SkiaDrawingApi(rect, surface);
+        return new SkiaDrawingApi(size, surface);
     }
 
-    private void InitWindow(DrawingWindow apiWindow, ref DrawingRect rect, bool fullScreen)
+    private void InitWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appId)
     {
         this.drawingWindow = apiWindow;
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Creating Linux Window - {appId}...");
 
-        int i = impl.InitWindow(0, 0, (int)rect.Width, (int)rect.Height, fullScreen);
+        int i = impl.InitWindow(size, fullScreen, appId);
         if (i != 0)
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Failed to init Wayland Window, exiting...");
@@ -78,9 +79,9 @@ internal class LinuxWindow : IDrawingWindow
         impl.GetWindowInformation(ref boundsWidth, ref boundsHeight);
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium,$"Active Window Dimensions: w:[{boundsWidth}] h:[{boundsHeight}]");
 
-        rect.Width = boundsWidth;
-        rect.Height = boundsHeight;
-        windowSize = rect;
+        size.Width = boundsWidth;
+        size.Height = boundsHeight;
+        windowSize = size;
 
         impl.GetSurfaceInformation(ref sampleCount, ref stencilBits, ref gl_format);
         impl.SetSwapInterval(1);
@@ -132,7 +133,7 @@ internal class LinuxWindow : IDrawingWindow
 
 public abstract class LinuxDrawingImplementation
 {
-    internal abstract int InitWindow(int x, int y, int w, int h, bool fullscreen);
+    internal abstract int InitWindow(DrawingSize size, bool fullscreen, string appid);
 
     internal abstract void SwapBuffers();
 

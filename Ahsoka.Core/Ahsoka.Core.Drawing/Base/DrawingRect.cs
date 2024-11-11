@@ -2,7 +2,21 @@
 
 namespace Ahsoka.Core.Drawing.Base;
 
-public class DrawingRect
+
+
+public class DrawingSize
+{ 
+    public float Width { get; set; }
+    public float Height { get; set; }
+
+    public DrawingSize(float width, float height)
+    {
+        Width = width;
+        Height = height;
+    }
+}
+
+    public class DrawingRect
 {
     public float X { get; set; }
     public float Y { get; set; }

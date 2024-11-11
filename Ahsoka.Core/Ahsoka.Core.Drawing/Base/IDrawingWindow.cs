@@ -6,7 +6,7 @@ namespace Ahsoka.Core.Drawing.Base;
 /// </summary>
 internal interface IDrawingWindow
 {
-    IDrawingApi CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid);
+    IDrawingApi CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid, int surfaceId);
     void ShowAndRun();
     void Close();
     void HandleEvent(EventHandler handler);

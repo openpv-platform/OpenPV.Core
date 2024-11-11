@@ -57,7 +57,7 @@ void* wayland_dispatch_thread()
 	return NULL;
 }
 
-int InitWindowInterop(int w, int h, bool fullScreen, char* appId)
+int InitWindowInterop(int w, int h, bool fullScreen, char * appId, int surfaceId)
 {
 	pthread_t dispatch_thread;
 	int ret = 0;
@@ -74,6 +74,7 @@ int InitWindowInterop(int w, int h, bool fullScreen, char* appId)
 	}
 
 	// Grab AppID / AppName
+	window.surfaceId = surfaceId;
 	window.appId = (char*)malloc(strlen(appId));
 	strcpy(appId,window.appId);
 
@@ -82,27 +83,27 @@ int InitWindowInterop(int w, int h, bool fullScreen, char* appId)
 	window.height = h;
 
 	if (fullScreen)
-	{	
 		window.fullscreen = 1;
-		
-		#ifdef ISPRO
 
-			//Ask the IVI Shell for the Window Size
-			ilm_init();
-			t_ilm_display screenid = 0;
-			struct ilmScreenProperties screenProperties;
 
-			ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screenid, &screenProperties);
-			if (ILM_SUCCESS == callResult)
-			{
-				window.width = screenProperties.screenWidth;
-				window.height = screenProperties.screenHeight;
-			}
+//Ask the IVI Shell for the Window Size if running Pro
+#ifdef ISPRO
+	ilm_init();
+	t_ilm_display screenid = 0;
+	struct ilmScreenProperties screenProperties;
 
-			ilm_destroy();
-		#endif
+	ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screenid, &screenProperties);
+	if (ILM_SUCCESS == callResult)
+	{
+		if (window.fullscreen)
+		{
+			window.width = screenProperties.screenWidth;
+			window.height = screenProperties.screenHeight;
+		}
 	}
-	
+	ilm_destroy();
+#endif
+
 	ret = InitWaylandClient(&display, &window);
 	if (ret != 0)
 		return -1;
@@ -111,9 +112,15 @@ int InitWindowInterop(int w, int h, bool fullScreen, char* appId)
 	if (ret != 0)
 		return -1;
 
+#ifndef ISPRO
 	ret = CreateXdgLayer(&display, &window);
 	if (ret != 0)
 		return -1;
+#elif ISPRO
+	window.surface = wl_compositor_create_surface(display.compositor);
+  	ivi_application_surface_create(display.ivi_app, surfaceId, window.surface);
+	wl_display_roundtrip(display.display);
+#endif
 
 	CreateEglWindow(&display, &window);
 
@@ -125,6 +132,7 @@ int InitWindowInterop(int w, int h, bool fullScreen, char* appId)
 
 	display.initialized = true;
 	window.initialized = true;
+
 	if (CAIRO_DEBUG) printf("-- Done with window interop INIT...\r\n");
 
 	ret = pthread_create(&dispatch_thread, NULL, &wayland_dispatch_thread, NULL);

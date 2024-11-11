@@ -7,12 +7,14 @@ public abstract class SkiaDrawingManager : DrawingManager<SkiaDrawingApi>, IDraw
     #region Fields
     DrawingWindow ahsokaWindow;
     string appId;
+    int surfaceId;
     #endregion
 
     #region Methods
-    public SkiaDrawingManager(string appid = "AhsokaDrawingWindow")
+    public SkiaDrawingManager(string appid = "AhsokaDrawingWindow", int surfaceid = 9999)
     {
         this.appId = appid;
+        this.surfaceId = surfaceid;
     }
 
     void IDrawingManager.Init()
@@ -22,7 +24,7 @@ public abstract class SkiaDrawingManager : DrawingManager<SkiaDrawingApi>, IDraw
 
     void IDrawingManager.PrepareDrawingApi()
     {
-        ahsokaWindow = new DrawingWindow(appId, OperatingSystem.IsLinux()) { FrameRateEnabled = false };
+        ahsokaWindow = new DrawingWindow(appId, surfaceId, OperatingSystem.IsLinux()) { FrameRateEnabled = false };
         DrawingApi = ahsokaWindow.GetApi();
 
         float screenWidth = ahsokaWindow.Size.Width;

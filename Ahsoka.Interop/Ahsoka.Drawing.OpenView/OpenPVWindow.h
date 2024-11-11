@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-int InitWindowInterop(int w, int h, bool fullScreen, char* appId);
+int InitWindowInterop(int w, int h, bool fullScreen, char* appId, int surfaceId);
 void DestoryWindowContext();
 
 void * GetFunction(const char *str);

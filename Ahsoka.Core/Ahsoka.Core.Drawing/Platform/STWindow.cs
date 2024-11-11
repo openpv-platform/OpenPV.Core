@@ -16,9 +16,9 @@ internal class STWindow : LinuxWindow
         #region Native Interop
         public const string NativeLibraryName = "AhsokaLib/Ahsoka.Drawing.OpenViewLinux.so";
 
-        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int InitWindowInterop(int w, int h, bool fullscreen, string appId);
-      
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        internal static extern int InitWindowInterop(int w, int h, bool fullscreen, [MarshalAs(UnmanagedType.LPStr)] string appId, int surfaceId);
+
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void GetWindowDimensions(ref int w, ref int h);
       
@@ -40,12 +40,12 @@ internal class STWindow : LinuxWindow
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void DestoryWindowContext();
 
-        internal override int InitWindow(DrawingSize size, bool fullscreen, string appId)
+        internal override int InitWindow(DrawingSize size, bool fullscreen, string appId, int surfaceId)
         {
             if (String.IsNullOrEmpty(appId))
                 appId = "LinuxDrawingWindow";
 
-            return InitWindowInterop((int)size.Width, (int)size.Height, fullscreen, appId);
+            return InitWindowInterop((int)size.Width, (int)size.Height, fullscreen, appId, surfaceId);
         }
 
         internal override void GetWindowInformation(ref int w, ref int h)

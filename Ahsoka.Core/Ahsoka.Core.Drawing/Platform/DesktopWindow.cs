@@ -18,7 +18,7 @@ internal class DesktopWindow : IDrawingWindow
     GRContext context;
     GL gl;
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid, int surfaceId)
     {
      
         WindowOptions options = WindowOptions.Default;

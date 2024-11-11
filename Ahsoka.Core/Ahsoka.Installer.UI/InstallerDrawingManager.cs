@@ -40,7 +40,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
     #endregion
 
     #region Methods
-    private InstallerDrawingManager() :base("Ahsoka.Installer")
+    private InstallerDrawingManager() : base("Ahsoka.Installer", 1000)
     {
 
         CurrentState = new StartState();

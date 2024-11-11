@@ -141,7 +141,7 @@ int CreateXdgLayer(OpenPvDisplay *display, OpenPvWindow *window)
 
     xdg_toplevel_set_title(window->xdg_toplevel, window->appId);
     xdg_toplevel_set_app_id(window->xdg_toplevel, window->appId);
-        
+  
     if (window->fullscreen)
         xdg_toplevel_set_fullscreen(window->xdg_toplevel, NULL);
 

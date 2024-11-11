@@ -54,8 +54,6 @@ internal class OpenViewProRemoteTargetTool : LinuxRemoteTargetTool
         string ahsokaEarly = Properties.Resources.hlio_early;
         scpClient.Upload(new MemoryStream(Encoding.UTF8.GetBytes(ahsokaEarly)), "/usr/sbin/hlio-init.sh");
 
-
-
         return null;
     }
 

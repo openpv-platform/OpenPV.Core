@@ -7,6 +7,7 @@
 #include <sys/time.h>
 #include <pthread.h>
 #include <getopt.h>
+#include <time.h>
 
 #include <wayland-client.h>
 #include <wayland-server.h>
@@ -156,14 +157,23 @@ int Init()
 
 void GetScreenInfo()
 {
-    struct ilmScreenProperties screenProperties;
-	ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screen_ID, &screenProperties);
-	if (ILM_SUCCESS == callResult)
-	{
-		screenWidth = screenProperties.screenWidth;
-		screenHeight = screenProperties.screenHeight;
-	}
+	printf("Getting Screen Info\n");
+	
+	struct ilmScreenProperties screenProperties;
+	screenProperties.screenWidth = 0;
+	screenProperties.screenHeight = 0;
 
+	ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screen_ID, &screenProperties);
+	
+	while (ILM_SUCCESS != callResult || screenProperties.screenWidth == 0)
+	{
+		printf("Waiting for Screen Properties\n");
+		usleep(100*1000);
+		callResult = ilm_getPropertiesOfScreen(screen_ID, &screenProperties);
+	}
+ 	
+	screenWidth = screenProperties.screenWidth;
+	screenHeight = screenProperties.screenHeight;
 }
 
 void CreateScreenLayers()

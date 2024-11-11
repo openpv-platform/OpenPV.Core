@@ -73,6 +73,7 @@ typedef struct OpenPvWindow {
 	char* appId;
 	int width, height;
 	bool initialized;
+	int surfaceId;
 
 } OpenPvWindow;
 

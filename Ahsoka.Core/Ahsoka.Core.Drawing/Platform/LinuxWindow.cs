@@ -32,9 +32,9 @@ internal class LinuxWindow : IDrawingWindow
         this.impl = impl;
     }
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid, int surfaceId)
     {
-        InitWindow(apiWindow, size, fullScreen, appid);
+        InitWindow(apiWindow, size, fullScreen, appid, surfaceId);
 
         try
         {
@@ -63,12 +63,12 @@ internal class LinuxWindow : IDrawingWindow
         return new SkiaDrawingApi(size, surface);
     }
 
-    private void InitWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appId)
+    private void InitWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appId, int surfaceId)
     {
         this.drawingWindow = apiWindow;
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Creating Linux Window - {appId}...");
 
-        int i = impl.InitWindow(size, fullScreen, appId);
+        int i = impl.InitWindow(size, fullScreen, appId, surfaceId);
         if (i != 0)
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Failed to init Wayland Window, exiting...");
@@ -133,7 +133,7 @@ internal class LinuxWindow : IDrawingWindow
 
 public abstract class LinuxDrawingImplementation
 {
-    internal abstract int InitWindow(DrawingSize size, bool fullscreen, string appid);
+    internal abstract int InitWindow(DrawingSize size, bool fullscreen, string appid, int surfaceId);
 
     internal abstract void SwapBuffers();
 

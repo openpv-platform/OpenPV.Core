@@ -45,28 +45,27 @@ public class DrawingWindow
     public bool FrameRateEnabled { get; set; } = true;
     public bool ShowClipRectangles { get; set; } = true;
 
-
     #endregion
 
     #region Methods
-    public DrawingWindow(string appId = "DrawingWindow", bool fullScreen = false, int width = 800, int height = 480)
+    public DrawingWindow(string appId = "DrawingWindow", int surfaceId = 2000, bool fullScreen = false, int width = 800, int height = 480)
     {
         size = new (width, height);
 
         if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacosArm64 or PlatformFamily.Ubuntu64)
         {
             nativeWindow = new Platform.DesktopWindow();
-            api = nativeWindow.CreateWindow(this, size, fullScreen, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, size, fullScreen, appId, surfaceId) as SkiaDrawingApi;
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
         {
             nativeWindow = new Platform.STWindow();
-            api = nativeWindow.CreateWindow(this, size, fullScreen, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, size, fullScreen, appId, surfaceId) as SkiaDrawingApi;
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
         {
             nativeWindow = new Platform.TIWindow();
-            api = nativeWindow.CreateWindow(this, size, fullScreen, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, size, fullScreen, appId, surfaceId) as SkiaDrawingApi;
         }
     }
 

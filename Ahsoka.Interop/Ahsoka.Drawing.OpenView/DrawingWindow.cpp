@@ -9,7 +9,7 @@
 #include "weston-platform.h"
 #include <dlfcn.h>
 #include <stdlib.h>
-#include <SurfaceConfigReader.h>
+#include <LayerManagerConfigReader.h>
 
 #ifdef ISPRO
 #include "ilm/ilm_control.h"
@@ -81,7 +81,7 @@ int InitWindowWithSize(bool fullScreen,int x, int y, int w, int h, char* appId, 
 int InitWindowCore(char* appId, int surfaceId)
 {
 	// Load Surface Config
-	LoadSurfaceConfiguration();
+	LoadLayerManagerConfig();
 	auto surfaceInfo = GetSurfaceLayout(surfaceId);
 	if (surfaceInfo.surface_id() == surfaceId && context.width == 0 && context.height == 0)
 	{	

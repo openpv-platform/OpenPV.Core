@@ -46,8 +46,8 @@ public class GeneralTests : LinearTestBase
     //[TestMethod]
     public void CreateSurfaceInfo()
     {
-        SurfaceConfiguration surfaceConfiguration = new SurfaceConfiguration();
-        surfaceConfiguration.SurfaceLayouts.Add(new SurfaceLayout() { SurfaceId = 121212, X = 100, Y = 100, Width = 800, Height = 480 });
+        LayerManager.LayerManagerConfiguration surfaceConfiguration = new ();
+        surfaceConfiguration.SurfaceLayouts.Add(new() { SurfaceId = 121212, X = 100, Y = 100, Width = 800, Height = 480 });
         using (MemoryStream ms = new MemoryStream())
         {
             ProtoBuf.Serializer.Serialize(ms, surfaceConfiguration);

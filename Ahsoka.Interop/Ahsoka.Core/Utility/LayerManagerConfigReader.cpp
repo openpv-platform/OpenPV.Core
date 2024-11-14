@@ -5,12 +5,12 @@
 #include <sstream>
 #include <filesystem>
 
-#include "SurfaceConfigReader.h"
+#include "LayerManagerConfigReader.h"
 
 using namespace std;
-using namespace AhsokaSystem;
+using namespace AhsokaLayerManager;
 
-void LoadSurfaceConfiguration()
+void LoadLayerManagerConfig()
 {
     printf("Loading Configuration\n");
     
@@ -39,4 +39,5 @@ SurfaceLayout GetSurfaceLayout(int surface_id)
 
     return emptyLayout;
 }
+
 

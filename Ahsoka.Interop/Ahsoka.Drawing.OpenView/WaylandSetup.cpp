@@ -221,7 +221,7 @@ static void seat_handle_capabilities(void *data, struct wl_seat *seat,
 	{
 	 	if (CAIRO_DEBUG) printf("-- ADDING POINTER\r\n");
 		struct wl_pointer *pointer = wl_seat_get_pointer(seat);
-		//wl_pointer_add_listener(pointer, &pointer_listener, seat);
+		wl_pointer_add_listener(pointer, &pointer_listener, seat);
 	}
 }
 

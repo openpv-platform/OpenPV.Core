@@ -28,7 +28,7 @@ include_directories( EGL Wayland Touch)
 add_library(${PROJECT_NAME} SHARED
             DrawingWindow.cpp
             GLSetup.cpp
-            WaylandSetup.c
+            WaylandSetup.cpp
             Wayland/xdg-shell-client-protocol.c
             Touch/XdgTouch.c)
 

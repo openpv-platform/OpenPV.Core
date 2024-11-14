@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package AhsokaLayerManager;
+option csharp_namespace = "Ahsoka.LayerManager";
+
+message LayoutManagerMessageTypes
+{
+	enum Ids
+	{
+		NO_MESSAGE = 0;
+
+		CLOSE_LOGO = 1;
+		
+	}
+}
+
+message LayerManagerConfiguration
+{
+    bool show_unknown_apps = 1;
+    string boot_logo_path = 2;
+    repeated SurfaceLayout surface_layouts = 3;
+}
+
+message SurfaceLayout
+{
+    int32 surface_id = 1;
+    int32 x = 2;
+    int32 y = 3;
+    int32 width = 4;
+    int32 height = 5;
+}

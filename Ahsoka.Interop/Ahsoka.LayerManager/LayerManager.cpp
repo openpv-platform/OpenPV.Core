@@ -12,7 +12,7 @@
 #include <wayland-server.h>
 #include <ilm/ilm_control.h>
 #include "LayerManager.h"
-#include "SurfaceConfigReader.h"
+#include "LayerManagerConfigReader.h"
 
 typedef struct 
 {
@@ -170,7 +170,7 @@ int Init()
 
     ilm_registerShutdownNotification(shutdownCallbackFunction, NULL);
 
-    LoadSurfaceConfiguration();
+    LoadLayerManagerConfig();
 
     return 0;
 }

@@ -9,6 +9,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Security.AccessControl;
 using System.Text;
 
 namespace Ahsoka.System;
@@ -39,6 +40,7 @@ internal class OpenViewProRemoteTargetTool : LinuxRemoteTargetTool
         sshClient.RunCommand($"systemctl disable gplv3-notice");
         sshClient.RunCommand($"systemctl disable systemd-bootchart.service");
         sshClient.RunCommand($"systemctl mask systemd-udev-settle");
+        sshClient.RunCommand($"systemctl disable psplash-start.service");
         var result = sshClient.RunCommand($"systemctl disable tee-supplicant");
 
         result = sshClient.RunCommand($"mkdir -p /usr/local/Ahsoka/factory/weston");
@@ -73,7 +75,7 @@ internal class OpenViewProRemoteTargetTool : LinuxRemoteTargetTool
         SshCommand commandResult = base.AddServices(info, sshClient, scpClient);
 
         progress.Report($"Install Ahsoka LayerManager Application");
-        string path = Path.Combine(PlatformSupportPathInfo.GetPlatformAppsPath(info.PlatformFamily), "Ahsoka.LayerManager.OpenViewLinuxPro");
+        string path = Path.Combine(PlatformSupportPathInfo.GetPlatformAppsPath(info.PlatformFamily), "Ahsoka.LayerManager");
 
         string appPath = $"/usr/local/Ahsoka/factory/weston/Ahsoka.LayerManager";
         using (var memoryStream = new MemoryStream(File.ReadAllBytes(path)))

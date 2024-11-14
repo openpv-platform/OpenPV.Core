@@ -12,8 +12,8 @@ include(Functions.cmake)
 
 # Interop for C++ SDK
 IF (NOT WIN32)
-    add_subdirectory ("Ahsoka.Client.Shared")
-    add_subdirectory ("Ahsoka.Client.Test")
+    add_subdirectory ("Ahsoka.Core")
+    add_subdirectory ("Ahsoka.Core.Test")
 ENDIF()
 
 #Interop Objects for Services

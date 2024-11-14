@@ -310,6 +310,71 @@
                     "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
                 }
             }
+        },
+        {
+            "name": "openpvpro-release",
+            "displayName": "OpenPVPro Release",
+            "description": "Target the Windows Subsystem for Linux (WSL) or a remote Linux system.",
+            "generator": "Ninja",
+            "toolchainFile": "/root/sdk/sysroots/x86_64-arago-linux/usr/share/cmake/OEToolchainConfig.cmake",
+            "binaryDir": "${sourceDir}/Ahsoka.Interop/Build/OpenViewLinuxPro",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "AHSOKA_BUILD_OUTPUTS" : "${sourceDir}/BuildOutputs/SDK/OpenViewLinuxPro_TargetSupport/SDK"
+            },
+            "environment": {
+                "SDKTARGETSYSROOT": "/root/sdk/sysroots/aarch64-oe-linux",
+                "PATH": "/root/sdk/sysroots/x86_64-arago-linux/usr/bin:/root/sdk/sysroots/x86_64-arago-linux/usr/sbin:/root/sdk/sysroots/x86_64-arago-linux/bin:/root/sdk/sysroots/x86_64-arago-linux/sbin:/root/sdk/sysroots/x86_64-arago-linux/usr/bin/../x86_64-arago-linux/bin:/root/sdk/sysroots/x86_64-arago-linux/usr/bin/aarch64-oe-linux:/root/sdk/sysroots/x86_64-arago-linux/usr/bin/aarch64-oe-linux-musl:$PATH",
+                "PKG_CONFIG_SYSROOT_DIR": "/root/sdk/sysroots/aarch64-oe-linux",
+                "PKG_CONFIG_PATH": "/root/sdk/sysroots/aarch64-oe-linux/usr/lib/pkgconfig:/root/sdk/sysroots/aarch64-oe-linux/usr/share/pkgconfig",
+                "CONFIG_SITE": "/root/sdk/site-config-aarch64-oe-linux",
+                "OECORE_NATIVE_SYSROOT": "/root/sdk/sysroots/x86_64-arago-linux",
+                "OECORE_TARGET_SYSROOT": "/root/sdk/sysroots/aarch64-oe-linux",
+                "OECORE_ACLOCAL_OPTS": "-I /root/sdk/sysroots/x86_64-arago-linux/usr/share/aclocal",
+                "OECORE_BASELIB": "lib",
+                "OECORE_TARGET_ARCH": "aarch64",
+                "OECORE_TARGET_OS": "linux",
+                "CC": "aarch64-oe-linux-gcc  -mbranch-protection=standard --sysroot=/root/sdk/sysroots/aarch64-oe-linux",
+                "CXX": "aarch64-oe-linux-g++  -mbranch-protection=standard --sysroot=/root/sdk/sysroots/aarch64-oe-linux",
+                "CPP": "aarch64-oe-linux-gcc -E  -mbranch-protection=standard --sysroot=/root/sdk/sysroots/aarch64-oe-linux",
+                "AS": "aarch64-oe-linux-as ",
+                "LD": "aarch64-oe-linux-ld  --sysroot=/root/sdk/sysroots/aarch64-oe-linux",
+                "GDB": "aarch64-oe-linux-gdb",
+                "STRIP": "aarch64-oe-linux-strip",
+                "RANLIB": "aarch64-oe-linux-ranlib",
+                "OBJCOPY": "aarch64-oe-linux-objcopy",
+                "OBJDUMP": "aarch64-oe-linux-objdump",
+                "READELF": "aarch64-oe-linux-readelf",
+                "AR": "aarch64-oe-linux-ar",
+                "NM": "aarch64-oe-linux-nm",
+                "M4": "m4",
+                "TARGET_PREFIX": "aarch64-oe-linux-",
+                "CONFIGURE_FLAGS": "--target=aarch64-oe-linux --host=aarch64-oe-linux --build=x86_64-linux --with-libtool-sysroot=/root/sdk/sysroots/aarch64-oe-linux",
+                "CFLAGS": " -O2 -pipe -g -feliminate-unused-debug-types ",
+                "CXXFLAGS": " -O2 -pipe -g -feliminate-unused-debug-types ",
+                "LDFLAGS": "-Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed ",
+                "CPPFLAGS": "",
+                "KCFLAGS": "--sysroot=/root/sdk/sysroots/aarch64-oe-linux",
+                "OECORE_DISTRO_VERSION": "2023.10",
+                "OECORE_SDK_VERSION": "2023.10",
+                "ARCH": "arm64",
+                "CROSS_COMPILE": "aarch64-oe-linux-",
+                "OECORE_TUNE_CCARGS": " -mbranch-protection=standard",
+                "CMAKE_TOOLCHAIN_FILE": "/root/sdk/sysroots/x86_64-arago-linux/usr/share/cmake/OEToolchainConfig.cmake",
+                "OE_CMAKE_FIND_LIBRARY_CUSTOM_LIB_SUFFIX": "`echo lib | sed -e s/lib//`"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Linux"
+            },
+            "vendor": {
+                "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
+                    "copySources": true,
+                    "copyBuildOutput": true,
+                    "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
+                }
+            }
         }
     ]
 }

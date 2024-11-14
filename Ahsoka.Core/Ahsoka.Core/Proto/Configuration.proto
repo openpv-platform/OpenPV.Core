@@ -74,3 +74,17 @@ enum ServiceEnableDisable
     Disabled = 0;
     Enabled = 1;
 }
+
+message SurfaceConfiguration
+{
+    repeated SurfaceLayout surface_layouts = 1;
+}
+
+message SurfaceLayout
+{
+    int32 surface_id = 1;
+    int32 x = 2;
+    int32 y = 3;
+    int32 width = 4;
+    int32 height = 5;
+}

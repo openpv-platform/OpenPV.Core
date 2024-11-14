@@ -16,16 +16,36 @@ internal class DesktopWindow : IDrawingWindow
     private IWindow window;
     SKSurface surface;
     GRContext context;
+    DrawingRect drawingRect;
     GL gl;
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid, int surfaceId)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingRect bounds, bool fullScreen, string appid, int surfaceId)
     {
-     
+        drawingRect = bounds;
+
         WindowOptions options = WindowOptions.Default;
-        options.Size = new Vector2D<int>((int)size.Width, (int)size.Height);
+        options.Size = new Vector2D<int>((int)bounds.Width, (int)bounds.Height);
         options.Title = appid;
         options.IsContextControlDisabled = true;
-     
+
+        return CreateWindow(apiWindow, options);
+    }
+
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, int surfaceId, string appid)
+    {
+
+        WindowOptions options = WindowOptions.Default;
+        options.Size = new Vector2D<int>(1024, 600);
+        options.Title = appid;
+        options.IsContextControlDisabled = true;
+
+        drawingRect = new DrawingRect(0,0,options.Size.X, options.Size.Y);
+
+        return CreateWindow(apiWindow, options);
+    }
+
+    private IDrawingApi CreateWindow(DrawingWindow apiWindow, WindowOptions options)
+    {
         window = Silk.NET.Windowing.Window.Create(options);
         window.Load += () =>
         {
@@ -74,9 +94,9 @@ internal class DesktopWindow : IDrawingWindow
 
         window.Render += (deltaTime) =>
         {
-          
+
             context.ResetContext();
-            
+
             // Handle the Frame (Prepare, Render) returns if New Render was Don
             if (apiWindow.HandleFrame())
                 context?.Flush(true, true);
@@ -88,15 +108,15 @@ internal class DesktopWindow : IDrawingWindow
             gl.ReadBuffer(GLEnum.Front);
             gl.DrawBuffer(GLEnum.Back);
             gl.Disable(GLEnum.ScissorTest);
-            gl.BlitFramebuffer(0, 0, (int)size.Width, (int)size.Height,
-                               0, 0, (int)size.Width, (int)size.Height, (int)GLEnum.ColorBufferBit, GLEnum.Nearest);
+            gl.BlitFramebuffer(0, 0, (int)drawingRect.Width, (int)drawingRect.Height,
+                               0, 0, (int)drawingRect.Width, (int)drawingRect.Height, (int)GLEnum.ColorBufferBit, GLEnum.Nearest);
         };
 
         window.Initialize();
 
         InitWindow();
 
-        return new SkiaDrawingApi(size, surface);
+        return new SkiaDrawingApi(new DrawingSize( drawingRect.Width,drawingRect.Height), surface);
     }
 
     private void InitWindow()

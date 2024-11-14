@@ -1,5 +1,4 @@
-#include "WaylandClientInterop.h"
-
+#include "WaylandSetup.h"
 
 #include <EGL/eglext.h>
 #include <limits.h>
@@ -122,7 +121,7 @@ static void pointer_handle_motion(void *data, struct wl_pointer *wl_pointer, uin
 static void pointer_handle_button(void *data, struct wl_pointer *pointer,
 		uint32_t serial, uint32_t time, uint32_t button, uint32_t state) 
 {
-	struct wl_seat *seat = data;
+	struct wl_seat *seat = (struct wl_seat*)data;
 	
 	// If the user presses the left pointer button, start an interactive move
 	// of the toplevel
@@ -156,22 +155,34 @@ static void pointer_handle_button(void *data, struct wl_pointer *pointer,
 	}
 }
 
-static void noop() 
+static void pointer_handle_enter(void*, struct wl_pointer*, uint32_t, struct wl_surface*, wl_fixed_t, wl_fixed_t)
 {
-	// This space intentionally left blank
+
+}
+
+static void pointer_handle_leave(void*, struct wl_pointer*, unsigned int, struct wl_surface*)
+{
+
+}
+
+
+static void pointer_handle_axis(void *data, struct wl_pointer *wl_pointer, uint32_t time, 
+			uint32_t axis, wl_fixed_t value)
+{
+
 }
 
 static const struct wl_pointer_listener pointer_listener = 
 {
-	.enter = noop,
-	.leave = noop,
+	.enter = pointer_handle_enter,
+	.leave = pointer_handle_leave,
 	.motion = pointer_handle_motion,
 	.button = pointer_handle_button,
-	.axis = noop,
+	.axis = pointer_handle_axis,
 };
 
 
-static int get_seat(OpenPvDisplay *d, struct wl_seat *seat)
+static int get_seat(DrawingWindowContext *d, struct wl_seat *seat)
 {
 	// Evaluate Seats and Available Seats
 	int seatIndex = -1;
@@ -183,11 +194,11 @@ static int get_seat(OpenPvDisplay *d, struct wl_seat *seat)
 }
 
 static void seat_handle_capabilities(void *data, struct wl_seat *seat,
-			 enum wl_seat_capability caps)
+			 unsigned int caps)
 {
 	if (CAIRO_DEBUG) printf("-- Handling Seat Capabilities   SEAT:[%i] CAP:[%i] \r\n", seat, caps);
 
-	OpenPvDisplay *d = (OpenPvDisplay *) data;
+	DrawingWindowContext *d = (DrawingWindowContext *) data;
 	
 	int seatIndex = get_seat(d, seat);
 	if (seatIndex < 0)
@@ -206,16 +217,16 @@ static void seat_handle_capabilities(void *data, struct wl_seat *seat,
 		wl_touch_destroy(d->seats[seatIndex].touch);
 		d->seats[seatIndex].touch = NULL;
 	}
-
-	if (caps & WL_SEAT_CAPABILITY_POINTER) 
+	else if (caps & WL_SEAT_CAPABILITY_POINTER) 
 	{
 	 	if (CAIRO_DEBUG) printf("-- ADDING POINTER\r\n");
 		struct wl_pointer *pointer = wl_seat_get_pointer(seat);
-		wl_pointer_add_listener(pointer, &pointer_listener, seat);
+		//wl_pointer_add_listener(pointer, &pointer_listener, seat);
 	}
 }
 
-static const struct wl_seat_listener seat_listener = {
+static const struct wl_seat_listener seat_listener = 
+{
 	seat_handle_capabilities,
 };
 
@@ -231,21 +242,21 @@ static const struct xdg_wm_base_listener wm_base_listener = {
 static void registry_handle_global(void *data, struct wl_registry *registry,
 		       uint32_t name, const char *interface, uint32_t version)
 {
-	OpenPvDisplay *d = (OpenPvDisplay *) data;
+	DrawingWindowContext *d = (DrawingWindowContext *) data;
 	
 	if (CAIRO_DEBUG > 1) printf("-- %s [%i]\r\n", interface, name );
 	
 	if (strcmp(interface, "wl_compositor") == 0)
-		d->compositor = wl_registry_bind(registry, name, (&wl_compositor_interface), 1);
+		d->compositor = (struct wl_compositor*)wl_registry_bind(registry, name, (&wl_compositor_interface), 1);
 	else if (strcmp(interface, "xdg_wm_base") == 0)
 	{
-		d->wm_base = wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
+		d->wm_base = (struct xdg_wm_base*)wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
 		xdg_wm_base_add_listener(d->wm_base, &wm_base_listener, d);
 	}
 #ifdef ISPRO 
 	else if (strcmp(interface, "ivi_application") == 0) 
 	{
-        d->ivi_app =  wl_registry_bind(registry, name, &ivi_application_interface, 1);
+        d->ivi_app =  (struct ivi_application*)wl_registry_bind(registry, name, &ivi_application_interface, 1);
     }
 #endif
     else if (strcmp(interface, "wl_seat") == 0)
@@ -260,7 +271,7 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 		if (availableSeat >=0)
 		{
 			d->seats[availableSeat].seat_name = name;
-			d->seats[availableSeat].seat = wl_registry_bind(registry, name, &wl_seat_interface, 1);
+			d->seats[availableSeat].seat = (struct wl_seat*)wl_registry_bind(registry, name, &wl_seat_interface, 1);
 			wl_seat_add_listener(d->seats[availableSeat].seat, &seat_listener, d);
 
 			if (CAIRO_DEBUG) printf("-- ADDING SEAT[%i] @ [%i] and [%i]\r\n", d->seats[availableSeat].seat, availableSeat, name );
@@ -271,13 +282,13 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 		}
 	}
     else if (strcmp(interface, "wl_shm") == 0)
-	    d->shm = wl_registry_bind(registry, name, &wl_shm_interface, 1);
+	    d->shm = (struct wl_shm*)wl_registry_bind(registry, name, &wl_shm_interface, 1);
 }
 
 static void registry_handle_global_remove(void *data, struct wl_registry *registry,
 			      uint32_t name)
 {
-	OpenPvDisplay *d = (OpenPvDisplay *) data;
+	DrawingWindowContext *d = (DrawingWindowContext *) data;
 	
 	for (size_t i = 0; i < MAX_SEATS; i++)
 		if (d->seats[i].seat_name == name)
@@ -311,7 +322,7 @@ static const struct wl_registry_listener registry_listener = {
 	registry_handle_global_remove
 };
 
-int InitWaylandClient(OpenPvDisplay *display, OpenPvWindow *window)
+int InitWaylandClient(DrawingWindowContext *display)
 {
 	display->display = wl_display_connect(NULL);
 	display->registry = wl_display_get_registry(display->display);

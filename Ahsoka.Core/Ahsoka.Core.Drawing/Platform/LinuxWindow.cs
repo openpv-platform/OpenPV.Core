@@ -15,14 +15,15 @@ internal class LinuxWindow : IDrawingWindow
     int sampleCount = 0;
     int stencilBits = 0;
     uint gl_format = 0x8058;
-    DrawingSize windowSize;
-
+    DrawingRect bounds;
+    bool isFullScreen = false;
     readonly CancellationTokenSource cancelTokenSource = new();
     readonly BlockingCollection<EventHandler> eventQueue = new();
 
     DrawingWindow drawingWindow;
     SKSurface surface;
     GRContext context;
+
 
     // Embedded Context
     Task touchHandler;
@@ -32,10 +33,25 @@ internal class LinuxWindow : IDrawingWindow
         this.impl = impl;
     }
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appid, int surfaceId)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow,int surfaceId, string appid)
     {
-        InitWindow(apiWindow, size, fullScreen, appid, surfaceId);
+        bounds = new(0,0,0,0);
 
+        InitNativeWindow(apiWindow, appid, surfaceId);
+        return InitDrawingApi(apiWindow, bounds);
+    }
+
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingRect bounds, bool fullScreen, string appid, int surfaceId)
+    {
+        this.isFullScreen = fullScreen;
+        this.bounds = bounds;
+
+        InitNativeWindow(apiWindow, appid, surfaceId);
+        return InitDrawingApi(apiWindow, bounds);
+    }
+
+    private IDrawingApi InitDrawingApi(DrawingWindow apiWindow, DrawingRect bounds)
+    {
         try
         {
             touchHandler = Task.Run(() =>
@@ -60,16 +76,22 @@ internal class LinuxWindow : IDrawingWindow
         }
         catch (OperationCanceledException) { }
 
-        return new SkiaDrawingApi(size, surface);
+        return new SkiaDrawingApi(new DrawingSize(bounds.Width, bounds.Height), surface);
     }
 
-    private void InitWindow(DrawingWindow apiWindow, DrawingSize size, bool fullScreen, string appId, int surfaceId)
+    private void InitNativeWindow(DrawingWindow apiWindow, string appId, int surfaceId)
     {
         this.drawingWindow = apiWindow;
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Creating Linux Window - {appId}...");
 
-        int i = impl.InitWindow(size, fullScreen, appId, surfaceId);
-        if (i != 0)
+        int windowResult = 0;
+        
+        if ((bounds.Width > 0 && bounds.Height > 0) || isFullScreen)
+            windowResult = impl.InitNativeWindowWithSize(bounds, this.isFullScreen, appId, surfaceId);
+        else
+            windowResult = impl.InitNativeWindowWithSurfaceId(surfaceId, appId);
+
+        if (windowResult != 0)
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Failed to init Wayland Window, exiting...");
             return;
@@ -79,9 +101,8 @@ internal class LinuxWindow : IDrawingWindow
         impl.GetWindowInformation(ref boundsWidth, ref boundsHeight);
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium,$"Active Window Dimensions: w:[{boundsWidth}] h:[{boundsHeight}]");
 
-        size.Width = boundsWidth;
-        size.Height = boundsHeight;
-        windowSize = size;
+        bounds.Width = boundsWidth;
+        bounds.Height = boundsHeight;
 
         impl.GetSurfaceInformation(ref sampleCount, ref stencilBits, ref gl_format);
         impl.SetSwapInterval(1);
@@ -133,7 +154,9 @@ internal class LinuxWindow : IDrawingWindow
 
 public abstract class LinuxDrawingImplementation
 {
-    internal abstract int InitWindow(DrawingSize size, bool fullscreen, string appid, int surfaceId);
+    internal abstract int InitNativeWindowWithSize(DrawingRect windowBounds, bool fullscreen, string appid, int surfaceId);
+
+    internal abstract int InitNativeWindowWithSurfaceId(int surfaceId, string appid);
 
     internal abstract void SwapBuffers();
 

@@ -1,13 +1,12 @@
 #include <stdlib.h>
-#include "EGLSurface.h"
+#include "GLSetup.h"
 #include "weston-platform.h"
 
 int PrintConfigs(EGLDisplay egl_disp, EGLConfig* egl_configs, EGLint egl_num_configs);
 
-int InitEGL(OpenPvDisplay *display, OpenPvWindow *window)
+int InitEGL(DrawingWindowContext *display)
 {
     EGLint major, minor, count, n, size, i;
-	EGLConfig *configs;
 	EGLBoolean ret;
 
 	static const EGLint context_attribs[] = {
@@ -30,7 +29,7 @@ int InitEGL(OpenPvDisplay *display, OpenPvWindow *window)
 	};
 
 	// Clear Alpha
-	if (window->opaque || window->buffer_size == 16)
+	if (display->opaque || display->buffer_size == 16)
 		config_attribs[9] = 0;
 
  	display->egl.dpy = weston_platform_get_egl_display(EGL_PLATFORM_WAYLAND_KHR, display->display, NULL);
@@ -55,7 +54,7 @@ int InitEGL(OpenPvDisplay *display, OpenPvWindow *window)
 	if (!eglGetConfigs(display->egl.dpy, NULL, 0, &count) || count < 1)
 		return -1;
 
-	configs = calloc(count, sizeof *configs);
+	 EGLConfig* configs = new EGLConfig[count];
 
     int rc = eglGetConfigs(display->egl.dpy, configs, count, &count);
     if (rc != EGL_TRUE) {
@@ -96,9 +95,9 @@ static void handle_toplevel_configure(void *data, struct xdg_toplevel *toplevel,
 			  struct wl_array *states)
 {
 #ifndef ISPRO
-	OpenPvWindow *window = (OpenPvWindow *)data;
-	window->width = width;
-	window->height = height;
+	DrawingWindowContext *display = (DrawingWindowContext *)data;
+	display->width = width;
+	display->height = height;
 #endif
 }
 
@@ -116,12 +115,12 @@ static const struct xdg_toplevel_listener xdg_toplevel_listener = {
 static void handle_surface_configure(void *data, struct xdg_surface *surface,
 			 uint32_t serial)
 {
-	OpenPvWindow *window = data;
+	DrawingWindowContext *display = (DrawingWindowContext *)data;
 
 	xdg_surface_ack_configure(surface, serial);
 
 	// critical for our surface to send acknowledge above. Error if not sent
-	window->wait_for_configure = false;
+	display->wait_for_configure = false;
 }
 
 static const struct xdg_surface_listener xdg_surface_listener = 
@@ -129,21 +128,21 @@ static const struct xdg_surface_listener xdg_surface_listener =
 	handle_surface_configure
 };
 
-int CreateXdgLayer(OpenPvDisplay *display, OpenPvWindow *window)
+int CreateXdgLayer(DrawingWindowContext *display)
 {
-    window->surface = wl_compositor_create_surface(display->compositor);
+    display->surface = wl_compositor_create_surface(display->compositor);
 
-    window->xdg_surface = xdg_wm_base_get_xdg_surface(display->wm_base, window->surface);
-    xdg_surface_add_listener(window->xdg_surface, &xdg_surface_listener, window);
+    display->xdg_surface = xdg_wm_base_get_xdg_surface(display->wm_base, display->surface);
+    xdg_surface_add_listener(display->xdg_surface, &xdg_surface_listener, display);
 
-    window->xdg_toplevel = xdg_surface_get_toplevel(window->xdg_surface);
-    xdg_toplevel_add_listener(window->xdg_toplevel, &xdg_toplevel_listener, window);
+    display->xdg_toplevel = xdg_surface_get_toplevel(display->xdg_surface);
+    xdg_toplevel_add_listener(display->xdg_toplevel, &xdg_toplevel_listener, display);
 
-    xdg_toplevel_set_title(window->xdg_toplevel, window->appId);
-    xdg_toplevel_set_app_id(window->xdg_toplevel, window->appId);
+    xdg_toplevel_set_title(display->xdg_toplevel, display->appId);
+    xdg_toplevel_set_app_id(display->xdg_toplevel, display->appId);
   
-    if (window->fullscreen)
-        xdg_toplevel_set_fullscreen(window->xdg_toplevel, NULL);
+    if (display->fullscreen)
+        xdg_toplevel_set_fullscreen(display->xdg_toplevel, NULL);
 
 	// roundtrip to wait for any pending requests
 	wl_display_roundtrip(display->display);
@@ -151,18 +150,18 @@ int CreateXdgLayer(OpenPvDisplay *display, OpenPvWindow *window)
 	return 0;
 }
 
-int CreateEglWindow(OpenPvDisplay *display, OpenPvWindow *window)
+int CreateEglWindow(DrawingWindowContext *display)
 {
-	window->native = wl_egl_window_create(window->surface, window->width, window->height);
+	display->native = wl_egl_window_create(display->surface, display->width, display->height);
 
-	window->egl_surface = weston_platform_create_egl_surface(display->egl.dpy, display->egl.conf, window->native, NULL);
-	wl_surface_commit(window->surface);
+	display->egl_surface = weston_platform_create_egl_surface(display->egl.dpy, display->egl.conf, display->native, NULL);
+	wl_surface_commit(display->surface);
 	
      // Keep Front Buffer for Dirty Rectangles
-    eglSurfaceAttrib(display->egl.dpy, window->egl_surface, EGL_SWAP_BEHAVIOR, EGL_BUFFER_PRESERVED);
+    eglSurfaceAttrib(display->egl.dpy, display->egl_surface, EGL_SWAP_BEHAVIOR, EGL_BUFFER_PRESERVED);
   
     // Prepare for Drawing (we only use one surface currently)
-    eglMakeCurrent(window->display->egl.dpy, window->egl_surface, window->egl_surface, window->display->egl.ctx);
+    eglMakeCurrent(display->egl.dpy, display->egl_surface, display->egl_surface, display->egl.ctx);
 	eglSwapInterval(display->egl.dpy, 1);
 
 	return 0;

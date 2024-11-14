@@ -26,12 +26,19 @@ include_directories( EGL Wayland Touch)
 
 # add the target Library
 add_library(${PROJECT_NAME} SHARED
-            OpenPVWindow.c
-            EGL/EGLSurface.c
-            Wayland/WaylandClientInterop.c
+            DrawingWindow.cpp
+            GLSetup.cpp
+            WaylandSetup.c
             Wayland/xdg-shell-client-protocol.c
             Touch/XdgTouch.c)
 
+
+#Include Core / Proto
+target_link_libraries(${PROJECT_NAME} PRIVATE Ahsoka.Core Ahsoka.Proto)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE -s)
+
+#Set Output Location
 set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS}/../../../Ahsoka.Services/)
 set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS}/../../../Ahsoka.Services/)
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")

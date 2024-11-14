@@ -17,7 +17,10 @@ internal class STWindow : LinuxWindow
         public const string NativeLibraryName = "AhsokaLib/Ahsoka.Drawing.OpenViewLinux.so";
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        internal static extern int InitWindowInterop(int w, int h, bool fullscreen, [MarshalAs(UnmanagedType.LPStr)] string appId, int surfaceId);
+        internal static extern int InitWindowWithSize(bool fullscreen, int x, int y, int width, int height,  [MarshalAs(UnmanagedType.LPStr)] string appid, int surfaceId);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        internal static extern int InitWindowWithSurfaceId(int surfaceId, string appid);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void GetWindowDimensions(ref int w, ref int h);
@@ -40,12 +43,20 @@ internal class STWindow : LinuxWindow
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void DestoryWindowContext();
 
-        internal override int InitWindow(DrawingSize size, bool fullscreen, string appId, int surfaceId)
+        internal override int InitNativeWindowWithSize(DrawingRect bounds, bool fullscreen, string appId, int surfaceId)
         {
             if (String.IsNullOrEmpty(appId))
                 appId = "LinuxDrawingWindow";
 
-            return InitWindowInterop((int)size.Width, (int)size.Height, fullscreen, appId, surfaceId);
+            return InitWindowWithSize(fullscreen, (int)bounds.Y, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height, appId, surfaceId);
+        }
+
+        internal override int InitNativeWindowWithSurfaceId(int surfaceId, string appId)
+        {
+            if (String.IsNullOrEmpty(appId))
+                appId = "LinuxDrawingWindow";
+
+            return InitWindowWithSurfaceId(surfaceId, appId);
         }
 
         internal override void GetWindowInformation(ref int w, ref int h)

@@ -1,5 +1,5 @@
-#ifndef OPENPVGLESCONTEXT_H_
-#define OPENPVGLESCONTEXT_H_
+#ifndef DRAWINGWINDOW_H_
+#define DRAWINGWINDOW_H_
 
 #include "XdgTouch.h"
 #include <GLES2/gl2.h>
@@ -9,10 +9,10 @@
 extern "C" {
 #endif
 
-int InitWindowInterop(int w, int h, bool fullScreen, char* appId, int surfaceId);
+int InitWindowCore(char* appId, int surfaceId);
+int InitWindowWithSize(bool fullScreen,int x, int y, int w, int h, char* appId, int surfaceId);
+int InitWindowWithSurfaceId( int surfaceId, char* appId);
 void DestoryWindowContext();
-
-void * GetFunction(const char *str);
 
 void GLSwapBuffers();
 bool GetTouchData(TouchEvent *data, int timeoutInMs);
@@ -21,7 +21,9 @@ void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format);
 
 bool UpdateSwapInterval(int interval);
 
-#ifdef  __cplusplus
+void* GetFunction(const char *str);
+
+#ifdef __cplusplus
 }
 #endif
 #endif

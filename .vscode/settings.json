@@ -111,7 +111,21 @@
       "csignal": "cpp",
       "any": "cpp",
       "typeindex": "cpp",
-      "variant": "cpp"
+      "variant": "cpp",
+      "ivi-layout-export.h": "c",
+      "config-parser.h": "c",
+      "weston.h": "c",
+      "ivi-application-client-protocol.h": "c",
+      "complex": "cpp",
+      "source_location": "cpp",
+      "ranges": "cpp",
+      "shared_mutex": "cpp",
+      "span": "cpp",
+      "valarray": "cpp",
+      "ilm_client.h": "c",
+      "ilm_control.h": "c",
+      "surfaceconfigreader.h": "c",
+      "configuration.pb.h": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
   }

@@ -29,6 +29,7 @@ namespace AhsokaServiceFramework
             void Disconnect();
             void SendMessage(std::string header, std::string data, std::string clientId, bool isNotifcation);
             bool ReceiveMessage(std::string& header, std::string& data, std::string& clientId, bool isNotifcation, int timeoutInMs = INT_MAX);
+            
             std::string GetClientId();
             std::string GetNotificationClientId();
 
@@ -36,8 +37,7 @@ namespace AhsokaServiceFramework
 
             std::string clientId;
             std::string notificationClientId;
-            zmq::context_t *context;
-            
+
             bool IsConnected;
             bool IsListening;
             bool IsSending;
@@ -54,10 +54,6 @@ namespace AhsokaServiceFramework
             void ManageNotifications();       
            
             AhsokaServiceFramework::BlockingQueue<SocketMessage> outgoingMessages;
-
-            zmq::context_t& GetContext();
-            
-            void SendMessage(const std::string& header, const std::string& data);  
 
     };
 

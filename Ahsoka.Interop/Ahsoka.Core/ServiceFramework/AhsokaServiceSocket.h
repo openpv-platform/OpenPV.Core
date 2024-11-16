@@ -47,14 +47,12 @@ namespace AhsokaServiceFramework
             void ManageSocket();
             
             // Notification Reciever Items
+            zmq::socket_t* socket;
             ReadyWaiter notificationThreadReady;
             std::thread* notificationThread;
             void ManageNotifications();
+            
             AhsokaServiceFramework::BlockingQueue<SocketMessage> notificationMessages;
-
-            zmq::socket_t* socket;
-            zmq::context_t *context;
-            zmq::context_t& GetContext();
 
             std::string GetPairAddress();
     };

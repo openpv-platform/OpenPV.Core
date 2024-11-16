@@ -19,8 +19,8 @@ class IotTests
             IotServiceClient iotClient;
 
             auto runtime = AhsokaRuntime::CreateBuilder()
-                .AddClient(&client)
-                .AddClient(&iotClient)
+                .AddEndPoint(&client)
+                .AddEndPoint(&iotClient)
                 .SetServiceExecutable(pathToServiceExe)
                 .StartWithExternalServices(); // Connect to Already Running Runtime
 

@@ -111,17 +111,9 @@ namespace AhsokaServiceFramework
         return false;
     }
 
-   
-    zmq::context_t& AhsokaServiceSocket::GetContext()
-    {
-        return *context;
-    }
-
     void AhsokaServiceSocket::ManageNotifications()
     {
-        zmq::socket_t* notif_socket_snd;
-    
-        notif_socket_snd = new zmq::socket_t(GetContext(), zmq::socket_type::pair);
+        zmq::socket_t* notif_socket_snd = new zmq::socket_t(AhsokaZMQContext::GetZMQContext(), zmq::socket_type::pair);
         notif_socket_snd->set(zmq::sockopt::linger, 0);
         notif_socket_snd->connect(GetPairAddress());
 
@@ -152,15 +144,12 @@ namespace AhsokaServiceFramework
 
     void AhsokaServiceSocket::ManageSocket()
     {
-        this->context = &AhsokaZMQContext::GetZMQContext();
-
-        zmq::socket_t* notif_socket_rcv;
-        notif_socket_rcv = new zmq::socket_t(GetContext(), zmq::socket_type::pair);
+        zmq::socket_t* notif_socket_rcv = new zmq::socket_t(AhsokaZMQContext::GetZMQContext(), zmq::socket_type::pair);
         notif_socket_rcv->set(zmq::sockopt::linger, 0);
         notif_socket_rcv->bind(GetPairAddress());
         
         // Start Message Socket
-        socket = new zmq::socket_t(GetContext(), zmq::socket_type::router);
+        socket = new zmq::socket_t(AhsokaZMQContext::GetZMQContext(), zmq::socket_type::router);
         socket->set(zmq::sockopt::linger, 0);
         socket->bind(GetDataListenChannel());
         

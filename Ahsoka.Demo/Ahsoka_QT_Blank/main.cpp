@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     AhsokaSystem::SystemServiceClient client;
 
     auto runtime = AhsokaRuntime::CreateBuilder()
-        .AddClient(&client)
+        .AddEndPoint(&client)
         .SetServiceExecutable("./CommandLine/Ahsoka.CommandLine")
         .StartWithExternalServices();
 

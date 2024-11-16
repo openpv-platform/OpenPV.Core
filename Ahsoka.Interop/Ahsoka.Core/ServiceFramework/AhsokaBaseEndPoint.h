@@ -79,7 +79,7 @@ namespace AhsokaServiceFramework
 				currentRuntime = 0;
 			}
 
-			void SendNotificationInternal(AhsokaMessageHeader& messageHeader, AhsokaMessage_t messageObject = 0, bool isNotifcation = true)
+			void SendMessageInternal(AhsokaMessageHeader& messageHeader, AhsokaMessage_t messageObject = 0, bool isNotifcation = false)
 			{
 				if (socket->GetIsConnected())
 				{

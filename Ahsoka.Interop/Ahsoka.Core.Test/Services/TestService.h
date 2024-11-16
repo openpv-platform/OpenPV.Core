@@ -27,10 +27,10 @@ namespace AhsokaSystem
 			{
 				if (messageHeader.transport_id() == EchoTest)
 				{
-					SendNotificationInternal(messageHeader, &message, false);
+					SendMessageInternal(messageHeader, &message, false);
 
 					messageHeader.set_transport_id(EchoTestNotification);
-					SendNotificationInternal(messageHeader, 0, true);
+					SendMessageInternal(messageHeader, 0, true);
 				}
 			}
 	};

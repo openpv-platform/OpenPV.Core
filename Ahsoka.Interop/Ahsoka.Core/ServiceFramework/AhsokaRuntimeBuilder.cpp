@@ -11,7 +11,6 @@
 #include <google/protobuf/util/json_util.h>
 #include "AhsokaRuntimeProcess.hpp"
 
-
 namespace fs = std::filesystem;
 
 using namespace AhsokaSystem;

@@ -13,8 +13,8 @@ class SparkTests
             SparkServiceClient sparkClient;
 
             auto runtime = AhsokaRuntime::CreateBuilder()
-                .AddClient(&client)
-                .AddClient(&sparkClient)
+                .AddEndPoint(&client)
+                .AddEndPoint(&sparkClient)
                 .SetServiceExecutable(pathToServiceExe)
                 .StartWithExternalServices(); // Connect to Already Running Runtime
 

@@ -16,8 +16,8 @@ class NetworkTests
             NetworkServiceClient networkClient;
 
             auto runtime = AhsokaRuntime::CreateBuilder()
-                .AddClient(&client)
-                .AddClient(&networkClient)
+                .AddEndPoint(&client)
+                .AddEndPoint(&networkClient)
                 .SetServiceExecutable(pathToServiceExe)
                 .StartWithExternalServices(); // Connect to Already Running Runtime
 

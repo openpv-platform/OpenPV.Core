@@ -12,7 +12,7 @@ class SystemTests
             SystemServiceClient client;
 
             auto runtime = AhsokaRuntime::CreateBuilder()
-                .AddClient(&client)
+                .AddEndPoint(&client)
                 .SetServiceExecutable(pathToServiceExe)
                 .StartWithExternalServices();
 

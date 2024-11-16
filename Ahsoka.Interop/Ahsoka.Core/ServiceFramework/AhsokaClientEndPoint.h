@@ -44,7 +44,7 @@ namespace AhsokaServiceFramework
 				header.set_client_message_id(messageId++);
 				header.set_client_id(((AhsokaClientSocket*)AhsokaBaseEndPoint<TTransportID>::socket)->GetClientId());
 					
-				AhsokaBaseEndPoint<TTransportID>::SendNotificationInternal(header, requestObject);
+				AhsokaBaseEndPoint<TTransportID>::SendMessageInternal(header, requestObject);
 
 				T* returnValue = WaitForResponse<T>(header, timeoutInMs);
 				
@@ -175,7 +175,7 @@ namespace AhsokaServiceFramework
 				ClientRegistration registration;
 				registration.set_client_id(((AhsokaClientSocket*)AhsokaBaseEndPoint<TTransportID>::socket)->GetNotificationClientId()); // Note use of Notification ClientID
 
-				AhsokaBaseEndPoint<TTransportID>::SendNotificationInternal(header, &registration, false);
+				AhsokaBaseEndPoint<TTransportID>::SendMessageInternal(header, &registration, true);
 			}
 
 			void Listen()

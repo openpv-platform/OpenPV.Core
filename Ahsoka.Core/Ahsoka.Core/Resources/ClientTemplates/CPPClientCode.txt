@@ -1,6 +1,5 @@
 #include "DefaultServiceClient.h"
 #include "DefaultServiceMessages.hpp"
-#include "AhsokaClientEndPoint.h"
 
 using namespace std;
 using namespace DefaultNameSpace;
@@ -10,20 +9,20 @@ namespace DefaultNameSpace
     typedef AhsokaClientEndPoint<DefaultTransportIdEnum> DefaultService_t;
 	
 	DefaultServiceClient::DefaultServiceClient():
-       AhsokaServiceFramework::AhsokaEndPointWithCallback<DefaultTransportIdEnum>(new DefaultService_t(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceMessages()))
+       AhsokaServiceFramework::AhsokaClientEndPoint<DefaultTransportIdEnum>(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceMessages())
     {
         
     }
 
     DefaultServiceClient::DefaultServiceClient(ServiceConfiguration config):
-	    AhsokaServiceFramework::AhsokaEndPointWithCallback<DefaultTransportIdEnum>(new DefaultService_t(config, DefaultServiceMessages()))
+	    AhsokaServiceFramework::AhsokaClientEndPoint<DefaultTransportIdEnum>(config, DefaultServiceMessages())
     {
         
     }
 
 	void DefaultServiceClient::RegisterListener(MessageReceived_t callback)
     {
-        return GetEndPoint<DefaultService_t>()->NotifyMessageReceived(callback);     
+        return NotifyMessageReceived(callback);     
     }
 
 %SERVICE_METHODS%

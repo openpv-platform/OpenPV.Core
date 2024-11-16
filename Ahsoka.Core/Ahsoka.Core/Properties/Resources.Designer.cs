@@ -222,7 +222,7 @@ namespace Ahsoka.Properties {
         ///echo &quot;Layer Manager Start Time&quot; $(date +%T.%3N)
         ///. /etc/profile.d/app_profile.sh
         ///
-        ///sleep 1
+        ///sleep 4
         ///
         ///chmod +x /usr/local/Ahsoka/factory/weston/Ahsoka.LayerManager
         ////usr/bin/stdbuf -oL /usr/local/Ahsoka/factory/weston/Ahsoka.LayerManager &amp;
@@ -277,7 +277,7 @@ namespace Ahsoka.Properties {
         ///    typedef AhsokaClientEndPoint&lt;DefaultTransportIdEnum&gt; DefaultService_t;
         ///	
         ///	DefaultServiceClient::DefaultServiceClient():
-        ///       AhsokaServiceFramework::AhsokaEndPointWithCallback&lt;DefaultTransportIdEnum&gt;(new DefaultService_t(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceM [rest of string was truncated]&quot;;.
+        ///       AhsokaServiceFramework::AhsokaEndPoint&lt;DefaultTransportIdEnum&gt;(new DefaultService_t(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceMessages()))        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CPPClientCode {
             get {
@@ -303,11 +303,12 @@ namespace Ahsoka.Properties {
         ///{
         ///	const std::string DefaultServiceName = &quot;DefaultService&quot;;
         ///
-        ///	class DefaultServiceClient : public AhsokaServiceFramework::AhsokaEndPointWithCallback&lt;DefaultTransportIdEnum&gt;
+        ///	class DefaultServiceClient : public AhsokaServiceFramework::AhsokaEndPoint&lt;DefaultTransportIdEnum&gt;
         ///	{
         ///		public:
         ///
-        ///			DefaultService [rest of string was truncated]&quot;;.
+        ///			DefaultServiceClient();
+        ///	 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CPPClientHeader {
             get {
@@ -731,23 +732,7 @@ namespace Ahsoka.Properties {
         ///   Looks up a localized string similar to [core]
         ///shell=ivi-shell.so
         ///modules=ivi-controller.so
-        ///
-        ///[ivi-shell]
-        ///ivi-id-agent-module=ivi-id-agent.so
-        ///
-        ///[desktop-app-default]
-        ///default-surface-id=5000
-        ///default-surface-id-max=6000
-        ///
-        ///[desktop-app]
-        ///surface-id=1000
-        ///app-title=Ahsoka.Installer
-        ///app-id=Ahsoka.Installer
-        ///
-        ///[desktop-app]
-        ///surface-id=1001
-        ///app-title=AhsokaDrawingWindow
-        ///app-id=AhsokaDrawingWindow.
+        ///.
         /// </summary>
         internal static string weston_ini {
             get {

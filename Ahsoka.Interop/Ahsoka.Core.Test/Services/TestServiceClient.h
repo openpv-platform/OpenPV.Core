@@ -6,7 +6,7 @@
 #include "AhsokaConfiguration.h"
 #include "AhsokaClientEndPoint.h"
 #include "Services.pb.h"
-#include "TestServiceMessages.hpp"
+#include "TestServiceMessages.h"
 
 using namespace std;
 using namespace AhsokaSystem;
@@ -14,29 +14,17 @@ using namespace AhsokaServiceFramework;
 
 namespace AhsokaSystem
 {
-
-    class TestEchoValue {};
-    enum TestMessageTypes : int
-    {
-        Test = 1
-    };
-
-	const std::string TestServiceName = "TestService";
-	typedef AhsokaClientEndPoint<TestMessageTypes> TestService_t;
-
-	class TestServiceClient : public AhsokaServiceFramework::AhsokaEndPointWithCallback<TestMessageTypes>
+	class TestServiceClient : public AhsokaServiceFramework::AhsokaClientEndPoint<TestMessageTypes>
 	{
 		public:
 
-			TestServiceClient(): 
-				AhsokaServiceFramework::AhsokaEndPointWithCallback<TestMessageTypes>(new TestService_t(AhsokaConfiguration::GetServiceConfiguration(TestServiceName), TestServiceMessages())) {}
-
 			TestServiceClient(ServiceConfiguration config):
-				AhsokaServiceFramework::AhsokaEndPointWithCallback<TestMessageTypes>(new TestService_t(config, TestServiceMessages())) {}
+				AhsokaServiceFramework::AhsokaClientEndPoint<TestMessageTypes>(config, TestServiceMessages()) {}
 
-			void RegisterListener(MessageReceived_t callback) {}
-
-
+			unique_ptr<AhsokaSystem::ServiceConfiguration> EchoConfig(AhsokaSystem::ServiceConfiguration& configValue, int timeoutInMs)
+			{
+				return SendNotificationWithResponse<AhsokaSystem::ServiceConfiguration>(EchoTest, &configValue, timeoutInMs);
+			}
 			
 	};
 }

@@ -7,11 +7,11 @@
 #include "Configuration.pb.h"
 #include "AhsokaMessagesBase.h"
 #include "BlockingQueue.h"
+#include "AhsokaClientSocket.h"
 
 namespace AhsokaServiceFramework
 {
-
-	class MessagePair
+	class ClientMessagePair
 	{
 		public:
 
@@ -25,12 +25,12 @@ namespace AhsokaServiceFramework
 		public:
 
 			typedef std::function<void(TTransportID, AhsokaMessageType_t&)> MessageReceived_t;
-
+			
 			void NotifyMessageReceived(MessageReceived_t callback)
 			{
 				notificationCallback = callback;
 			}
-
+			
 			std::unique_ptr<EmptyNotification> SendNotificationWithResponse(TTransportID transportId, AhsokaMessage_t requestObject = 0, int timeoutInMs = INT_MAX)
 			{
 				return SendNotificationWithResponse<EmptyNotification>(transportId, requestObject, timeoutInMs);
@@ -42,7 +42,8 @@ namespace AhsokaServiceFramework
 				AhsokaMessageHeader header;
 				header.set_transport_id(transportId);
 				header.set_client_message_id(messageId++);
-
+				header.set_client_id(((AhsokaClientSocket*)AhsokaBaseEndPoint<TTransportID>::socket)->GetClientId());
+					
 				AhsokaBaseEndPoint<TTransportID>::SendNotificationInternal(header, requestObject);
 
 				T* returnValue = WaitForResponse<T>(header, timeoutInMs);
@@ -56,9 +57,18 @@ namespace AhsokaServiceFramework
 			{
 				// Validate that we are using an Enumeration TYPE at compile time
 				static constexpr bool is_enum = std::is_enum<TTransportID>::value;
+				
+				AhsokaBaseEndPoint<TTransportID>::socket = CreateSocket(config);
 			}
 
 		protected:
+
+		    IAhsokaSocket* CreateSocket(AhsokaSystem::ServiceConfiguration& config)
+			{
+				AhsokaClientSocket * retVal = new AhsokaClientSocket();
+				retVal->SetEndPoint(this);
+				return retVal;
+			};
 
 			void OnHandleReceive(AhsokaMessageHeader& messageHeader, AhsokaMessageType_t& message)
 			{
@@ -66,9 +76,9 @@ namespace AhsokaServiceFramework
 					notificationCallback((TTransportID)messageHeader.transport_id(), message);
 			}
 
-			void ClientDataReady(bool isNotification)
+			void RecieveMessage(bool isNotification)
 			{
-				MessagePair pair;
+				ClientMessagePair pair;
 					
 				// Recieve Out of Band Message and Process on Handler
 				if (this->ReceiveMessage(pair.header, pair.message, isNotification))
@@ -99,10 +109,10 @@ namespace AhsokaServiceFramework
 
 			void OnEndPointDisconnected()
 			{
+				UpdateClientRegistration(DeregisterClient);
+
 				if (notificationThread != 0)
 				{
-					UpdateClientRegistration(DeregisterClient);
-
 					isListening = false;
 					notificationThread->join();
 					notificationThread = 0;
@@ -116,9 +126,8 @@ namespace AhsokaServiceFramework
 			MessageReceived_t notificationCallback;
 			bool isListening = false;
 			std::thread* notificationThread = 0;
-			AhsokaServiceFramework::BlockingQueue<MessagePair> incomingMessages;
-			AhsokaServiceFramework::BlockingQueue<MessagePair> notificationMessages;
-
+			AhsokaServiceFramework::BlockingQueue<ClientMessagePair> incomingMessages;
+			AhsokaServiceFramework::BlockingQueue<ClientMessagePair> notificationMessages;
 			
 			template <class T>
 			T * WaitForResponse(AhsokaMessageHeader& requestHeader, int timeoutInMs = INT_MAX)
@@ -134,7 +143,7 @@ namespace AhsokaServiceFramework
 					&& responseClientId != requestHeader.client_message_id()
 					&& expireTime > std::chrono::steady_clock::now().time_since_epoch())
 				{
-					MessagePair pair;
+					ClientMessagePair pair;
 					if (incomingMessages.PopWithTimeOut(1000, pair))
 					{
 						responseTransportId = pair.header->transport_id();
@@ -161,9 +170,10 @@ namespace AhsokaServiceFramework
 				AhsokaMessageHeader header;
 				header.set_transport_id(transportId);
 				header.set_client_message_id(messageId++);
-
+				header.set_client_id(((AhsokaClientSocket*)AhsokaBaseEndPoint<TTransportID>::socket)->GetClientId());
+				
 				ClientRegistration registration;
-				registration.set_client_id(AhsokaBaseEndPoint<TTransportID>::socket.GetNotificationClientId()); // Note use of Notification ClientID
+				registration.set_client_id(((AhsokaClientSocket*)AhsokaBaseEndPoint<TTransportID>::socket)->GetNotificationClientId()); // Note use of Notification ClientID
 
 				AhsokaBaseEndPoint<TTransportID>::SendNotificationInternal(header, &registration, false);
 			}
@@ -172,7 +182,7 @@ namespace AhsokaServiceFramework
 			{				
 				while (isListening) 
 				{
-					MessagePair pair;
+					ClientMessagePair pair;
 					if (notificationMessages.PopWithTimeOut(1000, pair))
 					{
 						OnHandleReceive(*pair.header, *pair.message);

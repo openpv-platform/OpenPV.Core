@@ -36,7 +36,6 @@ namespace AhsokaServiceFramework
 				configuration = config;
 				found = true;
 			}
-				
 		}
 
 		if (!found)

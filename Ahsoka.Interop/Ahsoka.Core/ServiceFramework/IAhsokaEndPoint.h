@@ -13,15 +13,17 @@ namespace AhsokaServiceFramework
     {
         public:
 
+            virtual ~IAhsokaEndPoint() {}
+
             virtual AhsokaSystem::ServiceConfiguration& GetRuntimeConfiguration() = 0;
 
             virtual void SetRuntime(AhsokaRuntime*) = 0;
-            
+           
             virtual void Connect() = 0;
 
             virtual void Disconnect() = 0;
 
-            virtual void ClientDataReady(bool isNotification) = 0;
+            virtual void RecieveMessage(bool isNotification) = 0;
 
         protected:
 

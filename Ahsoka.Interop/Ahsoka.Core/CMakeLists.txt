@@ -11,7 +11,7 @@ FILE(GLOB ServiceFramework ServiceFramework/*.cpp)
 FILE(GLOB Utility Utility/*.cpp)
 
 # Define Library
-add_Library(Ahsoka.Core STATIC ${ServiceFramework} ${Utility})
+add_Library(Ahsoka.Core STATIC ${ServiceFramework} ${Utility} ${TinyLib})
 
 # Add Included Folders.
 target_include_directories(Ahsoka.Core PUBLIC ServiceFramework Utility)
@@ -25,8 +25,8 @@ ENDIF()
 find_library( AHSOKA_LIBS NAMES Ahsoka.Proto)
 target_link_libraries(Ahsoka.Core PRIVATE Ahsoka.Proto)
 
-find_library( TINY_LIB NAMES tiny-process-library)
-target_link_libraries(Ahsoka.Core PRIVATE tiny-process-library)
+#find_library( TINY_LIB NAMES tiny-process-library)
+#target_link_libraries(Ahsoka.Core PRIVATE tiny-process-library)
 
 IF (WIN32)
        
@@ -56,7 +56,9 @@ FILE(GLOB ServiceHeaders Services/*.h )
 FILE(COPY ${ServiceHeaders} DESTINATION ${AHSOKA_BUILD_OUTPUTS}/inc/services)
 
 FILE(GLOB ServiceFrameworkHeaders ServiceFramework/*.h )
+FILE(GLOB UtilityHeaders Utility/*.h )
 FILE(COPY ${ServiceFrameworkHeaders} DESTINATION ${AHSOKA_BUILD_OUTPUTS}/inc/services)
+FILE(COPY ${UtilityHeaders} DESTINATION ${AHSOKA_BUILD_OUTPUTS}/inc/services)
 
 #Pick up Proto Headers and Include in Output Folder
 ADD_CUSTOM_COMMAND(TARGET Ahsoka.Core

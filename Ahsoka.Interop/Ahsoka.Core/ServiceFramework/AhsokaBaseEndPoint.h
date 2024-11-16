@@ -5,28 +5,32 @@
 #include "Configuration.pb.h"
 #include "AhsokaRuntime.h"
 #include "AhsokaMessagesBase.h"
-#include "AhsokaSocket.h"
+#include "IAhsokaSocket.h"
 
 namespace AhsokaServiceFramework
-{	
+{
 	template <typename TTransportID>
 	class AhsokaBaseEndPoint : public IAhsokaEndPoint
 	{
 		public:
 
+			AhsokaBaseEndPoint() {}
+            
+            virtual ~AhsokaBaseEndPoint() {}
+
 			void Connect()
 			{
 				if (currentRuntime)
 				{
-					socket.Connect(currentRuntime->GetZMQContext());
+					socket->Connect();
 					OnEndPointConnected();
 				}					
 			}
 
 			void Disconnect()
 			{
-				socket.Disconnect();
 				OnEndPointDisconnected();
+				socket->Disconnect();
 			}
 
 		    AhsokaSystem::ServiceConfiguration& GetRuntimeConfiguration() 
@@ -34,9 +38,35 @@ namespace AhsokaServiceFramework
 				return serviceConfig;
 			}
 
+
+ 			template <typename TEndPoint>
+            [[deprecated("Use 'this' instead.")]]
+			TEndPoint* GetEndPoint() { return static_cast<TEndPoint*>(this); }
+
+			void Start()
+			{
+				AhsokaRuntime::CreateBuilder()
+					.AddEndPoint(this)
+					.StartLocalRuntime();
+			}
+
+			void Stop()
+			{
+				try
+				{
+					this->currentRuntime->RequestShutdown();
+				}
+				catch(const std::exception& e) {}
+				
+				this->currentRuntime->WaitForShutdown();
+			}
+
 		protected:
-		 	AhsokaSocket socket;
+
+		 	IAhsokaSocket * socket;
 			AhsokaMessagesBase messageFactory;
+
+			virtual IAhsokaSocket* CreateSocket(AhsokaSystem::ServiceConfiguration& config) = 0;
 
 			void SetRuntime(AhsokaRuntime* runtime) {currentRuntime = runtime;}
 
@@ -46,41 +76,42 @@ namespace AhsokaServiceFramework
 			{
 				// Validate that we are using an Enumeration TYPE
 				static constexpr bool is_enum = std::is_enum<TTransportID>::value;
-
-				socket.SetEndPoint(this);
 				currentRuntime = 0;
 			}
 
-			void SendNotificationInternal(AhsokaMessageHeader& messageHeader, AhsokaMessage_t messageObject = 0, bool expectResponse = true)
+			void SendNotificationInternal(AhsokaMessageHeader& messageHeader, AhsokaMessage_t messageObject = 0, bool isNotifcation = true)
 			{
-				if (socket.GetIsConnected())
+				if (socket->GetIsConnected())
 				{
 					if (messageObject == 0)
 						messageObject = new EmptyNotification();
 
-					messageHeader.set_client_id(socket.GetClientId());
-					socket.SendMessage(messageHeader.SerializeAsString(), messageObject->SerializeAsString(), expectResponse);
+					std::string clientId = messageHeader.client_id();
+					socket->SendMessage(messageHeader.SerializeAsString(), messageObject->SerializeAsString(), clientId , isNotifcation);
 
 					messageSendCount++;
 				}
 				else { }
 			}
 
-		    bool ReceiveMessage(AhsokaMessageHeader *& messageHeader, AhsokaMessageType_t *& messageObject, bool isOutOfBand, int timeoutInMs = INT_MAX)
+		    bool ReceiveMessage(AhsokaMessageHeader *& messageHeader, AhsokaMessageType_t *& messageObject, 
+					bool isOutOfBand, int timeoutInMs = INT_MAX)
 		    {
 				messageReceivedCount++;
 
 				std::string headerData;
 				std::string messageData;
+				std::string clientId;
 
 				// Try to Recieve a Message
-				if (!socket.ReceiveMessage(headerData, messageData, isOutOfBand, timeoutInMs))
+				if (!socket->ReceiveMessage(headerData, messageData, clientId, isOutOfBand, timeoutInMs))
 					return false;
 
 				// Decode Request Header
 				messageHeader = new AhsokaMessageHeader();
 				messageHeader->ParseFromString(headerData);
-
+				messageHeader->set_client_id(clientId);
+				
 				// Lookup and Decode Message
 				messageObject = messageFactory.CreateMessage<AhsokaMessageType_t>(messageHeader->transport_id(), messageData, false);
 		

@@ -3,10 +3,14 @@
 #include <map>
 #include <functional>
 #include "IAhsokaEndPoint.h"
-#include "AhsokaEndPoint.h"
+#include "AhsokaBaseEndPoint.h"
+#include "Services.pb.h"
 
 namespace AhsokaServiceFramework
 {
+ 
+	typedef google::protobuf::Message AhsokaMessageType_t;
+    typedef google::protobuf::Message * AhsokaMessage_t;
     typedef std::function<AhsokaMessage_t()> MessageConstructor_t;
 
     class ServiceMessageInfo
@@ -84,6 +88,13 @@ namespace AhsokaServiceFramework
 				return []()->AhsokaMessage_t{return new T();};
 			}
          
+            AhsokaMessagesBase()
+            {
+                RegisterServiceNotification(CoreTransportIds::RegisterClient, CreateCTOR<AhsokaServiceFramework::ClientRegistration>());
+		        RegisterServiceNotification(CoreTransportIds::DeregisterClient, CreateCTOR<AhsokaServiceFramework::ClientRegistration>());
+            }
+
+
         private:
 
             std::map<int,ServiceMessageInfo> serviceInfo;

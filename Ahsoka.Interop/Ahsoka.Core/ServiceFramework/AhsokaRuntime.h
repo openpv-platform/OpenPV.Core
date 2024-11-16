@@ -4,7 +4,7 @@
 #include <vector>
 #include <zmq.hpp>
 
-#include "AhsokaEndPoint.h"
+#include "IAhsokaEndPoint.h"
 
 namespace AhsokaServiceFramework
 {
@@ -25,21 +25,16 @@ namespace AhsokaServiceFramework
 			static void ReleaseStartup();
 			void RequestShutdown();
 			void WaitForShutdown();
-
-			zmq::context_t& GetZMQContext()
-			{
-				return context;
-			}
+	
 		private:
 
 			class Details;
 			std::unique_ptr<Details> details;
-            zmq::context_t context;
-			
+           
 			friend AhsokaRuntimeBuilder;
 			AhsokaRuntime();
 			
-			void ExecuteRuntime(std::vector<AhsokaEndPoint*>, AhsokaRuntimeProcess*);
+			void ExecuteRuntime(std::vector<IAhsokaEndPoint*>, AhsokaRuntimeProcess*);
 
 			template <typename TTransportID> friend class AhsokaBaseEndPoint;
 			

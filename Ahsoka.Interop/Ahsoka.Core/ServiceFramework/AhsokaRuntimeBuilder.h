@@ -13,7 +13,9 @@ namespace AhsokaServiceFramework
 			~AhsokaRuntimeBuilder();
   			AhsokaRuntimeBuilder(const AhsokaRuntimeBuilder& other);
 
-			AhsokaRuntimeBuilder& AddClient(AhsokaEndPoint* client);
+			[[deprecated("Use AddEndPoint() instead.")]]
+			AhsokaRuntimeBuilder& AddClient(IAhsokaEndPoint* client);
+			AhsokaRuntimeBuilder& AddEndPoint(IAhsokaEndPoint* client);
 			AhsokaRuntimeBuilder& SetServiceExecutable(const std::string& fileName);
 			AhsokaRuntimeBuilder& SetServiceConfiguration(const std::string& fileName);
 			

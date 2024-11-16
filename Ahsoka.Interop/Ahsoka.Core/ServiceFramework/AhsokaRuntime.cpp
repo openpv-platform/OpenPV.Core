@@ -5,6 +5,7 @@
 #include "AhsokaRuntimeProcess.hpp"
 #include "AhsokaRuntime.h"
 #include "AhsokaRuntimeBuilder.h"
+#include "AhsokaZMQContext.h"
 
 using namespace AhsokaSystem;
 using namespace std;
@@ -17,7 +18,7 @@ namespace AhsokaServiceFramework
 	{
 		public:
 			
-			std::map<std::string, AhsokaEndPoint*> endPoints;
+			std::map<std::string, IAhsokaEndPoint*> endPoints;
 			AhsokaRuntimeProcess* process;
 
 			static std::mutex RuntimeMutex;
@@ -26,7 +27,7 @@ namespace AhsokaServiceFramework
 			void ExecuteRuntimeInternal()
 			{
 				for (auto it : endPoints)
-					it.second->GetEndPoint()->Connect();
+					it.second->Connect();
 			}
 	};
 
@@ -48,7 +49,7 @@ namespace AhsokaServiceFramework
 		return builder;
 	}
 
-	void AhsokaRuntime::ExecuteRuntime(std::vector<AhsokaEndPoint*> clients, AhsokaRuntimeProcess* process)
+	void AhsokaRuntime::ExecuteRuntime(std::vector<IAhsokaEndPoint*> clients, AhsokaRuntimeProcess* process)
 	{
 		// Add to Runtime List
 		AhsokaMutexLock_t lock(Details::RuntimeMutex);
@@ -57,8 +58,8 @@ namespace AhsokaServiceFramework
 		// Create Context Items.
 		for (auto it : clients)
 		{
-			it->GetEndPoint()->SetRuntime(this);
-			details->endPoints[it->GetEndPoint()->GetRuntimeConfiguration().service_name()] = it;
+			it->SetRuntime(this);
+			details->endPoints[it->GetRuntimeConfiguration().service_name()] = it;
 		}
 
 		// Capture for Shutdown
@@ -76,7 +77,7 @@ namespace AhsokaServiceFramework
 	void  AhsokaRuntime::RequestShutdown()
 	{
 		for (auto it : details->endPoints)
-			it.second->GetEndPoint()->Disconnect();
+			it.second->Disconnect();
 
 		if (details->process != 0)
 			details->process->EndProcess();

@@ -9,7 +9,6 @@
 #include "Configuration.pb.h"
 #include "IAhsokaEndPoint.h"
 #include <google/protobuf/util/json_util.h>
-#include "AhsokaEndPoint.h"
 #include "AhsokaRuntimeProcess.hpp"
 
 
@@ -25,7 +24,7 @@ namespace AhsokaServiceFramework
 
 			bool isClient = false;
 			std::string externalCommandline = "";
-			std::vector<AhsokaEndPoint*> clients;
+			std::vector<IAhsokaEndPoint*> clients;
 			std::string defaultConfigName = "AhsokaConfig.json";
 			
 			AhsokaRuntimeProcess* StartProcessExecutable()
@@ -65,7 +64,13 @@ namespace AhsokaServiceFramework
 		
 	}
 	
-	AhsokaRuntimeBuilder& AhsokaRuntimeBuilder::AddClient(AhsokaEndPoint* client)
+	AhsokaRuntimeBuilder& AhsokaRuntimeBuilder::AddEndPoint(IAhsokaEndPoint* client)
+	{
+		details->clients.push_back(client);
+		return *this;
+	}
+
+	AhsokaRuntimeBuilder& AhsokaRuntimeBuilder::AddClient(IAhsokaEndPoint* client)
 	{
 		details->clients.push_back(client);
 		return *this;

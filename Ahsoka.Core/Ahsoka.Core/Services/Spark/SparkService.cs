@@ -101,7 +101,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 AppEvent = (AppChangesEnum)changesDto.AppEvent,
                 Message = changesDto.Message,
             };
-            SendMessageInternal(reply, info);
+            SendMessageInternal(reply, info, true);
         });
 
         SendMessageInternal(messageHeader);

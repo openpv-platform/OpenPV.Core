@@ -10,8 +10,8 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 {
     // While clients use two dealer sockets, we use a single
     // router socket that can reply / send to either one.
-    RouterSocket socket; 
-
+    RouterSocket socket;
+    int socketThreadId = -1;
     IAhsokaEndPoint endPoint;
     NetMQPoller socketPoller = new();
     NetMQQueue<NetMQMessage> sendQueue = new();
@@ -38,6 +38,9 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
            
             socket.ReceiveReady += (o, e) =>
             {
+                if (socketThreadId == -1) 
+                    socketThreadId = Environment.CurrentManagedThreadId;
+
                 endPoint.ReceiveMessage(false); // Services Don't Care Really
             };
 
@@ -110,9 +113,20 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
             message.Append(data);
 
             if (sendAsNotification)
-                sendQueue.Enqueue(message);
+            {
+                // Send if In Recieve Thread...else Queue
+                if (socketThreadId == Environment.CurrentManagedThreadId)
+                    socket.TrySendMultipartMessage(message);
+                else
+                    sendQueue.Enqueue(message);
+            }
             else
-                socket.TrySendMultipartMessage(message);
+            {
+                if (socketThreadId != Environment.CurrentManagedThreadId)
+                    throw new ApplicationException("Service Replies must be sent from the Recieving Thread.");
+                else
+                    socket.TrySendMultipartMessage(message);
+            }
         }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Sending Service {(sendAsNotification ? "Notification" : "Message")} on {endPoint.ServiceConfig.ServiceName} ");

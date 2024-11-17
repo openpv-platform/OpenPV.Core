@@ -46,6 +46,8 @@ namespace AhsokaServiceFramework
             std::vector<std::string> clientList;
             void ManageSocket();
             
+            int socketTID = -1;
+
             // Notification Reciever Items
             zmq::socket_t* socket;
             ReadyWaiter notificationThreadReady;

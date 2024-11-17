@@ -1,6 +1,7 @@
 #include "AhsokaServiceSocket.h"
 #include "AhsokaZMQContext.h"
 #include "Services.pb.h"
+#include <unistd.h>
 
 namespace AhsokaServiceFramework
 {
@@ -67,7 +68,33 @@ namespace AhsokaServiceFramework
 
     void AhsokaServiceSocket::SendMessage(std::string header, std::string data, std::string clientId, bool sendAsNotification)
     {
-        if (sendAsNotification)
+        int thisTID = gettid();
+            
+        // Replies OR Notifications in Same Thread go immediately.
+        if (!sendAsNotification)
+        {
+            if (thisTID != socketTID)
+                throw "Reply messages my be sent from recieve thread.";
+
+            zmq::multipart_t message;
+            message.add(zmq::message_t(clientId));
+            message.add(zmq::message_t(header));
+            message.add(zmq::message_t(data));
+            message.send(*socket, 0);
+        }
+        else if (sendAsNotification && thisTID == socketTID)
+        {
+            // Send to All Clients
+            for (auto it: clientList)
+            {
+                zmq::multipart_t message;
+                message.add(zmq::message_t(it));
+                message.add(zmq::message_t(header));
+                message.add(zmq::message_t(data));
+                message.send(*socket, 0);
+            }
+        }
+        else
         {
             SocketMessage message;
             message.header = header;
@@ -75,19 +102,13 @@ namespace AhsokaServiceFramework
             message.isNotification = true;
             notificationMessages.Push(message);
         }
-        else
-        {
-            zmq::multipart_t message;
-            message.add(zmq::message_t(clientId));
-            message.add(zmq::message_t(header));
-            message.add(zmq::message_t(data));
-            message.send(*socket, 0);
-        }
     }
 
     bool AhsokaServiceSocket::ReceiveMessage(std::string& header, std::string& data,  std::string& clientId, bool isNotification, int timeoutInMs)
     {
-        // Receive message
+        // Capture the Socket Thread
+        socketTID = gettid();
+ 
         try
         {
             // Set Timeout
@@ -113,6 +134,8 @@ namespace AhsokaServiceFramework
 
     void AhsokaServiceSocket::ManageNotifications()
     {
+        pthread_setname_np(pthread_self(), "Ahsoka Service Notification Thread");
+
         zmq::socket_t* notif_socket_snd = new zmq::socket_t(AhsokaZMQContext::GetZMQContext(), zmq::socket_type::pair);
         notif_socket_snd->set(zmq::sockopt::linger, 0);
         notif_socket_snd->connect(GetPairAddress());
@@ -144,6 +167,8 @@ namespace AhsokaServiceFramework
 
     void AhsokaServiceSocket::ManageSocket()
     {
+        pthread_setname_np(pthread_self(), "Ahsoka Socket Management Thread");
+
         zmq::socket_t* notif_socket_rcv = new zmq::socket_t(AhsokaZMQContext::GetZMQContext(), zmq::socket_type::pair);
         notif_socket_rcv->set(zmq::sockopt::linger, 0);
         notif_socket_rcv->bind(GetPairAddress());

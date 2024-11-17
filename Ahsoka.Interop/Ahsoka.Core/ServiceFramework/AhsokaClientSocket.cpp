@@ -91,6 +91,8 @@ namespace AhsokaServiceFramework
 
     void AhsokaClientSocket::ManageNotifications()
     {
+        pthread_setname_np(pthread_self(), "Ahsoka Client Notification Thread");
+
         // Start Notification Socket
         notificationSocket = new zmq::socket_t(AhsokaZMQContext::GetZMQContext(), zmq::socket_type::dealer);
         notificationSocket->set(zmq::sockopt::routing_id, notificationClientId.c_str());
@@ -129,6 +131,8 @@ namespace AhsokaServiceFramework
 
     void AhsokaClientSocket::ManageSocket()
     {
+        pthread_setname_np(pthread_self(), "Ahsoka Client Socket Thread");
+
         // Start Message Socket
         socket = new zmq::socket_t(AhsokaZMQContext::GetZMQContext(), zmq::socket_type::dealer);
         socket->set(zmq::sockopt::routing_id, clientId.c_str());

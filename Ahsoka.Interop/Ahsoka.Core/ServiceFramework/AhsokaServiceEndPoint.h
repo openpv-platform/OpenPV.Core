@@ -36,7 +36,6 @@ namespace AhsokaServiceFramework
 
 		protected:
 
-
 		    IAhsokaSocket* CreateSocket(AhsokaSystem::ServiceConfiguration& config)
 			{
 				AhsokaServiceSocket * retVal = new AhsokaServiceSocket();

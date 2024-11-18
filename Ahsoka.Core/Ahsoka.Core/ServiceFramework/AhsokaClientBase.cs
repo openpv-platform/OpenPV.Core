@@ -25,18 +25,15 @@ public interface IAhsokaClientEndPoint : IAhsokaEndPoint, IDispatchSource
     void SetToken(Token securityToken);
 }
 
-public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTransportIds>,
+public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTransportIds>,
     IAhsokaClientEndPoint
     where TTransportIds : Enum, new()
 {
     byte[] clientId = Guid.NewGuid().ToByteArray();
     byte[] notificationClientId = Guid.NewGuid().ToByteArray();
 
-    Task notificationTask = null;
     IAhsokaServiceEndPoint autoStartService = null;
-    CancellationTokenSource source;
     BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> incomingMessages = new();
-    BlockingCollection<KeyValuePair<AhsokaMessageHeader, object>> notificationMessages = new();
     Token securityToken = null;
 
     #region Service Notification Handler 
@@ -98,42 +95,8 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
 
         // Register Client for Notifications
         UpdateClientRegistration(CoreTransportIds.RegisterClient);
-
-        // Start Notification Listener if this service has callbacks
-        if (this.ServiceMessageInfo.Info.Any(x => x.Value.IsNotification))
-        {
-            incomingMessages = new();
-            source = new CancellationTokenSource();
-            notificationTask = Task.Factory.StartNew(() =>
-            {
-                // Set Thread Name
-                var originalName = Thread.CurrentThread.Name;
-                Thread.CurrentThread.Name = $"{ServiceConfig.ServiceName}_NotificationHandler";
-
-                while (!source.IsCancellationRequested)
-                {
-                    if (GetMessage(out KeyValuePair<AhsokaMessageHeader, object> message))
-                        OnHandleReceive(message.Key, message.Value);
-                }
-
-                // Restore Name since this comes from the Thread Pool
-                Thread.CurrentThread.Name = originalName;
-
-            }, source.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-        
-        }
     }
-    
-    [DebuggerHidden]
-    private bool GetMessage(out KeyValuePair<AhsokaMessageHeader, object> message)
-    {
-        message = new();
-        try
-        {
-            return notificationMessages.TryTake(out message, int.MaxValue, source.Token);
-        }
-        catch (OperationCanceledException) { return false; }
-    }
+   
 
     private void UpdateClientRegistration(CoreTransportIds transportId)
     {
@@ -159,9 +122,6 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
             autoStartService.Stop();
 
         base.OnEndPointDisconnected();
-
-        source.Cancel();
-        notificationTask?.Wait();
     }
 
     protected override IAhsokaSocket CreateSocket(ServiceConfiguration config)
@@ -188,22 +148,26 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
         if (info == null)
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"No transport Info was found for Message with TransportID = {messageHeader.TransportId}. Message was passed through as a Notification");
-            notificationMessages.TryAdd(new(messageHeader, message));
+            OnHandleReceive(messageHeader, message);
         }
-        else if (info.IsNotification && messageHeader.TransportId == CoreTransportIds.ServiceErrorThrown.EnumToInt())
-            incomingMessages.TryAdd(new(messageHeader, message)); // Unblock Wait Message
         else if (info.IsNotification && messageHeader.TransportId >= 0)
-            notificationMessages.TryAdd(new(messageHeader, message)); // Error Notifications are < 0
+        {
+            // Error Notifications are < 0 and Reply to Original Message Thread
+            OnHandleReceive(messageHeader, message);
+        }
         else
+        {
+            // Replies and Error Responses
             incomingMessages.TryAdd(new(messageHeader, message));
+        }
     }
 
-    public void SendNotificationWithResponse(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue)
+    public void SendMessageWithResponse(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue)
     {
-        SendNotificationWithResponse<EmptyNotification>(transportId, requestObject, timeoutInMs);
+        SendMessageWithResponse<EmptyNotification>(transportId, requestObject, timeoutInMs);
     }
 
-    public virtual T SendNotificationWithResponse<T>(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue) where T : class
+    public virtual T SendMessageWithResponse<T>(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue) where T : class
     {
         if (!IsConnected)
             Start();
@@ -250,7 +214,7 @@ public abstract class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<TTranspor
                 returnObject = message.Value;
 
                 if (responseHeader.TransportId == CoreTransportIds.InvalidToken.EnumToInt())
-                    throw new SecurityException("The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked iwht a valid token");
+                    throw new SecurityException("The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked with a valid token");
 
                 if (responseHeader.TransportId == CoreTransportIds.ServiceErrorThrown.EnumToInt() &&
                     returnObject is ServiceErrorThrownResponse errorMessage)

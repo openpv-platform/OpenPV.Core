@@ -62,7 +62,7 @@ public class VideoServiceTest : LinearTestBase
         }
 
 
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
 

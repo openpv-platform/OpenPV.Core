@@ -177,7 +177,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
     private InstallCompleteInfo ExecuteInstall(string installFile, string passKey)
     {
-        return SendNotificationWithResponse<InstallCompleteInfo>(InstallMessageTypes.Ids.InstallPackage, new InstallPackageRequest() { InstallPackagePath = installFile, InstallPassKey = passKey });
+        return SendMessageWithResponse<InstallCompleteInfo>(InstallMessageTypes.Ids.InstallPackage, new InstallPackageRequest() { InstallPackagePath = installFile, InstallPassKey = passKey });
     }
 
     private void RunServiceOutOfProcess(string installerPath, string installerArgs)

@@ -46,7 +46,7 @@ public class VideoServiceClient : AhsokaClientBase<VideoMessageTypes.Ids>
     /// <returns></returns>
     public VideoPlayerInfo GetVideoPlayers()
     {
-        return SendNotificationWithResponse<VideoPlayerInfo>(VideoMessageTypes.Ids.GetVideoPlayers, new EmptyNotification());
+        return SendMessageWithResponse<VideoPlayerInfo>(VideoMessageTypes.Ids.GetVideoPlayers, new EmptyNotification());
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public class VideoServiceClient : AhsokaClientBase<VideoMessageTypes.Ids>
     /// <returns></returns>
     public VideoStatus PlayVideo(VideoPlaybackRequest playbackRequest)
     {
-        return SendNotificationWithResponse<VideoStatus>(VideoMessageTypes.Ids.PlayVideo, playbackRequest);
+        return SendMessageWithResponse<VideoStatus>(VideoMessageTypes.Ids.PlayVideo, playbackRequest);
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class VideoServiceClient : AhsokaClientBase<VideoMessageTypes.Ids>
     /// <returns></returns>
     public VideoStatus PauseVideo(VideoPlayer player)
     {
-        return SendNotificationWithResponse<VideoStatus>(VideoMessageTypes.Ids.PauseVideo, player);
+        return SendMessageWithResponse<VideoStatus>(VideoMessageTypes.Ids.PauseVideo, player);
     }
 
     /// <summary>
@@ -76,7 +76,7 @@ public class VideoServiceClient : AhsokaClientBase<VideoMessageTypes.Ids>
     /// <returns></returns>
     public VideoStatus ResumeVideo(VideoPlayer player)
     {
-        return SendNotificationWithResponse<VideoStatus>(VideoMessageTypes.Ids.ResumeVideo, player);
+        return SendMessageWithResponse<VideoStatus>(VideoMessageTypes.Ids.ResumeVideo, player);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public class VideoServiceClient : AhsokaClientBase<VideoMessageTypes.Ids>
     /// <returns></returns>
     public VideoStatus PositionVideo(VideoPosition position)
     {
-        return SendNotificationWithResponse<VideoStatus>(VideoMessageTypes.Ids.PositionVideo, position);
+        return SendMessageWithResponse<VideoStatus>(VideoMessageTypes.Ids.PositionVideo, position);
     }
 
 
@@ -97,7 +97,7 @@ public class VideoServiceClient : AhsokaClientBase<VideoMessageTypes.Ids>
     /// <returns></returns>
     public VideoStatus StopVideo(VideoPlayer player)
     {
-        return SendNotificationWithResponse<VideoStatus>(VideoMessageTypes.Ids.StopVideo, player);
+        return SendMessageWithResponse<VideoStatus>(VideoMessageTypes.Ids.StopVideo, player);
     }
 
     /// <summary>
@@ -107,6 +107,6 @@ public class VideoServiceClient : AhsokaClientBase<VideoMessageTypes.Ids>
     /// <returns></returns>
     public VideoStatus RequestVideoStatus(VideoPlayer player)
     {
-        return SendNotificationWithResponse<VideoStatus>(VideoMessageTypes.Ids.RequestStatus, player);
+        return SendMessageWithResponse<VideoStatus>(VideoMessageTypes.Ids.RequestStatus, player);
     }
 }

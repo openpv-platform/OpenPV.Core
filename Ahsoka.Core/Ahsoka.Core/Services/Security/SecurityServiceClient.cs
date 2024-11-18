@@ -60,7 +60,7 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     {
         lock (requests) // Protect the List until we get response so notification doesn't get stepped on.
         {
-            var response = SendNotificationWithResponse<TokenRequestResponse>(SecurityMessageTypes.Ids.RequestToken, tokenRequest);
+            var response = SendMessageWithResponse<TokenRequestResponse>(SecurityMessageTypes.Ids.RequestToken, tokenRequest);
             if (usingWaitMethod)
                 requests[response.RequestId.ToGuid()] = null;
             
@@ -75,7 +75,7 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     /// <param name="completeInfo">Challenge Completed</param>
     public TopicResult CompleteChallenge(ChallengeCompleteInfo completeInfo)
     {
-        return SendNotificationWithResponse<TopicResult>(SecurityMessageTypes.Ids.CompleteChallenge, completeInfo);
+        return SendMessageWithResponse<TopicResult>(SecurityMessageTypes.Ids.CompleteChallenge, completeInfo);
     }
 
     /// <summary>

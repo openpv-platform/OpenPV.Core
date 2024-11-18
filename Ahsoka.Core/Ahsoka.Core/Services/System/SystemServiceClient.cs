@@ -52,9 +52,20 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     public string EchoValue(string dataValue)
     {
         EchoValue request = new() { DataValue = dataValue };
-        var result = SendNotificationWithResponse<EchoValue>(SystemMessageTypes.Ids.Echo, request);
+        var result = SendMessageWithResponse<EchoValue>(SystemMessageTypes.Ids.Echo, request);
         return result.DataValue;
     }
+
+    /// <summary>
+    /// Internall Testing Notificaiton
+    /// </summary>
+    /// <param name="dataValue"></param>
+    internal void EchoNotif(string dataValue)
+    {
+        EchoValue request = new() { DataValue = dataValue };
+        SendMessageWithResponse<EmptyNotification>(SystemMessageTypes.Ids.RequestNotif, request);
+    }
+
 
     /// <summary>
     /// Gets a list of Services running in the Service Runtime as well as their Runtime Information / Metrics.
@@ -62,7 +73,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     /// <returns></returns>
     public ServiceInfo GetRunningServices()
     {
-        return SendNotificationWithResponse<ServiceInfo>(SystemMessageTypes.Ids.GetServiceInfo);
+        return SendMessageWithResponse<ServiceInfo>(SystemMessageTypes.Ids.GetServiceInfo);
     }
 
     /// <summary>
@@ -73,7 +84,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     /// <param name="timeoutInMs"></param>
     public void RequestServiceShutdown(ShutdownTypes type = ShutdownTypes.ShutdownServices, int exitCode = 0, int timeoutInMs = int.MaxValue)
     {
-        SendNotificationWithResponse<GetHardwareInformationReply>(SystemMessageTypes.Ids.RequestShutdown,
+        SendMessageWithResponse<GetHardwareInformationReply>(SystemMessageTypes.Ids.RequestShutdown,
              new ShutdownInformation() { ShutdownType = type, ShutdownCode = exitCode }, timeoutInMs);
     }
 
@@ -84,7 +95,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     /// <returns></returns>
     public GetHardwareInformationReply GetHardwareInformation(int timeoutInMs = int.MaxValue)
     {
-        return SendNotificationWithResponse<GetHardwareInformationReply>(SystemMessageTypes.Ids.GetHardwareInformation, null, timeoutInMs);
+        return SendMessageWithResponse<GetHardwareInformationReply>(SystemMessageTypes.Ids.GetHardwareInformation, null, timeoutInMs);
     }
 
     /// <summary>
@@ -151,7 +162,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     /// <returns></returns>
     public BrightnessInfo GetBrightness()
     {
-        return SendNotificationWithResponse<BrightnessInfo>(SystemMessageTypes.Ids.GetBrightness);
+        return SendMessageWithResponse<BrightnessInfo>(SystemMessageTypes.Ids.GetBrightness);
     }
 
     /// <summary>
@@ -164,7 +175,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     /// <returns></returns>
     public BrightnessInfo SetBrightness(BrightnessInfo brightnessInfo)
     {
-        return SendNotificationWithResponse<BrightnessInfo>(SystemMessageTypes.Ids.SetBrightness, brightnessInfo);
+        return SendMessageWithResponse<BrightnessInfo>(SystemMessageTypes.Ids.SetBrightness, brightnessInfo);
     }
 
     /// <summary>
@@ -173,7 +184,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     /// <returns>Information about the current Mode (Device / Host) and the Mount Point</returns>
     public UsbInfo GetUsbInfo()
     {
-        return SendNotificationWithResponse<UsbInfo>(SystemMessageTypes.Ids.GetUsbInfo);
+        return SendMessageWithResponse<UsbInfo>(SystemMessageTypes.Ids.GetUsbInfo);
     }
 
     /// <summary>
@@ -182,7 +193,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     /// <param name="usbInfo">Information about the current Mode (Device / Host) and the Mount Point</param>
     public void SetUsbInfo(UsbInfo usbInfo)
     {
-        SendNotificationWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetUsbInfo, usbInfo);
+        SendMessageWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetUsbInfo, usbInfo);
     }
 
     /// <summary>
@@ -200,7 +211,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
             DelayRtsBeforeSend = serialRS485Config.delay_rts_before_send
         };
 
-        SendNotificationWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetSerialConfig, send_config);
+        SendMessageWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetSerialConfig, send_config);
     }
 
 
@@ -225,7 +236,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
             FirmwareFileName = firmwareFilename
         };
 
-        return SendNotificationWithResponse<TouchTuneInfoReply>(SystemMessageTypes.Ids.UpdateTouchTune, request);
+        return SendMessageWithResponse<TouchTuneInfoReply>(SystemMessageTypes.Ids.UpdateTouchTune, request);
     }
 
     /// <summary>
@@ -234,7 +245,7 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     /// <param name="bootLogoInfo">Boot logo info such as the path to the .png image file.</param>
     public void SetBootLogo(BootLogoInfo bootLogoInfo)
     {
-        SendNotificationWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetBootLogo, bootLogoInfo);
+        SendMessageWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetBootLogo, bootLogoInfo);
     }
 
    

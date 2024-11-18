@@ -45,7 +45,7 @@ public class SparkServiceClient : AhsokaClientBase<SparkMessageTypes.Ids>
     /// <returns>Subscription Info containing details about the subscription.</returns>
     public SparkSubscriptionInfo GetSparkSubscription(int timeoutInMs = int.MaxValue)
     {
-        return SendNotificationWithResponse<SparkSubscriptionInfo>(SparkMessageTypes.Ids.GetSparkSubscription, new EmptyNotification(), timeoutInMs);
+        return SendMessageWithResponse<SparkSubscriptionInfo>(SparkMessageTypes.Ids.GetSparkSubscription, new EmptyNotification(), timeoutInMs);
     }
 
     /// <summary>
@@ -56,7 +56,7 @@ public class SparkServiceClient : AhsokaClientBase<SparkMessageTypes.Ids>
     /// <param name="timeoutInMs"></param>
     public void SetSparkSubscription(SparkSubscription subscription, int timeoutInMs = int.MaxValue)
     {
-        SendNotificationWithResponse<EmptyNotification>(SparkMessageTypes.Ids.SetSparkSubscription, subscription);
+        SendMessageWithResponse<EmptyNotification>(SparkMessageTypes.Ids.SetSparkSubscription, subscription);
     }
 
     /// <summary>
@@ -65,7 +65,7 @@ public class SparkServiceClient : AhsokaClientBase<SparkMessageTypes.Ids>
     /// <returns></returns>
     public SparkReleaseInfo GetAvailableReleases()
     {
-        return SendNotificationWithResponse<SparkReleaseInfo>(SparkMessageTypes.Ids.GetAvailableReleases);
+        return SendMessageWithResponse<SparkReleaseInfo>(SparkMessageTypes.Ids.GetAvailableReleases);
     }
 
     /// <summary>
@@ -75,12 +75,12 @@ public class SparkServiceClient : AhsokaClientBase<SparkMessageTypes.Ids>
     /// <returns></returns>
     public SparkReleaseDownloadCompleted DownloadApplication(SparkReleaseDownloadRequest request)
     {
-        return SendNotificationWithResponse<SparkReleaseDownloadCompleted>(SparkMessageTypes.Ids.GetRelease, request);
+        return SendMessageWithResponse<SparkReleaseDownloadCompleted>(SparkMessageTypes.Ids.GetRelease, request);
     }
 
     internal void UpdateLicenseInfo(ModuleLicenseInfo licenseInfo)
     {
-        SendNotificationWithResponse<EmptyNotification>(SparkMessageTypes.Ids.UpdateLicenseInfo, licenseInfo);
+        SendMessageWithResponse<EmptyNotification>(SparkMessageTypes.Ids.UpdateLicenseInfo, licenseInfo);
     }
 
     /// <summary>
@@ -89,7 +89,7 @@ public class SparkServiceClient : AhsokaClientBase<SparkMessageTypes.Ids>
     /// <returns></returns>
     public void SubscribeToAppChanges()
     {
-        SendNotificationWithResponse<EmptyNotification>(SparkMessageTypes.Ids.SubscribeToAppChange, new EmptyNotification());
+        SendMessageWithResponse<EmptyNotification>(SparkMessageTypes.Ids.SubscribeToAppChange, new EmptyNotification());
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public class SparkServiceClient : AhsokaClientBase<SparkMessageTypes.Ids>
     /// <returns></returns>
     public void UnubscribeToAppChanges()
     {
-        SendNotificationWithResponse<EmptyNotification>(SparkMessageTypes.Ids.UnsubscribeToAppChange, new EmptyNotification());
+        SendMessageWithResponse<EmptyNotification>(SparkMessageTypes.Ids.UnsubscribeToAppChange, new EmptyNotification());
     }
 }
 

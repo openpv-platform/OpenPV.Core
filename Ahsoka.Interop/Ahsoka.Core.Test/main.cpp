@@ -10,14 +10,17 @@
 
 using namespace std;
  
+int responseCount = 0;
+int requestCount = 200000;
 ReadyWaiter waiter;
 
 void NotificationRecieved(TestMessageTypes transportId, AhsokaServiceFramework::AhsokaMessageType_t& message)
 {
-     if (transportId == EchoTestNotification)
+    if (transportId == EchoTestNotification)
     {
-        std::cout << "Notification Received" << std::endl;
-        waiter.SetReady();
+        responseCount++;
+        if (responseCount == requestCount)
+            waiter.SetReady();
     }
 }
 
@@ -39,7 +42,10 @@ int main()
     client->NotifyMessageReceived(NotificationRecieved);
 
     // Call Example Function...this will also send a notification
-    auto newConfig = client->EchoConfig(localConfig, 5000);
+    for (size_t i = 0; i < requestCount; i++)
+    {    
+        auto newConfig = client->EchoConfig(localConfig, 5000);
+    }
     
     // Block until message recieved.
     waiter.WaitForReady();

@@ -31,6 +31,9 @@ message SystemMessageTypes
 
 		SET_BOOT_LOGO = 30;
 
+		TEST_NOTIF = 31;
+		REQUEST_NOTIF = 32;
+
 		REQUEST_SHUTDOWN = 100;
 	}
 }

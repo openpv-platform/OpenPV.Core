@@ -45,7 +45,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <param name="adapterRequest">Adapter to Enable</param>
     public void EnableAdapter(AdapterRequest adapterRequest)
     {
-        SendNotificationWithResponse<EmptyNotification>(NetworkMessageTypes.Ids.EnableAdapter, adapterRequest);
+        SendMessageWithResponse<EmptyNotification>(NetworkMessageTypes.Ids.EnableAdapter, adapterRequest);
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <param name="adapterRequest">Adapter to Disable</param>
     public void DisableAdapter(AdapterRequest adapterRequest)
     {
-        SendNotificationWithResponse<EmptyNotification>(NetworkMessageTypes.Ids.DisableAdapter, adapterRequest);
+        SendMessageWithResponse<EmptyNotification>(NetworkMessageTypes.Ids.DisableAdapter, adapterRequest);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public AvailableAdapters GetNetworkAdapters(int timeoutInMs = int.MaxValue)
     {
-        return SendNotificationWithResponse<AvailableAdapters>(NetworkMessageTypes.Ids.GetAdapters, null, timeoutInMs);
+        return SendMessageWithResponse<AvailableAdapters>(NetworkMessageTypes.Ids.GetAdapters, null, timeoutInMs);
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public AdapterConfiguration GetNetworkConfiguration(AdapterRequest adapterConfigurationRequest, int timeoutInMs = int.MaxValue)
     {
-        return SendNotificationWithResponse<AdapterConfiguration>(NetworkMessageTypes.Ids.GetAdapterConfiguration, adapterConfigurationRequest, timeoutInMs);
+        return SendMessageWithResponse<AdapterConfiguration>(NetworkMessageTypes.Ids.GetAdapterConfiguration, adapterConfigurationRequest, timeoutInMs);
     }
 
     /// <summary>
@@ -86,7 +86,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public IPInfo GetIPInfo(AdapterRequest adapterConfigurationRequest, int timeoutInMs = int.MaxValue)
     {
-        return SendNotificationWithResponse<IPInfo>(NetworkMessageTypes.Ids.GetNetworkInfo, adapterConfigurationRequest, timeoutInMs);
+        return SendMessageWithResponse<IPInfo>(NetworkMessageTypes.Ids.GetNetworkInfo, adapterConfigurationRequest, timeoutInMs);
     }
 
     /// <summary>
@@ -97,7 +97,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public AdapterConfigurationResult SetNetworkConfiguration(AdapterConfiguration adapterConfiguration, int timeoutInMs = int.MaxValue)
     {
-       return SendNotificationWithResponse<AdapterConfigurationResult>(NetworkMessageTypes.Ids.SetAdapterConfiguration, adapterConfiguration, timeoutInMs);
+       return SendMessageWithResponse<AdapterConfigurationResult>(NetworkMessageTypes.Ids.SetAdapterConfiguration, adapterConfiguration, timeoutInMs);
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public WirelessNetworkInfoList DiscoverNetworks(AdapterRequest adapterRequest)
     {
-        return SendNotificationWithResponse<WirelessNetworkInfoList>(NetworkMessageTypes.Ids.DiscoverNetworks, adapterRequest);
+        return SendMessageWithResponse<WirelessNetworkInfoList>(NetworkMessageTypes.Ids.DiscoverNetworks, adapterRequest);
     }
 
     /// <summary>
@@ -118,7 +118,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public NetworkProfilesList GetNetworkProfiles(ProfileRequest profileRequest, int timeoutInMs = int.MaxValue)
     {
-        return SendNotificationWithResponse<NetworkProfilesList>(NetworkMessageTypes.Ids.GetNetworkProfiles, profileRequest, timeoutInMs);
+        return SendMessageWithResponse<NetworkProfilesList>(NetworkMessageTypes.Ids.GetNetworkProfiles, profileRequest, timeoutInMs);
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <param name="timeoutInMs">How long to wait before returning if the service does not reply</param>
     public void SetNetworkProfiles(NetworkProfilesList profiles, int timeoutInMs = int.MaxValue)
     {
-        SendNotificationWithResponse<EmptyNotification>(NetworkMessageTypes.Ids.SetNetworkProfiles, profiles);
+        SendMessageWithResponse<EmptyNotification>(NetworkMessageTypes.Ids.SetNetworkProfiles, profiles);
     }
 
     /// <summary>
@@ -138,7 +138,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     [ExcludeFromCodeCoverage]
     public void Connect(WirelessConnectionRequest connection)
     {
-        SendNotificationWithResponse<WirelessConnectionResponse>(NetworkMessageTypes.Ids.ConnectToNetwork, connection);
+        SendMessageWithResponse<WirelessConnectionResponse>(NetworkMessageTypes.Ids.ConnectToNetwork, connection);
     }
 
     /// <summary>
@@ -148,7 +148,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     [ExcludeFromCodeCoverage]
     public void Disconnect(AdapterRequest adapterRequest)
     {
-        SendNotificationWithResponse(NetworkMessageTypes.Ids.DisconnectNetwork, adapterRequest);
+        SendMessageWithResponse(NetworkMessageTypes.Ids.DisconnectNetwork, adapterRequest);
     }
 
 
@@ -160,6 +160,6 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public void AttemptAutoConnect(AutoConnectRequest connectRequest, int timeoutInMs = int.MaxValue)
     {
-        SendNotificationWithResponse<NetworkProfilesList>(NetworkMessageTypes.Ids.AttemptAutoConnect, connectRequest, timeoutInMs);
+        SendMessageWithResponse<NetworkProfilesList>(NetworkMessageTypes.Ids.AttemptAutoConnect, connectRequest, timeoutInMs);
     }
 }

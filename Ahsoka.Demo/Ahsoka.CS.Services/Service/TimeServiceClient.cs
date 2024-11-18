@@ -47,7 +47,7 @@ public class TimeServiceClient : AhsokaClientBase<TimeServiceMessageTypes.Ids>
         // the client will wait for <TimeInfo> and return that making it appear our async calls are sync calls
         // to the client caller.  For purely reactive style clients this could be left off and the internal
         // SendMessageInternal() could be used instead.
-        return SendNotificationWithResponse<TimeInfo>(TimeServiceMessageTypes.Ids.GetTime);
+        return SendMessageWithResponse<TimeInfo>(TimeServiceMessageTypes.Ids.GetTime);
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class TimeServiceClient : AhsokaClientBase<TimeServiceMessageTypes.Ids>
     {
         // Because we return an empty notifcation there is no need to capture the result...we simply block until the result is returned
         // and return void.
-        SendNotificationWithResponse(TimeServiceMessageTypes.Ids.SetTime, timeInfo);
+        SendMessageWithResponse(TimeServiceMessageTypes.Ids.SetTime, timeInfo);
     }
 }
 

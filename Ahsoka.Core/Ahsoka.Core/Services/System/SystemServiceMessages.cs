@@ -98,6 +98,10 @@ public class SystemServiceMessages : AhsokaMessagesBase
         this.RegisterServiceRequest(SystemMessageTypes.Ids.UpdateTouchTune, typeof(TouchTuneInfo), typeof(TouchTuneInfoReply));
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.RequestShutdown, typeof(ShutdownInformation), typeof(EmptyNotification));
+
+        // Test Calls
+        this.RegisterServiceRequest(SystemMessageTypes.Ids.RequestNotif, typeof(EchoValue), typeof(EmptyNotification), false, true);
+        this.RegisterServiceNotification(SystemMessageTypes.Ids.TestNotif, typeof(EchoValue), false, true);
     }
 
     /// <InheritDoc/>

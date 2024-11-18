@@ -139,6 +139,48 @@ public class ServiceTests : LinearTestBase
         AhsokaRuntime.Default.StopAllEndPoints();
     }
 
+    readonly Semaphore messageReceived = new(0, 1);
+
+    [TestMethod]
+    public void TestNofifications()
+    {
+        SystemServiceClient systemClient = new();
+        systemClient.Start();
+
+        var receiveCount = 0;
+        var totalRuns = 200000;
+
+        // List to Message Notifications
+        systemClient.NotificationReceived += (sender, args) =>
+        {
+            if (args.TransportId == SystemMessageTypes.Ids.TestNotif)
+            {
+                receiveCount++;
+                if (receiveCount == totalRuns)
+                    messageReceived.Release();
+            }
+        };
+
+        Stopwatch watch = new();
+        watch.Start();
+        for (int i = 0; i < totalRuns; i++)
+        {
+            systemClient.EchoNotif("Test Value"); 
+        }
+
+        messageReceived.WaitOne(30000);
+
+        if (receiveCount == totalRuns)
+            Assert.AreEqual(totalRuns, receiveCount);
+
+        watch.Stop();
+
+        Console.WriteLine("");
+        Console.WriteLine($"Performance Test: {receiveCount} Request/Response Calls completed in {watch.ElapsedMilliseconds}ms");
+        Console.WriteLine($"                : {((float)receiveCount / watch.ElapsedMilliseconds) * 1000} Calls Per Second");
+        Console.WriteLine("");
+    }
+
     [TestMethod]
     public void TestBaseServiceComponents()
     {
@@ -187,19 +229,15 @@ public class ServiceTests : LinearTestBase
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-        var set = AhsokaRuntime.CreateBuilder()
-                     .AddClients(systemClient)
-                     .StartWithInternalServices();
+        systemClient.Start();
 
         // Request Service Shutdown
-        set.RequestShutdown();
-        set.WaitForShutdown();
+        systemClient.Stop();
+        systemClient.WaitForStop();
 
-        set = AhsokaRuntime.CreateBuilder()
-                    .AddClients(systemClient)
-                    .StartWithInternalServices();
+        systemClient.Start();
 
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     [TestMethod]

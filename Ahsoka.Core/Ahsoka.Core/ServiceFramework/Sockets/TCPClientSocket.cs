@@ -9,9 +9,13 @@ internal sealed class TCPClientSocket : IAhsokaSocket
 {
     IAhsokaClientEndPoint endPoint;
 
+    // Main Socket Management
     NetMQPoller socketPoller = new();
     DealerSocket socket;
     NetMQQueue<NetMQMessage> sendQueue = new();
+   
+    // Notification Handler
+    NetMQPoller notificationPoller = new();
     DealerSocket notificationSocket;
 
     public bool IsConnected { get; private set; }
@@ -52,7 +56,7 @@ internal sealed class TCPClientSocket : IAhsokaSocket
             notificationSocket.Options.Identity = this.endPoint.GetNotificationId();
             notificationSocket.Options.Linger = TimeSpan.FromSeconds(1);
             notificationSocket.Connect(this.endPoint.ServiceConfig.DataURI);
-            socketPoller.Add(notificationSocket);
+            notificationPoller.Add(notificationSocket);
             
             // Listen to Notifications
             notificationSocket.ReceiveReady += (o, e) =>
@@ -60,7 +64,8 @@ internal sealed class TCPClientSocket : IAhsokaSocket
                 this.endPoint.ReceiveMessage(true);
             };
 
-            socketPoller.RunAsync($"{this.endPoint.ServiceConfig.ServiceName}_ClientPoller");
+            socketPoller.RunAsync($"{this.endPoint.ServiceConfig.ServiceName}_Client Socket Thread");
+            notificationPoller.RunAsync($"{this.endPoint.ServiceConfig.ServiceName}_Client_Notification Thread");
 
             IsConnected = true;
 
@@ -80,11 +85,13 @@ internal sealed class TCPClientSocket : IAhsokaSocket
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Disconnecting {endPoint.ServiceConfig.ServiceName}");
 
                 socket.Disconnect(endPoint.ServiceConfig.DataURI);
-                notificationSocket.Disconnect(endPoint.ServiceConfig.DataURI);
                 socketPoller.StopAsync();
                 socketPoller.RemoveAndDispose(socket);
                 socketPoller.RemoveAndDispose(sendQueue);
-                socketPoller.RemoveAndDispose(notificationSocket);
+              
+                notificationSocket.Disconnect(endPoint.ServiceConfig.DataURI);
+                notificationPoller.StopAsync();
+                notificationPoller.RemoveAndDispose(notificationSocket);
 
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
             }

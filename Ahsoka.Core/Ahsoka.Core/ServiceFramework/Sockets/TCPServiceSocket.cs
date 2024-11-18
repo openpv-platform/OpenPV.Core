@@ -13,6 +13,11 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
     RouterSocket socket;
     int socketThreadId = -1;
     IAhsokaEndPoint endPoint;
+
+    // The Poller manages our thread for the main Socket (Router)
+    // the send queue ensures that we don't send messages on the socket
+    // from multiple threads.  Unlike C++ we don't need a second thread here since 
+    // the send queue acts as our "Pair Socket" handling messages in mutliple threads.
     NetMQPoller socketPoller = new();
     NetMQQueue<NetMQMessage> sendQueue = new();
     List<byte[]> validClientIds = new ();

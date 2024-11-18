@@ -66,6 +66,15 @@ namespace AhsokaServiceFramework
             clientList.erase(itr);
     }
 
+    void AhsokaServiceSocket::SendMessageToTransport(std::string header, std::string data, std::string clientId)
+    {   
+        zmq::multipart_t message;
+        message.add(zmq::message_t(clientId));
+        message.add(zmq::message_t(header));
+        message.add(zmq::message_t(data));
+        message.send(*socket, 0);
+    }
+
     void AhsokaServiceSocket::SendMessage(std::string header, std::string data, std::string clientId, bool sendAsNotification)
     {
         int thisTID = gettid();
@@ -76,23 +85,13 @@ namespace AhsokaServiceFramework
             if (thisTID != socketTID)
                 throw "Reply messages my be sent from recieve thread.";
 
-            zmq::multipart_t message;
-            message.add(zmq::message_t(clientId));
-            message.add(zmq::message_t(header));
-            message.add(zmq::message_t(data));
-            message.send(*socket, 0);
+            SendMessageToTransport(header,data,clientId);
         }
         else if (sendAsNotification && thisTID == socketTID)
         {
             // Send to All Clients
             for (auto it: clientList)
-            {
-                zmq::multipart_t message;
-                message.add(zmq::message_t(it));
-                message.add(zmq::message_t(header));
-                message.add(zmq::message_t(data));
-                message.send(*socket, 0);
-            }
+                SendMessageToTransport(header,data,it);
         }
         else
         {
@@ -203,7 +202,7 @@ namespace AhsokaServiceFramework
                 }
                 else if (items[1].revents & ZMQ_POLLIN) 
                 {
-                    // Receive Data
+                    // Receive Data from Out of Band Notification Sends
                     zmq::multipart_t received;
                     if (received.recv(*notif_socket_rcv, 0))
                     {               
@@ -212,13 +211,7 @@ namespace AhsokaServiceFramework
                         
                         // Send to All Clients
                         for (auto it: clientList)
-                        {
-                            zmq::multipart_t message;
-                            message.add(zmq::message_t(it));
-                            message.add(zmq::message_t(header));
-                            message.add(zmq::message_t(data));
-                            message.send(*socket, 0);
-                        }
+                           SendMessageToTransport(header,data,it);
                     }
                 }
             }

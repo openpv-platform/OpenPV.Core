@@ -23,7 +23,7 @@ namespace AhsokaSystem
 
 			unique_ptr<AhsokaSystem::ServiceConfiguration> EchoConfig(AhsokaSystem::ServiceConfiguration& configValue, int timeoutInMs)
 			{
-				return SendNotificationWithResponse<AhsokaSystem::ServiceConfiguration>(EchoTest, &configValue, timeoutInMs);
+				return SendMessageWithResponse<AhsokaSystem::ServiceConfiguration>(EchoTest, &configValue, timeoutInMs);
 			}
 			
 	};

@@ -120,8 +120,8 @@ public class ClientCodeGenerator
         const string messageMacroVoid = "\t{0} {1}Client::{2}(int timeoutInMs)\r\n";
         const string startEnd = "\t{0}\r\n";
 
-        const string bodyMacro = "\t\treturn SendNotificationWithResponse<{1}>({2});\r\n";
-        const string bodyMacroNoReturn = "\t\tSendNotificationWithResponse({1});\r\n";
+        const string bodyMacro = "\t\treturn SendMessageWithResponse<{1}>({2});\r\n";
+        const string bodyMacroNoReturn = "\t\tSendMessageWithResponse({1});\r\n";
 
         foreach (var item in messages.Info)
         {

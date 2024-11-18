@@ -45,7 +45,7 @@ public class IotServiceClient : AhsokaClientBase<IotMessageTypes.Ids>
     /// <returns></returns>
     public ClientConnectionInfo CreateClient(ClientInfo clientInfo)
     {
-        return SendNotificationWithResponse<ClientConnectionInfo>(IotMessageTypes.Ids.CreateClient, clientInfo);
+        return SendMessageWithResponse<ClientConnectionInfo>(IotMessageTypes.Ids.CreateClient, clientInfo);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class IotServiceClient : AhsokaClientBase<IotMessageTypes.Ids>
     /// <returns></returns>
     public ClientConnectionInfo DestroyClient(ClientMessage clientInfo)
     {
-        return SendNotificationWithResponse<ClientConnectionInfo>(IotMessageTypes.Ids.DestroyClient, clientInfo);
+        return SendMessageWithResponse<ClientConnectionInfo>(IotMessageTypes.Ids.DestroyClient, clientInfo);
     }
 
     /// <summary>
@@ -64,7 +64,7 @@ public class IotServiceClient : AhsokaClientBase<IotMessageTypes.Ids>
     /// <param name="subscription">Topic to Subcribe</param>
     public TopicResult SubscribeTopic(TopicSubscription subscription)
     {
-        return SendNotificationWithResponse<TopicResult>(IotMessageTypes.Ids.SubscribeTopic, subscription);
+        return SendMessageWithResponse<TopicResult>(IotMessageTypes.Ids.SubscribeTopic, subscription);
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class IotServiceClient : AhsokaClientBase<IotMessageTypes.Ids>
     /// <param name="subscription">Topic to Unsubscribe</param>
     public TopicResult UnSubscribeTopic(TopicSubscription subscription)
     {
-        return SendNotificationWithResponse<TopicResult>(IotMessageTypes.Ids.UnsubscribeTopic, subscription);
+        return SendMessageWithResponse<TopicResult>(IotMessageTypes.Ids.UnsubscribeTopic, subscription);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public class IotServiceClient : AhsokaClientBase<IotMessageTypes.Ids>
     /// <param name="message"></param>
     public TopicResult PublishTopic(TopicMessage message)
     {
-        return SendNotificationWithResponse<TopicResult>(IotMessageTypes.Ids.PublishTopic, message);
+        return SendMessageWithResponse<TopicResult>(IotMessageTypes.Ids.PublishTopic, message);
     }
 }
 

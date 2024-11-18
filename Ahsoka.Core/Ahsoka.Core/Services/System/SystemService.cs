@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.ServiceModel.Channels;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -179,7 +180,22 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             case SystemMessageTypes.Ids.SetBootLogo:
                 HandleSetBootLogo(messageHeader, message as BootLogoInfo);
                 break;
+
+            case SystemMessageTypes.Ids.RequestNotif:
+                HandleNotif(messageHeader, message as EchoValue);
+                break;
         }
+    }
+
+    private void HandleNotif(AhsokaMessageHeader messageHeader, EchoValue message)
+    {
+        AhsokaMessageHeader header = new()
+        {
+            TransportId = SystemMessageTypes.Ids.TestNotif.EnumToInt()
+        };
+
+        SendMessageInternal(messageHeader);
+        SendMessageInternal(header, message, true);
     }
 
     private void HandleShutdown(AhsokaMessageHeader messageHeader, ShutdownInformation message)

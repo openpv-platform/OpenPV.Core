@@ -40,7 +40,10 @@ namespace AhsokaServiceFramework
             bool IsListening;
             bool IsNotifying;
 
-            // Socket Thread Items            
+            // Socket Thread / Socket.
+            // This thread manages the recieve and send of message on the main 
+            // router socket            
+            zmq::socket_t* socket;
             ReadyWaiter socketThreadReady;
             std::thread* socketThread;
             std::vector<std::string> clientList;
@@ -48,8 +51,9 @@ namespace AhsokaServiceFramework
             
             int socketTID = -1;
 
-            // Notification Reciever Items
-            zmq::socket_t* socket;
+            // Notification Reciever Items.   
+            // This Thread manages any out of band notifications that we recieve
+            // and uses a pair socket to route them to the socket thread to be send when available.
             ReadyWaiter notificationThreadReady;
             std::thread* notificationThread;
             void ManageNotifications();
@@ -57,6 +61,8 @@ namespace AhsokaServiceFramework
             AhsokaServiceFramework::BlockingQueue<SocketMessage> notificationMessages;
 
             std::string GetPairAddress();
+            void SendMessageToTransport(std::string header, std::string data, std::string clientId);
+   
     };
 
     

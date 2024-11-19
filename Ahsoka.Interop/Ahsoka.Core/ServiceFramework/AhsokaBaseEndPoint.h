@@ -18,6 +18,13 @@ namespace AhsokaServiceFramework
             
             virtual ~AhsokaBaseEndPoint() {}
 
+			bool GetIsConnected()
+			{
+				if (currentRuntime)
+					return socket->GetIsConnected();
+				return false;		
+			}
+
 			void Connect()
 			{
 				if (currentRuntime)
@@ -46,8 +53,8 @@ namespace AhsokaServiceFramework
 			void Start()
 			{
 				AhsokaRuntime::CreateBuilder()
-					.AddEndPoint(this)
-					.StartLocalRuntime();
+						.AddEndPoint(this)
+						.StartLocalRuntime();
 			}
 
 			void Stop()
@@ -65,6 +72,7 @@ namespace AhsokaServiceFramework
 
 		 	IAhsokaSocket * socket;
 			AhsokaMessagesBase messageFactory;
+			bool isServiceEndPoint;
 
 			virtual IAhsokaSocket* CreateSocket(AhsokaSystem::ServiceConfiguration& config) = 0;
 
@@ -113,7 +121,7 @@ namespace AhsokaServiceFramework
 				messageHeader->set_client_id(clientId);
 				
 				// Lookup and Decode Message
-				messageObject = messageFactory.CreateMessage<AhsokaMessageType_t>(messageHeader->transport_id(), messageData, false);
+				messageObject = messageFactory.CreateMessage<AhsokaMessageType_t>(messageHeader->transport_id(), messageData, isServiceEndPoint);
 		
 				return (messageObject != 0);
 			}
@@ -123,6 +131,8 @@ namespace AhsokaServiceFramework
 			virtual void OnEndPointConnected() {}
 
 			virtual void OnEndPointDisconnected() {}
+
+			void UpdateConfiguration(AhsokaSystem::ServiceConfiguration config) {serviceConfig = config;}
 
 	private:
 			

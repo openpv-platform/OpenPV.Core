@@ -41,7 +41,7 @@ internal class LinuxWindow : IDrawingWindow
         return InitDrawingApi(apiWindow, bounds);
     }
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingRect bounds, bool fullScreen, string appid, int surfaceId)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingRect bounds, bool fullScreen, int surfaceId, string appid)
     {
         this.isFullScreen = fullScreen;
         this.bounds = bounds;
@@ -121,6 +121,11 @@ internal class LinuxWindow : IDrawingWindow
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Create Surface {surface != null}");
     }
 
+    public int UpdateWindowPosition(int surfaceId, int x, int y, int w, int h)
+    {
+       return impl.ChangeWindowPosition(surfaceId, x, y, w, h);
+    }
+
     void IDrawingWindow.Close()
     {
         // Request Close of Window / Touch
@@ -171,6 +176,8 @@ public abstract class LinuxDrawingImplementation
     internal abstract void SetSwapInterval(int interval);
 
     internal abstract void DestroyContext();
+
+    internal abstract int ChangeWindowPosition(int surfaceId, int x, int y, int w, int h);
 }
 
 [StructLayout(LayoutKind.Explicit, Pack = 1)]

@@ -267,7 +267,6 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #include &quot;DefaultServiceClient.h&quot;
         ///#include &quot;DefaultServiceMessages.hpp&quot;
-        ///#include &quot;AhsokaClientEndPoint.h&quot;
         ///
         ///using namespace std;
         ///using namespace DefaultNameSpace;
@@ -277,7 +276,12 @@ namespace Ahsoka.Properties {
         ///    typedef AhsokaClientEndPoint&lt;DefaultTransportIdEnum&gt; DefaultService_t;
         ///	
         ///	DefaultServiceClient::DefaultServiceClient():
-        ///       AhsokaServiceFramework::AhsokaEndPoint&lt;DefaultTransportIdEnum&gt;(new DefaultService_t(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceMessages()))        /// [rest of string was truncated]&quot;;.
+        ///       AhsokaServiceFramework::AhsokaClientEndPoint&lt;DefaultTransportIdEnum&gt;(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceMessages())
+        ///    {
+        ///        
+        ///    }
+        ///
+        ///    DefaultServiceClient [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CPPClientCode {
             get {
@@ -291,6 +295,7 @@ namespace Ahsoka.Properties {
         ///#include &lt;functional&gt;
         ///#include &lt;memory&gt;
         ///#include &quot;AhsokaServices.h&quot;
+        ///#include &quot;AhsokaClientEndPoint.h&quot;
         ///
         ///using namespace std;
         ///using namespace DefaultNameSpace;
@@ -303,11 +308,8 @@ namespace Ahsoka.Properties {
         ///{
         ///	const std::string DefaultServiceName = &quot;DefaultService&quot;;
         ///
-        ///	class DefaultServiceClient : public AhsokaServiceFramework::AhsokaEndPoint&lt;DefaultTransportIdEnum&gt;
+        ///	class DefaultServiceClient : public AhsokaServiceFramework::AhsokaClientEndPoint&lt;DefaultTransportIdEnum&gt;
         ///	{
-        ///		public:
-        ///
-        ///			DefaultServiceClient();
         ///	 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CPPClientHeader {
@@ -451,6 +453,16 @@ namespace Ahsoka.Properties {
         internal static byte[] JournalOverride {
             get {
                 object obj = ResourceManager.GetObject("JournalOverride", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] LayerManagerService {
+            get {
+                object obj = ResourceManager.GetObject("LayerManagerService", resourceCulture);
                 return ((byte[])(obj));
             }
         }

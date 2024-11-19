@@ -75,7 +75,10 @@ internal class Program
             foreach (var eventItem in args.Events)
             {
                 if (eventItem.Event == TouchEvent.Pressed)
+                {
+                    window.UpdateWindowPosition(121212, 200, 300, 500, 500);
                     touched = true;
+                }
                 else if (eventItem.Event == TouchEvent.Released)
                     touched = false;
             }

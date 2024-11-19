@@ -55,6 +55,14 @@
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5008,
       "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "LayerManagerService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 5100,
+      "behaviors": "AutoStart"
     }
   ]
 }

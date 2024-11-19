@@ -2,6 +2,7 @@ using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Dispatch;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services;
+using Ahsoka.Services.Iot;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.System;
 using Ahsoka.Services.System.Platform;
@@ -65,6 +66,29 @@ public class ServiceTests : LinearTestBase
         Console.WriteLine($"Performance Test: {count} Calls completed in {watch.ElapsedMilliseconds}ms");
         Console.WriteLine($"                : {((float)count / watch.ElapsedMilliseconds) * 1000} Calls Per Second");
         Console.WriteLine("");
+    }
+
+    //[TestMethod]
+    public void TestLayoutManager()
+    {
+        LayoutManagerServiceClient client = new(new ServiceConfiguration()
+        {
+            DataChannel = 5100,
+            ServiceName = LayoutManagerServiceClient.Name,
+            TcpListenAddress = "*",
+            TcpConnectionAddress = "openviewpro"
+        });
+
+        client.Start();
+
+        client.UpdateSurfaceLayout(new LayerManager.SurfaceLayout()
+        {
+              SurfaceId = 121212,
+              Height = 500,
+              Width = 500,
+              X = 100,
+              Y = 100,
+        });
     }
 
 

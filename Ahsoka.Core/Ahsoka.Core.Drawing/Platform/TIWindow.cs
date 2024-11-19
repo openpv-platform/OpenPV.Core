@@ -26,6 +26,9 @@ internal class TIWindow : LinuxWindow
         internal static extern void GetWindowDimensions(ref int w, ref int h);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int UpdateWindowPosition(int surfaceId, int x, int y, int width, int height);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr GetSurfaceInfo(ref int samples, ref int stencilBits, ref uint gl_format);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -93,6 +96,11 @@ internal class TIWindow : LinuxWindow
         internal override void DestroyContext()
         {
             DestoryWindowContext();
+        }
+
+        internal override int ChangeWindowPosition(int surfaceId, int x, int y, int w, int h)
+        {
+            return UpdateWindowPosition(surfaceId, x, y, w, h);
         }
 
         #endregion

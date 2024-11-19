@@ -1,5 +1,6 @@
 #include <string>
 #include <fstream>
+#include <filesystem>
 #include <sstream>
 #include "AhsokaConfiguration.h"
 #include <google/protobuf/util/json_util.h>
@@ -18,12 +19,13 @@ namespace AhsokaServiceFramework
 		AhsokaConfiguration::runtimeConfig.ParseFromIstream(&ifs);
 	}
 
-	ServiceConfiguration AhsokaConfiguration::GetServiceConfiguration(const string& serviceName)
+	ServiceConfiguration AhsokaConfiguration::GetServiceConfiguration(const string& serviceName, bool throwIfNotFound)
 	{
 		// Load Default Configuration
-		if (runtimeConfig.services_size() == 0)
+		string path = ".appinfo/AutoStartServiceConfig.pbuff";
+		if (runtimeConfig.services_size() == 0 && std::filesystem::exists(path))
 		{
-			LoadConfiguration(".appinfo/AutoStartServiceConfig.pbuff");
+			LoadConfiguration(path);
 		}
 
 		// Find Service Configuration;
@@ -39,8 +41,15 @@ namespace AhsokaServiceFramework
 		}
 
 		if (!found)
-			throw std::logic_error(("Service Config not found for %s", serviceName));
-
+		{
+			if(throwIfNotFound)
+				throw std::logic_error(("Service Config not found for %s", serviceName));
+		
+			configuration.set_service_name("");
+			configuration.set_data_channel(-1);
+			
+			std::cout << "Service Config not found for " << serviceName << std::endl;
+		}		
 		return configuration;
 	}
 

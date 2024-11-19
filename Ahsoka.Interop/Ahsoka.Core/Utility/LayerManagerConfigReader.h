@@ -2,12 +2,22 @@
 #define WESTONREADER_H_
 
 #include "LayerManagerService.pb.h"
+#include "Configuration.pb.h"
 
-static AhsokaLayerManager::LayerManagerConfiguration config;
-
-extern "C"
+namespace AhsokaLayerManager
 {
-    void LoadLayerManagerConfig();
-    AhsokaLayerManager::SurfaceLayout GetSurfaceLayout(int surface_id);
+    class ConfigReader
+    {
+        public: 
+           
+            static LayerManagerConfiguration& LoadLayerManagerConfig();
+            static SurfaceLayout GetSurfaceLayout(int surface_id);
+            static void UpdateSurfaceLayout(SurfaceLayout& newLayout);
+            static AhsokaSystem::ServiceConfiguration GetServiceConfiguration();
+
+        private:
+            static AhsokaLayerManager::LayerManagerConfiguration config;
+
+    };
 }
 #endif

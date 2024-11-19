@@ -12,10 +12,8 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reactive.Disposables;
 using System.Threading;
 using System.Threading.Tasks;
-using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.DeveloperTools;
 internal class PluginsViewModel : ViewModelBase, IToolViewModel

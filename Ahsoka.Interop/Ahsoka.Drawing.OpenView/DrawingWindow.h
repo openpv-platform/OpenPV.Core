@@ -18,7 +18,7 @@ void GLSwapBuffers();
 bool GetTouchData(TouchEvent *data, int timeoutInMs);
 void GetWindowDimensions(int *w, int *h);
 void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format);
-
+int  UpdateWindowPosition(int surfaceId, int x, int y, int w, int h);
 bool UpdateSwapInterval(int interval);
 
 void* GetFunction(const char *str);

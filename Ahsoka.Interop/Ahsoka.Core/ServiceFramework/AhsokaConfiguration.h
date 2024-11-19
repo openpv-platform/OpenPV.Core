@@ -12,7 +12,7 @@ namespace AhsokaServiceFramework
         public:
         
             static void LoadConfiguration(const string& configurationFile);
-            static ServiceConfiguration GetServiceConfiguration(const string& serviceName);
+            static ServiceConfiguration GetServiceConfiguration(const string& serviceName, bool throwIfNotFound = true);
 
         private:
 

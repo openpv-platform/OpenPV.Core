@@ -8,15 +8,14 @@ message LayoutManagerMessageTypes
 	enum Ids
 	{
 		NO_MESSAGE = 0;
-
 		CLOSE_LOGO = 1;
-		
+        UPDATE_SURFACE_LAYOUT = 2;
 	}
 }
 
 message LayerManagerConfiguration
 {
-    bool show_unknown_apps = 1;
+    bool show_unknown_surfaces = 1;
     string boot_logo_path = 2;
     repeated SurfaceLayout surface_layouts = 3;
 }
@@ -28,4 +27,7 @@ message SurfaceLayout
     int32 y = 3;
     int32 width = 4;
     int32 height = 5;
+    int32 surface_width = 6;
+    int32 surface_height = 7;
+    bool is_visible = 8;
 }

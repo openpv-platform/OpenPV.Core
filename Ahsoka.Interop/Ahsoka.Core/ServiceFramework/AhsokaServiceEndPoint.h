@@ -31,6 +31,7 @@ namespace AhsokaServiceFramework
 				// Validate that we are using an Enumeration TYPE at compile time
 				static constexpr bool is_enum = std::is_enum<TTransportID>::value;
 
+				AhsokaBaseEndPoint<TTransportID>::isServiceEndPoint = true;
 				AhsokaBaseEndPoint<TTransportID>::socket = CreateSocket(config);
 			}
 

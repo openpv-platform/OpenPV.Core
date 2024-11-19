@@ -4,7 +4,7 @@
 
 
 #define MAX_SEATS 10
-#define CAIRO_DEBUG 2
+#define CAIRO_DEBUG 1
 
 typedef struct 
 {
@@ -61,6 +61,7 @@ typedef struct
 	int width, height;
 	int x, y;
 	int surfaceId;
+	int surface_width, surface_height;
 	
 } DrawingWindowContext;
 

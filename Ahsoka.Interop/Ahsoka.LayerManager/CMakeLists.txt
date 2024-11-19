@@ -16,10 +16,10 @@ add_definitions( -DISPRO)
 project (${PROJECT_NAME} VERSION 1.0 DESCRIPTION "OpenPV Layer Manager Service")
 
 # Set the Linker flags that will link neccesary 3rd party libraries into our shared lib
-include_directories(Wayland Touch)
+include_directories(Service)
 
 # add the target Library
-add_executable(${PROJECT_NAME} main.cpp LayerManager.cpp)
+add_executable(${PROJECT_NAME} main.cpp LayerManagerService.cpp)
 
  # Add ProtoBuf
 find_package (Protobuf REQUIRED)

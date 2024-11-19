@@ -23,6 +23,9 @@ internal class STWindow : LinuxWindow
         internal static extern int InitWindowWithSurfaceId(int surfaceId, string appid);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int UpdateWindowPosition(int surfaceId, int x, int y, int width, int height);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void GetWindowDimensions(ref int w, ref int h);
       
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
@@ -92,6 +95,11 @@ internal class STWindow : LinuxWindow
         internal override void SetSwapInterval(int interval)
         {
             UpdateSwapInterval(interval);
+        }
+
+        internal override int ChangeWindowPosition(int surfaceId, int x, int y, int w, int h)
+        {
+            return UpdateWindowPosition(surfaceId, x, y, w, h);
         }
 
         #endregion

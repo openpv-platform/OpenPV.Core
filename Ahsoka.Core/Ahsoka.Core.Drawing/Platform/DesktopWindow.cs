@@ -19,7 +19,7 @@ internal class DesktopWindow : IDrawingWindow
     DrawingRect drawingRect;
     GL gl;
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingRect bounds, bool fullScreen, string appid, int surfaceId)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingRect bounds, bool fullScreen, int surfaceId, string appid)
     {
         drawingRect = bounds;
 
@@ -152,7 +152,13 @@ internal class DesktopWindow : IDrawingWindow
 
     void IDrawingWindow.HandleEvent(EventHandler handler)
     {
-        window.Invoke(handler);
+        handler.Invoke(this, EventArgs.Empty);
+    }
+
+    public int UpdateWindowPosition(int surfaceId, int x, int y, int w, int h)
+    {
+        Console.WriteLine("Size Updates Only supported on Embedded Targets");
+        return 0;
     }
 }
 

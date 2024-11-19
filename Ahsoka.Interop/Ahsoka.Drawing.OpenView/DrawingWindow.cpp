@@ -12,6 +12,7 @@
 #include <LayerManagerConfigReader.h>
 
 #ifdef ISPRO
+#include <LayerManagerServiceClient.h>
 #include "ilm/ilm_control.h"
 #include "ilm/ilm_types.h"
 #include <ilm/ivi-application-client-protocol.h>
@@ -58,31 +59,73 @@ void* wayland_dispatch_thread(void *)
 int InitWindowWithSurfaceId(int surfaceId, char* appId)
 {
 	// Grab Requested Size
+	context.surfaceId = surfaceId;
 	context.width = 0;
 	context.height = 0;
 	context.x = 0;
 	context.y = 0;
 	context.fullscreen = 0;
+
+	// Passing No Size assumes Layout Manager will be Sizing the Window.
+
 	return InitWindowCore(appId, surfaceId);
+}
+
+void SendLayoutToLayoutManager()
+{
+	#ifdef ISPRO
+		// Send Info to LayerManager to Position Screen
+		SurfaceLayout layout;
+		layout.set_surface_id(context.surfaceId);
+		layout.set_height(context.height);
+		layout.set_width(context.width);
+		layout.set_y(context.y);
+		layout.set_x(context.x);
+		layout.set_is_visible(true);
+		
+		LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
+		serviceClient.UpdateSurfaceLayout(layout);
+	#endif
 }
 
 int InitWindowWithSize(bool fullScreen,int x, int y, int w, int h, char* appId, int surfaceId)
 {
 	// Grab Requested Size
+	context.surfaceId = surfaceId;
 	context.width = w;
 	context.height = h;
 	context.x = x;
 	context.y = y;
 	context.fullscreen = (int)fullScreen;
 	
+	// When using IVI Shell and Overriding the Size
+	// we send the layout to Layout Service
+	if (surfaceId > 0 && !fullScreen)
+		SendLayoutToLayoutManager();
+
 	return InitWindowCore(appId, surfaceId);
 }
+
+int UpdateWindowPosition(int surfaceId, int x, int y, int w, int h)
+{
+	// Grab Requested Size
+	context.width = w;
+	context.height = h;
+	context.x = x;
+	context.y = y;
+
+	SendLayoutToLayoutManager();
+
+	return 1;
+}
+
+
 
 int InitWindowCore(char* appId, int surfaceId)
 {
 	// Load Surface Config
-	LoadLayerManagerConfig();
-	auto surfaceInfo = GetSurfaceLayout(surfaceId);
+	AhsokaLayerManager::ConfigReader::LoadLayerManagerConfig();
+	auto surfaceInfo = AhsokaLayerManager::ConfigReader::GetSurfaceLayout(surfaceId);
 	if (surfaceInfo.surface_id() == surfaceId && context.width == 0 && context.height == 0)
 	{	
 		printf("Found Surface Configuration\n");
@@ -154,6 +197,8 @@ int InitWindowCore(char* appId, int surfaceId)
 	// start the touch input queue
 	createXdgTouchQueue();
 
+	context.surface_height = context.height;
+	context.surface_width = context.width;
 	context.initialized = true;
 	
 	if (CAIRO_DEBUG) printf("-- Done with window interop INIT...\r\n");

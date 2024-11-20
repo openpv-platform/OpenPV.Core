@@ -17,13 +17,19 @@ internal class STWindow : LinuxWindow
         public const string NativeLibraryName = "AhsokaLib/Ahsoka.Drawing.OpenViewLinux.so";
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        internal static extern int InitWindowWithSize(bool fullscreen, int x, int y, int width, int height,  [MarshalAs(UnmanagedType.LPStr)] string appid, int surfaceId);
+        internal static extern int InitWindowWithSize(bool fullscreen, int x, int y, int width, int height, int surfaceId,  [MarshalAs(UnmanagedType.LPStr)] string appid);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         internal static extern int InitWindowWithSurfaceId(int surfaceId, string appid);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern int UpdateWindowPosition(int surfaceId, int x, int y, int width, int height);
+        internal static extern int UpdateSurfaceLocation(int surfaceId, int x, int y, int width, int height, bool commitChanges);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int UpdateSurfaceSource(int surfaceId, int x, int y, int width, int height, bool commitChanges);
+
+        [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern int UpdateSurfaceVisibility(int surfaceId, bool visibility, float opacity, bool commitChanges);
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void GetWindowDimensions(ref int w, ref int h);
@@ -51,7 +57,7 @@ internal class STWindow : LinuxWindow
             if (String.IsNullOrEmpty(appId))
                 appId = "LinuxDrawingWindow";
 
-            return InitWindowWithSize(fullscreen, (int)bounds.Y, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height, appId, surfaceId);
+            return InitWindowWithSize(fullscreen, (int)bounds.Y, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height, surfaceId, appId);
         }
 
         internal override int InitNativeWindowWithSurfaceId(int surfaceId, string appId)
@@ -97,9 +103,19 @@ internal class STWindow : LinuxWindow
             UpdateSwapInterval(interval);
         }
 
-        internal override int ChangeWindowPosition(int surfaceId, int x, int y, int w, int h)
+        internal override int ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges = true)
         {
-            return UpdateWindowPosition(surfaceId, x, y, w, h);
+            return UpdateSurfaceLocation(surfaceId, x, y, w, h, commitChanges);
+        }
+
+        internal override int ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges = true)
+        {
+            return UpdateSurfaceSource(surfaceId, x, y, w, h, commitChanges);
+        }
+
+        internal override int ChangeVisbility(int surfaceId, bool isVisible, float visibility, bool commitChanges = true)
+        {
+            return UpdateSurfaceVisibility(surfaceId, isVisible, visibility, commitChanges);
         }
 
         #endregion

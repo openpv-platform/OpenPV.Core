@@ -155,9 +155,21 @@ internal class DesktopWindow : IDrawingWindow
         handler.Invoke(this, EventArgs.Empty);
     }
 
-    public int UpdateWindowPosition(int surfaceId, int x, int y, int w, int h)
+    int IDrawingWindow.ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges)
     {
         Console.WriteLine("Size Updates Only supported on Embedded Targets");
+        return 0;
+    }
+
+    int IDrawingWindow.ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges)
+    {
+        Console.WriteLine("Source Updates Only supported on Embedded Targets");
+        return 0;
+    }
+
+    int IDrawingWindow.ChangeVisibility(int surfaceId, bool isVisible, float visibility, bool commitChanges)
+    {
+        Console.WriteLine("Visibility Updates Only supported on Embedded Targets");
         return 0;
     }
 }

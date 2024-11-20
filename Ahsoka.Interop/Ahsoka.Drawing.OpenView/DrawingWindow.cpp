@@ -1,145 +1,137 @@
 #include <stdio.h>
 #include <unistd.h>
-
-#include "DrawingWindow.h"
-#include "WaylandSetup.h"
-#include "GLSetup.h"
-#include <GLES2/gl2.h>
-#include <EGL/egl.h>
-#include "weston-platform.h"
 #include <dlfcn.h>
 #include <stdlib.h>
-#include <LayerManagerConfigReader.h>
+
+#include <GLES2/gl2.h>
+#include <EGL/egl.h>
+#include <weston-platform.h>
+
+#include "GLSetup.h"
+#include "WaylandSetup.h"
+#include "DrawingWindow.h"
 
 #ifdef ISPRO
 #include <LayerManagerServiceClient.h>
-#include "ilm/ilm_control.h"
-#include "ilm/ilm_types.h"
+#include <ilm/ilm_control.h>
+#include <ilm/ilm_types.h>
 #include <ilm/ivi-application-client-protocol.h>
 #endif
 
-
 static DrawingWindowContext context = { 0 };
-
-void GetWindowDimensions(int *w, int *h)
-{
-	*w = context.width;
-	*h = context.height;
-}
-
-void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format)
-{
-	int val = 0;
-	eglGetConfigAttrib(context.egl.dpy, context.egl.conf, EGL_SAMPLES, &val);
-	*samples = val;
-
-	eglGetConfigAttrib(context.egl.dpy, context.egl.conf, EGL_STENCIL_SIZE, &val);
-	*stencilBits = val;
-
-	*gl_format = (int)0x8058; // GL_RGBA8 
-}
-
-bool GetTouchData(TouchEvent *data, int timeoutInMs)
-{
-	bool result = false;
-	result = dequeue(data, timeoutInMs);
-	return result;
-}
-
-void* wayland_dispatch_thread(void *)
-{
-	// Background thread to call dispatch and block until incoming events are processed
-	while (1)
-	{
-		wl_display_dispatch(context.display);
-	}
-	return NULL;
-}
 
 int InitWindowWithSurfaceId(int surfaceId, char* appId)
 {
-	// Grab Requested Size
+	// Set to Defaults to allow Surface Lookup
 	context.surfaceId = surfaceId;
 	context.width = 0;
 	context.height = 0;
-	context.x = 0;
-	context.y = 0;
 	context.fullscreen = 0;
 
 	// Passing No Size assumes Layout Manager will be Sizing the Window.
-
 	return InitWindowCore(appId, surfaceId);
 }
 
-void SendLayoutToLayoutManager()
+int InitWindowWithSize(bool fullScreen, int w, int h, int surfaceId, char* appId)
 {
-	#ifdef ISPRO
-		// Send Info to LayerManager to Position Screen
-		SurfaceLayout layout;
-		layout.set_surface_id(context.surfaceId);
-		layout.set_height(context.height);
-		layout.set_width(context.width);
-		layout.set_y(context.y);
-		layout.set_x(context.x);
-		layout.set_is_visible(true);
-		
-		LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
-		serviceClient.UpdateSurfaceLayout(layout);
-	#endif
-}
-
-int InitWindowWithSize(bool fullScreen,int x, int y, int w, int h, char* appId, int surfaceId)
-{
-	// Grab Requested Size
+	// Grab Requested Size to override Surface Setup
 	context.surfaceId = surfaceId;
 	context.width = w;
 	context.height = h;
-	context.x = x;
-	context.y = y;
 	context.fullscreen = (int)fullScreen;
 	
 	// When using IVI Shell and Overriding the Size
 	// we send the layout to Layout Service
 	if (surfaceId > 0 && !fullScreen)
-		SendLayoutToLayoutManager();
-
+	{
+		UpdateSurfaceLocation(surfaceId, 0, 0, w, h,false);
+		UpdateSurfaceSource(surfaceId, 0, 0, w, h, true);
+	}
 	return InitWindowCore(appId, surfaceId);
 }
 
-int UpdateWindowPosition(int surfaceId, int x, int y, int w, int h)
+int UpdateSurfaceLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges)
 {
 	// Grab Requested Size
-	context.width = w;
-	context.height = h;
-	context.x = x;
-	context.y = y;
-
-	SendLayoutToLayoutManager();
+	#ifdef ISPRO
+		
+		// Send Info to LayerManager to Position Screen
+		SurfaceRectangle rectangle;
+		rectangle.set_surface_id(surfaceId);
+		rectangle.set_x(x);
+		rectangle.set_y(y);
+		rectangle.set_height(h);
+		rectangle.set_width(w);
+		rectangle.set_commit_changes(commitChanges);
+		
+		LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
+		serviceClient.UpdateSurfaceLocation(rectangle);
+	#endif
 
 	return 1;
 }
 
+int UpdateSurfaceSource(int surfaceId, int x, int y, int w, int h, bool commitChanges)
+{
+	// Grab Requested Size
+	#ifdef ISPRO
+		
+		// Send Info to LayerManager to Position Screen
+		SurfaceRectangle rectangle;
+		rectangle.set_surface_id(surfaceId);
+		rectangle.set_x(x);
+		rectangle.set_y(y);
+		rectangle.set_height(h);
+		rectangle.set_width(w);
+		rectangle.set_commit_changes(commitChanges);
+		
+		LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
+		serviceClient.UpdateSurfaceSource(rectangle);
+	#endif
 
+	return 1;
+}
+
+int UpdateSurfaceVisibility(int surfaceId, bool visibility, float opacity, bool commitChanges)
+{
+	// Grab Requested Size
+	#ifdef ISPRO
+		
+		// Send Info to LayerManager to Position Screen
+		SurfaceVisibility visInfo;
+		visInfo.set_surface_id(surfaceId);
+		visInfo.set_is_visible(visibility);
+		visInfo.set_opacity(opacity);
+		visInfo.set_commit_changes(commitChanges);
+		
+		LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
+		serviceClient.UpdateSurfaceVisibility(visInfo);
+	#endif
+	return 1;
+}
 
 int InitWindowCore(char* appId, int surfaceId)
 {
-	// Load Surface Config
-	AhsokaLayerManager::ConfigReader::LoadLayerManagerConfig();
-	auto surfaceInfo = AhsokaLayerManager::ConfigReader::GetSurfaceLayout(surfaceId);
-	if (surfaceInfo.surface_id() == surfaceId && context.width == 0 && context.height == 0)
-	{	
-		printf("Found Surface Configuration\n");
-		context.x = surfaceInfo.x();
-		context.y = surfaceInfo.y();
-		context.height = surfaceInfo.height();
-		context.width = surfaceInfo.width();
-	}
-	else if (context.width == 0 || context.height == 0) 
-	{
-		// Failed Surface Lookup
-		printf("No Surface Or Size Found - Defaulting to Full Screen\n");
-		context.fullscreen = 1;
-	}
+	// Load Surface Config if Found
+	#ifdef ISPRO
+		LayerManagerConfiguration config;
+		AhsokaLayerManager::LayerManagerServiceClient::LoadLayerManagerConfig(config);
+		for (SurfaceSetup setup : config.surface_setup())
+			if (setup.surface_id() == surfaceId && context.width == 0 && context.height == 0)
+			{
+				printf("Found Surface Configuration - Using Size Info\n");
+				context.height = setup.location_rectangle().height();
+				context.width = setup.location_rectangle().width();
+			}
+
+		// Width and Height was 0 (Failed Lookup)...so fall back to full Screen	
+		if (context.width == 0 || context.height == 0) 
+		{
+			// Failed Surface Lookup
+			printf("No Surface Or Size Found - Defaulting to Full Screen\n");
+			context.fullscreen = 1;
+		}
+	#endif
 
 	// Grab AppID / AppName
 	context.surfaceId = surfaceId;
@@ -204,13 +196,48 @@ int InitWindowCore(char* appId, int surfaceId)
 	if (CAIRO_DEBUG) printf("-- Done with window interop INIT...\r\n");
 
 	pthread_t dispatch_thread;
-	ret = pthread_create(&dispatch_thread, NULL, &wayland_dispatch_thread, NULL);
+	ret = pthread_create(&dispatch_thread, NULL, &WaylandDispatchThread, NULL);
 	if (ret != 0)
 		return -1;
 	
 	if (CAIRO_DEBUG) printf("-- Dispatch thread created successfully...\r\n");
 	
 	return 0;
+}
+
+void GetWindowDimensions(int *w, int *h)
+{
+	*w = context.width;
+	*h = context.height;
+}
+
+void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format)
+{
+	int val = 0;
+	eglGetConfigAttrib(context.egl.dpy, context.egl.conf, EGL_SAMPLES, &val);
+	*samples = val;
+
+	eglGetConfigAttrib(context.egl.dpy, context.egl.conf, EGL_STENCIL_SIZE, &val);
+	*stencilBits = val;
+
+	*gl_format = (int)0x8058; // GL_RGBA8 
+}
+
+bool GetTouchData(TouchEvent *data, int timeoutInMs)
+{
+	bool result = false;
+	result = dequeue(data, timeoutInMs);
+	return result;
+}
+
+void* WaylandDispatchThread(void *)
+{
+	// Background thread to call dispatch and block until incoming events are processed
+	while (1)
+	{
+		wl_display_dispatch(context.display);
+	}
+	return NULL;
 }
 
 

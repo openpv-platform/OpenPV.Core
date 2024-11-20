@@ -68,30 +68,6 @@ public class ServiceTests : LinearTestBase
         Console.WriteLine("");
     }
 
-    //[TestMethod]
-    public void TestLayoutManager()
-    {
-        LayoutManagerServiceClient client = new(new ServiceConfiguration()
-        {
-            DataChannel = 5100,
-            ServiceName = LayoutManagerServiceClient.Name,
-            TcpListenAddress = "*",
-            TcpConnectionAddress = "openviewpro"
-        });
-
-        client.Start();
-
-        client.UpdateSurfaceLayout(new LayerManager.SurfaceLayout()
-        {
-              SurfaceId = 121212,
-              Height = 500,
-              Width = 500,
-              X = 100,
-              Y = 100,
-        });
-    }
-
-
     [TestMethod]
     public void AutoStartTests()
     {

@@ -59,7 +59,6 @@ typedef struct
 	bool wait_for_configure;
 	char* appId;
 	int width, height;
-	int x, y;
 	int surfaceId;
 	int surface_width, surface_height;
 	

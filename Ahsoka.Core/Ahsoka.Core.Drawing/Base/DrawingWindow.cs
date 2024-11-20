@@ -91,9 +91,19 @@ public class DrawingWindow
         }
     }
 
-    public int UpdateWindowPosition(int surfaceId, int x, int y, int w, int h)
+    public int ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges = true)
     {
-        return nativeWindow.UpdateWindowPosition(surfaceId,x,y, w, h);
+        return nativeWindow.ChangeLocation(surfaceId, x, y, w, h, commitChanges);
+    }
+
+    public int ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges = true)
+    {
+        return nativeWindow.ChangeSource(surfaceId, x, y, w, h, commitChanges);
+    }
+
+    public int ChangeVisibility(int surfaceId, bool isVisible, float opacity, bool commitChanges = true)
+    {
+        return nativeWindow.ChangeVisibility(surfaceId, isVisible, opacity, commitChanges);
     }
 
     public void Close()

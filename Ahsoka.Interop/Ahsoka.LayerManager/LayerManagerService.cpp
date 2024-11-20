@@ -2,12 +2,12 @@
 #include <functional>
 #include <memory>
 #include <vector>
+
 #include "AhsokaRuntimeBuilder.h"
 #include "AhsokaServiceEndPoint.h"
 #include "LayerManagerServiceMessages.h"
-
-#include "LayerManagerConfigReader.h"
 #include "LayerManagerService.h"
+#include "LayerManagerServiceClient.h"
 
 #include <pthread.h>
 #include <wayland-client.h>
@@ -21,27 +21,20 @@ using namespace AhsokaServiceFramework;
 
 namespace AhsokaLayerManager
 {
-
     // Static Members
-    ReadyWaiter LayerManagerService::waitForExit;
-    t_ilm_uint LayerManagerService::layer = 1000;
-    t_ilm_uint LayerManagerService::screen_ID = 0;
-    t_ilm_uint LayerManagerService::screenWidth;
-    t_ilm_uint LayerManagerService::screenHeight;
-    bool LayerManagerService::showUnknownSurfaces = true;
-    std::vector<int> LayerManagerService::surfaceList;
+    LayerManagerService::LayerManagerContext LayerManagerService::context;
 
     LayerManagerService::LayerManagerService():
-        AhsokaServiceFramework::AhsokaServiceEndPoint<LayoutManagerMessageTypes_Ids>(localConfig, LayerManagerServiceMessages()) 
+        AhsokaServiceFramework::AhsokaServiceEndPoint<LayoutManagerMessageTypes_Ids>(LayerManagerServiceClient::GetServiceConfiguration(), LayerManagerServiceMessages()) 
     {
 
     }	
-
     
     void LayerManagerService::StartAndRun()
     {
+        context.layerId = 1000;
+        context.screenId = 0;
 
-        cout << "LayerManager: Startup" << std::endl;
         if (ilm_init() == ILM_FAILED) 
         {
             cout << "LayerManager: ilm_init failed " << std::endl;
@@ -52,9 +45,8 @@ namespace AhsokaLayerManager
         ilm_registerShutdownNotification(WaylandShutdown, NULL);
 
         // Load Layer Manager Configuration
-        auto configuration = ConfigReader::LoadLayerManagerConfig();
-        showUnknownSurfaces = configuration.show_unknown_surfaces();
-
+        LayerManagerServiceClient::LoadLayerManagerConfig(context.layerConfiguration);
+        
         // Get Screen Info (Single Screen Support Only)
         // Creates Screen and Layer 1000
         CreateScreen();
@@ -66,7 +58,7 @@ namespace AhsokaLayerManager
         signal(SIGTERM, RequestShutdown);
 
         // Wait for Exit
-        waitForExit.WaitForReady();
+        context.waitForExit.WaitForReady();
 
         // Stop Service
         Stop();
@@ -81,11 +73,7 @@ namespace AhsokaLayerManager
     void LayerManagerService::StartLayoutService()
     {
         // Wire Up Callbacks for Screen
-        ilm_registerNotification(LayerManagerCallback, NULL);
-
-        // Load Service Configuration
-        auto config = ConfigReader::GetServiceConfiguration();
-        UpdateConfiguration(config);
+        ilm_registerNotification(LayerCallback, NULL);
 
         // Start the Service Runtime
         Start();
@@ -94,33 +82,167 @@ namespace AhsokaLayerManager
     void LayerManagerService::RequestShutdown(int signum)
     {
         cout << "LayerManager: Shutdown Request Recieved." << std::endl;
-        waitForExit.SetReady();
+        context.waitForExit.SetReady();
+    }
+
+    bool LayerManagerService::IsSurfaceActive(int surfaceId)
+    {
+        auto position = std::find(context.surfaceList.begin(), context.surfaceList.end(), surfaceId);
+        return (position != context.surfaceList.end());
     }
 
     void LayerManagerService::OnHandleReceive(AhsokaMessageHeader& messageHeader, AhsokaMessageType_t& message)
     {
-        if (messageHeader.transport_id() == LayoutManagerMessageTypes::CLOSE_LOGO)
+        if (messageHeader.transport_id() == LayoutManagerMessageTypes::STOP_LOGO)
         {
             cout << "LayerManager: Close Logo Received" << std::endl;
 
             // Handle Close Logo
             SendMessageInternal(messageHeader, &message, false);
         }
-        else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_LAYOUT)
+        else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_SETUP)
         {
-            auto surfaceInfo = (AhsokaLayerManager::SurfaceLayout&)message;
+            auto surfaceInfo = (AhsokaLayerManager::SurfaceSetup&)message;
             
-            cout << "LayerManager: Update Surface Layout Received for Surface " << surfaceInfo.surface_id()  << std::endl;
+            cout << "LayerManager: Update Surface Setup Received for Surface " << surfaceInfo.surface_id()  << std::endl;
            
             // Update Surface Layout Info
-            ConfigReader::UpdateSurfaceLayout(surfaceInfo);
+            UpdateSurfaceSetup(surfaceInfo);
 
             // Reconfigure Surface if its been created...otherwise it will 
             // be configured on creation.
-            std::vector<int>::iterator position = std::find(surfaceList.begin(), surfaceList.end(), surfaceInfo.surface_id());
-            if (position != surfaceList.end()) 
-                ConfigureSurface(surfaceInfo.surface_id(), surfaceInfo.width(), surfaceInfo.height());
-     
+            if (IsSurfaceActive(surfaceInfo.surface_id()))
+                ConfigureSurface(surfaceInfo.surface_id(), surfaceInfo.location_rectangle().width(), surfaceInfo.location_rectangle().height());
+          
+            // Reply to Caller
+            SendMessageInternal(messageHeader, &message, false);
+        }
+        else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_LOCATION)
+        {
+            auto location = (AhsokaLayerManager::SurfaceRectangle&)message;
+            auto surfaceInfo = GetSurfaceSetup(location.surface_id());
+            
+            if (location.surface_id() == surfaceInfo.surface_id())
+            {   
+                cout << "LayerManager: Update Location Rectangle Received for Surface " << location.surface_id()  << std::endl;
+            
+                // Update Surface Layout Info
+                surfaceInfo.mutable_location_rectangle()->CopyFrom(location);
+                UpdateSurfaceSetup(surfaceInfo);
+
+                // Reconfigure Surface if its been created...otherwise it will 
+                // be configured on creation.
+                if (IsSurfaceActive(surfaceInfo.surface_id()))
+                {
+                    ilm_surfaceSetDestinationRectangle(location.surface_id(), location.x(), location.y(), location.width(), location.height());
+                    if(location.commit_changes())
+                        ilm_commitChanges();
+                }
+            }
+            else
+               cout << "LayerManager: Location Recieved with No Known Surface " << location.surface_id()  << std::endl;
+            
+
+            // Reply to Caller
+            SendMessageInternal(messageHeader, &message, false);
+        }
+        else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_SOURCE)
+        {
+            auto location = (AhsokaLayerManager::SurfaceRectangle&)message;
+            auto surfaceInfo = GetSurfaceSetup(location.surface_id());
+            
+            if (location.surface_id() == surfaceInfo.surface_id())
+            {   
+                cout << "LayerManager: Update Source Rectangle Received for Surface " << location.surface_id()  << std::endl;
+            
+                // Update Surface Layout Info
+                surfaceInfo.mutable_source_rectangle()->CopyFrom(location);
+                UpdateSurfaceSetup(surfaceInfo);
+
+                // Reconfigure Surface if its been created...otherwise it will 
+                // be configured on creation.
+                if (IsSurfaceActive(surfaceInfo.surface_id()))
+                {
+                    ilm_surfaceSetSourceRectangle(location.surface_id(), location.x(), location.y(), location.width(), location.height());
+                    if(location.commit_changes())
+                        ilm_commitChanges();
+              
+                }
+            }
+            else
+               cout << "LayerManager: Location Recieved with No Known Surface " << location.surface_id()  << std::endl;
+            
+
+            // Reply to Caller
+            SendMessageInternal(messageHeader, &message, false);
+        }
+        else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_VISIBILITY)
+        {
+            auto visibility = (AhsokaLayerManager::SurfaceVisibility&)message;
+            auto surfaceInfo = GetSurfaceSetup(visibility.surface_id());
+            
+            if (visibility.surface_id() == surfaceInfo.surface_id())
+            {   
+                cout << "LayerManager: Update Visibility for Surface " << visibility.surface_id()  << std::endl;
+            
+                // Update Surface Layout Info
+                surfaceInfo.mutable_visibility()->CopyFrom(visibility);
+                UpdateSurfaceSetup(surfaceInfo);
+
+                // Reconfigure Surface if its been created...otherwise it will 
+                // be configured on creation.
+                if (IsSurfaceActive(surfaceInfo.surface_id()))
+                {
+                    ilm_surfaceSetVisibility(visibility.surface_id(), visibility.is_visible());
+                    ilm_surfaceSetOpacity(visibility.surface_id(), visibility.opacity());
+                    if(visibility.commit_changes())
+                        ilm_commitChanges();
+                } 
+            }
+            else
+               cout << "LayerManager: Location Recieved with No Known Surface " << visibility.surface_id()  << std::endl;
+            
+
+            // Reply to Caller
+            SendMessageInternal(messageHeader, &message, false);
+        }
+         else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_Z_ORDER)
+        {
+            auto surfaceOrder = (AhsokaLayerManager::SurfaceOrder&)message;
+            cout << "LayerManager: Update Surface Order to ";
+            
+            int surfaceCount = surfaceOrder.surface_id().size();
+            std::vector<t_ilm_layer> layers;
+            for (int i = 0; i < surfaceCount; ++i) 
+            {
+                int surfaceId = surfaceOrder.surface_id().Get(i);
+                if (IsSurfaceActive(surfaceId))
+                {    
+                    layers.push_back(surfaceId);
+                    cout << surfaceId << " ";
+                }
+                else
+                {
+                    cout << "Skipped(" << surfaceId << ") ";
+                }
+            }
+            cout << std::endl;
+
+            // Check for Missing SurfaceIDs
+            for (const t_ilm_layer& surfaceId : context.surfaceList) 
+            {
+                auto position = std::find(layers.begin(),layers.end(), surfaceId);
+                if (position == layers.end())
+                    layers.insert(layers.begin(),surfaceId);
+            }
+
+            ilm_layerSetRenderOrder(context.layerId, layers.data(), layers.size());
+            if(surfaceOrder.commit_changes())
+                ilm_commitChanges();
+
+            // Save New Layer List into Context
+            layers.swap(context.surfaceList);
+          
             // Reply to Caller
             SendMessageInternal(messageHeader, &message, false);
         }
@@ -133,82 +255,159 @@ namespace AhsokaLayerManager
         screenProperties.screenWidth = 0;
         screenProperties.screenHeight = 0;
 
-        ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screen_ID, &screenProperties);
+        ilmErrorTypes callResult = ilm_getPropertiesOfScreen(context.screenId, &screenProperties);
         
         while (ILM_SUCCESS != callResult || screenProperties.screenWidth == 0)
         {
             printf("Waiting for Screen Properties\n");
             usleep(100*1000);
-            callResult = ilm_getPropertiesOfScreen(screen_ID, &screenProperties);
+            callResult = ilm_getPropertiesOfScreen(context.screenId, &screenProperties);
         }
         
-        screenWidth = screenProperties.screenWidth;
-        screenHeight = screenProperties.screenHeight;
+        context.screenWidth = screenProperties.screenWidth;
+        context.screenHeight = screenProperties.screenHeight;
    
         t_ilm_layer renderOrder[2];
-        renderOrder[0] = layer;
+        renderOrder[0] = context.layerId;
 
-        callResult = ilm_layerCreateWithDimension(&layer, screenWidth, screenHeight);
+        callResult = ilm_layerCreateWithDimension(&context.layerId, context.screenWidth, context.screenHeight);
         if (callResult != ILM_SUCCESS)
             printf("Error ilm_layerCreateWithDimension in CreateScreenLayers\n");
     
-        callResult = ilm_layerSetVisibility(layer,ILM_TRUE);
+        callResult = ilm_layerSetVisibility(context.layerId,ILM_TRUE);
         if (callResult != ILM_SUCCESS)
             printf("Error ilm_layerSetVisibility in CreateScreenLayers\n");
         
-        callResult = ilm_displaySetRenderOrder(screen_ID, renderOrder, 1);
+        callResult = ilm_displaySetRenderOrder(context.screenId, renderOrder, 1);
         if (callResult != ILM_SUCCESS)
             printf("Error ilm_displaySetRenderOrder in CreateScreenLayers\n");
     
         ilm_commitChanges();
-        printf("LayerManager: Created Layer (%d) with Destination Region: x:0 y:0 w:%u h:%u\n", layer, screenWidth, screenHeight);
-    
+        printf("LayerManager: Created Layer (%d) with Destination Region: x:0 y:0 w:%u h:%u\n", context.layerId, context.screenWidth, context.screenHeight);
+    }
+
+    SurfaceSetup LayerManagerService::GetSurfaceSetup(int surfaceId)
+    {
+        SurfaceSetup emptyLayout;
+        for (SurfaceSetup layout : context.layerConfiguration.surface_setup())
+            if (layout.surface_id() == surfaceId)
+                return layout;
+
+        emptyLayout.set_surface_id(-1);
+        return emptyLayout;
     }
 
 
-    void LayerManagerService::ConfigureSurface(t_ilm_uint id, t_ilm_uint aWidth, t_ilm_uint aHeight)
+    void LayerManagerService::UpdateSurfaceSetup(SurfaceSetup& newLayout)
     {
-        int x = 0;
-        int y = 0;
-        int height = aHeight;
-        int width = aWidth;
-        bool visible = showUnknownSurfaces;
-        auto layout = ConfigReader::GetSurfaceLayout(id);
-        
-        if (layout.surface_id() == id)
+        LayerManagerConfiguration& config = context.layerConfiguration;
+        for (size_t i = 0; i < config.surface_setup().size(); i++)
         {
-            printf("LayerManager: Surface Layout Found (%u) Configured with:\n"
-            "    x:%u y:%u w:%u h:%u\n", id, layout.x(), layout.y(), layout.width(), layout.height());
-
-            x = layout.x();
-            y = layout.y();
-            height = layout.height();
-            width = layout.width();
-
-            // Is Sizing Surface Differently capture Surface Rect
-            // this is usefull for stretching / shrinking window relative to drawing surface
-            if (layout.surface_height() > 0 && layout.surface_width() > 0)
+            // Remove Existing Item..if exists
+            if (config.surface_setup()[i].surface_id() == newLayout.surface_id())
             {
-                aHeight = layout.surface_height();
-                aWidth = layout.surface_width();
+                config.mutable_surface_setup()->SwapElements(i, config.mutable_surface_setup()->size() - 1);
+                config.mutable_surface_setup()->RemoveLast();
             }
-
-            visible = layout.is_visible();
         }
 
-        ilm_surfaceSetDestinationRectangle(id, x, y, width, height);
-        ilm_surfaceSetSourceRectangle(id, 0, 0, aWidth, aHeight);
-        ilm_surfaceSetVisibility(id, visible);
-        ilm_layerAddSurface(layer,id);
-        ilm_surfaceRemoveNotification(id);
+        // Add Updated Item to List
+        config.mutable_surface_setup()->Add()->CopyFrom(newLayout);
+    }
 
+    void LayerManagerService::ValidateSurface(SurfaceSetup& layout, int id, int aRequestedWidth, int aRequestedHeight)
+    {
+        bool needsUpdate = false;
+
+        // if a Surface is Found Or if the 
+        if (layout.surface_id() == id)
+        {
+            printf("LayerManager: Surface Setup Found (%u)\n", id);
+
+            // If Sizing Surface Differently capture Surface Rect
+            // this is usefull for stretching / shrinking window relative to drawing surface
+            if (layout.source_rectangle().height() == 0 || layout.source_rectangle().width() == 0)
+            {
+                // Set Defaults on 
+                layout.mutable_source_rectangle()->set_x(layout.location_rectangle().x());
+                layout.mutable_source_rectangle()->set_y(layout.location_rectangle().y());
+                layout.mutable_source_rectangle()->set_height(layout.location_rectangle().height());
+                layout.mutable_source_rectangle()->set_width(layout.location_rectangle().width());
+                needsUpdate = true;
+            }
+        }
+        else
+        {
+            printf("LayerManager: Surface Not Found Found for (%u) - Generating from Request\n", id);
+
+            layout.set_surface_id(id);
+          
+            auto surfaceLocation = layout.mutable_location_rectangle();
+            surfaceLocation->set_surface_id(id);
+            surfaceLocation->set_height(aRequestedHeight);
+            surfaceLocation->set_width(aRequestedWidth);
+
+            auto surfaceSource = layout.mutable_source_rectangle();
+            surfaceSource->set_surface_id(id);
+            surfaceSource->set_height(aRequestedHeight);
+            surfaceSource->set_width(aRequestedWidth);
+           
+            auto visibility = layout.mutable_visibility();
+            visibility->set_surface_id(id);
+            visibility->set_is_visible(context.layerConfiguration.show_unknown_surfaces());
+            visibility->set_opacity(1.0);
+
+            needsUpdate = true;
+         }
+
+        if (needsUpdate)
+            UpdateSurfaceSetup(layout);
+    }
+
+    void LayerManagerService::ConfigureSurface(t_ilm_uint id, t_ilm_uint aRequestedWidth, t_ilm_uint aRequestedHeight)
+    {
+        bool visible = context.layerConfiguration.show_unknown_surfaces();
+        
+        auto setup = GetSurfaceSetup(id);
+        
+        // if a Surface is Found Or if the 
+        if (setup.surface_id() != id)
+             ValidateSurface(setup, id, aRequestedWidth, aRequestedHeight);
+
+        ilm_surfaceSetDestinationRectangle(id, setup.location_rectangle().x(), 
+                                               setup.location_rectangle().y(), 
+                                               setup.location_rectangle().width(), 
+                                               setup.location_rectangle().height());
+
+        ilm_surfaceSetSourceRectangle(id, setup.source_rectangle().x(), 
+                                               setup.source_rectangle().y(), 
+                                               setup.source_rectangle().width(), 
+                                               setup.source_rectangle().height());
+
+        ilm_surfaceSetVisibility(id, setup.visibility().is_visible());
+        ilm_surfaceSetOpacity(id, setup.visibility().opacity());
+
+        ilm_layerAddSurface(context.layerId,id);
+        ilm_layerSetRenderOrder(context.layerId, context.surfaceList.data(),context.surfaceList.size()); // Re-Apply Surface order
+        ilm_surfaceRemoveNotification(id); // Stop Listening for Changes
         ilm_commitChanges();
         
         printf("LayerManager: Surface (%u) Configured with:\n"
-            "    dst region: x:%u y:%u w:%u h:%u\n"
-            "    src region: x:%u y:%u w:%u h:%u\n"
-            "    visibility: TRUE\n"
-            "    added to layer (%u)\n", id, x, y, width, height, 0, 0, aWidth, aHeight,layer);
+            "    Location: x:%u y:%u w:%u h:%u\n"
+            "    Source: x:%u y:%u w:%u h:%u\n"
+            "    Visibility: %u\n"
+            "    Opacity: %f\n"
+            "    Layer: %u\n", id,  setup.location_rectangle().x(), 
+                                    setup.location_rectangle().y(), 
+                                    setup.location_rectangle().width(), 
+                                    setup.location_rectangle().height(),
+                                    setup.source_rectangle().x(), 
+                                    setup.source_rectangle().y(), 
+                                    setup.source_rectangle().width(), 
+                                    setup.source_rectangle().height(), 
+                                    setup.visibility().is_visible(), 
+                                    setup.visibility().opacity(), 
+                                    context.layerId);
     }
 
     void LayerManagerService::SurfaceCallback(t_ilm_uint id, struct ilmSurfaceProperties* sp, t_ilm_notification_mask m)
@@ -219,7 +418,7 @@ namespace AhsokaLayerManager
         }
     }
 
-    void LayerManagerService::LayerManagerCallback(ilmObjectType object, t_ilm_uint id, t_ilm_bool created, void *user_data)
+    void LayerManagerService::LayerCallback(ilmObjectType object, t_ilm_uint id, t_ilm_bool created, void *user_data)
     {
         (void)user_data;
         struct ilmSurfaceProperties sp;
@@ -231,9 +430,9 @@ namespace AhsokaLayerManager
                 printf("LayerManager: Surface (%d) Created\n",id);
                 
                 // Add Surface to List
-                std::vector<int>::iterator position = std::find(surfaceList.begin(), surfaceList.end(), id);
-                if (position == surfaceList.end()) 
-                    surfaceList.push_back(id);
+                std::vector<t_ilm_uint>::iterator position = std::find(context.surfaceList.begin(), context.surfaceList.end(), id);
+                if (position == context.surfaceList.end()) 
+                    context.surfaceList.push_back(id);
 
                 // always get configured event to follow the surface changings
                 ilm_surfaceAddNotification(id, &SurfaceCallback);
@@ -249,9 +448,9 @@ namespace AhsokaLayerManager
             else if (!created)
             {
                 // Remove from List
-                std::vector<int>::iterator position = std::find(surfaceList.begin(), surfaceList.end(), id);
-                if (position != surfaceList.end()) 
-                    surfaceList.erase(position);
+                std::vector<t_ilm_uint>::iterator position = std::find(context.surfaceList.begin(), context.surfaceList.end(), id);
+                if (position != context.surfaceList.end()) 
+                    context.surfaceList.erase(position);
 
                 printf("LayerManager: Surface (%u) Destroyed\n",id);
             }
@@ -292,7 +491,7 @@ namespace AhsokaLayerManager
             }
         }
 
-        exit(1);
+        context.waitForExit.SetReady();
     }
 
 }

@@ -11,6 +11,8 @@ internal interface IDrawingWindow
     void ShowAndRun();
     void Close();
     void HandleEvent(EventHandler handler);
-    int UpdateWindowPosition(int surfaceId, int x, int y, int w, int h);
+    int ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
+    int ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
+    int ChangeVisibility(int surfaceId, bool isVisible, float visibility, bool commitChanges = true);
 }
 

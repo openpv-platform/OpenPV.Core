@@ -2,6 +2,7 @@
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.LayoutManager;
 using Ahsoka.System;
+using System;
 
 namespace Ahsoka.Services.Iot;
 
@@ -44,20 +45,53 @@ public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageT
         return null;
     }
 
-
     /// <summary>
     /// Stop the Logo from showing in LayerManager
     /// </summary>
-    public void CloseLogo()
+    public void StopLogo()
     {
-        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.CloseLogo);
+        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.StopLogo);
     }
 
     /// <summary>
-    /// Update Surface Layout in LayerManager
+    /// Update All Surface Properties with Single Call
     /// </summary>
-    public void UpdateSurfaceLayout( SurfaceLayout layout)
+    public void UpdateSurfaceSetup( SurfaceSetup setup)
     {
-        var result = SendMessageWithResponse<SurfaceLayout>(LayoutManagerMessageTypes.Ids.UpdateSurfaceLayout, layout);
+        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceSetup, setup);
     }
+
+    /// <summary>
+    /// Update Surface Position (Location to Draw on Screen)
+    /// </summary>
+    public void UpdateSurfaceLocation(SurfaceRectangle locationInfo)
+    {
+        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceLocation, locationInfo);
+    }
+
+    /// <summary>
+    /// Update Surface Source (Location to Read From Buffer)
+    /// </summary>
+    public void UpdateSurfaceSource(SurfaceRectangle sourceInfo)
+    {
+        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceSource, sourceInfo);
+    }
+
+    /// <summary>
+    /// Update Surface Source (Location to Read From Buffer)
+    /// </summary>
+    public void UpdateSurfaceVisibility(SurfaceVisibility visibility)
+    {
+        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceVisibility, visibility);
+    }
+
+
+    /// <summary>
+    /// Update Draw Order of Surface ID's on Base Layer
+    /// </summary>
+    public void UpdateSurfaceZOrder(SurfaceOrder order)
+    {
+        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceZOrder, order);
+    }
+
 }

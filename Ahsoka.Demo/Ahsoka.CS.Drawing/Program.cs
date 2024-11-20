@@ -76,11 +76,14 @@ internal class Program
             {
                 if (eventItem.Event == TouchEvent.Pressed)
                 {
-                    window.UpdateWindowPosition(121212, 200, 300, 500, 500);
+                    window.ChangeLocation(121212, eventItem.X - 100, eventItem.Y - 100, 200, 200, true);
                     touched = true;
                 }
                 else if (eventItem.Event == TouchEvent.Released)
+                {
+                    window.ChangeLocation(121212, 0, 0, (int)window.Bounds.Width, (int)window.Bounds.Height, true);
                     touched = false;
+                }
             }
 
             // Push Previous Frames Cloud Position since we moved the cloud.

@@ -8,8 +8,12 @@ message LayoutManagerMessageTypes
 	enum Ids
 	{
 		NO_MESSAGE = 0;
-		CLOSE_LOGO = 1;
-        UPDATE_SURFACE_LAYOUT = 2;
+		STOP_LOGO = 1;
+        UPDATE_SURFACE_SETUP = 2;
+        UPDATE_SURFACE_LOCATION = 3;
+        UPDATE_SURFACE_SOURCE = 4;
+        UPDATE_SURFACE_VISIBILITY = 5;
+        UPDATE_SURFACE_Z_ORDER = 6;
 	}
 }
 
@@ -17,17 +21,37 @@ message LayerManagerConfiguration
 {
     bool show_unknown_surfaces = 1;
     string boot_logo_path = 2;
-    repeated SurfaceLayout surface_layouts = 3;
+    repeated SurfaceSetup surface_setup = 3;
 }
 
-message SurfaceLayout
+message SurfaceSetup
+{
+    int32 surface_id = 1;
+    SurfaceRectangle location_rectangle = 3;
+    SurfaceRectangle source_rectangle = 4;
+    SurfaceVisibility visibility = 5;
+}
+
+message SurfaceRectangle
 {
     int32 surface_id = 1;
     int32 x = 2;
     int32 y = 3;
     int32 width = 4;
     int32 height = 5;
-    int32 surface_width = 6;
-    int32 surface_height = 7;
-    bool is_visible = 8;
+    bool commit_changes = 6;
+}
+
+message SurfaceVisibility
+{
+    int32 surface_id = 1;
+    bool is_visible = 2;
+    float opacity = 3;
+    bool commit_changes = 4;
+}
+
+message SurfaceOrder
+{
+    repeated int32 surface_id = 1;
+    bool commit_changes = 4;
 }

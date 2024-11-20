@@ -42,20 +42,6 @@ public class GeneralTests : LinearTestBase
         AhsokaLogging.StopMemoryLog();
     }
 
-
-    //[TestMethod]
-    public void CreateSurfaceInfo()
-    {
-        LayerManager.LayerManagerConfiguration surfaceConfiguration = new ();
-        surfaceConfiguration.SurfaceLayouts.Add(new() { SurfaceId = 121212, X = 100, Y = 100, Width = 800, Height = 480 });
-        using (MemoryStream ms = new MemoryStream())
-        {
-            ProtoBuf.Serializer.Serialize(ms, surfaceConfiguration);
-            File.WriteAllBytes( @"C:\Users\Jake\Desktop\SurfaceConfiguration.pbuff", ms.ToArray());
-        }
-    }
-
-
     [TestMethod]
     public void GetParametersTests()
     {

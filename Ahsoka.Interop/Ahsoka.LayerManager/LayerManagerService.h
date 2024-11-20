@@ -7,7 +7,6 @@
 #include "AhsokaServiceEndPoint.h"
 #include "LayerManagerServiceMessages.h"
 #include "ReadyWaiter.h"
-#include "LayerManagerConfigReader.h"
 #include "LayerManagerService.h"
 
 #include <pthread.h>
@@ -39,23 +38,34 @@ namespace AhsokaLayerManager
 			
 			static void RequestShutdown(int);
 
-			static void LayerManagerCallback(ilmObjectType object, t_ilm_uint id, t_ilm_bool created, void *user_data);
+			static void LayerCallback(ilmObjectType object, t_ilm_uint id, t_ilm_bool created, void *user_data);
 			static void ConfigureSurface(t_ilm_uint id, t_ilm_uint width, t_ilm_uint height);
 			static void SurfaceCallback(t_ilm_uint id, struct ilmSurfaceProperties* sp, t_ilm_notification_mask m);
 			static void WaylandShutdown(t_ilm_shutdown_error_type error_type, int errornum, void *user_data);
 	
-			// We Default to Layer 1000 and Screen 0
-			static t_ilm_uint layer;
-			static t_ilm_uint screen_ID;
-			static t_ilm_uint screenWidth;
-			static t_ilm_uint screenHeight;
-			static int number_of_surfaces;
-			static bool showUnknownSurfaces;
+			// Surface Config Functions
+			static SurfaceSetup GetSurfaceSetup(int surfaceId);
+            static void UpdateSurfaceSetup(SurfaceSetup& newLayout);
+            static bool IsSurfaceActive(int surfaceId);
+   			static void ValidateSurface(SurfaceSetup& layout, int id, int aRequestedWidth, int aRequestedHeight);
 
-			static pthread_mutex_t mutex;
-			static pthread_cond_t  waiterVariable;
+			typedef struct 
+			{
+				// We Default to Layer 1000 and Screen 0
+			    t_ilm_uint layerId;
+				t_ilm_uint screenId;
+				t_ilm_uint screenWidth;
+				t_ilm_uint screenHeight;
 
-			static ReadyWaiter waitForExit;
-			static std::vector<int> surfaceList;
+				ReadyWaiter waitForExit;
+				std::vector<t_ilm_uint> surfaceList;
+
+				AhsokaLayerManager::LayerManagerConfiguration layerConfiguration;
+
+			} LayerManagerContext;
+
+
+			static LayerManagerContext context;
+			
 	};
 }

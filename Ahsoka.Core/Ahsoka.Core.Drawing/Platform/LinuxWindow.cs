@@ -121,9 +121,19 @@ internal class LinuxWindow : IDrawingWindow
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Create Surface {surface != null}");
     }
 
-    public int UpdateWindowPosition(int surfaceId, int x, int y, int w, int h)
+    int IDrawingWindow.ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges)
     {
-       return impl.ChangeWindowPosition(surfaceId, x, y, w, h);
+        return impl.ChangeLocation(surfaceId, x, y, w, h, commitChanges);
+    }
+
+    int IDrawingWindow.ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges)
+    {
+        return impl.ChangeSource(surfaceId, x, y, w, h, commitChanges);
+    }
+
+    int IDrawingWindow.ChangeVisibility(int surfaceId, bool isVisible, float visibility, bool commitChanges)
+    {
+        return impl.ChangeVisbility(surfaceId, isVisible, visibility, commitChanges);
     }
 
     void IDrawingWindow.Close()
@@ -177,7 +187,11 @@ public abstract class LinuxDrawingImplementation
 
     internal abstract void DestroyContext();
 
-    internal abstract int ChangeWindowPosition(int surfaceId, int x, int y, int w, int h);
+    internal abstract int ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
+
+    internal abstract int ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
+
+    internal abstract int ChangeVisbility(int surfaceId, bool isVisible, float visibility, bool commitChanges = true);
 }
 
 [StructLayout(LayoutKind.Explicit, Pack = 1)]

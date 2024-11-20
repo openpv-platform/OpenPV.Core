@@ -17,8 +17,12 @@ namespace AhsokaLayerManager
 
             LayerManagerServiceMessages()
             {
-                RegisterServiceRequest(LayoutManagerMessageTypes::CLOSE_LOGO, CreateCTOR<AhsokaServiceFramework::EmptyNotification>(), CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
-		        RegisterServiceRequest(LayoutManagerMessageTypes::UPDATE_SURFACE_LAYOUT, CreateCTOR<AhsokaLayerManager::SurfaceLayout>(),  CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
+                RegisterServiceRequest(LayoutManagerMessageTypes::STOP_LOGO, CreateCTOR<AhsokaServiceFramework::EmptyNotification>(), CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
+		        RegisterServiceRequest(LayoutManagerMessageTypes::UPDATE_SURFACE_SETUP, CreateCTOR<AhsokaLayerManager::SurfaceSetup>(),  CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
+		        RegisterServiceRequest(LayoutManagerMessageTypes::UPDATE_SURFACE_LOCATION, CreateCTOR<AhsokaLayerManager::SurfaceRectangle>(),  CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
+		        RegisterServiceRequest(LayoutManagerMessageTypes::UPDATE_SURFACE_SOURCE, CreateCTOR<AhsokaLayerManager::SurfaceRectangle>(),  CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
+		        RegisterServiceRequest(LayoutManagerMessageTypes::UPDATE_SURFACE_VISIBILITY, CreateCTOR<AhsokaLayerManager::SurfaceVisibility>(),  CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
+		        RegisterServiceRequest(LayoutManagerMessageTypes::UPDATE_SURFACE_Z_ORDER, CreateCTOR<AhsokaLayerManager::SurfaceOrder>(),  CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
 			}
     };
 }

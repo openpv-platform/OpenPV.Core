@@ -249,7 +249,6 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
     {
         CurrentState = CurrentState.HandleAction(action);
         handled = true;
-       
     }
 
     public DrawingRect GetActionPosition(int buttonPosition, int buttonSize)

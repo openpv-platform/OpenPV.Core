@@ -29,17 +29,17 @@ int InitWindowWithSurfaceId(int surfaceId, char* appId)
 	context.fullscreen = 0;
 
 	// Passing No Size assumes Layout Manager will be Sizing the Window.
-	return InitWindowCore(appId, surfaceId);
+	return InitWindowCore(surfaceId, appId);
 }
 
 int InitWindowWithSize(bool fullScreen, int w, int h, int surfaceId, char* appId)
 {
 	// Grab Requested Size to override Surface Setup
 	context.surfaceId = surfaceId;
-	context.width = w;
-	context.height = h;
 	context.fullscreen = (int)fullScreen;
-	
+	context.width = fullScreen ? 0 : w;
+	context.height = fullScreen ? 0 : h;
+
 	// When using IVI Shell and Overriding the Size
 	// we send the layout to Layout Service
 	if (surfaceId > 0 && !fullScreen)
@@ -47,7 +47,7 @@ int InitWindowWithSize(bool fullScreen, int w, int h, int surfaceId, char* appId
 		UpdateSurfaceLocation(surfaceId, 0, 0, w, h,false);
 		UpdateSurfaceSource(surfaceId, 0, 0, w, h, true);
 	}
-	return InitWindowCore(appId, surfaceId);
+	return InitWindowCore(surfaceId, appId);
 }
 
 int UpdateSurfaceLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges)
@@ -110,7 +110,7 @@ int UpdateSurfaceVisibility(int surfaceId, bool visibility, float opacity, bool 
 	return 1;
 }
 
-int InitWindowCore(char* appId, int surfaceId)
+int InitWindowCore(int surfaceId, char* appId)
 {
 	// Load Surface Config if Found
 	#ifdef ISPRO
@@ -123,15 +123,15 @@ int InitWindowCore(char* appId, int surfaceId)
 				context.height = setup.location_rectangle().height();
 				context.width = setup.location_rectangle().width();
 			}
-
-		// Width and Height was 0 (Failed Lookup)...so fall back to full Screen	
-		if (context.width == 0 || context.height == 0) 
-		{
-			// Failed Surface Lookup
-			printf("No Surface Or Size Found - Defaulting to Full Screen\n");
-			context.fullscreen = 1;
-		}
 	#endif
+
+	// Width and Height was 0 (Failed Lookup)...so fall back to full Screen	
+	if (context.width == 0 || context.height == 0) 
+	{
+		// Failed Surface Lookup
+		printf("No Surface Or Size Found - Defaulting to Full Screen\n");
+		context.fullscreen = 1;
+	}
 
 	// Grab AppID / AppName
 	context.surfaceId = surfaceId;

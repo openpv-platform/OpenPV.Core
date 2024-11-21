@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.20029",
+  "version": "4.0.1.10031",
   "applicationType": "Dotnet",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Drawing",
@@ -19,7 +19,7 @@
   },
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Drawing.csproj",
-    "publishProfile": "Properties\\PublishProfiles\\LinuxProfilePro.pubxml"
+    "publishProfile": "Properties\\PublishProfiles\\LinuxProfile.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
@@ -44,8 +44,8 @@
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
-  "platformFamily": "OpenViewLinuxPro",
-  "platformQualifier": "GenericArm64",
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
   "securityMode": "None",
   "applicationId": "00000000-0000-0000-0000-000000000000",
   "components": []

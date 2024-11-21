@@ -197,11 +197,16 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
         set
         {
+
+            bool isChanged = PackageInfo.PlatformFamily != value;
             PackageInfo.PlatformFamily = value;
             OnPropertyChanged();
 
             OnPropertyChanged(nameof(PlatformDescription));
             Deps.CheckDependencies(SystemInfo.CurrentPlatform, value);
+
+            if (isChanged)
+                NeedsSDKUpdate();
         }
     }
 

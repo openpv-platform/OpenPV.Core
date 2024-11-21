@@ -27,8 +27,8 @@ public abstract class SkiaDrawingManager : DrawingManager<SkiaDrawingApi>, IDraw
         ahsokaWindow = new DrawingWindow(surfaceId, appId) { FrameRateEnabled = false };
         DrawingApi = ahsokaWindow.GetApi();
 
-        float screenWidth = ahsokaWindow.Bounds.Width;
-        float screenHeight = ahsokaWindow.Bounds.Height;
+        float screenWidth = ahsokaWindow.Size.Width;
+        float screenHeight = ahsokaWindow.Size.Height;
 
         ahsokaWindow.PrepareFrame += (o, args) =>
         {

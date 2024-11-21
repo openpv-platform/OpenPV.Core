@@ -50,6 +50,7 @@ internal class StartState : InstallerUIStateBase
         timer.Stop();
         showHelp = !showHelp;
         InstallerDrawingManager.Default.HandleAction("?", out bool _);
+        InstallerDrawingManager.Default.Invalidate();
     }
 
     public StartState()

@@ -16,7 +16,7 @@ public class DrawingWindow
     int frameCount = 0;
     const int frameSeconds = 10;
     DateTime nextPrintTime = DateTime.Now.AddSeconds(frameSeconds);
-    readonly DrawingRect bounds;
+    readonly DrawingSize size;
     readonly IDrawingWindow nativeWindow;
     readonly SkiaDrawingApi api;
 
@@ -40,7 +40,7 @@ public class DrawingWindow
         return api;
     }
 
-    public DrawingRect Bounds { get => bounds; }
+    public DrawingSize Size { get => size; }
 
     public bool FrameRateEnabled { get; set; } = true;
     public bool ShowClipRectangles { get; set; } = true;
@@ -50,7 +50,6 @@ public class DrawingWindow
     #region Methods
     public DrawingWindow(int surfaceId = 2000, string appId = "DrawingWindow")
     {
-        
         if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacosArm64 or PlatformFamily.Ubuntu64)
         {
             nativeWindow = new Platform.DesktopWindow();
@@ -67,28 +66,30 @@ public class DrawingWindow
             api = nativeWindow.CreateWindow(this,surfaceId, appId) as SkiaDrawingApi;
         }
 
-        bounds = new DrawingRect(0, 0, api.ScreenWidth, api.ScreenHeight);
+        size = new(api.ScreenWidth, api.ScreenHeight);
     }
 
-    public DrawingWindow(bool fullScreen = false, int x = 0, int y = 0, int width = 800, int height = 480, int surfaceId = 10000, string appId = "DrawingWindow")
+    public DrawingWindow(bool fullScreen = false, int width = 800, int height = 480, int surfaceId = 10000, string appId = "DrawingWindow")
     {
-        bounds = new(x, y, width, height);
+        size = new(width, height);
 
         if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacosArm64 or PlatformFamily.Ubuntu64)
         {
             nativeWindow = new Platform.DesktopWindow();
-            api = nativeWindow.CreateWindow(this, bounds, fullScreen, surfaceId, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, fullScreen, width, height, surfaceId, appId) as SkiaDrawingApi;
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
         {
             nativeWindow = new Platform.STWindow();
-            api = nativeWindow.CreateWindow(this, bounds, fullScreen, surfaceId, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, fullScreen, width, height, surfaceId, appId) as SkiaDrawingApi;
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
         {
             nativeWindow = new Platform.TIWindow();
-            api = nativeWindow.CreateWindow(this, bounds, fullScreen, surfaceId, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, fullScreen, width, height, surfaceId, appId) as SkiaDrawingApi;
         }
+
+        size = new(api.ScreenWidth, api.ScreenHeight);
     }
 
     public int ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges = true)

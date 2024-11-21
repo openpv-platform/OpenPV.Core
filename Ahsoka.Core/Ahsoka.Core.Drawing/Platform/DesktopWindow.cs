@@ -16,15 +16,15 @@ internal class DesktopWindow : IDrawingWindow
     private IWindow window;
     SKSurface surface;
     GRContext context;
-    DrawingRect drawingRect;
+    DrawingSize drawingSize;
     GL gl;
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, DrawingRect bounds, bool fullScreen, int surfaceId, string appid)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, int surfaceId, string appid)
     {
-        drawingRect = bounds;
+        drawingSize = new DrawingSize(width, height);
 
         WindowOptions options = WindowOptions.Default;
-        options.Size = new Vector2D<int>((int)bounds.Width, (int)bounds.Height);
+        options.Size = new Vector2D<int>(width, height);
         options.Title = appid;
         options.IsContextControlDisabled = true;
 
@@ -39,7 +39,7 @@ internal class DesktopWindow : IDrawingWindow
         options.Title = appid;
         options.IsContextControlDisabled = true;
 
-        drawingRect = new DrawingRect(0,0,options.Size.X, options.Size.Y);
+        drawingSize = new (options.Size.X, options.Size.Y);
 
         return CreateWindow(apiWindow, options);
     }
@@ -108,15 +108,15 @@ internal class DesktopWindow : IDrawingWindow
             gl.ReadBuffer(GLEnum.Front);
             gl.DrawBuffer(GLEnum.Back);
             gl.Disable(GLEnum.ScissorTest);
-            gl.BlitFramebuffer(0, 0, (int)drawingRect.Width, (int)drawingRect.Height,
-                               0, 0, (int)drawingRect.Width, (int)drawingRect.Height, (int)GLEnum.ColorBufferBit, GLEnum.Nearest);
+            gl.BlitFramebuffer(0, 0, (int)drawingSize.Width, (int)drawingSize.Height,
+                               0, 0, (int)drawingSize.Width, (int)drawingSize.Height, (int)GLEnum.ColorBufferBit, GLEnum.Nearest);
         };
 
         window.Initialize();
 
         InitWindow();
 
-        return new SkiaDrawingApi(new DrawingSize( drawingRect.Width,drawingRect.Height), surface);
+        return new SkiaDrawingApi(new DrawingSize( drawingSize.Width,drawingSize.Height), surface);
     }
 
     private void InitWindow()

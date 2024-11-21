@@ -29,7 +29,7 @@ internal class Program
         Dispatcher.Default.AddStartupItem(client);
 
         // Create the Ahsoka Drawing API and matching Window
-        DrawingWindow window = new(121212, "AhsokaDrawingWindow");
+        DrawingWindow window = new(OperatingSystem.IsLinux()); // Surface ID's used on Pro Platform
         var api = window.GetApi();
 
         // Setup Drawing Objects and Values
@@ -75,15 +75,9 @@ internal class Program
             foreach (var eventItem in args.Events)
             {
                 if (eventItem.Event == TouchEvent.Pressed)
-                {
-                    window.ChangeLocation(121212, eventItem.X - 100, eventItem.Y - 100, 200, 200, true);
                     touched = true;
-                }
                 else if (eventItem.Event == TouchEvent.Released)
-                {
-                    window.ChangeLocation(121212, 0, 0, (int)window.Bounds.Width, (int)window.Bounds.Height, true);
                     touched = false;
-                }
             }
 
             // Push Previous Frames Cloud Position since we moved the cloud.

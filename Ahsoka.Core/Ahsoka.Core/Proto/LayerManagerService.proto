@@ -3,7 +3,7 @@ syntax = "proto3";
 package AhsokaLayerManager;
 option csharp_namespace = "Ahsoka.LayerManager";
 
-message LayoutManagerMessageTypes
+message LayerManagerMessageTypes
 {
 	enum Ids
 	{

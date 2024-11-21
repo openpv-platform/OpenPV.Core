@@ -9,7 +9,7 @@ namespace Ahsoka.Services.Iot;
 /// <summary>
 /// LayoutManager Client Working with Layout Service
 /// </summary>
-public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageTypes.Ids>
+public class LayerManagerServiceClient : AhsokaClientBase<LayerManagerMessageTypes.Ids>
 {
     /// <summary>
     /// Name for Service
@@ -19,7 +19,7 @@ public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageT
     /// <summary>
     /// Default Constructor that uses the System Default Configuration
     /// </summary>
-    public LayoutManagerServiceClient() :
+    public LayerManagerServiceClient() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
 
@@ -29,7 +29,7 @@ public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageT
     /// Constructor for use with Custom Service Configurations
     /// </summary>
     /// <param name="config"></param>
-    public LayoutManagerServiceClient(ServiceConfiguration config) :
+    public LayerManagerServiceClient(ServiceConfiguration config) :
         base(config, new LayoutManagerMessages())
     {
         // Disable Auto Start
@@ -50,7 +50,7 @@ public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageT
     /// </summary>
     public void StopLogo()
     {
-        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.StopLogo);
+        SendMessageWithResponse(LayerManagerMessageTypes.Ids.StopLogo);
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageT
     /// </summary>
     public void UpdateSurfaceSetup( SurfaceSetup setup)
     {
-        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceSetup, setup);
+        SendMessageWithResponse(LayerManagerMessageTypes.Ids.UpdateSurfaceSetup, setup);
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageT
     /// </summary>
     public void UpdateSurfaceLocation(SurfaceRectangle locationInfo)
     {
-        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceLocation, locationInfo);
+        SendMessageWithResponse(LayerManagerMessageTypes.Ids.UpdateSurfaceLocation, locationInfo);
     }
 
     /// <summary>
@@ -74,7 +74,7 @@ public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageT
     /// </summary>
     public void UpdateSurfaceSource(SurfaceRectangle sourceInfo)
     {
-        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceSource, sourceInfo);
+        SendMessageWithResponse(LayerManagerMessageTypes.Ids.UpdateSurfaceSource, sourceInfo);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageT
     /// </summary>
     public void UpdateSurfaceVisibility(SurfaceVisibility visibility)
     {
-        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceVisibility, visibility);
+        SendMessageWithResponse(LayerManagerMessageTypes.Ids.UpdateSurfaceVisibility, visibility);
     }
 
 
@@ -91,7 +91,7 @@ public class LayoutManagerServiceClient : AhsokaClientBase<LayoutManagerMessageT
     /// </summary>
     public void UpdateSurfaceZOrder(SurfaceOrder order)
     {
-        SendMessageWithResponse(LayoutManagerMessageTypes.Ids.UpdateSurfaceZOrder, order);
+        SendMessageWithResponse(LayerManagerMessageTypes.Ids.UpdateSurfaceZOrder, order);
     }
 
 }

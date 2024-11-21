@@ -20,7 +20,7 @@ using namespace AhsokaServiceFramework;
 
 namespace AhsokaLayerManager
 {
-	class LayerManagerService : public AhsokaServiceFramework::AhsokaServiceEndPoint<LayoutManagerMessageTypes_Ids>
+	class LayerManagerService : public AhsokaServiceFramework::AhsokaServiceEndPoint<LayerManagerMessageTypes_Ids>
 	{
 		public:
 
@@ -45,9 +45,9 @@ namespace AhsokaLayerManager
 	
 			// Surface Config Functions
 			static SurfaceSetup GetSurfaceSetup(int surfaceId);
-            static void UpdateSurfaceSetup(SurfaceSetup& newLayout);
+            static void UpdateSurfaceSetup(SurfaceSetup& newSetup);
             static bool IsSurfaceActive(int surfaceId);
-   			static void ValidateSurface(SurfaceSetup& layout, int id, int aRequestedWidth, int aRequestedHeight);
+   			static void ValidateSurface(SurfaceSetup& setup, int id, int aRequestedWidth, int aRequestedHeight);
 
 			typedef struct 
 			{

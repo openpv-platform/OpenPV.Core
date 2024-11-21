@@ -18,48 +18,48 @@ using namespace AhsokaServiceFramework;
 
 namespace AhsokaLayerManager
 {
-	class LayerManagerServiceClient : public AhsokaServiceFramework::AhsokaClientEndPoint<LayoutManagerMessageTypes_Ids>
+	class LayerManagerServiceClient : public AhsokaServiceFramework::AhsokaClientEndPoint<LayerManagerMessageTypes_Ids>
 	{
 		public:
 
 			LayerManagerServiceClient():
-				AhsokaServiceFramework::AhsokaClientEndPoint<LayoutManagerMessageTypes_Ids>(AhsokaConfiguration::GetServiceConfiguration(LayerManagerServiceName), 
+				AhsokaServiceFramework::AhsokaClientEndPoint<LayerManagerMessageTypes_Ids>(AhsokaConfiguration::GetServiceConfiguration(LayerManagerServiceName), 
 					LayerManagerServiceMessages()) 
 				{
 
 				}
 
 			LayerManagerServiceClient(ServiceConfiguration config):
-				AhsokaServiceFramework::AhsokaClientEndPoint<LayoutManagerMessageTypes_Ids>(config, LayerManagerServiceMessages()) {}
+				AhsokaServiceFramework::AhsokaClientEndPoint<LayerManagerMessageTypes_Ids>(config, LayerManagerServiceMessages()) {}
 
 			void StopLogo()
 			{
-				SendMessageWithResponse(LayoutManagerMessageTypes_Ids::LayoutManagerMessageTypes_Ids_STOP_LOGO, 0, 5000);
+				SendMessageWithResponse(LayerManagerMessageTypes_Ids::LayerManagerMessageTypes_Ids_STOP_LOGO, 0, 5000);
 			}
 
 			void UpdateSurfaceLayout(SurfaceSetup & setup)
 			{
-				SendMessageWithResponse(LayoutManagerMessageTypes_Ids::LayoutManagerMessageTypes_Ids_UPDATE_SURFACE_SETUP, &setup, 5000);
+				SendMessageWithResponse(LayerManagerMessageTypes_Ids::LayerManagerMessageTypes_Ids_UPDATE_SURFACE_SETUP, &setup, 5000);
 			}
 
 			void UpdateSurfaceLocation(SurfaceRectangle & locationInfo)
 			{
-				SendMessageWithResponse(LayoutManagerMessageTypes_Ids::LayoutManagerMessageTypes_Ids_UPDATE_SURFACE_LOCATION, &locationInfo, 5000);
+				SendMessageWithResponse(LayerManagerMessageTypes_Ids::LayerManagerMessageTypes_Ids_UPDATE_SURFACE_LOCATION, &locationInfo, 5000);
 			}
 
 			void UpdateSurfaceSource(SurfaceRectangle & sourceInfo)
 			{
-				SendMessageWithResponse(LayoutManagerMessageTypes_Ids::LayoutManagerMessageTypes_Ids_UPDATE_SURFACE_SOURCE, &sourceInfo, 5000);
+				SendMessageWithResponse(LayerManagerMessageTypes_Ids::LayerManagerMessageTypes_Ids_UPDATE_SURFACE_SOURCE, &sourceInfo, 5000);
 			}
 
 			void UpdateSurfaceVisibility(SurfaceVisibility & visibilityInfo)
 			{
-				SendMessageWithResponse(LayoutManagerMessageTypes_Ids::LayoutManagerMessageTypes_Ids_UPDATE_SURFACE_VISIBILITY, &visibilityInfo, 5000);
+				SendMessageWithResponse(LayerManagerMessageTypes_Ids::LayerManagerMessageTypes_Ids_UPDATE_SURFACE_VISIBILITY, &visibilityInfo, 5000);
 			}
 
 			void UpdateSurfaceVisibility(SurfaceOrder & order)
 			{
-				SendMessageWithResponse(LayoutManagerMessageTypes_Ids::LayoutManagerMessageTypes_Ids_UPDATE_SURFACE_Z_ORDER, &order, 5000);
+				SendMessageWithResponse(LayerManagerMessageTypes_Ids::LayerManagerMessageTypes_Ids_UPDATE_SURFACE_Z_ORDER, &order, 5000);
 			}
 
 

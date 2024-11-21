@@ -26,10 +26,10 @@ public class LayoutManagerTests : LinearTestBase
     //[TestMethod]
     public void TestLayoutManager()
     {
-        LayoutManagerServiceClient client = new(new ServiceConfiguration()
+        LayerManagerServiceClient client = new(new ServiceConfiguration()
         {
             DataChannel = 5100,
-            ServiceName = LayoutManagerServiceClient.Name,
+            ServiceName = LayerManagerServiceClient.Name,
             TcpListenAddress = "*",
             TcpConnectionAddress = "openviewpro"
         });

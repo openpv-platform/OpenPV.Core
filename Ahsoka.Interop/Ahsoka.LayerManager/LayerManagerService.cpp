@@ -25,7 +25,7 @@ namespace AhsokaLayerManager
     LayerManagerService::LayerManagerContext LayerManagerService::context;
 
     LayerManagerService::LayerManagerService():
-        AhsokaServiceFramework::AhsokaServiceEndPoint<LayoutManagerMessageTypes_Ids>(LayerManagerServiceClient::GetServiceConfiguration(), LayerManagerServiceMessages()) 
+        AhsokaServiceFramework::AhsokaServiceEndPoint<LayerManagerMessageTypes_Ids>(LayerManagerServiceClient::GetServiceConfiguration(), LayerManagerServiceMessages()) 
     {
 
     }	
@@ -93,14 +93,14 @@ namespace AhsokaLayerManager
 
     void LayerManagerService::OnHandleReceive(AhsokaMessageHeader& messageHeader, AhsokaMessageType_t& message)
     {
-        if (messageHeader.transport_id() == LayoutManagerMessageTypes::STOP_LOGO)
+        if (messageHeader.transport_id() == LayerManagerMessageTypes::STOP_LOGO)
         {
             cout << "LayerManager: Close Logo Received" << std::endl;
 
             // Handle Close Logo
             SendMessageInternal(messageHeader, &message, false);
         }
-        else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_SETUP)
+        else if (messageHeader.transport_id() == LayerManagerMessageTypes::UPDATE_SURFACE_SETUP)
         {
             auto surfaceInfo = (AhsokaLayerManager::SurfaceSetup&)message;
             
@@ -117,7 +117,7 @@ namespace AhsokaLayerManager
             // Reply to Caller
             SendMessageInternal(messageHeader, &message, false);
         }
-        else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_LOCATION)
+        else if (messageHeader.transport_id() == LayerManagerMessageTypes::UPDATE_SURFACE_LOCATION)
         {
             auto location = (AhsokaLayerManager::SurfaceRectangle&)message;
             auto surfaceInfo = GetSurfaceSetup(location.surface_id());
@@ -146,7 +146,7 @@ namespace AhsokaLayerManager
             // Reply to Caller
             SendMessageInternal(messageHeader, &message, false);
         }
-        else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_SOURCE)
+        else if (messageHeader.transport_id() == LayerManagerMessageTypes::UPDATE_SURFACE_SOURCE)
         {
             auto location = (AhsokaLayerManager::SurfaceRectangle&)message;
             auto surfaceInfo = GetSurfaceSetup(location.surface_id());
@@ -176,7 +176,7 @@ namespace AhsokaLayerManager
             // Reply to Caller
             SendMessageInternal(messageHeader, &message, false);
         }
-        else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_VISIBILITY)
+        else if (messageHeader.transport_id() == LayerManagerMessageTypes::UPDATE_SURFACE_VISIBILITY)
         {
             auto visibility = (AhsokaLayerManager::SurfaceVisibility&)message;
             auto surfaceInfo = GetSurfaceSetup(visibility.surface_id());
@@ -206,7 +206,7 @@ namespace AhsokaLayerManager
             // Reply to Caller
             SendMessageInternal(messageHeader, &message, false);
         }
-         else if (messageHeader.transport_id() == LayoutManagerMessageTypes::UPDATE_SURFACE_Z_ORDER)
+         else if (messageHeader.transport_id() == LayerManagerMessageTypes::UPDATE_SURFACE_Z_ORDER)
         {
             auto surfaceOrder = (AhsokaLayerManager::SurfaceOrder&)message;
             cout << "LayerManager: Update Surface Order to ";
@@ -289,9 +289,9 @@ namespace AhsokaLayerManager
     SurfaceSetup LayerManagerService::GetSurfaceSetup(int surfaceId)
     {
         SurfaceSetup emptyLayout;
-        for (SurfaceSetup layout : context.layerConfiguration.surface_setup())
-            if (layout.surface_id() == surfaceId)
-                return layout;
+        for (SurfaceSetup setup : context.layerConfiguration.surface_setup())
+            if (setup.surface_id() == surfaceId)
+                return setup;
 
         emptyLayout.set_surface_id(-1);
         return emptyLayout;
@@ -315,24 +315,24 @@ namespace AhsokaLayerManager
         config.mutable_surface_setup()->Add()->CopyFrom(newLayout);
     }
 
-    void LayerManagerService::ValidateSurface(SurfaceSetup& layout, int id, int aRequestedWidth, int aRequestedHeight)
+    void LayerManagerService::ValidateSurface(SurfaceSetup& setup, int id, int aRequestedWidth, int aRequestedHeight)
     {
         bool needsUpdate = false;
 
         // if a Surface is Found Or if the 
-        if (layout.surface_id() == id)
+        if (setup.surface_id() == id)
         {
             printf("LayerManager: Surface Setup Found (%u)\n", id);
 
             // If Sizing Surface Differently capture Surface Rect
             // this is usefull for stretching / shrinking window relative to drawing surface
-            if (layout.source_rectangle().height() == 0 || layout.source_rectangle().width() == 0)
+            if (setup.source_rectangle().height() == 0 || setup.source_rectangle().width() == 0)
             {
                 // Set Defaults on 
-                layout.mutable_source_rectangle()->set_x(layout.location_rectangle().x());
-                layout.mutable_source_rectangle()->set_y(layout.location_rectangle().y());
-                layout.mutable_source_rectangle()->set_height(layout.location_rectangle().height());
-                layout.mutable_source_rectangle()->set_width(layout.location_rectangle().width());
+                setup.mutable_source_rectangle()->set_x(setup.location_rectangle().x());
+                setup.mutable_source_rectangle()->set_y(setup.location_rectangle().y());
+                setup.mutable_source_rectangle()->set_height(setup.location_rectangle().height());
+                setup.mutable_source_rectangle()->set_width(setup.location_rectangle().width());
                 needsUpdate = true;
             }
         }
@@ -340,19 +340,19 @@ namespace AhsokaLayerManager
         {
             printf("LayerManager: Surface Not Found Found for (%u) - Generating from Request\n", id);
 
-            layout.set_surface_id(id);
+            setup.set_surface_id(id);
           
-            auto surfaceLocation = layout.mutable_location_rectangle();
+            auto surfaceLocation = setup.mutable_location_rectangle();
             surfaceLocation->set_surface_id(id);
             surfaceLocation->set_height(aRequestedHeight);
             surfaceLocation->set_width(aRequestedWidth);
 
-            auto surfaceSource = layout.mutable_source_rectangle();
+            auto surfaceSource = setup.mutable_source_rectangle();
             surfaceSource->set_surface_id(id);
             surfaceSource->set_height(aRequestedHeight);
             surfaceSource->set_width(aRequestedWidth);
            
-            auto visibility = layout.mutable_visibility();
+            auto visibility = setup.mutable_visibility();
             visibility->set_surface_id(id);
             visibility->set_is_visible(context.layerConfiguration.show_unknown_surfaces());
             visibility->set_opacity(1.0);
@@ -361,7 +361,7 @@ namespace AhsokaLayerManager
          }
 
         if (needsUpdate)
-            UpdateSurfaceSetup(layout);
+            UpdateSurfaceSetup(setup);
     }
 
     void LayerManagerService::ConfigureSurface(t_ilm_uint id, t_ilm_uint aRequestedWidth, t_ilm_uint aRequestedHeight)

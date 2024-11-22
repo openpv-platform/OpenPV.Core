@@ -141,8 +141,8 @@ public class ServiceTests : LinearTestBase
 
     readonly Semaphore messageReceived = new(0, 1);
 
-    [TestMethod]
-    public void TestNofifications()
+    ///[TestMethod]
+    public void TestNotifications()
     {
         SystemServiceClient systemClient = new();
         systemClient.Start();

@@ -103,7 +103,7 @@ namespace AhsokaLayerManager
 				return config;
 			}
 
-			static LayerManagerServiceClient& GetDefaultClient()
+			static LayerManagerServiceClient& GetDefaultClient(bool stopClient = false)
 			{
 				static auto config = LayerManagerServiceClient::GetServiceConfiguration();
 				static LayerManagerServiceClient client(config);
@@ -111,10 +111,14 @@ namespace AhsokaLayerManager
 				if (!client.GetIsConnected())
 				{
 					std::cout << "Starting Service Client on " << config.data_channel() << std::endl;
-					client.Start();
+					if (stopClient)
+						client.Stop();
+					else	
+						client.Start();
 				}
 
 				return client;
 			}
+
 	};
 }

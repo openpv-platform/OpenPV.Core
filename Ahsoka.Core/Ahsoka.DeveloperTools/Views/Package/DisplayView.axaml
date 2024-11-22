@@ -1,0 +1,152 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+             xmlns:VM="clr-namespace:Ahsoka.DeveloperTools"
+             xmlns:material="using:Material.Icons.Avalonia" 
+             x:Class="Ahsoka.DeveloperTools.Views.DisplayView">
+
+	<Grid ColumnDefinitions="*,250" RowDefinitions="*,auto">
+		
+		<StackPanel Margin="-35" Grid.Column="1"
+					HorizontalAlignment="Center" >
+			<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12,40,12,12"
+				   Foreground="DimGray"
+				   Text="Display Actions "/>
+
+			<Button Margin="3,13,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding SelectedPackage.DisplayViewModel.AddSurface}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Add"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Add Surface"/>
+				</StackPanel>
+			</Button>
+
+			<Button Margin="3,3,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding SelectedPackage.DisplayViewModel.RemoveSurface}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Remove"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Remove Surface "/>
+				</StackPanel>
+			</Button>
+
+		</StackPanel>
+		<ScrollViewer>
+			<StackPanel DataContext="{Binding SelectedPackage.DisplayViewModel}" HorizontalAlignment="Stretch" >
+				<StackPanel.Styles>
+					<StyleInclude Source="/Styles/UserInputStyles.axaml"/>
+				</StackPanel.Styles>
+
+				<Border IsVisible="{Binding HasScreen}"
+							Margin="40,40,40,40" Padding="3" BorderBrush="WhiteSmoke" 
+							BorderThickness="0,0,0,0">
+					<Grid Margin="-15" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
+						<TextBlock Text="Screen Orientation:" Grid.Row="1" Grid.Column="0"/>
+						<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" HorizontalAlignment="Left" >
+							<ComboBox  SelectedItem="{Binding SystemOrientation}" ItemsSource="{Binding Orientations}" Grid.Row="4" Grid.Column="1" Width="250"  />
+							<TextBlock Text="(Rotates Logo and Installer)" ToolTip.Tip="Orientation is available via the SYSTEM_ORIENTATION environment variable." Grid.Row="1" Grid.Column="0"/>
+						</StackPanel>
+
+						<TextBlock Text="Startup Logo:" Grid.Row="2" Grid.Column="0"/>
+						<Button  Margin="5,0"  Grid.Row="2" Grid.Column="2" Content="Choose Path..." Command="{Binding SetStartLogo}"/>
+						<TextBox Text="{Binding StartupLogoPath}" Grid.Row="2" Grid.Column="1"  Width="280" TextWrapping="1" IsReadOnly="True"/>
+					</Grid>
+				</Border>
+				<Border  MinHeight="120"  BorderThickness="1" 
+						 BorderBrush="Gainsboro" 
+						 Margin="30,0,30,0" Padding="3">
+					<StackPanel>
+						<Grid>
+							<TextBlock VerticalAlignment="Top" Margin="8" Text="Layer Manager Configuration "
+								   HorizontalAlignment="Stretch"
+								   Foreground="SteelBlue" FontSize="15"/>
+							<CheckBox HorizontalAlignment="Right" Foreground="DimGray" Margin="20,0" FontSize="15" IsChecked="{Binding ShowUnknownSurfaces}" Content="Automatically Show Unknown Surfaces"
+									  ToolTip.Tip="When checked applications wihtout a Surface ID will be automaticaly shown at the requested size."/>
+						</Grid>
+						<StackPanel  IsVisible="{Binding ParentViewModel.HasIVIShell}">
+							<ListBox Margin="10" SelectedItem="{Binding SelectedSurface}"
+									 ItemsSource="{Binding Surfaces}"
+									 Background="Transparent" MinHeight="100"  >
+								<ListBox.ItemTemplate>
+									<DataTemplate>
+										<Grid Margin="-12" ClipToBounds="True">
+											<Border HorizontalAlignment="Stretch" 
+													VerticalAlignment="Stretch" BorderBrush="WhiteSmoke" 
+													BorderThickness="0,1,0,1">
+												<CustomerTools:DisplaySurfaceView/>
+											</Border>
+										</Grid>
+									</DataTemplate>
+								</ListBox.ItemTemplate>
+							</ListBox>
+
+							<StackPanel Margin="0,10,0,0" Orientation="Horizontal">
+								<TextBlock Margin="8" Grid.Row="1"  VerticalAlignment="Bottom"
+										   Text="Boot Logo and Layout Visualization" HorizontalAlignment="Left" 
+										   FontSize="15"
+										   Foreground="SteelBlue"/>
+								<TextBlock Margin="0,8" Grid.Row="1" VerticalAlignment="Bottom"
+										   Text="{Binding ScreenDescription, StringFormat='Screen: ({0})' FallbackValue='(Screen: 100 x 100)'}" 
+										   HorizontalAlignment="Left" FontSize="15"
+										   Foreground="SteelBlue"/>
+							</StackPanel>
+						</StackPanel>
+						<StackPanel HorizontalAlignment="Center" Margin="14" Orientation="Horizontal"  >
+							<Border BorderBrush="Gainsboro" BorderThickness="1">
+								<Border Margin="0" Background="WhiteSmoke" BorderBrush="Gainsboro"
+													Grid.Row="1" HorizontalAlignment="Left"
+													MinWidth="{Binding SimWidth, FallbackValue=300}" MinHeight="{Binding SimHeight, FallbackValue=200}"
+													MaxWidth="{Binding SimWidth, FallbackValue=300}" MaxHeight="{Binding SimHeight, FallbackValue=200}">
+									<Image Source="{Binding StartupLogoImage}" Stretch="Uniform"  ToolTip.Tip="Startup Logo." />
+								</Border>
+							</Border>
+
+							<Border BorderBrush="Gainsboro"  Margin="20,0,0,0" BorderThickness="1" >
+								<Border  IsVisible="{Binding HasIVIShell}" BorderBrush="Gainsboro"
+											Grid.Row="1" Background="WhiteSmoke" HorizontalAlignment="Left"
+												MinWidth="{Binding SimWidth, FallbackValue=300}" MinHeight="{Binding SimHeight, FallbackValue=200}"
+												MaxWidth="{Binding SimWidth, FallbackValue=300}" MaxHeight="{Binding SimHeight, FallbackValue=200}">
+
+
+									<ItemsControl ItemsSource="{Binding Surfaces}" >
+										<ItemsControl.ItemsPanel>
+											<ItemsPanelTemplate>
+												<Canvas Height="{Binding Size}" Width="{Binding Size}"/>
+											</ItemsPanelTemplate>
+										</ItemsControl.ItemsPanel>
+										<ItemsControl.Styles>
+											<Style Selector="ContentPresenter" x:DataType="VM:SurfaceSetupViewModel" >
+												<Setter Property="Canvas.Left" Value="{Binding SimX}"/>
+												<Setter Property="Canvas.Top" Value="{Binding SimY}"/>
+											</Style>
+										</ItemsControl.Styles>
+										<ItemsControl.ItemTemplate>
+											<DataTemplate>
+												<Rectangle Fill="{Binding SimColor}" Width="{Binding SimWidth}" Height="{Binding SimHeight}" />
+											</DataTemplate>
+										</ItemsControl.ItemTemplate>
+									</ItemsControl>
+
+								</Border>
+							</Border>
+						</StackPanel>
+						
+					</StackPanel>
+				</Border>
+				
+			</StackPanel>
+		</ScrollViewer>
+	</Grid>
+</UserControl>
+

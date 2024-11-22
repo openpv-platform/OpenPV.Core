@@ -1,19 +1,7 @@
-using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.Dispatch;
-using Ahsoka.LayerManager;
-using Ahsoka.ServiceFramework;
-using Ahsoka.Services;
-using Ahsoka.Services.Iot;
-using Ahsoka.Services.Network;
-using Ahsoka.Services.System;
-using Ahsoka.Services.System.Platform;
+using Ahsoka.Services.LayerManager;
 using Ahsoka.System;
-using Ahsoka.System.Hardware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ahsoka.Test;
@@ -37,7 +25,7 @@ public class LayoutManagerTests : LinearTestBase
         client.Start();
 
 
-        client.UpdateSurfaceVisibility(new LayerManager.SurfaceVisibility()
+        client.UpdateSurfaceVisibility(new SurfaceVisibility()
         {
             SurfaceId = 1000,
             CommitChanges = true,
@@ -46,14 +34,14 @@ public class LayoutManagerTests : LinearTestBase
                
         });
 
-        client.UpdateSurfaceZOrder(new LayerManager.SurfaceOrder()
+        client.UpdateSurfaceZOrder(new SurfaceOrder()
         {
             SurfaceIds = [121212,1000,12345],
             CommitChanges = true,
         });
 
 
-        client.UpdateSurfaceLocation(new LayerManager.SurfaceRectangle()
+        client.UpdateSurfaceLocation(new SurfaceRectangle()
         {
               SurfaceId = 121212,
               Width = 500,
@@ -64,7 +52,7 @@ public class LayoutManagerTests : LinearTestBase
 
         Task.Delay(2000).Wait();
 
-        client.UpdateSurfaceSource(new LayerManager.SurfaceRectangle()
+        client.UpdateSurfaceSource(new SurfaceRectangle()
         {
             SurfaceId = 121212,
             Width = 500,
@@ -75,10 +63,10 @@ public class LayoutManagerTests : LinearTestBase
 
         Task.Delay(2000).Wait();
 
-        client.UpdateSurfaceSetup(new LayerManager.SurfaceSetup()
+        client.UpdateSurfaceSetup(new SurfaceSetup()
         {
             SurfaceId = 121212,
-            LocationRectangle = new LayerManager.SurfaceRectangle
+            LocationRectangle = new SurfaceRectangle
             {
                 SurfaceId = 121212,
                 Width = 1024,
@@ -86,7 +74,7 @@ public class LayoutManagerTests : LinearTestBase
                 X = 0,
                 Y = 0
             },
-            SourceRectangle = new LayerManager.SurfaceRectangle
+            SourceRectangle = new SurfaceRectangle
             {
                 SurfaceId = 121212,
                 Width = 1024,
@@ -94,7 +82,7 @@ public class LayoutManagerTests : LinearTestBase
                 X = 0,
                 Y = 0
             },
-            Visibility = new LayerManager.SurfaceVisibility()
+            Visibility = new SurfaceVisibility()
             {
                 IsVisible = true,
                 Opacity = 1
@@ -105,10 +93,10 @@ public class LayoutManagerTests : LinearTestBase
         using (MemoryStream ms = new MemoryStream())
         {
             LayerManagerConfiguration configuration = new LayerManagerConfiguration();
-            configuration.SurfaceSetups.Add( new LayerManager.SurfaceSetup()
+            configuration.SurfaceSetups.Add( new SurfaceSetup()
             {
                 SurfaceId = 121212,
-                LocationRectangle = new LayerManager.SurfaceRectangle
+                LocationRectangle = new SurfaceRectangle
                 {
                     SurfaceId = 121212,
                     Width = 600,
@@ -116,7 +104,7 @@ public class LayoutManagerTests : LinearTestBase
                     X = 50,
                     Y = 50
                 },
-                SourceRectangle = new LayerManager.SurfaceRectangle
+                SourceRectangle = new SurfaceRectangle
                 {
                     SurfaceId = 121212,
                     Width = 600,
@@ -124,7 +112,7 @@ public class LayoutManagerTests : LinearTestBase
                     X = 0,
                     Y = 0
                 },
-                Visibility = new LayerManager.SurfaceVisibility()
+                Visibility = new SurfaceVisibility()
                 {
                     IsVisible = true,
                     Opacity = 1.0f

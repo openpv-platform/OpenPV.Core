@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="90"
+         	 xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.DisplaySurfaceView" >
+	<Grid Margin="12,2,12,4" ColumnDefinitions="30,auto" 
+		  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+		<Grid Margin="10,3,0,0"  RowDefinitions="auto,auto" ColumnDefinitions="auto,auto,auto, auto, auto"
+			  HorizontalAlignment="Right" >
+
+			<TextBlock Text="Surface ID:"  
+					   Margin="0,3,8,0" 
+					   VerticalAlignment="Center"  
+					   HorizontalAlignment="Left" FontSize="13" 
+					   TextWrapping="1" />
+			
+			<TextBox Text="{Binding SurfaceId}" Height="23" Margin="3" Grid.Row="0" Width="200" Grid.Column="1" />
+		
+			<TextBlock Text="App Name:"  Margin="0,3,13,0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+		
+			<TextBox Text="{Binding SurfaceName}" Margin="3" Grid.Row="1" Width="200" Grid.Column="1" />
+
+			<StackPanel Orientation="Horizontal" Margin="140,3,13,0" Grid.Column="2" HorizontalAlignment="Right" >
+				<TextBlock Text="Y:  "  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+				<TextBox Height="23" Text="{Binding SurfaceY}" Margin="3" Grid.Column="2" Width="20"  />
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" Margin="30,3,13,0" Grid.Column="2" Grid.RowSpan="2" HorizontalAlignment="Left" >
+				<TextBlock Text="X:  "  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+				<TextBox Height="23" Text="{Binding SurfaceX}" Margin="3" Grid.Column="2" Width="20"  />
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" Margin="10,3,13,0" Grid.Column="3" Grid.RowSpan="2" HorizontalAlignment="Left" >
+				<TextBlock Text="W:  "  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+				<TextBox Height="23" Text="{Binding SurfaceWidth}" Margin="3" Grid.Column="2" Width="20"  />
+			</StackPanel>
+			<StackPanel Orientation="Horizontal" Margin="140,0,13,0" Grid.Row="1" HorizontalAlignment="Right" Grid.Column="2">
+				<TextBlock Text="H:  "  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+				<TextBox Text="{Binding SurfaceHeight}" Margin="3" Grid.Column="2" Width="20"  />
+			</StackPanel>
+		</Grid>
+	
+	</Grid>
+</UserControl>

@@ -7,10 +7,6 @@
 #include "weston-platform.h"
 #include "wayland-util.h"
 
-#ifdef ISPRO
-#include <ilm/ivi-application-client-protocol.h>
-#endif
-
 #define BTN_RIGHT		0x111
 #define BTN_LEFT		0x110
 
@@ -244,7 +240,8 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 {
 	DrawingWindowContext *d = (DrawingWindowContext *) data;
 	
-	if (CAIRO_DEBUG > 1) printf("-- %s [%i]\r\n", interface, name );
+	if (CAIRO_DEBUG > 1) 
+		printf("-- %s [%i]\r\n", interface, name );
 	
 	if (strcmp(interface, "wl_compositor") == 0)
 		d->compositor = (struct wl_compositor*)wl_registry_bind(registry, name, (&wl_compositor_interface), 1);
@@ -253,12 +250,7 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 		d->wm_base = (struct xdg_wm_base*)wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
 		xdg_wm_base_add_listener(d->wm_base, &wm_base_listener, d);
 	}
-#ifdef ISPRO 
-	else if (strcmp(interface, "ivi_application") == 0) 
-	{
-        d->ivi_app =  (struct ivi_application*)wl_registry_bind(registry, name, &ivi_application_interface, 1);
-    }
-#endif
+
     else if (strcmp(interface, "wl_seat") == 0)
     {
 		// Find a Seat Slot
@@ -283,6 +275,11 @@ static void registry_handle_global(void *data, struct wl_registry *registry,
 	}
     else if (strcmp(interface, "wl_shm") == 0)
 	    d->shm = (struct wl_shm*)wl_registry_bind(registry, name, &wl_shm_interface, 1);
+	
+	// Handle Platform Specific Callbacks
+	if(d->registryCallback != 0)
+		d->registryCallback(data, registry, name,  interface, version);
+
 }
 
 static void registry_handle_global_remove(void *data, struct wl_registry *registry,

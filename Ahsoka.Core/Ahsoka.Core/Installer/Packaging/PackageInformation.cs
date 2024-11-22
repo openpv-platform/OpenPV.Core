@@ -1,13 +1,13 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.System;
 using Ahsoka.Utility;
+using Ahsoka.Services.LayerManager;
 using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 
 namespace Ahsoka.Installer;
@@ -19,14 +19,13 @@ public class PackageInformation : PackageHeader
     // Package Type
     public string Version { get; set; }
     public ApplicationType ApplicationType { get; set; } = ApplicationType.Dotnet;
-    public Orientation SystemOrientation { get; set; } = Orientation.DefaultOrientation;
+ 
     public string ExecCommand { get; set; }
     public string PackageName { get; set; }
     public string PackageDescription { get; set; }
     public string ApplicationVersion { get; set; }
     public string PackageApplicationFolder { get; set; }
     public string PackageOutputDirectory { get; set; }
-    public string StartupLogoPath { get; set; }
     public string PackageSigningCertFile { get; set; }
     public List<ModuleLicense> Licenses { get; set; } = new();
 
@@ -39,6 +38,8 @@ public class PackageInformation : PackageHeader
     public CppInformation CppInfo { get; set; }
 
     public ServiceInfo ServiceInfo { get; set; } = new();
+
+    public LayerManagerConfiguration ScreenConfiguration { get; set; } = new();
 
     public static PackageInformation LoadPackageInformation(string path)
     {

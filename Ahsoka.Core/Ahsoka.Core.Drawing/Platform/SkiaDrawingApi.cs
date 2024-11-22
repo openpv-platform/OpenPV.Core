@@ -4,7 +4,7 @@ using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using SkiaSharp;
-using System.IO;
+using Ahsoka.Services.LayerManager;
 
 public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 {
@@ -116,14 +116,13 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
         CurrentContext.Canvas.DrawBitmap(image.NativeObject as SKBitmap, rect.AsSKRect(), paint);
     }
    
-   public override void DrawRectangle(DrawingRect rectangle, DrawingPaint paint)
+    public override void DrawRectangle(DrawingRect rectangle, DrawingPaint paint)
     {
         if (paint.IsFill)
             CurrentContext.Canvas.DrawRect(rectangle.AsSKRect(), paint.AsFillPaint());
 
         if (paint.IsStroke)
             CurrentContext.Canvas.DrawRect(rectangle.AsSKRect(), paint.AsStrokePaint());
-
     }
     
     public override void DrawRectangle(DrawingRect rectangle, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth = 1)

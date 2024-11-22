@@ -22,6 +22,8 @@ void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format);
 bool UpdateSwapInterval(int interval);
 void* GetFunction(const char *str);
 
+void RegisterHandles(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version);
+
 void* WaylandDispatchThread(void *);
 
 #ifdef __cplusplus

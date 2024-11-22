@@ -2,6 +2,14 @@
 #define DRAWINGWINDOWCONTEXT_H_
 #include <stdio.h>
 
+#include <wayland-client.h>
+#include <wayland-server.h>
+#include <wayland-cursor.h>
+#include <wayland-client-protocol.h>
+#include <wayland-egl.h>
+#include <EGL/egl.h>
+#include "xdg-shell-client-protocol.h"
+#include "XdgTouch.h"
 
 #define MAX_SEATS 10
 #define CAIRO_DEBUG 1
@@ -62,6 +70,8 @@ typedef struct
 	int surfaceId;
 	int surface_width, surface_height;
 	
+	void (*registryCallback)(void *data,struct wl_registry *wl_registry, uint32_t name,const char *interface,  uint32_t version) ;
+
 } DrawingWindowContext;
 
 #endif

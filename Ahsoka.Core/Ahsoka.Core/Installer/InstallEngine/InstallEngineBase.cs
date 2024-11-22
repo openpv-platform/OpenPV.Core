@@ -300,6 +300,7 @@ public class InstallEngineBase
             // Add App Plugins Last
             InstallerPlugin.GetApplicationPlugin(PackageInformation.ApplicationType),
             new StartupInstallerPlugin(), // Generates Start Scripts.
+            new LayerManagerPlugin(),
             .. Extensions.GetExtensions<InstallerPlugin>(),
         ];
 

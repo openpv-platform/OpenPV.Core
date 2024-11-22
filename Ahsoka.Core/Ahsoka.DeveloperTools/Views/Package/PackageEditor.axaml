@@ -13,21 +13,7 @@
 		</Grid.ColumnDefinitions>
 		<Border BorderBrush="Gainsboro" BorderThickness="1,0,0,0" Grid.Row="0"
 				Grid.Column="1" Grid.RowSpan="2"  Background="WhiteSmoke" VerticalAlignment="Stretch" Margin="0,0,0,0">
-			<StackPanel Margin="20" VerticalAlignment="Bottom"
-						HorizontalAlignment="Left">
-				<StackPanel  HorizontalAlignment="Left" Orientation="Horizontal">
-					<TextBlock FontSize="12" Text="Platform:"/>
-					<TextBlock FontSize="12" Margin="5,0,0,0" FontStyle="Italic" Text="{Binding SelectedPackage.PlatformDescription, FallbackValue=No Family}"/>
-				</StackPanel>
-				<StackPanel HorizontalAlignment="Left" Margin="0,6,0,0" Orientation="Horizontal">
-					<TextBlock FontSize="12" Text="Project Type:"/>
-					<TextBlock FontSize="12" Margin="5,0,5,0" FontStyle="Italic" Text="{Binding SelectedPackage.ApplicationType, FallbackValue=No Project Type}"/>
-				</StackPanel>
-				<StackPanel HorizontalAlignment="Left" Margin="0,6,0,0" Orientation="Horizontal">
-					<TextBlock FontSize="12" Text="Generated:"/>
-					<TextBlock FontSize="12" Margin="5,0,5,0" FontStyle="Italic" Text="{Binding SelectedPackage.ProjectGenerated, FallbackValue=Not Found}"/>
-				</StackPanel>
-			</StackPanel>
+			
 		</Border>
 
 		<TabControl SelectedIndex="{Binding SelectedPackage.SelectedTab}"
@@ -49,13 +35,13 @@
 				</TabItem.Header>
 				<CustomerTools:DeveloperView/>
 			</TabItem>
-			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}">
+			<TabItem IsVisible="{Binding SelectedPackage.HasScreen}">
 				<TabItem.Header>
 					<TextBlock
 						FontSize="18"
-						Text="Options"/>
+						Text="Display"/>
 				</TabItem.Header>
-				<CustomerTools:DeviceView/>
+				<CustomerTools:DisplayView/>
 			</TabItem>
 			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
 				<TabItem.Header>
@@ -82,11 +68,8 @@
 				</TabItem.Header>
 				<CustomerTools:ServiceOptionsView/>
 			</TabItem>
-
 		
 		</TabControl>
-
-
 
 		<CustomerTools:DependenciesView Grid.Column="0" 
 			Grid.ColumnSpan="3" 

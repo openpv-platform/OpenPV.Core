@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-int InitEGL(DrawingWindowContext *display);
+int InitEGL(DrawingWindowContext *display, bool printConfig);
 int CreateXdgLayer(DrawingWindowContext *display);
 int CreateEglWindow(DrawingWindowContext *display);
 

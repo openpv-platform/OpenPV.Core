@@ -35,8 +35,8 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     private StartupOptionsViewModel serviceStartModel;
     private ServiceViewModel dataServiceModel;
     ExtensionsViewModel extensionsViewModel;
+    DisplayViewModel displayViewModel;
     private CppViewModel cppViewModel;
-    private Bitmap bitmap;
     private bool customShown = false; 
     SparkViewModel sparkViewModel;
     DependenciesCheckViewModel deps;
@@ -65,6 +65,15 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         get
         {
             return PlatformFamily != PlatformFamily.PowerVision;
+        }
+        set { }
+    }
+
+    public bool HasIVIShell
+    {
+        get
+        {
+            return packageInfo.PlatformFamily == PlatformFamily.OpenViewLinuxPro;
         }
         set { }
     }
@@ -372,6 +381,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                     HandleHardwareInfoChanges();
                     OnPropertyChanged();
                     OnPropertyChanged(nameof(IsOpenView));
+                    OnPropertyChanged(nameof(HasIVIShell));
                 }
             }
         }
@@ -387,12 +397,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         get { return PackageInfo.ExecCommand; }
         set { PackageInfo.ExecCommand = value; OnPropertyChanged(); }
-    }
-
-    public Orientation SystemOrientation
-    {
-        get { return PackageInfo.SystemOrientation; }
-        set { PackageInfo.SystemOrientation = value; OnPropertyChanged(); }
     }
 
     public string SecurityPassKey
@@ -459,6 +463,16 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
     }
 
+    public DisplayViewModel DisplayViewModel
+    {
+        get => displayViewModel;
+        set
+        {
+            displayViewModel = value;
+            OnPropertyChanged();
+        }
+    }
+
     public RuntimeConfiguration ServiceConfiguration { get { return PackageInfo.ServiceInfo.RuntimeConfiguration; } }
     #endregion
 
@@ -480,14 +494,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     #endregion
 
     #region Drop Downs
-    public Orientation[] Orientations
-    {
-        get
-        {
-            return Enum.GetValues<Orientation>().ToArray();
-        }
-    }
-
+    
     public PackageType[] PackageTypes
     {
         get
@@ -525,54 +532,6 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     }
     #endregion
 
-    #region Logo
-    public string StartupLogoPath
-    {
-        get { return PackageInfo.StartupLogoPath; }
-        set
-        {
-            PackageInfo.StartupLogoPath = value;
-            OnPropertyChanged();
-            LoadStartLogo();
-        }
-    }
-
-    public Bitmap StartupLogoImage
-    {
-        get { return bitmap; }
-        private set { bitmap = value; OnPropertyChanged(); }
-    }
-
-    public void LoadStartLogo()
-    {
-        try
-        {
-            string path = Path.GetFullPath(StartupLogoPath ?? "", Path.GetDirectoryName(PackageInfo.GetPackageInfoPath()));
-
-            if (File.Exists(path))
-            {
-                var bytes = File.ReadAllBytes(path);
-                Stream stream = new MemoryStream(bytes);
-                var image = new Avalonia.Media.Imaging.Bitmap(stream);
-                StartupLogoImage = image;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex);
-            StartupLogoImage = null;
-        }
-    }
-
-    internal async void SetStartLogo()
-    {
-        string currentPath = Path.Combine(Path.GetDirectoryName(PackageInfo.GetPackageInfoPath()), StartupLogoPath ?? "");
-
-        var path = await ParentViewModel.FileLocatorAsync("Pick Output Directory", "*", "Images", currentPath);
-        if (path != null)
-            StartupLogoPath = Path.GetRelativePath(Path.GetDirectoryName(PackageInfo.GetPackageInfoPath()), path);
-    }
-    #endregion
 
     #region Folder Selectors
     public string PackageApplicationFolder
@@ -629,12 +588,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         StartupViewModel = new StartupOptionsViewModel(this);
         ServiceViewModel = new ServiceViewModel(this);
         ExtensionsViewModel = new ExtensionsViewModel(this);
+        DisplayViewModel = new DisplayViewModel(this);
 
         Deps.CheckDependencies(SystemInfo.CurrentPlatform, PackageInfo.PlatformFamily);
 
         UpdateApplicationViewModel();
-        LoadStartLogo();
-
+        
         HandleHardwareInfoChanges();
 
         DotNetViewModel?.NeedsUpdate();
@@ -647,6 +606,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         if (hardwareInfo != null)
         {
             HasScreen = hardwareInfo.ScreenInfo.ScreenWidth > 0;
+            DisplayViewModel.UpdateUI();
         }
     }
 

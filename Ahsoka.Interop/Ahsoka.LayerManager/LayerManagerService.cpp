@@ -46,7 +46,10 @@ namespace AhsokaLayerManager
 
         // Load Layer Manager Configuration
         LayerManagerServiceClient::LoadLayerManagerConfig(context.layerConfiguration);
-        
+             for (SurfaceSetup setup : context.layerConfiguration.surface_setup())
+                     cout << "CONFIG FOUND  " << setup.location_rectangle().x() << std::endl;
+
+
         // Get Screen Info (Single Screen Support Only)
         // Creates Screen and Layer 1000
         CreateScreen();

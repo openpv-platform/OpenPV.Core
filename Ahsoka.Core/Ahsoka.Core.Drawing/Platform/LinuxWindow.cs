@@ -142,7 +142,8 @@ internal class LinuxWindow : IDrawingWindow
         cancelTokenSource.Cancel();
         touchHandler?.Wait();
 
-        // TODO: Add destroyContext() call to clean up and reclaim weston / egl memory
+        // Add destroyContext() call to clean up and reclaim weston / egl memory
+        impl.DestroyContext();
     }
 
     public void ShowAndRun()

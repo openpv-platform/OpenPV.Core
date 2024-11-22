@@ -1,12 +1,11 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-
 namespace Ahsoka.DeveloperTools.Views;
 
-public partial class DeviceView : UserControl
+public partial class DisplaySurfaceView : UserControl
 {
-    public DeviceView()
+    public DisplaySurfaceView()
     {
         InitializeComponent();
     }
@@ -15,4 +14,5 @@ public partial class DeviceView : UserControl
     {
         AvaloniaXamlLoader.Load(this);
     }
+
 }

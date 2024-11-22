@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package AhsokaLayerManager;
-option csharp_namespace = "Ahsoka.LayerManager";
+option csharp_namespace = "Ahsoka.Services.LayerManager";
 
 message LayerManagerMessageTypes
 {
@@ -21,7 +21,8 @@ message LayerManagerConfiguration
 {
     bool show_unknown_surfaces = 1;
     string boot_logo_path = 2;
-    repeated SurfaceSetup surface_setup = 3;
+    Orientation orientation = 3;
+    repeated SurfaceSetup surface_setup = 4;
 }
 
 message SurfaceSetup
@@ -30,6 +31,7 @@ message SurfaceSetup
     SurfaceRectangle location_rectangle = 3;
     SurfaceRectangle source_rectangle = 4;
     SurfaceVisibility visibility = 5;
+    string surface_app_name = 6;
 }
 
 message SurfaceRectangle
@@ -54,4 +56,13 @@ message SurfaceOrder
 {
     repeated int32 surface_id = 1;
     bool commit_changes = 4;
+}
+
+
+enum Orientation
+{
+    DefaultOrientation = 0;
+    Rotate90 = 1;
+    Rotate180 = 2;
+    Rotate270 = 3;
 }

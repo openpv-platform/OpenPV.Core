@@ -25,16 +25,16 @@ internal class StartLogoComponent : InstallEngineComponent
        List<InstallerPlugin> installedPlugins,
        IProgress<PackageProgressInfo> progress = null)
     {
-        if (!this.IsEnabled ||info.StartupLogoPath == null)
+        if (!this.IsEnabled || info.ScreenConfiguration?.BootLogoPath == null)
             return null;
 
-        string logoPath = Path.GetFullPath(info.StartupLogoPath, Path.GetDirectoryName(info.GetPackageInfoPath()));
+        string logoPath = Path.GetFullPath(info.ScreenConfiguration?.BootLogoPath, Path.GetDirectoryName(info.GetPackageInfoPath()));
         if (!File.Exists(logoPath))
             return null;
 
         var data = new MemoryStream(File.ReadAllBytes(logoPath));
-        if (info.SystemOrientation != Orientation.DefaultOrientation)
-            data = ImageUtility.RotateImage(info.SystemOrientation, data);
+        if (info.ScreenConfiguration != null && info.ScreenConfiguration.Orientation != Services.LayerManager.Orientation.DefaultOrientation)
+            data = ImageUtility.RotateImage(info.ScreenConfiguration.Orientation, data);
 
         var component = new PackageComponent()
         {

@@ -4,7 +4,7 @@
 
 int PrintConfigs(EGLDisplay egl_disp, EGLConfig* egl_configs, EGLint egl_num_configs);
 
-int InitEGL(DrawingWindowContext *display)
+int InitEGL(DrawingWindowContext *display, bool printConfig)
 {
     EGLint major, minor, count, n, size, i;
 	EGLBoolean ret;
@@ -63,7 +63,8 @@ int InitEGL(DrawingWindowContext *display)
     }
 
 	// Print out EGL Config.
-	//PrintConfigs(display->egl.dpy,configs,count);
+	if (printConfig)
+        PrintConfigs(display->egl.dpy,configs,count);
 
 	ret = eglChooseConfig(display->egl.dpy, config_attribs, configs, count, &n);
 
@@ -94,11 +95,11 @@ static void handle_toplevel_configure(void *data, struct xdg_toplevel *toplevel,
 			  int32_t width, int32_t height,
 			  struct wl_array *states)
 {
-#ifndef ISPRO
+
 	DrawingWindowContext *display = (DrawingWindowContext *)data;
 	display->width = width;
 	display->height = height;
-#endif
+
 }
 
 static void handle_toplevel_close(void *data, struct xdg_toplevel *xdg_toplevel)

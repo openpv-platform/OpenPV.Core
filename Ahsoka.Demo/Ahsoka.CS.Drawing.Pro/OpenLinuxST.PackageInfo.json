@@ -1,21 +1,19 @@
 {
-  "version": "4.0.1.20031",
+  "version": "4.0.1.10035",
   "applicationType": "Dotnet",
-  "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Drawing.Pro",
   "packageName": "Ahsoka.CS.Drawing.Pro",
   "packageDescription": "Drawing, LayerManager, and Touch With SKIA using Ahsoka DrawingAPI",
   "applicationVersion": "3.0",
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
-  "startupLogoPath": "EnovLogo.png",
   "licenses": [],
   "optimizedServiceManager": false,
   "customPackageInfo": {
-    "includeApplication": false,
+    "includeApplication": true,
     "includeBootLogo": false,
-    "includeInstallerUI": false,
-    "includeFirmwareUpdate": false
+    "includeInstallerUI": true,
+    "includeFirmwareUpdate": true
   },
   "dotNetInfo": {
     "projectPath": "Ahsoka.CS.Drawing.Pro.csproj",
@@ -42,10 +40,69 @@
     },
     "environmentValues": []
   },
+  "screenConfiguration": {
+    "showUnknownSurfaces": true,
+    "bootLogoPath": "EnovLogo.png",
+    "orientation": "DefaultOrientation",
+    "surfaceSetups": [
+      {
+        "surfaceId": 2000,
+        "locationRectangle": {
+          "surfaceId": 12121212,
+          "x": 0,
+          "y": 0,
+          "width": 480,
+          "height": 480,
+          "commitChanges": false
+        },
+        "sourceRectangle": {
+          "surfaceId": 12121212,
+          "x": 0,
+          "y": 0,
+          "width": 480,
+          "height": 480,
+          "commitChanges": false
+        },
+        "visibility": {
+          "surfaceId": 0,
+          "isVisible": true,
+          "opacity": 1.0,
+          "commitChanges": false
+        },
+        "surfaceAppName": "DemoApp"
+      },
+      {
+        "surfaceId": 121212,
+        "locationRectangle": {
+          "surfaceId": 12121212,
+          "x": 520,
+          "y": 24,
+          "width": 490,
+          "height": 550,
+          "commitChanges": false
+        },
+        "sourceRectangle": {
+          "surfaceId": 12121212,
+          "x": 0,
+          "y": 0,
+          "width": 490,
+          "height": 550,
+          "commitChanges": false
+        },
+        "visibility": {
+          "surfaceId": 0,
+          "isVisible": true,
+          "opacity": 1.0,
+          "commitChanges": false
+        },
+        "surfaceAppName": "MainApp"
+      }
+    ]
+  },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinuxPro",
-  "platformQualifier": "PXX",
+  "platformQualifier": "GenericArm64",
   "securityMode": "None",
   "applicationId": "00000000-0000-0000-0000-000000000000",
   "components": []

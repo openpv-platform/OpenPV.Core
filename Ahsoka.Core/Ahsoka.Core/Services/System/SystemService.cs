@@ -461,7 +461,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             if (File.Exists(bootLogoInfo.Path))
             {
                using var ms = new MemoryStream(File.ReadAllBytes(bootLogoInfo.Path));
-               var data = ImageUtility.RotateImage((Orientation)(int)bootLogoInfo.Rotation, ms);
+               var data = ImageUtility.RotateImage((LayerManager.Orientation)(int)bootLogoInfo.Rotation, ms);
                File.WriteAllBytes(tempFile, data.ToArray());
                bootLogoInfo.Path = tempFile;
             }

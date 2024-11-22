@@ -147,7 +147,7 @@
 			</Border>
 
 		</Grid>
-		<Grid IsVisible="{Binding AddExtensionsShown, FallbackValue=true}" IsEnabled="{Binding !IsWorking}"
+		<Grid IsVisible="{Binding AddExtensionsShown, FallbackValue=false}" IsEnabled="{Binding !IsWorking}"
 					Grid.ColumnSpan="3" Grid.RowSpan="10" Background="#33FFFFFF">
 			
 			<Border Grid.Row="0" Grid.Column="2" BorderBrush="Gainsboro" BorderThickness="0"  Height="350" Width="650"  
@@ -211,7 +211,6 @@
 							</ListBox.ItemTemplate>
 						</ListBox>
 					</Border>
-
 				</Grid>
 			</Border>
 		</Grid>

@@ -94,15 +94,6 @@ public enum PackageType
     opvClear = 2,
 }
 
-public enum Orientation
-{
-    DefaultOrientation = 0,
-    Rotate90 = 1,
-    Rotate180 = 2,
-    Rotate270 = 3,
-}
-
-
 public enum ApplicationType
 {
     Unknown = 0,

@@ -1,10 +1,8 @@
-﻿using Ahsoka.LayerManager;
-using Ahsoka.ServiceFramework;
-using Ahsoka.Services.LayoutManager;
+﻿using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using System;
 
-namespace Ahsoka.Services.Iot;
+namespace Ahsoka.Services.LayerManager;
 
 /// <summary>
 /// LayoutManager Client Working with Layout Service

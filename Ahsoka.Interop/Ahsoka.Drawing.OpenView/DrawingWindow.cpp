@@ -11,11 +11,11 @@
 #include "WaylandSetup.h"
 #include "DrawingWindow.h"
 
+// Add Layer Manager Support for Pro
 #ifdef ISPRO
-#include <LayerManagerServiceClient.h>
-#include <ilm/ilm_control.h>
-#include <ilm/ilm_types.h>
-#include <ilm/ivi-application-client-protocol.h>
+#include "DrawingWindow+Pro.cxx"
+#else
+#include "DrawingWindow+Select.cxx"
 #endif
 
 static DrawingWindowContext context = { 0 };
@@ -52,92 +52,38 @@ int InitWindowWithSize(bool fullScreen, int w, int h, int surfaceId, char* appId
 
 int UpdateSurfaceLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges)
 {
-	// Grab Requested Size
-	#ifdef ISPRO
-		
-		// Send Info to LayerManager to Position Screen
-		SurfaceRectangle rectangle;
-		rectangle.set_surface_id(surfaceId);
-		rectangle.set_x(x);
-		rectangle.set_y(y);
-		rectangle.set_height(h);
-		rectangle.set_width(w);
-		rectangle.set_commit_changes(commitChanges);
-		
-		LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
-		serviceClient.UpdateSurfaceLocation(rectangle);
-	#endif
-
-	return 1;
+	return UpdateSurfaceLocationImpl(surfaceId, x, y, w, h, commitChanges);
 }
 
 int UpdateSurfaceSource(int surfaceId, int x, int y, int w, int h, bool commitChanges)
 {
-	// Grab Requested Size
-	#ifdef ISPRO
-		
-		// Send Info to LayerManager to Position Screen
-		SurfaceRectangle rectangle;
-		rectangle.set_surface_id(surfaceId);
-		rectangle.set_x(x);
-		rectangle.set_y(y);
-		rectangle.set_height(h);
-		rectangle.set_width(w);
-		rectangle.set_commit_changes(commitChanges);
-		
-		LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
-		serviceClient.UpdateSurfaceSource(rectangle);
-	#endif
-
-	return 1;
+	return UpdateSurfaceSourceImpl(surfaceId, x, y, w, h, commitChanges);
 }
 
 int UpdateSurfaceVisibility(int surfaceId, bool visibility, float opacity, bool commitChanges)
 {
-	// Grab Requested Size
-	#ifdef ISPRO
-		
-		// Send Info to LayerManager to Position Screen
-		SurfaceVisibility visInfo;
-		visInfo.set_surface_id(surfaceId);
-		visInfo.set_is_visible(visibility);
-		visInfo.set_opacity(opacity);
-		visInfo.set_commit_changes(commitChanges);
-		
-		LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
-		serviceClient.UpdateSurfaceVisibility(visInfo);
-	#endif
-	return 1;
+	return UpdateSurfaceVisibilityImpl(surfaceId, visibility, opacity, commitChanges);
 }
 
 int InitWindowCore(int surfaceId, char* appId)
 {
-	// Load Surface Config if Found
-	#ifdef ISPRO
-		LayerManagerConfiguration config;
-		AhsokaLayerManager::LayerManagerServiceClient::LoadLayerManagerConfig(config);
-		for (SurfaceSetup setup : config.surface_setup())
-			if (setup.surface_id() == surfaceId && context.width == 0 && context.height == 0)
-			{
-				printf("Found Surface Configuration - Using Size Info\n");
-				context.height = setup.location_rectangle().height();
-				context.width = setup.location_rectangle().width();
-			}
-	#endif
+	// Grab AppID / AppName
+	context.surfaceId = surfaceId;
+	context.appId = (char*)malloc(strlen(appId));
+	strcpy(appId,context.appId);
 
-	// Width and Height was 0 (Failed Lookup)...so fall back to full Screen	
+	//Init Layer Manager (gets dimensions if needed)
+	InitLayerManager(context);
+
+	// Width and Height was 0 so fall back to full Screen	
+	// Should only happen on Select since Pro will assign before this point
 	if (context.width == 0 || context.height == 0) 
 	{
 		// Failed Surface Lookup
 		printf("No Surface Or Size Found - Defaulting to Full Screen\n");
 		context.fullscreen = 1;
 	}
-
-	// Grab AppID / AppName
-	context.surfaceId = surfaceId;
-	context.appId = (char*)malloc(strlen(appId));
-	strcpy(appId,context.appId);
-
+	
 	context.initialized = false;
 	
 	for (size_t i = 0; i < MAX_SEATS; i++)
@@ -147,41 +93,16 @@ int InitWindowCore(int surfaceId, char* appId)
 		context.seats[i].touch = 0;
 	}
 
-//Ask the IVI Shell for the Window Size if running Pro
-#ifdef ISPRO
-	ilm_init();
-	t_ilm_display screenid = 0;
-	struct ilmScreenProperties screenProperties;
-
-	ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screenid, &screenProperties);
-	if (ILM_SUCCESS == callResult)
-	{
-		if (context.fullscreen)
-		{
-			context.width = screenProperties.screenWidth;
-			context.height = screenProperties.screenHeight;
-		}
-	}
-	ilm_destroy();
-#endif
-
 	int ret = InitWaylandClient(&context);
 	if (ret != 0)
 		return -1;
 
-	ret = InitEGL(&context);
+	ret = InitEGL(&context,false);
 	if (ret != 0)
 		return -1;
 
-#ifndef ISPRO
-	ret = CreateXdgLayer(&context);
-	if (ret != 0)
-		return -1;
-#elif ISPRO
-	context.surface = wl_compositor_create_surface(context.compositor);
-  	struct ivi_surface * surface = ivi_application_surface_create(context.ivi_app, surfaceId, context.surface);
-	wl_display_roundtrip(context.display);
-#endif
+	// Creates XDG or IVI Surface
+	CreateLayoutSurface(context);
 
 	// Create GL
 	CreateEglWindow(&context);
@@ -258,6 +179,8 @@ bool UpdateSwapInterval(int interval)
 
 void DestoryWindowContext()
 {
+	CloseLayerManager();
+	
 	eglMakeCurrent(context.egl.dpy, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 
 	weston_platform_destroy_egl_surface(context.egl.dpy,context.egl_surface);

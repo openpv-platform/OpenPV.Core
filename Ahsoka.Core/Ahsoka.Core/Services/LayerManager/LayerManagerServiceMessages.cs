@@ -1,9 +1,8 @@
 ﻿using Ahsoka.Installer;
-using Ahsoka.LayerManager;
 using Ahsoka.ServiceFramework;
 using System.Collections.Generic;
 
-namespace Ahsoka.Services.LayoutManager;
+namespace Ahsoka.Services.LayerManager;
 
 internal class LayoutManagerMessages : AhsokaMessagesBase
 {

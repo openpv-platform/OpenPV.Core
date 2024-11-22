@@ -6,7 +6,7 @@ namespace Ahsoka.Core.Drawing.Base;
 /// </summary>
 internal interface IDrawingWindow
 {
-    IDrawingApi CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, int surfaceId, string appid);
+    IDrawingApi CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, string appid);
     IDrawingApi CreateWindow(DrawingWindow apiWindow, int surfaceId, string appid);
     void ShowAndRun();
     void Close();
@@ -14,5 +14,6 @@ internal interface IDrawingWindow
     int ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
     int ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
     int ChangeVisibility(int surfaceId, bool isVisible, float visibility, bool commitChanges = true);
+    int GetSurfaceId();
 }
 

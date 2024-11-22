@@ -3,6 +3,9 @@
 #include <ilm/ilm_types.h>
 #include <ilm/ivi-application-client-protocol.h>
 
+// Start Surfaces at 20000
+int lastSurfaceId = 20000;
+
 void HandleGlobalRegistry(void *data, struct wl_registry *registry,
 		       uint32_t name, const char *interface, uint32_t version)
 {
@@ -29,26 +32,58 @@ void InitLayerManager(DrawingWindowContext& context)
 			context.width = setup.location_rectangle().width();
 		}
 
+	ilm_init();
+		
 	// Use ilm to get screen size if needed
 	if (context.fullscreen || context.height == 0  || context.width == 0)
 	{		
 		//Ask the IVI Shell for the Window Size if running Pro
-		ilm_init();
 		t_ilm_display screenid = 0;
 		struct ilmScreenProperties screenProperties;
 
 		ilmErrorTypes callResult = ilm_getPropertiesOfScreen(screenid, &screenProperties);
 		if (ILM_SUCCESS == callResult)
 		{
-			if (context.fullscreen || context.height == 0  || context.width == 0)
-			{
-				context.width = screenProperties.screenWidth;
-				context.height = screenProperties.screenHeight;
-				context.fullscreen = 1;
-			}
+			context.width = screenProperties.screenWidth;
+			context.height = screenProperties.screenHeight;
+			context.fullscreen = 1;
 		}
-		ilm_destroy();
 	}
+
+	if (context.surfaceId == -1)
+	{
+        //surfaces on layer (in rendering order)
+        int surfaceCount = 0;
+        t_ilm_surface* surfaceArray = NULL;
+
+        ilmErrorTypes  callResult = ilm_getSurfaceIDs(&surfaceCount, &surfaceArray);
+        if (ILM_SUCCESS != callResult)
+        {
+            cout << "LayerManagerService: ilm_getSurfaceIDs returned: " << ILM_ERROR_STRING(callResult) << "\n";
+            return;
+        }
+
+		bool found = false;
+		do
+		{
+			found = false;
+			for (size_t i = 0; i < surfaceCount; i++)
+				if (surfaceArray[i] == lastSurfaceId)
+				{	
+					found = true;
+					break;
+				}
+
+			lastSurfaceId++;
+		} 
+		while (found);
+
+		context.surfaceId = lastSurfaceId;
+		
+		free(surfaceArray);
+	}
+		
+	ilm_destroy();
 }
 
 void CreateLayoutSurface(DrawingWindowContext& context)

@@ -19,8 +19,14 @@ internal class DesktopWindow : IDrawingWindow
     DrawingSize drawingSize;
     GL gl;
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, int surfaceId, string appid)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, string appid)
     {
+        if (fullScreen)
+        {
+            width = 800;
+            height = 600;
+        }
+
         drawingSize = new DrawingSize(width, height);
 
         WindowOptions options = WindowOptions.Default;
@@ -29,6 +35,11 @@ internal class DesktopWindow : IDrawingWindow
         options.IsContextControlDisabled = true;
 
         return CreateWindow(apiWindow, options);
+    }
+    int IDrawingWindow.GetSurfaceId()
+    {
+        // Desktop Window doesn't use SurfaceIDs
+        return -1;
     }
 
     IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, int surfaceId, string appid)

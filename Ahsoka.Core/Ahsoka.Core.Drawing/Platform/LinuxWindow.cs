@@ -11,6 +11,7 @@ namespace Ahsoka.Core.Drawing.Platform;
 
 internal class LinuxWindow : IDrawingWindow
 {
+    int surfaceId = 0;
     LinuxDrawingImplementation impl;
     int sampleCount = 0;
     int stencilBits = 0;
@@ -37,17 +38,22 @@ internal class LinuxWindow : IDrawingWindow
     {
         size = new(0,0);
 
-        InitNativeWindow(apiWindow, appid, surfaceId);
+        surfaceId = InitNativeWindow(apiWindow, appid, surfaceId);
         return InitDrawingApi(apiWindow, (int)size.Width, (int)size.Height);
     }
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, int surfaceId, string appid)
+    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, string appid)
     {
         this.isFullScreen = fullScreen;
         this.size = new DrawingSize(width,height);
 
-        InitNativeWindow(apiWindow, appid, surfaceId);
+        surfaceId = InitNativeWindow(apiWindow, appid, -1);
         return InitDrawingApi(apiWindow, (int)size.Width, (int)size.Height);
+    }
+
+    int IDrawingWindow.GetSurfaceId()
+    {
+        return surfaceId; 
     }
 
     private IDrawingApi InitDrawingApi(DrawingWindow apiWindow, int width, int height)
@@ -79,22 +85,20 @@ internal class LinuxWindow : IDrawingWindow
         return new SkiaDrawingApi(new DrawingSize(width, height), surface);
     }
 
-    private void InitNativeWindow(DrawingWindow apiWindow, string appId, int surfaceId)
+    private int InitNativeWindow(DrawingWindow apiWindow, string appId, int surfaceId)
     {
         this.drawingWindow = apiWindow;
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Creating Linux Window - {appId}...");
 
-        int windowResult = 0;
-        
-        if ((size.Width > 0 && size.Height > 0) || isFullScreen)
-            windowResult = impl.InitNativeWindowWithSize(this.isFullScreen, (int)size.Width,(int) size.Height, appId, surfaceId);
+        if (surfaceId == -1 || isFullScreen)
+            this.surfaceId = impl.InitNativeWindowWithSize(this.isFullScreen, (int)size.Width,(int) size.Height, appId);
         else
-            windowResult = impl.InitNativeWindowWithSurfaceId(surfaceId, appId);
+            this.surfaceId = impl.InitNativeWindowWithSurfaceId(surfaceId, appId);
 
-        if (windowResult != 0)
+        if (this.surfaceId == -1)
         {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Failed to init Wayland Window, exiting...");
-            return;
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Failed to init Window, exiting...");
+            return 0;
         }
 
         int boundsHeight = 0, boundsWidth = 0;
@@ -119,6 +123,8 @@ internal class LinuxWindow : IDrawingWindow
 
         surface = SKSurface.Create(context, renderTarget, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Create Surface {surface != null}");
+
+        return this.surfaceId;
     }
 
     int IDrawingWindow.ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges)
@@ -170,7 +176,7 @@ internal class LinuxWindow : IDrawingWindow
 
 public abstract class LinuxDrawingImplementation
 {
-    internal abstract int InitNativeWindowWithSize(bool fullscreen, int width, int height, string appid, int surfaceId);
+    internal abstract int InitNativeWindowWithSize(bool fullscreen, int width, int height, string appid);
 
     internal abstract int InitNativeWindowWithSurfaceId(int surfaceId, string appid);
 

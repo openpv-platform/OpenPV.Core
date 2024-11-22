@@ -65,18 +65,12 @@ namespace AhsokaLayerManager
 
 			static void LoadLayerManagerConfig(AhsokaLayerManager::LayerManagerConfiguration& config)
 			{
-				printf("LayerManager Config Reader: Loading Configuration\n");
-
 				std::string file = "/usr/local/Ahsoka/current/.appinfo/SurfaceConfiguration.pbuff";
 				
 				if (filesystem::exists(file))
 				{
 					std::ifstream ifs(file, std::ifstream::in);
-					config.ParseFromIstream(&ifs);
-
-					for (SurfaceSetup setup : config.surface_setup())
-						printf("LayerManager Config Reader: Found SurfaceID %d\n", setup.surface_id() );
-				}
+					config.ParseFromIstream(&ifs);	}
 				else
 				{
 					config.set_show_unknown_surfaces(true);
@@ -108,13 +102,15 @@ namespace AhsokaLayerManager
 				static auto config = LayerManagerServiceClient::GetServiceConfiguration();
 				static LayerManagerServiceClient client(config);
 
-				if (!client.GetIsConnected())
+				if (!client.GetIsConnected() && !stopClient )
 				{
 					std::cout << "Starting Service Client on " << config.data_channel() << std::endl;
-					if (stopClient)
-						client.Stop();
-					else	
-						client.Start();
+					client.Start();
+				}
+				else if (client.GetIsConnected() && stopClient)
+				{
+					std::cout << "Stopping Service Client on " << config.data_channel() << std::endl;
+					client.Stop();
 				}
 
 				return client;

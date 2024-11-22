@@ -2,7 +2,9 @@
 using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Dispatch;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System;
+using Ahsoka.System;
 
 internal class Program
 {
@@ -28,9 +30,15 @@ internal class Program
         SystemServiceClient client = new();
         Dispatcher.Default.AddStartupItem(client);
 
+        // Surface ID is used to assign a value which can
+        // be use to position via LayoutService or configure the window in OpenPV
+        int surfaceId = 121212;
+        
         // Create the Ahsoka Drawing API and matching Window
-        DrawingWindow window = new(121212, "AhsokaDrawingWindow"); // Surface ID's used on Pro Platform
+        DrawingWindow window = new(surfaceId, "AhsokaDrawingWindow"); // Surface ID's used on Pro Platform
         var api = window.GetApi();
+
+        AhsokaLogging.LogMessage( AhsokaVerbosity.Medium, "Window Surface ID = " + window.GetSurfaceId());
 
         // Setup Drawing Objects and Values
         var cloudTemp = api.CreateImage("Cloud.png");
@@ -159,5 +167,9 @@ internal class Program
         // Now start the Main Drawing Loop 
         // we will block here until the app shuts down.
         window.ShowAndRun();
+
+        ApplicationContext.WaitForExitSignal();
+
+        window.Close();
     }
 }

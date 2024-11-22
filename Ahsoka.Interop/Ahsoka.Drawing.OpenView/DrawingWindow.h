@@ -5,8 +5,8 @@
 extern "C" {
 #endif
 
-int InitWindowCore(int surfaceId, char* appId);
-int InitWindowWithSize(bool fullScreen, int w, int h,  int surfaceId, char* appId);
+int InitWindowCore(char* appId);
+int InitWindowWithSize(bool fullScreen, int w, int h, char* appId);
 int InitWindowWithSurfaceId( int surfaceId, char* appId);
 
 int UpdateSurfaceLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges);

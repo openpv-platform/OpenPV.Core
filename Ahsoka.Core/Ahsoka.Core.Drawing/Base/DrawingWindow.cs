@@ -35,6 +35,12 @@ public class DrawingWindow
         return api;
     }
 
+    public int GetSurfaceId()
+    {
+        return nativeWindow.GetSurfaceId();
+    }
+
+
     public SkiaDrawingApi GetSkiaApi()
     {
         return api;
@@ -69,24 +75,24 @@ public class DrawingWindow
         size = new(api.ScreenWidth, api.ScreenHeight);
     }
 
-    public DrawingWindow(bool fullScreen = false, int width = 800, int height = 480, int surfaceId = 10000, string appId = "DrawingWindow")
+    public DrawingWindow(bool fullScreen = false, int width = 800, int height = 480, string appId = "DrawingWindow")
     {
         size = new(width, height);
 
         if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacosArm64 or PlatformFamily.Ubuntu64)
         {
             nativeWindow = new Platform.DesktopWindow();
-            api = nativeWindow.CreateWindow(this, fullScreen, width, height, surfaceId, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, fullScreen, width, height, appId) as SkiaDrawingApi;
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
         {
             nativeWindow = new Platform.STWindow();
-            api = nativeWindow.CreateWindow(this, fullScreen, width, height, surfaceId, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, fullScreen, width, height, appId) as SkiaDrawingApi;
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
         {
             nativeWindow = new Platform.TIWindow();
-            api = nativeWindow.CreateWindow(this, fullScreen, width, height, surfaceId, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, fullScreen, width, height, appId) as SkiaDrawingApi;
         }
 
         size = new(api.ScreenWidth, api.ScreenHeight);

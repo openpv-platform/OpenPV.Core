@@ -29,25 +29,18 @@ int InitWindowWithSurfaceId(int surfaceId, char* appId)
 	context.fullscreen = 0;
 
 	// Passing No Size assumes Layout Manager will be Sizing the Window.
-	return InitWindowCore(surfaceId, appId);
+	return InitWindowCore(appId);
 }
 
-int InitWindowWithSize(bool fullScreen, int w, int h, int surfaceId, char* appId)
+int InitWindowWithSize(bool fullScreen, int w, int h, char* appId)
 {
 	// Grab Requested Size to override Surface Setup
-	context.surfaceId = surfaceId;
+	context.surfaceId = -1;
 	context.fullscreen = (int)fullScreen;
 	context.width = fullScreen ? 0 : w;
 	context.height = fullScreen ? 0 : h;
 
-	// When using IVI Shell and Overriding the Size
-	// we send the layout to Layout Service
-	if (surfaceId > 0 && !fullScreen)
-	{
-		UpdateSurfaceLocation(surfaceId, 0, 0, w, h,false);
-		UpdateSurfaceSource(surfaceId, 0, 0, w, h, true);
-	}
-	return InitWindowCore(surfaceId, appId);
+	return InitWindowCore(appId);
 }
 
 int UpdateSurfaceLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges)
@@ -65,10 +58,9 @@ int UpdateSurfaceVisibility(int surfaceId, bool visibility, float opacity, bool 
 	return UpdateSurfaceVisibilityImpl(surfaceId, visibility, opacity, commitChanges);
 }
 
-int InitWindowCore(int surfaceId, char* appId)
+int InitWindowCore(char* appId)
 {
 	// Grab AppID / AppName
-	context.surfaceId = surfaceId;
 	context.appId = (char*)malloc(strlen(appId));
 	strcpy(appId,context.appId);
 
@@ -77,10 +69,10 @@ int InitWindowCore(int surfaceId, char* appId)
 
 	// Width and Height was 0 so fall back to full Screen	
 	// Should only happen on Select since Pro will assign before this point
-	if (context.width == 0 || context.height == 0) 
+	if ((context.width == 0 || context.height == 0) && !context.fullscreen) 
 	{
 		// Failed Surface Lookup
-		printf("No Surface Or Size Found - Defaulting to Full Screen\n");
+		printf("No Surface or Size Specified - Defaulting to Full Screen\n");
 		context.fullscreen = 1;
 	}
 	
@@ -123,7 +115,7 @@ int InitWindowCore(int surfaceId, char* appId)
 	
 	if (CAIRO_DEBUG) printf("-- Dispatch thread created successfully...\r\n");
 	
-	return 0;
+	return context.surfaceId;
 }
 
 void GetWindowDimensions(int *w, int *h)

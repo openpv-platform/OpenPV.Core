@@ -15,6 +15,7 @@ void InitLayerManager(DrawingWindowContext& context)
 void CreateLayoutSurface(DrawingWindowContext& context)
 {
 	CreateXdgLayer(&context);
+	context.surfaceId = 20000; // Not RealID
 }
 
 int UpdateSurfaceLocationImpl(int surfaceId, int x, int y, int w, int h, bool commitChanges)

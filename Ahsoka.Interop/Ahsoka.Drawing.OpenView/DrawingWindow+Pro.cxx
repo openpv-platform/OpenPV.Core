@@ -104,8 +104,8 @@ int UpdateSurfaceLocationImpl(int surfaceId, int x, int y, int w, int h, bool co
 	rectangle.set_width(w);
 	rectangle.set_commit_changes(commitChanges);
 	
-	LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
-	serviceClient.UpdateSurfaceLocation(rectangle);
+	LayerManagerServiceClient* serviceClient = LayerManagerServiceClient::GetDefaultClient();
+	serviceClient->UpdateSurfaceLocation(rectangle);
 
 	return 1;
 }
@@ -121,8 +121,8 @@ int UpdateSurfaceSourceImpl(int surfaceId, int x, int y, int w, int h, bool comm
 	rectangle.set_width(w);
 	rectangle.set_commit_changes(commitChanges);
 	
-	LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
-	serviceClient.UpdateSurfaceSource(rectangle);
+	LayerManagerServiceClient* serviceClient = LayerManagerServiceClient::GetDefaultClient();
+	serviceClient->UpdateSurfaceSource(rectangle);
 
 	return 1;
 }
@@ -137,8 +137,8 @@ int UpdateSurfaceVisibilityImpl(int surfaceId, bool visibility, float opacity, b
 	visInfo.set_opacity(opacity);
 	visInfo.set_commit_changes(commitChanges);
 	
-	LayerManagerServiceClient& serviceClient = LayerManagerServiceClient::GetDefaultClient();
-	serviceClient.UpdateSurfaceVisibility(visInfo);
+	LayerManagerServiceClient* serviceClient = LayerManagerServiceClient::GetDefaultClient();
+	serviceClient->UpdateSurfaceVisibility(visInfo);
 
 	return 1;
 }
@@ -146,5 +146,10 @@ int UpdateSurfaceVisibilityImpl(int surfaceId, bool visibility, float opacity, b
 void CloseLayerManager()
 {
 	// Stop Client if Running
-	LayerManagerServiceClient::GetDefaultClient(true);
+	auto client = LayerManagerServiceClient::GetDefaultClient(false);
+	if (client != 0 && client->GetIsConnected())
+	{
+		std::cout << "Stopping Service Client" << std::endl;
+		client->Stop();
+	}
 }

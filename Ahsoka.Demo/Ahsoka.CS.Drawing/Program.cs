@@ -3,6 +3,7 @@ using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Dispatch;
 using Ahsoka.Services.System;
+using Ahsoka.System;
 
 internal class Program
 {
@@ -153,5 +154,8 @@ internal class Program
         // Now start the Main Drawing Loop 
         // we will block here until the app shuts down.
         window.ShowAndRun();
+        window.Close();
+
+        ApplicationContext.Exit();
     }
 }

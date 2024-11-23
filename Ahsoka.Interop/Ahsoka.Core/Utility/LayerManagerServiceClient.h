@@ -97,22 +97,17 @@ namespace AhsokaLayerManager
 				return config;
 			}
 
-			static LayerManagerServiceClient& GetDefaultClient(bool stopClient = false)
+			static LayerManagerServiceClient* GetDefaultClient(bool startClient = true)
 			{
-				static auto config = LayerManagerServiceClient::GetServiceConfiguration();
-				static LayerManagerServiceClient client(config);
-
-				if (!client.GetIsConnected() && !stopClient )
+				static LayerManagerServiceClient* client = 0;
+				if (client == 0 && startClient) 
 				{
+					auto config = LayerManagerServiceClient::GetServiceConfiguration();
+					client = new LayerManagerServiceClient(config);
+					client->Start();
 					std::cout << "Starting Service Client on " << config.data_channel() << std::endl;
-					client.Start();
 				}
-				else if (client.GetIsConnected() && stopClient)
-				{
-					std::cout << "Stopping Service Client on " << config.data_channel() << std::endl;
-					client.Stop();
-				}
-
+				
 				return client;
 			}
 

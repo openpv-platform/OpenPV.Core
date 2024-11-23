@@ -1,6 +1,7 @@
 ﻿using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.ServiceFramework;
+using Ahsoka.System;
 using SkiaSharp;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
@@ -144,9 +145,10 @@ internal class LinuxWindow : IDrawingWindow
 
     void IDrawingWindow.Close()
     {
+     
         // Request Close of Window / Touch
         cancelTokenSource.Cancel();
-        touchHandler?.Wait();
+        touchHandler?.Wait(1000);
 
         // Add destroyContext() call to clean up and reclaim weston / egl memory
         impl.DestroyContext();
@@ -154,8 +156,17 @@ internal class LinuxWindow : IDrawingWindow
 
     public void ShowAndRun()
     {
+        // Listen for Shutdown
+        var task = Task.Run(() =>
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, "LinuxWindow Waiting for Shutdown");
+            ApplicationContext.WaitForExitSignal();
+            cancelTokenSource.Cancel();
+        }, cancelTokenSource.Token);
+
+
         // Main Run Loop
-        while(!cancelTokenSource.IsCancellationRequested)
+        while (!cancelTokenSource.IsCancellationRequested)
         {
             while (eventQueue.Count > 0)
                 eventQueue.Take().Invoke(this,EventArgs.Empty);
@@ -166,6 +177,8 @@ internal class LinuxWindow : IDrawingWindow
             
             impl.SwapBuffers();
         }
+
+        AhsokaLogging.LogMessage(AhsokaVerbosity.High, "LinuxWindow Shutdown Recieved");
     }
 
     void IDrawingWindow.HandleEvent(EventHandler handler)

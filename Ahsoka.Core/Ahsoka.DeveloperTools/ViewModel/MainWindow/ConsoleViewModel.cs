@@ -122,6 +122,11 @@ internal class ConsoleViewModel : ChildViewModelBase<MainViewModel>, ICanCancel
         }
     }
 
+    internal void FetchLayerManagerJournal()
+    {
+        RunJournalCommandAsync("LayerManager", "Ahsoka.LayerManager", null);
+    }
+
     internal void FetchInstallerJournal()
     {
         RunJournalCommandAsync("Installer", "Ahsoka.Installer", null);

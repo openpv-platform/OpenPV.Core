@@ -75,7 +75,16 @@
 					<TextBlock Margin="4,0" VerticalAlignment="Center" FontSize="13"  Text="Watch Application"/>
 				</StackPanel>
 			</Button>
-			
+			<Button IsVisible="{Binding !ParentViewModel.ProgressVisible}" Margin="4, 4, 4,4" Grid.Column="1" Grid.Row="0" Height="30"
+				DockPanel.Dock="Right"
+				VerticalAlignment="Top"
+				Command="{Binding FetchLayerManagerJournal}"
+				Background="Transparent">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="18" Height="18" Foreground="SteelBlue" Kind="Layers"></material:MaterialIcon>
+					<TextBlock Margin="4,0" VerticalAlignment="Center" FontSize="13"  Text="Watch LayerManager"/>
+				</StackPanel>
+			</Button>
 			<TextBlock VerticalAlignment="Center" DockPanel.Dock="Left"
 					FontSize="22" Margin="8,0" Foreground="SteelBlue" Text="Console"/>
 

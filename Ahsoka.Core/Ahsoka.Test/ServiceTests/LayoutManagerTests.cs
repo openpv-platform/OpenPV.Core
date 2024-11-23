@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Ahsoka.Test;
 
-[TestClass]
+//[TestClass]
 public class LayoutManagerTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }

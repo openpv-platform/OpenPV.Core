@@ -46,10 +46,7 @@ namespace AhsokaLayerManager
 
         // Load Layer Manager Configuration
         LayerManagerServiceClient::LoadLayerManagerConfig(context.layerConfiguration);
-             for (SurfaceSetup setup : context.layerConfiguration.surface_setup())
-                     cout << "CONFIG FOUND  " << setup.location_rectangle().x() << std::endl;
-
-
+        
         // Get Screen Info (Single Screen Support Only)
         // Creates Screen and Layer 1000
         CreateScreen();
@@ -98,8 +95,6 @@ namespace AhsokaLayerManager
     {
         if (messageHeader.transport_id() == LayerManagerMessageTypes::STOP_LOGO)
         {
-            cout << "LayerManager: Close Logo Received" << std::endl;
-
             // Handle Close Logo
             SendMessageInternal(messageHeader, &message, false);
         }
@@ -107,8 +102,6 @@ namespace AhsokaLayerManager
         {
             auto surfaceInfo = (AhsokaLayerManager::SurfaceSetup&)message;
             
-            cout << "LayerManager: Update Surface Setup Received for Surface " << surfaceInfo.surface_id()  << std::endl;
-           
             // Update Surface Layout Info
             UpdateSurfaceSetup(surfaceInfo);
 
@@ -127,8 +120,6 @@ namespace AhsokaLayerManager
             
             if (location.surface_id() == surfaceInfo.surface_id())
             {   
-                cout << "LayerManager: Update Location Rectangle Received for Surface " << location.surface_id()  << std::endl;
-            
                 // Update Surface Layout Info
                 surfaceInfo.mutable_location_rectangle()->CopyFrom(location);
                 UpdateSurfaceSetup(surfaceInfo);
@@ -162,8 +153,6 @@ namespace AhsokaLayerManager
             
             if (location.surface_id() == surfaceInfo.surface_id())
             {   
-                cout << "LayerManager: Update Source Rectangle Received for Surface " << location.surface_id()  << std::endl;
-            
                 // Update Surface Layout Info
                 surfaceInfo.mutable_source_rectangle()->CopyFrom(location);
                 UpdateSurfaceSetup(surfaceInfo);
@@ -192,8 +181,6 @@ namespace AhsokaLayerManager
             
             if (visibility.surface_id() == surfaceInfo.surface_id())
             {   
-                cout << "LayerManager: Update Visibility for Surface " << visibility.surface_id()  << std::endl;
-            
                 // Update Surface Layout Info
                 surfaceInfo.mutable_visibility()->CopyFrom(visibility);
                 UpdateSurfaceSetup(surfaceInfo);
@@ -302,7 +289,7 @@ namespace AhsokaLayerManager
             if (setup.surface_id() == surfaceId)
                 return setup;
 
-        emptyLayout.set_surface_id(-1);
+        emptyLayout.set_surface_id(-12345678); // Unknown Surface
         return emptyLayout;
     }
 
@@ -379,7 +366,6 @@ namespace AhsokaLayerManager
         
         auto setup = GetSurfaceSetup(id);
         
-        // if a Surface is Found Or if the 
         if (setup.surface_id() != id)
              ValidateSurface(setup, id, aRequestedWidth, aRequestedHeight);
 

@@ -744,7 +744,13 @@ namespace Ahsoka.Properties {
         ///   Looks up a localized string similar to [core]
         ///shell=ivi-shell.so
         ///modules=ivi-controller.so
-        ///.
+        ///
+        ///[ivi-shell]
+        ///ivi-id-agent-module=ivi-id-agent.so
+        ///
+        ///[desktop-app-default]
+        ///default-surface-id=2000000
+        ///default-surface-id-max=2001000.
         /// </summary>
         internal static string weston_ini {
             get {

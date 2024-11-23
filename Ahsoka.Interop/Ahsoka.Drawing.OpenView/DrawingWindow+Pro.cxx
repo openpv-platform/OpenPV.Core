@@ -1,3 +1,4 @@
+#include <memory>
 #include <LayerManagerServiceClient.h>
 #include <ilm/ilm_control.h>
 #include <ilm/ilm_types.h>
@@ -141,6 +142,52 @@ int UpdateSurfaceVisibilityImpl(int surfaceId, bool visibility, float opacity, b
 	serviceClient->UpdateSurfaceVisibility(visInfo);
 
 	return 1;
+}
+
+
+int GetSurfaceLocationImpl(int surfaceId, int* x, int* y, int* w, int *h)
+{
+	// Grab Requested Size
+	// Send Info to LayerManager to Position Screen
+	SurfaceRequest visInfo;
+	visInfo.set_surface_id(surfaceId);
+	
+	LayerManagerServiceClient* serviceClient = LayerManagerServiceClient::GetDefaultClient();
+	auto result = serviceClient->GetSurfaceSetup(visInfo);
+
+	*x = result->location_rectangle().x();
+	*y = result->location_rectangle().y();
+	*w = result->location_rectangle().width();
+	*h = result->location_rectangle().height();
+	return 1;
+}
+
+
+bool GetSurfaceVisibilityImpl(int surfaceId)
+{
+	// Grab Requested Size
+	// Send Info to LayerManager to Position Screen
+	SurfaceRequest visInfo;
+	visInfo.set_surface_id(surfaceId);
+	
+	LayerManagerServiceClient* serviceClient = LayerManagerServiceClient::GetDefaultClient();
+	auto result = serviceClient->GetSurfaceSetup(visInfo);
+
+	return result->visibility().is_visible();
+}
+
+
+float GetSurfaceOpacityImpl(int surfaceId)
+{
+	// Grab Requested Size
+	// Send Info to LayerManager to Position Screen
+	SurfaceRequest visInfo;
+	visInfo.set_surface_id(surfaceId);
+	
+	LayerManagerServiceClient* serviceClient = LayerManagerServiceClient::GetDefaultClient();
+	auto result = serviceClient->GetSurfaceSetup(visInfo);
+
+	return result->visibility().opacity();;
 }
 
 void CloseLayerManager()

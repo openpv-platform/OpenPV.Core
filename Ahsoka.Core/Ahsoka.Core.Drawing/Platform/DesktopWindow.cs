@@ -7,6 +7,7 @@ using Silk.NET.Windowing;
 using SkiaSharp;
 using System.Diagnostics;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Ahsoka.Core.Drawing.Platform;
 
@@ -166,13 +167,13 @@ internal class DesktopWindow : IDrawingWindow
         handler.Invoke(this, EventArgs.Empty);
     }
 
-    int IDrawingWindow.ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges)
+    int IDrawingWindow.UpdateLocationRectangle(int surfaceId, int x, int y, int w, int h, bool commitChanges)
     {
         Console.WriteLine("Size Updates Only supported on Embedded Targets");
         return 0;
     }
 
-    int IDrawingWindow.ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges)
+    int IDrawingWindow.UpdateSourceRectangle(int surfaceId, int x, int y, int w, int h, bool commitChanges)
     {
         Console.WriteLine("Source Updates Only supported on Embedded Targets");
         return 0;
@@ -182,6 +183,24 @@ internal class DesktopWindow : IDrawingWindow
     {
         Console.WriteLine("Visibility Updates Only supported on Embedded Targets");
         return 0;
+    }
+
+    bool IDrawingWindow.GetSurfaceVisibility(int surfaceId)
+    {
+        Console.WriteLine("Visibility Access Only supported on Embedded Targets");
+        return true;
+    }
+
+    float IDrawingWindow.GetSurfaceOpacity(int surfaceId)
+    {
+        Console.WriteLine("Opacity Access Only supported on Embedded Targets");
+        return 1.0f;
+    }
+
+    DrawingRect IDrawingWindow.GetSurfaceLocation(int surfaceId)
+    {
+        Console.WriteLine("Opacity Access Only supported on Embedded Targets");
+        return new DrawingRect(0,0,this.drawingSize.Width, this.drawingSize.Height);
     }
 }
 

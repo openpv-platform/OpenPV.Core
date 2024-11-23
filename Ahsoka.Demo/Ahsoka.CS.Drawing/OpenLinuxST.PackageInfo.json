@@ -1,14 +1,12 @@
 {
-  "version": "4.0.1.20031",
+  "version": "4.0.1.10036",
   "applicationType": "Dotnet",
-  "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Drawing",
   "packageName": "Ahsoka.CS.Drawing",
   "packageDescription": "Drawing and Touch With SKIA using Ahsoka DrawingAPI",
   "applicationVersion": "3.0",
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
-  "startupLogoPath": "EnovLogo.png",
   "licenses": [],
   "optimizedServiceManager": false,
   "customPackageInfo": {
@@ -41,6 +39,12 @@
       ]
     },
     "environmentValues": []
+  },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "EnovLogo.png",
+    "orientation": "DefaultOrientation",
+    "surfaceSetups": []
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,

@@ -9,11 +9,16 @@ message LayerManagerMessageTypes
 	{
 		NO_MESSAGE = 0;
 		STOP_LOGO = 1;
+
         UPDATE_SURFACE_SETUP = 2;
-        UPDATE_SURFACE_LOCATION = 3;
-        UPDATE_SURFACE_SOURCE = 4;
-        UPDATE_SURFACE_VISIBILITY = 5;
-        UPDATE_SURFACE_Z_ORDER = 6;
+        GET_SURFACE_SETUP = 3;
+        
+        UPDATE_SURFACE_LOCATION = 4;
+        UPDATE_SURFACE_SOURCE = 5;
+        UPDATE_SURFACE_VISIBILITY = 6;
+        UPDATE_SURFACE_Z_ORDER = 7;
+
+
 	}
 }
 
@@ -58,6 +63,11 @@ message SurfaceOrder
     bool commit_changes = 4;
 }
 
+
+message SurfaceRequest
+{
+    int32 surface_id = 1;
+}
 
 enum Orientation
 {

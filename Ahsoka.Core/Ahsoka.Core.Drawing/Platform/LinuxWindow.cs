@@ -37,7 +37,7 @@ internal class LinuxWindow : IDrawingWindow
 
     IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, int surfaceId, string appid)
     {
-        size = new(0,0);
+        size = new(0, 0);
 
         surfaceId = InitNativeWindow(apiWindow, appid, surfaceId);
         return InitDrawingApi(apiWindow, (int)size.Width, (int)size.Height);
@@ -46,7 +46,7 @@ internal class LinuxWindow : IDrawingWindow
     IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, string appid)
     {
         this.isFullScreen = fullScreen;
-        this.size = new DrawingSize(width,height);
+        this.size = new DrawingSize(width, height);
 
         surfaceId = InitNativeWindow(apiWindow, appid, -1);
         return InitDrawingApi(apiWindow, (int)size.Width, (int)size.Height);
@@ -54,7 +54,7 @@ internal class LinuxWindow : IDrawingWindow
 
     int IDrawingWindow.GetSurfaceId()
     {
-        return surfaceId; 
+        return surfaceId;
     }
 
     private IDrawingApi InitDrawingApi(DrawingWindow apiWindow, int width, int height)
@@ -92,7 +92,7 @@ internal class LinuxWindow : IDrawingWindow
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Creating Linux Window - {appId}...");
 
         if (surfaceId == -1 || isFullScreen)
-            this.surfaceId = impl.InitNativeWindowWithSize(this.isFullScreen, (int)size.Width,(int) size.Height, appId);
+            this.surfaceId = impl.InitNativeWindowWithSize(this.isFullScreen, (int)size.Width, (int)size.Height, appId);
         else
             this.surfaceId = impl.InitNativeWindowWithSurfaceId(surfaceId, appId);
 
@@ -103,8 +103,8 @@ internal class LinuxWindow : IDrawingWindow
         }
 
         int boundsHeight = 0, boundsWidth = 0;
-        impl.GetWindowInformation(ref boundsWidth, ref boundsHeight);
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium,$"Active Window Dimensions: w:[{boundsWidth}] h:[{boundsHeight}]");
+        impl.GetWindowSize(ref boundsWidth, ref boundsHeight);
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Active Window Dimensions: w:[{boundsWidth}] h:[{boundsHeight}]");
 
         size.Width = boundsWidth;
         size.Height = boundsHeight;
@@ -128,24 +128,10 @@ internal class LinuxWindow : IDrawingWindow
         return this.surfaceId;
     }
 
-    int IDrawingWindow.ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges)
-    {
-        return impl.ChangeLocation(surfaceId, x, y, w, h, commitChanges);
-    }
-
-    int IDrawingWindow.ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges)
-    {
-        return impl.ChangeSource(surfaceId, x, y, w, h, commitChanges);
-    }
-
-    int IDrawingWindow.ChangeVisibility(int surfaceId, bool isVisible, float visibility, bool commitChanges)
-    {
-        return impl.ChangeVisbility(surfaceId, isVisible, visibility, commitChanges);
-    }
 
     void IDrawingWindow.Close()
     {
-     
+
         // Request Close of Window / Touch
         cancelTokenSource.Cancel();
         touchHandler?.Wait(1000);
@@ -154,6 +140,36 @@ internal class LinuxWindow : IDrawingWindow
         impl.DestroyContext();
     }
 
+
+    int IDrawingWindow.UpdateLocationRectangle(int surfaceId, int x, int y, int w, int h, bool commitChanges)
+    {
+        return impl.UpdateLocationRectangle(surfaceId, x, y, w, h, commitChanges);
+    }
+
+    int IDrawingWindow.UpdateSourceRectangle(int surfaceId, int x, int y, int w, int h, bool commitChanges)
+    {
+        return impl.UpdateSourceRectangle(surfaceId, x, y, w, h, commitChanges);
+    }
+
+    int IDrawingWindow.ChangeVisibility(int surfaceId, bool isVisible, float visibility, bool commitChanges)
+    {
+        return impl.UpdateVisibility(surfaceId, isVisible, visibility, commitChanges);
+    }
+
+    bool IDrawingWindow.GetSurfaceVisibility(int surfaceId)
+    {
+        return impl.GetVisibility(surfaceId);
+    }
+
+    float IDrawingWindow.GetSurfaceOpacity(int surfaceId)
+    {
+        return impl.GetOpacity(surfaceId);
+    }
+
+    DrawingRect IDrawingWindow.GetSurfaceLocation(int surfaceId)
+    {
+        return impl.GetLocationRectangle(surfaceId);
+    }
     public void ShowAndRun()
     {
         // Listen for Shutdown
@@ -197,7 +213,7 @@ public abstract class LinuxDrawingImplementation
 
     internal abstract bool UpdateTouchData(ref TouchData data, int timeoutInMs = 1000);
 
-    internal abstract void GetWindowInformation(ref int w, ref int h);
+    internal abstract void GetWindowSize(ref int w, ref int h);
 
     internal abstract void GetSurfaceInformation(ref int sampleCount, ref int stencilBits, ref uint gl_format);
     
@@ -207,11 +223,17 @@ public abstract class LinuxDrawingImplementation
 
     internal abstract void DestroyContext();
 
-    internal abstract int ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
+    internal abstract int UpdateLocationRectangle(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
 
-    internal abstract int ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
+    internal abstract int UpdateSourceRectangle(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
 
-    internal abstract int ChangeVisbility(int surfaceId, bool isVisible, float visibility, bool commitChanges = true);
+    internal abstract int UpdateVisibility(int surfaceId, bool isVisible, float visibility, bool commitChanges = true);
+
+    internal abstract bool GetVisibility(int surfaceId);
+
+    internal abstract float GetOpacity(int surfaceId);
+
+    internal abstract DrawingRect GetLocationRectangle(int surfaceId);
 }
 
 [StructLayout(LayoutKind.Explicit, Pack = 1)]

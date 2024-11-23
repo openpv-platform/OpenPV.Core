@@ -37,9 +37,14 @@ namespace AhsokaLayerManager
 				SendMessageWithResponse(LayerManagerMessageTypes_Ids::LayerManagerMessageTypes_Ids_STOP_LOGO, 0, 5000);
 			}
 
-			void UpdateSurfaceLayout(SurfaceSetup & setup)
+			void UpdateSurfaceSetup(SurfaceSetup & setup)
 			{
 				SendMessageWithResponse(LayerManagerMessageTypes_Ids::LayerManagerMessageTypes_Ids_UPDATE_SURFACE_SETUP, &setup, 5000);
+			}
+
+			std::unique_ptr<SurfaceSetup> GetSurfaceSetup(SurfaceRequest & request)
+			{
+				return SendMessageWithResponse<SurfaceSetup>(LayerManagerMessageTypes_Ids::LayerManagerMessageTypes_Ids_GET_SURFACE_SETUP, &request, 5000);
 			}
 
 			void UpdateSurfaceLocation(SurfaceRectangle & locationInfo)

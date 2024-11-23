@@ -20,12 +20,15 @@ internal class Program
     static readonly DrawingColor colorFillTouched = new(0xFF444444);
     static readonly DrawingColor colorStroke = new(0xFF111111);
 
+
     /// <summary>
     /// Simple Example of Drawing with AhsokaDrawing
     /// </summary>
     /// <param name="args"></param>
     private static void Main(string[] args)
     {
+        DrawingRect originalBounds = DrawingRect.Empty;
+
         // Add For Communication with Display
         SystemServiceClient client = new();
         Dispatcher.Default.AddStartupItem(client);
@@ -84,12 +87,13 @@ internal class Program
             {
                 if (eventItem.Event == TouchEvent.Pressed)
                 {
-                    window.ChangeLocation(121212, eventItem.X - 100, eventItem.Y - 100, 200, 200, true);
+                    originalBounds = window.GetSurfaceLocation(window.GetSurfaceId());
+                    window.UpdateLocationRectangle(121212, (int)originalBounds.X + eventItem.X - 100, (int)originalBounds.Y + eventItem.Y - 100, 200, 200, true);
                     touched = true;
                 }
                 else if (eventItem.Event == TouchEvent.Released)
                 {
-                    window.ChangeLocation(121212, 0, 0, (int)window.Size.Width, (int)window.Size.Height, true);
+                    window.UpdateLocationRectangle(121212, (int)originalBounds.X, (int)originalBounds.Y, (int)originalBounds.Width, (int)originalBounds.Height, true);
                     touched = false;
                 }
             }

@@ -98,14 +98,29 @@ public class DrawingWindow
         size = new(api.ScreenWidth, api.ScreenHeight);
     }
 
-    public int ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges = true)
+    public DrawingRect GetSurfaceLocation(int surfaceId)
     {
-        return nativeWindow.ChangeLocation(surfaceId, x, y, w, h, commitChanges);
+        return nativeWindow.GetSurfaceLocation(surfaceId);
+    }
+
+    public bool GetCurrentVisibilty(int surfaceId)
+    {
+        return nativeWindow.GetSurfaceVisibility(surfaceId);
+    }
+
+    public float GetCurrentOpacity(int surfaceId)
+    {
+        return nativeWindow.GetSurfaceOpacity(surfaceId);
+    }
+
+    public int UpdateLocationRectangle(int surfaceId, int x, int y, int w, int h, bool commitChanges = true)
+    {
+        return nativeWindow.UpdateLocationRectangle(surfaceId, x, y, w, h, commitChanges);
     }
 
     public int ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges = true)
     {
-        return nativeWindow.ChangeSource(surfaceId, x, y, w, h, commitChanges);
+        return nativeWindow.UpdateSourceRectangle(surfaceId, x, y, w, h, commitChanges);
     }
 
     public int ChangeVisibility(int surfaceId, bool isVisible, float opacity, bool commitChanges = true)

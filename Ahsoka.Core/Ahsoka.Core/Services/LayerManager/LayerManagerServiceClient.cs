@@ -60,6 +60,14 @@ public class LayerManagerServiceClient : AhsokaClientBase<LayerManagerMessageTyp
     }
 
     /// <summary>
+    /// Update All Surface Properties with Single Call
+    /// </summary>
+    public SurfaceSetup GetSurfaceSetup(SurfaceRequest request)
+    {
+        return SendMessageWithResponse<SurfaceSetup>(LayerManagerMessageTypes.Ids.GetSurfaceSetup, request);
+    }
+
+    /// <summary>
     /// Update Surface Position (Location to Draw on Screen)
     /// </summary>
     public void UpdateSurfaceLocation(SurfaceRectangle locationInfo)

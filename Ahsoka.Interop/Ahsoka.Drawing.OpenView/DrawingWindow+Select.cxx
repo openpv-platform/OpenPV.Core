@@ -33,4 +33,19 @@ int UpdateSurfaceVisibilityImpl(int surfaceId, bool visibility, float opacity, b
 	return 1;
 }
 
+bool GetSurfaceVisibilityImpl(int surfaceId)
+{
+	return 1;
+}
+
+float GetSurfaceOpacityImpl(int surfaceId)
+{
+	return 1.0f;
+}
+
+int GetSurfaceLocationImpl(int surfaceId, int* x, int* y, int *w, int *h)
+{
+	return 1;
+}
+
 void CloseLayerManager(){}

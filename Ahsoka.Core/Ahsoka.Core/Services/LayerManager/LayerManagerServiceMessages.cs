@@ -10,6 +10,7 @@ internal class LayoutManagerMessages : AhsokaMessagesBase
     {
         this.RegisterServiceRequest(LayerManagerMessageTypes.Ids.StopLogo, typeof(EmptyNotification), typeof(EmptyNotification));
         this.RegisterServiceRequest(LayerManagerMessageTypes.Ids.UpdateSurfaceSetup, typeof(SurfaceSetup), typeof(EmptyNotification));
+        this.RegisterServiceRequest(LayerManagerMessageTypes.Ids.GetSurfaceSetup, typeof(SurfaceRequest), typeof(SurfaceSetup));
         this.RegisterServiceRequest(LayerManagerMessageTypes.Ids.UpdateSurfaceLocation, typeof(SurfaceRectangle), typeof(EmptyNotification));
         this.RegisterServiceRequest(LayerManagerMessageTypes.Ids.UpdateSurfaceSource, typeof(SurfaceRectangle), typeof(EmptyNotification));
         this.RegisterServiceRequest(LayerManagerMessageTypes.Ids.UpdateSurfaceVisibility, typeof(SurfaceVisibility), typeof(EmptyNotification));

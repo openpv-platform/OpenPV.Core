@@ -13,6 +13,10 @@ int UpdateSurfaceLocation(int surfaceId, int x, int y, int w, int h, bool commit
 int UpdateSurfaceSource(int surfaceId, int x, int y, int w, int h, bool commitChanges);
 int UpdateSurfaceVisibility(int surfaceId, bool visibility, float opacity, bool commitChanges);
 
+bool GetSurfaceVisibility(int surfaceId);
+int GetSurfaceLocation(int surfaceId, int* x, int* y, int* w, int *h);
+float GetSurfaceOpacity(int surfaceId);
+
 void DestoryWindowContext();
 
 void GLSwapBuffers();
@@ -22,8 +26,8 @@ void GetSurfaceInfo(int *samples, int *stencilBits, unsigned int * gl_format);
 bool UpdateSwapInterval(int interval);
 void* GetFunction(const char *str);
 
+// Internal Methods
 void RegisterHandles(void *data, struct wl_registry *registry, uint32_t name, const char *interface, uint32_t version);
-
 void* WaylandDispatchThread(void *);
 
 #ifdef __cplusplus

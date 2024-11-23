@@ -58,6 +58,22 @@ int UpdateSurfaceVisibility(int surfaceId, bool visibility, float opacity, bool 
 	return UpdateSurfaceVisibilityImpl(surfaceId, visibility, opacity, commitChanges);
 }
 
+bool GetSurfaceVisibility(int surfaceId)
+{
+	return GetSurfaceVisibilityImpl(surfaceId);	
+}
+
+float GetSurfaceOpacity(int surfaceId)
+{
+	return GetSurfaceOpacityImpl(surfaceId);	
+}
+
+int GetSurfaceLocation(int surfaceId, int* x, int* y, int *w, int *h)
+{
+	return GetSurfaceLocationImpl(surfaceId, x, y, w, h);	
+}
+
+
 int InitWindowCore(char* appId)
 {
 	// Grab AppID / AppName

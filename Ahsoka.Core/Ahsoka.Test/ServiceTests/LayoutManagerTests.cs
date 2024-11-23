@@ -11,7 +11,7 @@ public class LayoutManagerTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
 
-    //[TestMethod]
+    [TestMethod]
     public void TestLayoutManager()
     {
         LayerManagerServiceClient client = new(new ServiceConfiguration()
@@ -24,6 +24,7 @@ public class LayoutManagerTests : LinearTestBase
 
         client.Start();
 
+        var info = client.GetSurfaceSetup(new SurfaceRequest() { SurfaceId = 121212 });
 
         client.UpdateSurfaceVisibility(new SurfaceVisibility()
         {

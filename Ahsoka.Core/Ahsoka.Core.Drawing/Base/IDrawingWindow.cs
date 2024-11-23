@@ -11,9 +11,13 @@ internal interface IDrawingWindow
     void ShowAndRun();
     void Close();
     void HandleEvent(EventHandler handler);
-    int ChangeLocation(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
-    int ChangeSource(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
+    int UpdateLocationRectangle(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
+    int UpdateSourceRectangle(int surfaceId, int x, int y, int w, int h, bool commitChanges = true);
     int ChangeVisibility(int surfaceId, bool isVisible, float visibility, bool commitChanges = true);
     int GetSurfaceId();
+    
+    bool GetSurfaceVisibility(int surfaceId);
+    float GetSurfaceOpacity(int surfaceId);
+    DrawingRect GetSurfaceLocation(int surfaceId);
 }
 

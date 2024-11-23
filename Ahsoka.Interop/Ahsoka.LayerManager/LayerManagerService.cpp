@@ -149,6 +149,12 @@ namespace AhsokaLayerManager
             // Reply to Caller
             SendMessageInternal(messageHeader, &message, false);
         }
+        else if (messageHeader.transport_id() == LayerManagerMessageTypes::GET_SURFACE_SETUP)
+        {
+            auto surfaceId = (AhsokaLayerManager::SurfaceRequest&)message;
+            auto surfaceInfo = GetSurfaceSetup(surfaceId.surface_id());
+            SendMessageInternal(messageHeader, &surfaceInfo, false);
+        }
         else if (messageHeader.transport_id() == LayerManagerMessageTypes::UPDATE_SURFACE_SOURCE)
         {
             auto location = (AhsokaLayerManager::SurfaceRectangle&)message;

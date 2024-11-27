@@ -161,16 +161,16 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
     }
 
     /// <inheritdoc/>
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    protected override void OnReceiveNotification(AhsokaNotificationArgs args)
     {
-        switch (messageHeader.TransportId.IntToEnum<InstallMessageTypes.Ids>())
+        switch (args.TransportId)
         {
             case InstallMessageTypes.Ids.InstallProgress:
-                installerUI?.InstallProgress((InstallProgressInfo)message);
+                installerUI?.InstallProgress((InstallProgressInfo)args.NotificationObject);
                 break;
 
             case InstallMessageTypes.Ids.InstallLog:
-                installerUI?.Log((InstallLogInfo)message);
+                installerUI?.Log((InstallLogInfo)args.NotificationObject);
                 break;
         }
     }

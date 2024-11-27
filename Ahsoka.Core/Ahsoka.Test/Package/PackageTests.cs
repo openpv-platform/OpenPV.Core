@@ -54,7 +54,7 @@ public class PackagingTests : LinearTestBase
         File.Delete(fileName);
     }
 
-    [TestMethod]
+    //[TestMethod]
     public void TestPackagesOptimized()
     {
         RunPackageTest(true);

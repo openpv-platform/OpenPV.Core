@@ -2,10 +2,6 @@
 
 namespace Ahsoka.ServiceFramework;
 
-/// <summary>
-/// Abstract Base Class for all Client EndPoints
-/// </summary>
-/// <typeparam name="TTransportIds"></typeparam>
 public abstract partial class AhsokaClientBase<TTransportIds>
 {
     /// <summary>

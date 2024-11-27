@@ -130,12 +130,13 @@
 				</StackPanel.Styles>
 
 				<Border Margin="20,20,20,0" Padding="3"  BorderThickness="0,0,0,1">
-					<Grid Margin="5" ColumnDefinitions="150,Auto,25,125,Auto" RowDefinitions="36,36,36,*">
+					<Grid Margin="5" ColumnDefinitions="150,Auto,25,125,Auto" RowDefinitions="36,56,36,*">
 						<TextBlock TabIndex="0" Text="Package Name:" Grid.Row="0" Grid.Column="0"/>
 						<TextBox Text="{Binding PackageName, FallbackValue=PackageName}" Grid.Row="0"  Width="250"  Grid.Column="1" TextWrapping="1"/>
 
-						<TextBlock TabIndex="0" Text="Package Description:" Grid.Row="1" Grid.Column="0"/>
-						<TextBox Text="{Binding PackageDescription, FallbackValue=PackageDescription}" Grid.Row="1"  Width="450"  Grid.Column="1" TextWrapping="1"/>
+						<TextBlock TabIndex="0" Text="Package Description:"  Grid.Row="1" VerticalAlignment="Top" Margin="4,8" Grid.Column="0"/>
+						<TextBox Text="{Binding PackageDescription, FallbackValue=PackageDescription}" 
+								 Grid.Row="1"  Width="450" Height="56" Grid.Column="1" TextWrapping="1"/>
 
 						<TextBlock Text="Target Platform:" Grid.Row="2" Grid.Column="0"/>
 						<ComboBox  Grid.Row="2" Grid.Column="1" SelectedItem="{Binding PlatformDescription}"

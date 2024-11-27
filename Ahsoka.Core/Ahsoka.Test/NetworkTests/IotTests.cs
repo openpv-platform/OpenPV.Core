@@ -11,7 +11,7 @@ namespace Ahsoka.Test;
 public class IotTests : LinearTestBase
 {
     public TestContext TestContext { get; set; }
-    ClientMessage topicMessageResult = null;
+    Services.Iot.ClientMessage topicMessageResult = null;
     const string topic = "AhsokaTestTopic";
     const string url = "18144f318ca0488dacc077721d7778ee.s2.eu.hivemq.cloud";
     const int port = 8883;
@@ -78,11 +78,11 @@ public class IotTests : LinearTestBase
     private void TestDisconnect(IotServiceClient client, ClientConnectionInfo clientState)
     {
         // Disconnect
-        var disconnect = client.DestroyClient(new ClientMessage() { ClientId = clientState.ClientId });
+        var disconnect = client.DestroyClient(new Services.Iot.ClientMessage() { ClientId = clientState.ClientId });
         Assert.IsTrue(disconnect.ClientState == ClientState.Disconnected);
 
         // Cover Null Case
-        client.DestroyClient(new ClientMessage() { ClientId = String.Empty });
+        client.DestroyClient(new Services.Iot.ClientMessage() { ClientId = string.Empty });
     }
 
     private void TestSubscription(IotServiceClient client, ClientConnectionInfo clientState)
@@ -101,7 +101,7 @@ public class IotTests : LinearTestBase
         {
             TopicName = topic,
             ClientId = clientState.ClientId,
-            PayloadString = JsonUtility.Serialize(new ClientMessage() { ClientId = clientState.ClientId })
+            PayloadString = JsonUtility.Serialize(new Services.Iot.ClientMessage() { ClientId = clientState.ClientId })
         });
 
         if (result.Status != TopicResultStatus.Success)
@@ -153,7 +153,7 @@ public class IotTests : LinearTestBase
         if (e.TransportId == IotMessageTypes.Ids.TopicReceivedNotification)
         {
             TopicMessage result = e.NotificationObject as TopicMessage;
-            topicMessageResult = JsonUtility.Deserialize<ClientMessage>(result.PayloadString);
+            topicMessageResult = JsonUtility.Deserialize<Services.Iot.ClientMessage>(result.PayloadString);
             messageEvent.Set();
         }
     }

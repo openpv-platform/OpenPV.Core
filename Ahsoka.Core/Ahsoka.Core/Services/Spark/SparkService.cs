@@ -14,7 +14,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Spark;
 
@@ -39,48 +38,47 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
     {
     }
 
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
-        switch (messageHeader.TransportId.IntToEnum<SparkMessageTypes.Ids>())
+        switch (request.TransportId)
         {
-
             case SparkMessageTypes.Ids.SetSparkSubscription:
 
-                HandleSetSparkSubscription(messageHeader, message as SparkSubscription);
+                HandleSetSparkSubscription(request, request.Message as SparkSubscription);
                 break;
 
             case SparkMessageTypes.Ids.GetSparkSubscription:
 
-                HandleGetSparkSubscription(messageHeader);
+                HandleGetSparkSubscription(request);
                 break;
 
             case SparkMessageTypes.Ids.GetAvailableReleases:
 
-                HandleGetSparkReleases(messageHeader);
+                HandleGetSparkReleases(request);
                 break;
 
             case SparkMessageTypes.Ids.GetRelease:
 
                 source = new CancellationTokenSource();
-                HandleGetRelease(messageHeader, message as SparkReleaseDownloadRequest, source);
+                HandleGetRelease(request, request.Message as SparkReleaseDownloadRequest, source);
                 break;
 
             case SparkMessageTypes.Ids.UpdateLicenseInfo:
 
-                HandleUpdateLicenseFile(messageHeader, message as ModuleLicenseInfo);
+                HandleUpdateLicenseFile(request, request.Message as ModuleLicenseInfo);
                 break;
 
             case SparkMessageTypes.Ids.SubscribeToAppChange:
-                HandleSubscribeToAppChange(messageHeader);
+                HandleSubscribeToAppChange(request);
                 break;
 
             case SparkMessageTypes.Ids.UnsubscribeToAppChange:
-                HandleUnsubscribeToAppChange(messageHeader);
+                HandleUnsubscribeToAppChange(request);
                 break;
         }
     }
 
-    private void HandleSubscribeToAppChange(AhsokaMessageHeader messageHeader)
+    private void HandleSubscribeToAppChange(AhsokaServiceRequest messageHeader)
     {
         SparkSubscriptionInfo info = GetSparkSubscription();
 
@@ -93,7 +91,6 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 
         SparkDisplayClient.SharedSparkClient.SubscribeToAppChanges((changesDto) =>
         {
-            var reply = CreateReplyMessageHeader(messageHeader, SparkMessageTypes.Ids.AppChangeNotification);
             var info = new AppChangeInfo()
             {
                 ChannelName = changesDto.ChannelName,
@@ -101,28 +98,29 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 AppEvent = (AppChangesEnum)changesDto.AppEvent,
                 Message = changesDto.Message,
             };
-            SendMessageInternal(reply, info, true);
+
+            SendNotification(SparkMessageTypes.Ids.AppChangeNotification, info);
         });
 
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
 
     }
 
-    private void HandleUnsubscribeToAppChange(AhsokaMessageHeader messageHeader) 
+    private void HandleUnsubscribeToAppChange(AhsokaServiceRequest messageHeader) 
     { 
         SparkDisplayClient.SharedSparkClient.UnsubscribeToAppChanges();
 
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
     }
 
-    private void HandleUpdateLicenseFile(AhsokaMessageHeader messageHeader, ModuleLicenseInfo licenseInfo)
+    private void HandleUpdateLicenseFile(AhsokaServiceRequest messageHeader, ModuleLicenseInfo licenseInfo)
     {
         WriteLicenseFile(licenseInfo);
 
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
     }
 
-    private async void HandleGetRelease(AhsokaMessageHeader messageHeader, SparkReleaseDownloadRequest downloadRequest, CancellationTokenSource source)
+    private async void HandleGetRelease(AhsokaServiceRequest messageHeader, SparkReleaseDownloadRequest downloadRequest, CancellationTokenSource source)
     {
         try
         {
@@ -154,8 +152,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
             string pathToFile = downloadRequest.PathToFile;
             if (urlToDownload == null) throw new ApplicationException("Package does not contain OpenPV install");
 
-            var reply = CreateReplyMessageHeader(messageHeader, SparkMessageTypes.Ids.GetReleaseNotification);
-
+         
             using var client = new DownloadUtility(urlToDownload, pathToFile);
             client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) =>
             {
@@ -167,7 +164,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                     Status = MessageReplyStatus.Continue
                 };
 
-                SendMessageInternal(reply, notification);
+                SendNotification(SparkMessageTypes.Ids.GetReleaseNotification, notification);
             };
 
             await client.StartDownload(TimeSpan.FromSeconds(downloadRequest.TimeoutInSeconds), source);
@@ -180,7 +177,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 Status = MessageReplyStatus.Success
             };
 
-            SendMessageInternal(messageHeader, downloadCompleteMessage);
+            SendResponse(messageHeader, downloadCompleteMessage);
 
         }
         catch (Exception ex)
@@ -193,11 +190,11 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 Status = MessageReplyStatus.Error,
                 ResultText = ex.Message
             };
-            SendMessageInternal(messageHeader, downloadError);
+            SendResponse(messageHeader, downloadError);
         }
     }
 
-    private void HandleGetSparkReleases(AhsokaMessageHeader messageHeader)
+    private void HandleGetSparkReleases(AhsokaServiceRequest messageHeader)
     {
         try
         {
@@ -211,7 +208,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 {
                     AhsokaLogging.LogMessage( AhsokaVerbosity.High, "Could not retrieve Auto-Provisioning Info.");
 
-                    SendMessageInternal(messageHeader, new SparkReleaseInfo()
+                    SendResponse(messageHeader, new SparkReleaseInfo()
                     {
                         ResultText = "Could not Auto Provision Display",
                         Result = MessageReplyStatus.Error
@@ -254,7 +251,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 
             results.Result = MessageReplyStatus.Success;
 
-            SendMessageInternal(messageHeader, results);
+            SendResponse(messageHeader, results);
         }
         catch (Exception ex)
         {
@@ -266,22 +263,22 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 ResultText = "Could not retrieve results from Spark"
             };
 
-            SendMessageInternal(messageHeader, results);
+            SendResponse(messageHeader, results);
         }
     }
 
-    private void HandleGetSparkSubscription(AhsokaMessageHeader messageHeader)
+    private void HandleGetSparkSubscription(AhsokaServiceRequest messageHeader)
     {
         var subscription = GetSparkSubscription();
 
-        SendMessageInternal(messageHeader, subscription);
+        SendResponse(messageHeader, subscription);
     }
 
-    private void HandleSetSparkSubscription(AhsokaMessageHeader messageHeader, SparkSubscription sparkSubscription)
+    private void HandleSetSparkSubscription(AhsokaServiceRequest messageHeader, SparkSubscription sparkSubscription)
     {
         WriteSubscriptionInfo(sparkSubscription);
 
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
 
     }
 

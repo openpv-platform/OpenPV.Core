@@ -58,10 +58,11 @@ public partial class AhsokaRuntime
     /// Get a reference to a Service Available in the Runtime
     /// </summary>
     /// <param name="serviceName"></param>
+    /// <param name="dataChannel"></param>
     /// <returns></returns>
-    public IAhsokaServiceEndPoint GetService(string serviceName)
+    public IAhsokaServiceEndPoint GetService(string serviceName, int dataChannel = 0)
     {
-        return ServiceEndPoints.Where(x=>x.ServiceConfig.ServiceName == serviceName).FirstOrDefault();
+        return ServiceEndPoints.Where(x=>x.ServiceConfig.ServiceName == serviceName && (dataChannel == 0 || dataChannel == x.ServiceConfig.DataChannel)).FirstOrDefault();
     }
 
     /// <summary>
@@ -179,12 +180,12 @@ public partial class AhsokaRuntime
     {
         if (ahsokaEndPoint is IAhsokaClientEndPoint client)
         {
-            if (!ClientEndPoints.Contains(client))
+            if (ClientEndPoints.Contains(client))
                 ClientEndPoints.Remove(client);
         }
         else if (ahsokaEndPoint is IAhsokaServiceEndPoint service)
         {
-            if (!ServiceEndPoints.Contains(service))
+            if (ServiceEndPoints.Contains(service))
                 ServiceEndPoints.Remove(service);
         }
 

@@ -57,17 +57,17 @@ internal class MacOSNetworkImplementation : NetworkPlatformImplementationBase
         NetworkProfileHelper.SetNetworkProfiles(profilesList);
     }
 
-    protected override void OnConnect(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override void OnConnect(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientConnecting, connectionRequest.AdapterId, "");
     }
 
-    protected override void OnDisconnect(AhsokaMessageHeader header, string adapterId)
+    protected override void OnDisconnect(NetworkService.AhsokaServiceRequest header, string adapterId)
     {
         NetworkService.SendConnectionStateNotification(header, WirelessConnectionState.ClientDisconnected, adapterId, "");
     }
 
-    protected override bool WaitForTimeSync(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override bool WaitForTimeSync(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientWaitingForTime, connectionRequest.AdapterId, connectionRequest.Ssid);
         return true;

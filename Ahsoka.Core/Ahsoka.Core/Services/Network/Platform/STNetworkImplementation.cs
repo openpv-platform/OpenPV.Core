@@ -253,7 +253,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
         NetworkProfileHelper.SetNetworkProfiles(profilesList);
     }
 
-    protected override void OnConnect(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override void OnConnect(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         // Get Configuration and Check that we are a Client
         var configuration = GetAdapterConfiguration(connectionRequest.AdapterId);
@@ -337,7 +337,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: Finished OnConnect - {connectionRequest.Ssid}");
     }
 
-    protected override void OnDisconnect(AhsokaMessageHeader header, string adapterId)
+    protected override void OnDisconnect(NetworkService.AhsokaServiceRequest header, string adapterId)
     {
         using var adapter = interopList.AquireInterop(adapterId);
 
@@ -358,7 +358,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
         }
     }
 
-    protected override bool WaitForTimeSync(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override bool WaitForTimeSync(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientWaitingForTime, connectionRequest.AdapterId, connectionRequest.Ssid);
 
@@ -366,7 +366,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
     }
 
     #region Private Methods
-    private void ListenForDisconnect(AhsokaMessageHeader header, WirelessConnectionRequest connectionRequest)
+    private void ListenForDisconnect(NetworkService.AhsokaServiceRequest header, WirelessConnectionRequest connectionRequest)
     {
         // Create New TokenSource
         tokenSource = new CancellationTokenSource();

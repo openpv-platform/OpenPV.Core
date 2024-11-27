@@ -1,0 +1,31 @@
+﻿namespace Ahsoka.ServiceFramework;
+
+/// <summary>
+/// Client Socket Interface
+/// </summary>
+public interface IAhsokaClientSocket
+{
+    /// <summary>
+    /// Connect and Use Endpoint for Handlign Messages.
+    /// </summary>
+    /// <param name="endPoint"></param>
+    void Connect(IAhsokaClientEndPoint endPoint);
+
+    /// <summary>
+    /// Disconnect the Socket
+    /// </summary>
+    void Disconnect();
+
+    /// <summary>
+    /// Send Data over the Socket Transport
+    /// </summary>
+    /// <param name="message"></param>
+    /// <param name="timeoutInMs"></param>
+    AhsokaClientMessage SendMessageWithResponse(AhsokaClientMessage message, int timeoutInMs);
+
+    /// <summary>
+    /// Send Data over the Socket Transport
+    /// </summary>
+    /// <param name="message"></param>
+    void SendMessage(AhsokaClientMessage message);
+}

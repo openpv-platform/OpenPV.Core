@@ -137,6 +137,8 @@ public class SecurityServiceTests : LinearTestBase
         {
             if (args.NotificationObject is ChallengeRequestInfo info)
             {
+                Console.WriteLine("Starting Up");
+
                 // Complete Challenge
                 securityServiceClient.CompleteChallenge(new ChallengeCompleteInfo()
                 {
@@ -145,6 +147,8 @@ public class SecurityServiceTests : LinearTestBase
                     AcceptRequest = true,
                     ClientIdSigned = generateSecret ? securityServiceClient.GetLocalSecret() : null // Returns Locally signed ClientID, Required for Accept.
                 });
+
+                Console.WriteLine("Ending");
             }
         };
 

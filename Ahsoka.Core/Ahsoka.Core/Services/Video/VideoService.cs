@@ -61,102 +61,101 @@ public class VideoService : AhsokaServiceBase<VideoMessageTypes.Ids>
             players[id] = GetInterop(id);
     }
 
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    protected override void OnHandleServiceRequest(AhsokaServiceRequest message)
     {
-        switch (messageHeader.TransportId.IntToEnum<VideoMessageTypes.Ids>())
+        switch (message.TransportId)
         {
             case VideoMessageTypes.Ids.GetVideoPlayers:
-                HandleGetPlayers(messageHeader);
+                HandleGetPlayers(message);
                 break;
             case VideoMessageTypes.Ids.PlayVideo:
-                HandlePlayVideo(messageHeader, message as VideoPlaybackRequest);
+                HandlePlayVideo(message, message.Message as VideoPlaybackRequest);
                 break;
             case VideoMessageTypes.Ids.PauseVideo:
-                HandlePauseVideo(messageHeader, message as VideoPlayer);
+                HandlePauseVideo(message, message.Message as VideoPlayer);
                 break;
             case VideoMessageTypes.Ids.ResumeVideo:
-                HandleResumeVideo(messageHeader, message as VideoPlayer);
+                HandleResumeVideo(message, message.Message as VideoPlayer);
                 break;
             case VideoMessageTypes.Ids.PositionVideo:
-                HandlePositionVideo(messageHeader, message as VideoPosition);
+                HandlePositionVideo(message, message.Message as VideoPosition);
                 break;
             case VideoMessageTypes.Ids.StopVideo:
-                HandleStopVideo(messageHeader, message as VideoPlayer);
+                HandleStopVideo(message, message.Message as VideoPlayer);
                 break;
             case VideoMessageTypes.Ids.RequestStatus:
-                HandleRequestStatus(messageHeader, message as VideoPlayer);
+                HandleRequestStatus(message, message.Message as VideoPlayer);
                 break;
         }
     }
 
-    private void HandleGetPlayers(AhsokaMessageHeader messageHeader)
+    private void HandleGetPlayers(AhsokaServiceRequest message)
     {
         var playerInfo = new VideoPlayerInfo();
         foreach (var player in players.Values)
             playerInfo.Players.Add(new VideoPlayer() { VideoPlayerID = player.PlayerID });
 
-        SendMessageInternal(messageHeader, playerInfo);
+        SendResponse(message, playerInfo);
     }
 
-    private void HandleRequestStatus(AhsokaMessageHeader messageHeader, VideoPlayer videoPlayer)
+    private void HandleRequestStatus(AhsokaServiceRequest message, VideoPlayer videoPlayer)
     {
         VideoStatus status = new();
 
         if (players.TryGetValue(videoPlayer.VideoPlayerID,out VideoPlayerImpl value))
             status = value.GetStatus(status);
 
-        SendMessageInternal(messageHeader, status);
+        SendResponse(message, status);
     }
 
-    private void HandlePlayVideo(AhsokaMessageHeader messageHeader, VideoPlaybackRequest videoPlaybackRequest)
+    private void HandlePlayVideo(AhsokaServiceRequest message, VideoPlaybackRequest videoPlaybackRequest)
     {
         VideoStatus status = new VideoStatus() { VideoState =  PlaybackState.Playing };
         if (players.TryGetValue(videoPlaybackRequest.VideoPlayerID, out VideoPlayerImpl value))
             status = value.PlayVideo(videoPlaybackRequest);
 
-        SendMessageInternal(messageHeader, status);
+        SendResponse(message, status);
     }
 
-    private void HandlePauseVideo(AhsokaMessageHeader messageHeader, VideoPlayer player)
+    private void HandlePauseVideo(AhsokaServiceRequest message, VideoPlayer player)
     {
         VideoStatus status = new VideoStatus() { VideoState = PlaybackState.Paused };
         if (players.TryGetValue(player.VideoPlayerID, out VideoPlayerImpl value))
             status = value.PauseVideo(player);
 
-        SendMessageInternal(messageHeader, status);
+        SendResponse(message, status);
     }
-    private void HandleResumeVideo(AhsokaMessageHeader messageHeader, VideoPlayer player)
+    private void HandleResumeVideo(AhsokaServiceRequest message, VideoPlayer player)
     {
         VideoStatus status = new VideoStatus() { VideoState = PlaybackState.Playing };
         if (players.TryGetValue(player.VideoPlayerID, out VideoPlayerImpl value))
             status = value.ResumeVideo(player);
 
-        SendMessageInternal(messageHeader, status);
+        SendResponse(message, status);
     }
 
-    private void HandlePositionVideo(AhsokaMessageHeader messageHeader, VideoPosition position)
+    private void HandlePositionVideo(AhsokaServiceRequest message, VideoPosition position)
     {
         VideoStatus status = new VideoStatus() { VideoState = PlaybackState.Playing };
         if (players.TryGetValue(position.VideoPlayerID, out VideoPlayerImpl value))
             status = value.PositionVideo(position);
 
-        SendMessageInternal(messageHeader, status);
+        SendResponse(message, status);
     }
 
-    private void HandleStopVideo(AhsokaMessageHeader messageHeader, VideoPlayer videoPlayer)
+    private void HandleStopVideo(AhsokaServiceRequest message, VideoPlayer videoPlayer)
     {
         VideoStatus status = new VideoStatus() { VideoState = PlaybackState.Stopped };
         if (players.TryGetValue(videoPlayer.VideoPlayerID, out VideoPlayerImpl value))
             status = value.StopVideo();
 
-        SendMessageInternal(messageHeader, status);
+        SendResponse(message, status);
     }
 
-    private void SendStatusNotification(VideoStatus e)
+    private void SendStatusNotification(VideoStatus statusEvent)
     {
         // Create a Header for our Notification.
-        var notifHeader = new AhsokaMessageHeader() { TransportId = VideoMessageTypes.Ids.StatusUpdated.EnumToInt() };
-        SendMessageInternal(notifHeader, e, true);
+        SendNotification(VideoMessageTypes.Ids.StatusUpdated, statusEvent);
     }
     #endregion
 }

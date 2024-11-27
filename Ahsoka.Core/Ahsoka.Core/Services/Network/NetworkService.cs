@@ -50,158 +50,148 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
         UpdateCacheValue(NetworkServiceMessages.Available, true);
     }
 
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
-        switch (messageHeader.TransportId.IntToEnum<NetworkMessageTypes.Ids>())
+        switch (request.TransportId)
         {
             case NetworkMessageTypes.Ids.GetAdapters:
-                GetAdapters(messageHeader);
+                GetAdapters(request);
                 break;
 
             case NetworkMessageTypes.Ids.GetAdapterConfiguration:
-                GetAdapterConfiguration(messageHeader, message as AdapterRequest);
+                GetAdapterConfiguration(request, request.Message as AdapterRequest);
                 break;
 
             case NetworkMessageTypes.Ids.SetAdapterConfiguration:
-                SetAdapterConfiguration(messageHeader, message as AdapterConfiguration);
+                SetAdapterConfiguration(request, request.Message as AdapterConfiguration);
                 break;
 
             case NetworkMessageTypes.Ids.EnableAdapter:
-                EnableAdapter(messageHeader, message as AdapterRequest);
+                EnableAdapter(request, request.Message as AdapterRequest);
                 break;
 
             case NetworkMessageTypes.Ids.DisableAdapter:
-                DisableAdapter(messageHeader, message as AdapterRequest);
+                DisableAdapter(request, request.Message as AdapterRequest);
                 break;
 
             case NetworkMessageTypes.Ids.DiscoverNetworks:
-                Discover(messageHeader, message as AdapterRequest);
+                Discover(request, request.Message as AdapterRequest);
                 break;
 
             case NetworkMessageTypes.Ids.GetNetworkProfiles:
-                GetNetworkProfiles(messageHeader, message as ProfileRequest);
+                GetNetworkProfiles(request, request.Message as ProfileRequest);
                 break;
 
             case NetworkMessageTypes.Ids.SetNetworkProfiles:
-                SetNetworkProfiles(messageHeader, message as NetworkProfilesList);
+                SetNetworkProfiles(request, request.Message as NetworkProfilesList);
                 break;
 
             case NetworkMessageTypes.Ids.ConnectToNetwork:
-                ConnectToNetwork(messageHeader, message as WirelessConnectionRequest);
+                ConnectToNetwork(request, request.Message as WirelessConnectionRequest);
                 break;
 
             case NetworkMessageTypes.Ids.DisconnectNetwork:
-                Disconnect(messageHeader, message as AdapterRequest);
+                Disconnect(request, request.Message as AdapterRequest);
                 break;
 
             case NetworkMessageTypes.Ids.GetNetworkInfo:
-                GetIpInfo(messageHeader, message as AdapterRequest);
+                GetIpInfo(request, request.Message as AdapterRequest);
                 break;
 
             case NetworkMessageTypes.Ids.AttemptAutoConnect:
-                AttemptAutoConnect(messageHeader, message as AutoConnectRequest);
+                AttemptAutoConnect(request, request.Message as AutoConnectRequest);
                 break;
         }
     }
 
-    private void AttemptAutoConnect(AhsokaMessageHeader messageHeader, AutoConnectRequest adapterRequest)
+    private void AttemptAutoConnect(AhsokaServiceRequest messageHeader, AutoConnectRequest adapterRequest)
     {
         networkInterface.AttemptAutoConnect(messageHeader, adapterRequest);
-        SendMessageInternal(messageHeader, new EmptyNotification());
+        SendResponse(messageHeader, new EmptyNotification());
     }
 
-    private void GetIpInfo(AhsokaMessageHeader messageHeader, AdapterRequest adapterRequest)
+    private void GetIpInfo(AhsokaServiceRequest messageHeader, AdapterRequest adapterRequest)
     {
         var response = networkInterface.GetIPInfo(adapterRequest);
-        SendMessageInternal(messageHeader, response);
+        SendResponse(messageHeader, response);
     }
 
-    private void EnableAdapter(AhsokaMessageHeader messageHeader, AdapterRequest adapterRequest)
+    private void EnableAdapter(AhsokaServiceRequest messageHeader, AdapterRequest adapterRequest)
     {
         // Send Empty Response to Ack.
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
 
         // Execute Enable and Block
         var response = networkInterface.EnableAdapter(adapterRequest);
 
         // Send Async Ready Message
-        var header = new AhsokaMessageHeader()
-        {
-            TransportId = NetworkMessageTypes.Ids.NetworkAdapterReady.EnumToInt()
-        };
-
-        SendMessageInternal(header, response, true);
+        SendNotification(NetworkMessageTypes.Ids.NetworkAdapterReady, response);
     }
 
-    private void DisableAdapter(AhsokaMessageHeader messageHeader, AdapterRequest adapterRequest)
+    private void DisableAdapter(AhsokaServiceRequest messageHeader, AdapterRequest adapterRequest)
     {
         var response = networkInterface.DisableAdapter(adapterRequest);
-        SendMessageInternal(messageHeader, response);
+        SendResponse(messageHeader, response);
     }
 
     [ExcludeFromCodeCoverage]
-    private void ConnectToNetwork(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest)
+    private void ConnectToNetwork(AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         networkInterface.Connect(messageHeader, connectionRequest);
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
     }
 
     [ExcludeFromCodeCoverage]
-    private void Disconnect(AhsokaMessageHeader messageHeader, AdapterRequest request)
+    private void Disconnect(AhsokaServiceRequest messageHeader, AdapterRequest request)
     {
         networkInterface.Disconnect(messageHeader, request.AdapterId);
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
     }
 
-    private void GetNetworkProfiles(AhsokaMessageHeader messageHeader, ProfileRequest profileRequest)
+    private void GetNetworkProfiles(AhsokaServiceRequest messageHeader, ProfileRequest profileRequest)
     {
         var response = networkInterface.GetProfiles(profileRequest);
-        SendMessageInternal(messageHeader, response);
+        SendResponse(messageHeader, response);
     }
 
-    private void SetNetworkProfiles(AhsokaMessageHeader messageHeader, NetworkProfilesList profileRequest)
+    private void SetNetworkProfiles(AhsokaServiceRequest messageHeader, NetworkProfilesList profileRequest)
     {
         networkInterface.SetProfiles(profileRequest);
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
     }
 
-    private void GetAdapters(AhsokaMessageHeader messageHeader)
+    private void GetAdapters(AhsokaServiceRequest messageHeader)
     {
         var response = networkInterface.GetAdapters();
-        SendMessageInternal(messageHeader, response);
+        SendResponse(messageHeader, response);
     }
 
-    private void GetAdapterConfiguration(AhsokaMessageHeader messageHeader, AdapterRequest request)
+    private void GetAdapterConfiguration(AhsokaServiceRequest messageHeader, AdapterRequest request)
     {
         var response = networkInterface.GetAdapterConfiguration(request.AdapterId);
-        SendMessageInternal(messageHeader, response);
+        SendResponse(messageHeader, response);
     }
 
-    private void SetAdapterConfiguration(AhsokaMessageHeader messageHeader, AdapterConfiguration adapterConfiguration)
+    private void SetAdapterConfiguration(AhsokaServiceRequest messageHeader, AdapterConfiguration adapterConfiguration)
     {
         var result = networkInterface.UpdateConfiguration(adapterConfiguration);
-        SendMessageInternal(messageHeader, result);
+        SendResponse(messageHeader, result);
     }
 
-    private void Discover(AhsokaMessageHeader mesageHeader, AdapterRequest request)
+    private void Discover(AhsokaServiceRequest mesageHeader, AdapterRequest request)
     {
         var networks = networkInterface.Discover(request.AdapterId);
-        SendMessageInternal(mesageHeader, networks);
+        SendResponse(mesageHeader, networks);
     }
 
     [ExcludeFromCodeCoverage]
-    internal void SendWirelessNetworkInfo(AhsokaMessageHeader messageHeader, WirelessNetworkInfo info)
+    internal void SendWirelessNetworkInfo(AhsokaServiceRequest messageHeader, WirelessNetworkInfo info)
     {
-        var header = new AhsokaMessageHeader()
-        {
-            TransportId = NetworkMessageTypes.Ids.WirelessSignalChanged.EnumToInt()
-        };
-
-        SendMessageInternal(header, info, true);
+        SendNotification(NetworkMessageTypes.Ids.WirelessSignalChanged, info);
     }
 
     [ExcludeFromCodeCoverage]
-    internal void SendConnectionStateNotification(AhsokaMessageHeader messageHeader, WirelessConnectionState connectionResult, string adapterId, string ssid)
+    internal void SendConnectionStateNotification(AhsokaServiceRequest messageHeader, WirelessConnectionState connectionResult, string adapterId, string ssid)
     {
         var response = new WirelessConnectionNotification()
         {
@@ -216,10 +206,10 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
             TransportId = NetworkMessageTypes.Ids.ConnectionStateNotification.EnumToInt()
         };
 
-        SendMessageInternal(header, response, true);
+        SendNotification(NetworkMessageTypes.Ids.ConnectionStateNotification, response);
 
         if (connectionResult is WirelessConnectionState.ClientConnected or WirelessConnectionState.ClientConnectionFailed)
-            SendMessageInternal(messageHeader, new WirelessConnectionResponse() { AdapterId = adapterId, Ssid = ssid, State = connectionResult });
+            SendResponse(messageHeader, new WirelessConnectionResponse() { AdapterId = adapterId, Ssid = ssid, State = connectionResult });
 
         //Notify Data Service of State
         UpdateCacheValue(NetworkServiceMessages.NetworkState, connectionResult.ToString());

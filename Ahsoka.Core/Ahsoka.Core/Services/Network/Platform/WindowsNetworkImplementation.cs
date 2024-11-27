@@ -141,7 +141,7 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
         NetworkProfileHelper.SetNetworkProfiles(profilesList);
     }
 
-    protected override void OnConnect(AhsokaMessageHeader header, WirelessConnectionRequest connectionRequest)
+    protected override void OnConnect(NetworkService.AhsokaServiceRequest header, WirelessConnectionRequest connectionRequest)
     {
         var adapter = interfaceList[Guid.Parse(connectionRequest.AdapterId)];
 
@@ -150,7 +150,7 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
             ManageConnection(header, adapter, connectionRequest);
     }
 
-    protected override void OnDisconnect(AhsokaMessageHeader header, string adapterId)
+    protected override void OnDisconnect(NetworkService.AhsokaServiceRequest header, string adapterId)
     {
         var adapter = interfaceList[Guid.Parse(adapterId)];
 
@@ -159,7 +159,7 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
         NetworkService.SendConnectionStateNotification(header, WirelessConnectionState.ClientDisconnected, adapterId, String.Empty);
     }
 
-    private void ManageConnection(AhsokaMessageHeader header, WlanInterface adapter, WirelessConnectionRequest connectionRequest)
+    private void ManageConnection(NetworkService.AhsokaServiceRequest header, WlanInterface adapter, WirelessConnectionRequest connectionRequest)
     {
         // Wire up a connection Listener
         adapter.WlanConnectionNotification -= ConnectionListener;
@@ -252,7 +252,7 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
 
     }
 
-    protected override bool WaitForTimeSync(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override bool WaitForTimeSync(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientWaitingForTime, connectionRequest.AdapterId, connectionRequest.Ssid);
         return true;

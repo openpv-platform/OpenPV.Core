@@ -121,111 +121,107 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             UpdateCacheValue(item.Key, item.Value);
     }
 
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
-        switch (messageHeader.TransportId.IntToEnum<SystemMessageTypes.Ids>())
+        switch (request.TransportId)
         {
             case SystemMessageTypes.Ids.Echo:
 
-                HandleEchoValue(messageHeader, message);
+                HandleEchoValue(request);
                 break;
 
             case SystemMessageTypes.Ids.GetServiceInfo:
 
-                HandleGetServiceInfo(messageHeader);
+                HandleGetServiceInfo(request);
                 break;
 
             case SystemMessageTypes.Ids.RequestShutdown:
 
-                HandleShutdown(messageHeader, message as ShutdownInformation);
+                HandleShutdown(request);
                 break;
 
             case SystemMessageTypes.Ids.GetHardwareInformation:
 
-                HandleGetHardwareInformation(messageHeader);
+                HandleGetHardwareInformation(request);
                 break;
 
             case SystemMessageTypes.Ids.LoadApplication:
             case SystemMessageTypes.Ids.LoadApplicationCancelled:
             case SystemMessageTypes.Ids.LoadApplicationData:
 
-                HandleLoadApplicationMessage(messageHeader, message);
+                HandleLoadApplicationMessage(request);
                 break;
 
             case SystemMessageTypes.Ids.GetBrightness:
-                HandleGetBrightness(messageHeader);
+                HandleGetBrightness(request);
                 break;
 
             case SystemMessageTypes.Ids.SetBrightness:
-                HandleSetBrightness(messageHeader, message as BrightnessInfo);
+                HandleSetBrightness(request);
                 break;
 
             case SystemMessageTypes.Ids.GetUsbInfo:
-                HandleGetUsbInfo(messageHeader);
+                HandleGetUsbInfo(request);
                 break;
 
             case SystemMessageTypes.Ids.SetUsbInfo:
-                HandleSetUsbInfo(messageHeader, message as UsbInfo);
+                HandleSetUsbInfo(request);
                 break;
 
             case SystemMessageTypes.Ids.SetSerialConfig:
-                HandleSetRS485Config(messageHeader, (RS485ConfigNotification)message);
+                HandleSetRS485Config(request);
                 break;
 
             case SystemMessageTypes.Ids.UpdateTouchTune:
-                Console.WriteLine("SystemService: OnHandleReceive: UpdateTouchscreen");
-                HandleUpdateTouchscreen(messageHeader, message as TouchTuneInfo);
+                HandleUpdateTouchscreen(request);
                 break;
 
             case SystemMessageTypes.Ids.SetBootLogo:
-                HandleSetBootLogo(messageHeader, message as BootLogoInfo);
+                HandleSetBootLogo(request);
                 break;
 
             case SystemMessageTypes.Ids.RequestNotif:
-                HandleNotif(messageHeader, message as EchoValue);
+                HandleNotif(request);
                 break;
         }
     }
 
-    private void HandleNotif(AhsokaMessageHeader messageHeader, EchoValue message)
+    private void HandleNotif(AhsokaServiceRequest message)
     {
-        AhsokaMessageHeader header = new()
-        {
-            TransportId = SystemMessageTypes.Ids.TestNotif.EnumToInt()
-        };
+        SendResponse(message, message.Message);
 
-        SendMessageInternal(messageHeader);
-        SendMessageInternal(header, message, true);
+        SendNotification(SystemMessageTypes.Ids.TestNotif, message.Message);
     }
 
-    private void HandleShutdown(AhsokaMessageHeader messageHeader, ShutdownInformation message)
+    private void HandleShutdown(AhsokaServiceRequest message)
     {
-        SendShutdownNotification(messageHeader);
+        ShutdownInformation shutdownInfo = message.Message as ShutdownInformation;
+        SendResponse(message,shutdownInfo);
 
-        if (message.ShutdownType == ShutdownTypes.ShutdownServices)
+        if (shutdownInfo.ShutdownType == ShutdownTypes.ShutdownServices)
         {
             // Shutting Down From the Work Thread may Block
             Task.Run(() => { AhsokaRuntime.Default.StopAllEndPoints(false, true); });
         }
-        else if (message.ShutdownType == ShutdownTypes.ShutdownApplication)
+        else if (shutdownInfo.ShutdownType == ShutdownTypes.ShutdownApplication)
         {
-            coreInterop.ShutdownApplication(message.ShutdownCode);
+            coreInterop.ShutdownApplication(shutdownInfo.ShutdownCode);
         }
-        else if (message.ShutdownType == ShutdownTypes.Reboot)
+        else if (shutdownInfo.ShutdownType == ShutdownTypes.Reboot)
         {
             coreInterop.Reboot();
         }
     }
 
-    private void HandleLoadApplicationMessage(AhsokaMessageHeader messageHeader, object message)
+    private void HandleLoadApplicationMessage(AhsokaServiceRequest message)
     {
-        if (message is LoadApplication loadApplication) // Replies with LoadAppReply
+        if (message.Message is LoadApplication loadApplication) // Replies with LoadAppReply
         {
             var helper = FileTransferServiceHelper.CreateFileTransferHelper(loadApplication);
             if (helper != null)
             {
                 var response = helper.GetLoadReply<LoadApplicationReply>();
-                SendMessageInternal(messageHeader, response);
+                SendResponse(message, response);
                 Debug.WriteLine($"File Upload Started {loadApplication.FileName}");
             }
             else
@@ -236,12 +232,12 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
                     ReplyReason = $"Upload for file {loadApplication.FileName} is already in progress."
                 };
 
-                SendMessageInternal(messageHeader, response);
+                SendResponse(message, response);
                 Debug.WriteLine($"File Upload Rejected {loadApplication.FileName}");
             }
 
         }
-        else if (message is LoadApplicationData loadData) // Replys with LoadDataReply.
+        else if (message.Message is LoadApplicationData loadData) // Replys with LoadDataReply.
         {
             if (FileTransferServiceHelper.TryGetFileTransferHelper(loadData.UploadId, out var transferHelper))
             {
@@ -249,7 +245,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
                 var result = transferHelper.HandleData<LoadApplicationDataReply>(loadData);
                 if (result != null)
                 {
-                    SendMessageInternal(messageHeader, result);
+                    SendResponse(message, result);
 
                     if (result.ReplyStatus == MessageReplyStatus.Success)
                     {
@@ -262,7 +258,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             }
             else // No Transfer Object Found
             {
-                SendMessageInternal(messageHeader, new LoadApplicationDataReply()
+                SendResponse(message, new LoadApplicationDataReply()
                 {
                     UploadId = loadData.UploadId,
                     ReplyStatus = MessageReplyStatus.Error,
@@ -270,18 +266,18 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
                 });
             }
         }
-        else if (message is LoadApplicationCancelled clientCancelled) // Reply with Load Data Reply
+        else if (message.Message is LoadApplicationCancelled clientCancelled) // Reply with Load Data Reply
         {
             if (FileTransferServiceHelper.TryGetFileTransferHelper(clientCancelled.UploadId, out var transferHelper))
             {
                 var result = transferHelper.HandleClientCancellation<LoadApplicationDataReply>(clientCancelled);
 
-                SendMessageInternal(messageHeader, result);
+                SendResponse(message, result);
             }
         }
     }
 
-    private void HandleGetHardwareInformation(AhsokaMessageHeader messageHeader)
+    private void HandleGetHardwareInformation(AhsokaServiceRequest message)
     {
         if (deviceSigningKey == null)
             deviceSigningKey = SystemInfo.HardwareInfo.GetDeviceSigningKey();
@@ -302,67 +298,69 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         foreach (var item in platformVersions)
             response.VersionInfoes[item.Key] = item.Value;
 
-        SendMessageInternal(messageHeader, response);
+        SendResponse(message, response);
     }
 
-    public void SendShutdownNotification(AhsokaMessageHeader messageHeader)
-    {
-        SendMessageInternal(messageHeader);
-    }
-
-    private void HandleGetServiceInfo(AhsokaMessageHeader messageHeader)
+    private void HandleGetServiceInfo(AhsokaServiceRequest message)
     {
         var response = new ServiceInfo();
         foreach (var item in GetServiceInfo())
             response.ServiceStats.Add(item);
 
-        SendMessageInternal(messageHeader, response);
+        SendResponse(message, response);
     }
 
-    private void HandleEchoValue(AhsokaMessageHeader messageHeader, object message)
+    private void HandleEchoValue(AhsokaServiceRequest message)
     {
-        object returnObject = new EchoValue() { DataValue = (message as EchoValue).DataValue + " From Server" };
+        object returnObject = new EchoValue() 
+        { 
+            DataValue = (message.Message as EchoValue).DataValue + " From Server" 
+        };
 
-        SendMessageInternal(messageHeader, returnObject);
+        SendResponse(message, returnObject);
     }
 
-    private void HandleGetBrightness(AhsokaMessageHeader messageHeader)
+    private void HandleGetBrightness(AhsokaServiceRequest message)
     {
-        SendMessageInternal(messageHeader, settings.BrightnessInfo);
+        SendResponse(message, settings.BrightnessInfo);
     }
 
-    private void HandleSetBrightness(AhsokaMessageHeader messageHeader, BrightnessInfo brightnessInfo)
+    private void HandleSetBrightness(AhsokaServiceRequest message)
     {
-        coreInterop.SetBrightness(brightnessInfo.Percentage);
-        settings.BrightnessInfo.Percentage = brightnessInfo.Percentage;
-        if (brightnessInfo.Persist)
+        var info = message.Message as BrightnessInfo;
+        coreInterop.SetBrightness(info.Percentage);
+        settings.BrightnessInfo.Percentage = info.Percentage;
+        if (info.Persist)
             SaveSystemSettings();
-        HandleGetBrightness(messageHeader);
+
+        HandleGetBrightness(message);
     }
 
-    private void HandleGetUsbInfo(AhsokaMessageHeader messageHeader)
+    private void HandleGetUsbInfo(AhsokaServiceRequest message)
     {
-        SendMessageInternal(messageHeader, coreInterop.GetUsbInfo());
+        SendResponse(message, coreInterop.GetUsbInfo());
     }
 
-    private void HandleSetUsbInfo(AhsokaMessageHeader messageHeader, UsbInfo usbInfo)
+    private void HandleSetUsbInfo(AhsokaServiceRequest message)
     {
-        coreInterop.SetUsbInfo(usbInfo);
-        SendMessageInternal(messageHeader);
+        coreInterop.SetUsbInfo(message.Message as UsbInfo);
+        SendResponse(message);
     }
 
-    private void HandleSetRS485Config(AhsokaMessageHeader messageHeader, RS485ConfigNotification serial_config)
+    private void HandleSetRS485Config(AhsokaServiceRequest message)
     {
+        var config = message.Message as RS485ConfigNotification;
+
         // We are converting the protobuf structure back to it's base type to set the config locally.
         var serial_rs485_config = new Platform.SerialRS485()
         {
-            flags = serial_config.Flags,
-            delay_rts_after_send = serial_config.DelayRtsAfterSend,
-            delay_rts_before_send = serial_config.DelayRtsBeforeSend
+            flags = config.Flags,
+            delay_rts_after_send = config.DelayRtsAfterSend,
+            delay_rts_before_send = config.DelayRtsBeforeSend
         };
         coreInterop.SetRS485Config(serial_rs485_config);
 
-        SendMessageInternal(messageHeader);
+        SendResponse(message);
     }
 
     internal List<ServiceStats> GetServiceInfo()
@@ -447,14 +445,15 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         return file;
     }
 
-    private void HandleUpdateTouchscreen(AhsokaMessageHeader messageHeader, TouchTuneInfo updateTouchscreen)
+    private void HandleUpdateTouchscreen(AhsokaServiceRequest message)
     {
-        var response = coreInterop.UpdateTouchTune(updateTouchscreen);
-        SendMessageInternal(messageHeader, response);
+        var response = coreInterop.UpdateTouchTune(message.Message as TouchTuneInfo);
+        SendResponse(message, response);
     }
 
-    private void HandleSetBootLogo(AhsokaMessageHeader messageHeader, BootLogoInfo bootLogoInfo)
+    private void HandleSetBootLogo(AhsokaServiceRequest message)
     {
+        var bootLogoInfo = message.Message as BootLogoInfo;
         string tempFile = Path.GetTempFileName() + Path.GetExtension(bootLogoInfo.Path);
         if (bootLogoInfo.Rotation != BootLogoRotation.NoRotation)
         {
@@ -468,7 +467,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         }
 
         coreInterop.SetBootLogo(bootLogoInfo.Path);
-        SendMessageInternal(messageHeader);
+        SendResponse(message);
 
         if (File.Exists(tempFile))
             File.Delete(tempFile);

@@ -44,19 +44,20 @@ public class TimeService : AhsokaServiceBase<TimeServiceMessageTypes.Ids>
     /// contains the Transport ID (Message Type) that allows us to switch between various handlers.
     /// </summary>
     /// <param name="messageHeader"></param>
-    /// <param name="message"></param>
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    /// <param name="request"></param>
+
+    protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
-        switch (messageHeader.TransportId.IntToEnum<TimeServiceMessageTypes.Ids>())
+        switch (request.TransportId)
         {
             case TimeServiceMessageTypes.Ids.GetTime:
 
-                HandleGetTime(messageHeader);
+                HandleGetTime(request);
                 break;
 
             case TimeServiceMessageTypes.Ids.SetTime:
 
-                HandleSetTime(messageHeader, message);
+                HandleSetTime(request, request.Message);
                 break;
         }
     }
@@ -66,7 +67,7 @@ public class TimeService : AhsokaServiceBase<TimeServiceMessageTypes.Ids>
     /// </summary>
     /// <param name="messageHeader"></param>
     /// <param name="message"></param>
-    private void HandleSetTime(AhsokaMessageHeader messageHeader, object message)
+    private void HandleSetTime(AhsokaServiceRequest messageHeader, object message)
     {
         // Create a Thread for the Set Time Method
         // here we will send a notification when the time is set.
@@ -74,23 +75,20 @@ public class TimeService : AhsokaServiceBase<TimeServiceMessageTypes.Ids>
         {
             SetTimeResult result = timeServiceImplemntation.SetTime(message as TimeInfo);
 
-            // Create a Header for our Notification.
-            var notifHeader = new AhsokaMessageHeader() { TransportId = TimeServiceMessageTypes.Ids.SetTimeCompleteNotification.EnumToInt() };
-
             // Send the Result as a Notification (async socket)
-            SendMessageInternal(notifHeader, result, true);
+            SendNotification(TimeServiceMessageTypes.Ids.SetTimeCompleteNotification, result);
         });
 
         // While our Task is Running Async, we go ahead adn release the client
         // by sending the empty notification the original header.
-        SendMessageInternal(messageHeader, new EmptyNotification());
+        SendResponse(messageHeader, new EmptyNotification());
     }
 
     /// <summary>
     /// Handle the Get Time Message
     /// </summary>
     /// <param name="messageHeader"></param>
-    private void HandleGetTime(AhsokaMessageHeader messageHeader)
+    private void HandleGetTime(AhsokaServiceRequest messageHeader)
     {
         // Get the Result of our Time request from the Platform Implemetnation
         TimeInfo info = timeServiceImplemntation.GetTime();
@@ -98,7 +96,7 @@ public class TimeService : AhsokaServiceBase<TimeServiceMessageTypes.Ids>
         // Return the Info to the Client.   Note that we reply with the messageHeader
         // which ensures this call returns the the calling client since services can
         // handle multiple clients.
-        SendMessageInternal(messageHeader, info);
+        SendResponse(messageHeader, info);
     }
 
 

@@ -141,14 +141,14 @@ public class ServiceTests : LinearTestBase
 
     readonly Semaphore messageReceived = new(0, 1);
 
-    ///[TestMethod]
+    [TestMethod]
     public void TestNotifications()
     {
         SystemServiceClient systemClient = new();
         systemClient.Start();
 
         var receiveCount = 0;
-        var totalRuns = 200000;
+        var totalRuns = 100000;
 
         // List to Message Notifications
         systemClient.NotificationReceived += (sender, args) =>

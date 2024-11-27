@@ -81,13 +81,11 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     /// <summary>
     /// Handle Simple Token Requests
     /// </summary>
-    /// <param name="messageHeader"></param>
-    /// <param name="message"></param>
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    /// <param name="args"></param>
+    protected override void OnReceiveNotification(AhsokaNotificationArgs args)
     {
-        if (messageHeader.TransportId == SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt() && message is Token token)
+        if (args.TransportId == SecurityMessageTypes.Ids.AuthorizationComplete && args.NotificationObject is Token token)
         {
-
             // Accept Challenge Token and Release WaitEvent
             lock (requests)
             {
@@ -95,9 +93,10 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
                     requests[token.RequestId.ToGuid()] = token;
             }
             waitForChallengeAccept.Set();
+
+            args.ShouldRaiseEvent = false;
         }
 
-        base.OnHandleReceive(messageHeader, message);
     }
 
     /// <summary>

@@ -3,7 +3,6 @@
 
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
-using Ahsoka.Utility;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Protocol;
@@ -37,38 +36,38 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
     {
     }
 
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
-        switch (messageHeader.TransportId.IntToEnum<IotMessageTypes.Ids>())
+        switch (request.TransportId)
         {
             case IotMessageTypes.Ids.CreateClient:
 
-                HandleCreateClient(messageHeader, message as ClientInfo);
+                HandleCreateClient(request, request.Message as ClientInfo);
                 break;
 
             case IotMessageTypes.Ids.DestroyClient:
 
-                HandleDestroyClient(messageHeader, message as ClientMessage);
+                HandleDestroyClient(request, request.Message as ClientMessage);
                 break;
 
             case IotMessageTypes.Ids.SubscribeTopic:
 
-                HandleTopic(messageHeader, message as TopicSubscription, true);
+                HandleTopic(request, request.Message as TopicSubscription, true);
                 break;
 
             case IotMessageTypes.Ids.UnsubscribeTopic:
 
-                HandleTopic(messageHeader, message as TopicSubscription, false);
+                HandleTopic(request, request.Message as TopicSubscription, false);
                 break;
 
             case IotMessageTypes.Ids.PublishTopic:
 
-                HandlePublishTopic(messageHeader, message as TopicMessage);
+                HandlePublishTopic(request, request.Message as TopicMessage);
                 break;
         }
     }
 
-    private void HandlePublishTopic(AhsokaMessageHeader messageHeader, TopicMessage topicMessage)
+    private void HandlePublishTopic(AhsokaServiceRequest messageHeader, TopicMessage topicMessage)
     {
         TopicResult result = null;
         var client = GetClient(topicMessage.ClientId);
@@ -82,10 +81,10 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
             result = new TopicResult() { ClientId = topicMessage.ClientId, Status = TopicResultStatus.Error, ResultText = ex.Message };
         }
 
-        SendMessageInternal(messageHeader, result);
+        SendResponse(messageHeader, result);
     }
 
-    private void HandleTopic(AhsokaMessageHeader messageHeader, TopicSubscription topicSubscription, bool subscribe)
+    private void HandleTopic(AhsokaServiceRequest messageHeader, TopicSubscription topicSubscription, bool subscribe)
     {
         TopicResult result = null;
         var client = GetClient(topicSubscription.ClientId);
@@ -109,10 +108,10 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
             result = new TopicResult() { ClientId = topicSubscription.ClientId, Status = TopicResultStatus.Error, ResultText = ex.Message };
         }
 
-        SendMessageInternal(messageHeader, result);
+        SendResponse(messageHeader, result);
     }
 
-    private void HandleCreateClient(AhsokaMessageHeader messageHeader, ClientInfo clientInfo)
+    private void HandleCreateClient(AhsokaServiceRequest messageHeader, ClientInfo clientInfo)
     {
         // Create Tracker
         var internalClient = CreateClientTracker(messageHeader, clientInfo);
@@ -186,8 +185,6 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
 
         internalClient.NativeClient.ApplicationMessageReceivedAsync += (e) =>
         {
-            var reply = CreateReplyMessageHeader(messageHeader, IotMessageTypes.Ids.TopicReceivedNotification);
-
             var notif = new TopicMessage()
             {
                 ClientId = e.ClientId,
@@ -195,7 +192,7 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
                 Payload = e.ApplicationMessage.PayloadSegment.ToArray(),
             };
 
-            SendMessageInternal(reply, notif, true);
+            SendNotification(IotMessageTypes.Ids.TopicReceivedNotification, notif);
 
             return Task.CompletedTask;
         };
@@ -221,7 +218,7 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
         }
     }
 
-    private void HandleDestroyClient(AhsokaMessageHeader messageHeader, ClientMessage clientMessage)
+    private void HandleDestroyClient(AhsokaServiceRequest messageHeader, ClientMessage clientMessage)
     {
         // Get Client
         var client = GetClient(clientMessage.ClientId);
@@ -237,10 +234,10 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
             SendConnectionResult(messageHeader, ClientState.Disconnected, client);
         }
         else
-            SendMessageInternal(messageHeader);
+            SendResponse(messageHeader);
     }
 
-    private void SendConnectionResult(AhsokaMessageHeader header, ClientState state, InternalClient client, string resultText = null)
+    private void SendConnectionResult(AhsokaServiceRequest header, ClientState state, InternalClient client, string resultText = null)
     {
         client.State = state;
 
@@ -253,7 +250,7 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
             ResultText = resultText
         };
 
-        SendMessageInternal(header, notif);
+        SendResponse(header, notif);
     }
 
     private InternalClient GetClient(string clientId)
@@ -261,11 +258,11 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
         return clients.GetValueOrDefault(clientId);
     }
 
-    private InternalClient CreateClientTracker(AhsokaMessageHeader header, ClientInfo clientInfo)
+    private InternalClient CreateClientTracker(AhsokaServiceRequest header, ClientInfo clientInfo)
     {
         var data = new InternalClient()
         {
-            ClientId = new Guid(header.ClientId).ToString(), // Use Client ID for Cloud Clients too.
+            ClientId = new Guid(header.Header.ClientId).ToString(), // Use Client ID for Cloud Clients too.
             ClientInfo = clientInfo,
             NativeClient = null,
             State = ClientState.Connected,

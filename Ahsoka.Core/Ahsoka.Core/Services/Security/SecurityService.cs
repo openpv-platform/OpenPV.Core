@@ -1,9 +1,7 @@
 ﻿
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
-using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -53,20 +51,19 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
     /// <summary>
     /// Handles all Service Messages
     /// </summary>
-    /// <param name="messageHeader"></param>
-    /// <param name="message"></param>
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    /// <param name="request"></param>
+    protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
-        switch (messageHeader.TransportId.IntToEnum<SecurityMessageTypes.Ids>())
+        switch (request.TransportId)
         {
             case SecurityMessageTypes.Ids.RequestToken:
 
-                HandleCreateToken(messageHeader, message as TokenRequestInfo);
+                HandleCreateToken(request, request.Message as TokenRequestInfo);
                 break;
 
             case SecurityMessageTypes.Ids.CompleteChallenge:
 
-                HandleCompleteChallenge(messageHeader, message as ChallengeCompleteInfo);
+                HandleCompleteChallenge(request, request.Message as ChallengeCompleteInfo);
                 break;
 
         }
@@ -101,39 +98,37 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
 
     }
 
-    private void HandleCreateToken(AhsokaMessageHeader messageHeader, TokenRequestInfo tokenRequestInfo)
+    private void HandleCreateToken(AhsokaServiceRequest request, TokenRequestInfo tokenRequestInfo)
     {
-        var resultToken = TokenSource.Default.RequestTokens(tokenRequestInfo, configuration.ApplicationId, out byte[] request);
-        SendMessageInternal(messageHeader, new TokenRequestResponse { RequestId = request });
+        var resultToken = TokenSource.Default.RequestTokens(tokenRequestInfo, configuration.ApplicationId, out byte[] requestInfo);
+        SendResponse(request, new TokenRequestResponse { RequestId = requestInfo });
 
         // Return Token Or Issue Challenge.
         if (configuration.RequireChallenge == ChallengeOptions.NotRequired)
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, "HandleCreateToken - Not Required");
-            messageHeader.TransportId = SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt();
-            SendMessageInternal(messageHeader, resultToken, true);
+            SendNotification(SecurityMessageTypes.Ids.AuthorizationComplete, resultToken);
         }
         else
         {
-            messageHeader.TransportId = SecurityMessageTypes.Ids.ChallengeReceived.EnumToInt();
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, "HandleCreateToken - Required");
-            SendMessageInternal(messageHeader, new ChallengeRequestInfo()
+            SendNotification(SecurityMessageTypes.Ids.ChallengeReceived, new ChallengeRequestInfo()
             {
-                RequestId = request,
+                RequestId = requestInfo,
                 ClientCode = tokenRequestInfo.ClientCode,
                 ClientDescription = tokenRequestInfo.ClientDescription
-            }, true);
+            });
         }
 
     }
     
-    private void HandleCompleteChallenge(AhsokaMessageHeader messageHeader, ChallengeCompleteInfo challengeCompleteInfo)
+    private void HandleCompleteChallenge(AhsokaServiceRequest messageHeader, ChallengeCompleteInfo challengeCompleteInfo)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.High, "HandleCompleteChallenge");
         Token token = new Token() { RequestId = challengeCompleteInfo.RequestId };
         if (challengeCompleteInfo.AcceptRequest)
         {
-            bool result = ValidateLocalSecret(challengeCompleteInfo.ClientIdSigned, messageHeader.ClientId);
+            bool result = ValidateLocalSecret(challengeCompleteInfo.ClientIdSigned, messageHeader.Header.ClientId);
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Validated Client Secret for Local Security Client with result {result}");
             if (result)
                 token = TokenSource.Default.EnableToken(challengeCompleteInfo.RequestId, challengeCompleteInfo.ClientCode);
@@ -142,11 +137,10 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
         }
 
         // Reply To Challenge Complete
-        SendMessageInternal(messageHeader, token);
+        SendResponse(messageHeader, token);
 
         // Send Notification Regardless to Release any Waiting Client
-        messageHeader.TransportId = SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt();
-        SendMessageInternal(messageHeader, token);
+        SendNotification(SecurityMessageTypes.Ids.AuthorizationComplete, token);
     }
     #endregion
 

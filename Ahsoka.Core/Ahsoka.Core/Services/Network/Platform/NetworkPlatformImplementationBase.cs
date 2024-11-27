@@ -135,14 +135,14 @@ internal abstract class NetworkPlatformImplementationBase
             OnSetProfiles(profilesList);
     }
 
-    internal void Connect(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest)
+    internal void Connect(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         var info = networkAdapters[connectionRequest.AdapterId];
         if (!autoConnectInProgress && info.AdapterType == NetworkAdapterType.WifiClient)
             OnConnect(messageHeader, connectionRequest);
     }
 
-    internal void Disconnect(AhsokaMessageHeader messageHeader, string adapterId)
+    internal void Disconnect(NetworkService.AhsokaServiceRequest messageHeader, string adapterId)
     {
         var info = networkAdapters[adapterId];
         if (!autoConnectInProgress && info.AdapterType == NetworkAdapterType.WifiClient)
@@ -183,7 +183,7 @@ internal abstract class NetworkPlatformImplementationBase
         return ipInfo;
     }
 
-    protected bool WaitForIPAddress(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest)
+    protected bool WaitForIPAddress(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Waiting for IPAddress for {connectionRequest.WaitForIPAddressSeconds}");
 
@@ -214,7 +214,7 @@ internal abstract class NetworkPlatformImplementationBase
         return ipAddressFound;
     }
 
-    internal void AttemptAutoConnect(AhsokaMessageHeader messageHeader, AutoConnectRequest adapterRequest)
+    internal void AttemptAutoConnect(NetworkService.AhsokaServiceRequest messageHeader, AutoConnectRequest adapterRequest)
     {
         var info = networkAdapters[adapterRequest.AdapterId];
         if (autoConnectInProgress || info.AdapterType == NetworkAdapterType.WifiClient)
@@ -298,7 +298,7 @@ internal abstract class NetworkPlatformImplementationBase
     #endregion
 
     #region Abstract Calls
-    protected abstract bool WaitForTimeSync(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest);
+    protected abstract bool WaitForTimeSync(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest);
 
     protected abstract List<AdapterInfo> GetAdapterList();
 
@@ -314,9 +314,9 @@ internal abstract class NetworkPlatformImplementationBase
 
     protected abstract void OnSetProfiles(NetworkProfilesList profilesList);
 
-    protected abstract void OnConnect(AhsokaMessageHeader messageHeader, WirelessConnectionRequest connectionRequest);
+    protected abstract void OnConnect(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest);
 
-    protected abstract void OnDisconnect(AhsokaMessageHeader messageHeader, string adapterId);
+    protected abstract void OnDisconnect(NetworkService.AhsokaServiceRequest messageHeader, string adapterId);
 
  
     #endregion

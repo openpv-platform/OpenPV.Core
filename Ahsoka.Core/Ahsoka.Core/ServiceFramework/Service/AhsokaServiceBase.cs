@@ -82,7 +82,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     /// </summary>
     public override void Start()
     {
-        Start([CreateDefaultSocket(ServiceConfig)]);
+        Start(null);
     }
 
     /// <summary>
@@ -93,8 +93,11 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     {
         if (!isServiceStarted)
         {
-            handledSockets = sockets;
+            if (sockets == null || sockets.Length == 0)
+                sockets = [CreateDefaultSocket(ServiceConfig)];
 
+            handledSockets = sockets;
+         
             // Raise Before Connecting
             OnEndPointStarting();
 

@@ -24,5 +24,7 @@ class Program
         // Start the Application passing it our drawing area
         new ApplicationController()
             .RunApplication(InstallerDrawingManager.Default);
+
+        ApplicationContext.Exit();
     }
 }

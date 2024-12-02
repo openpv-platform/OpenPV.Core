@@ -78,8 +78,10 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
                 // Start Async Service
                 internalService = new InstallService();
-                AhsokaRuntime.Default.StartEndPoints(internalService);
+                internalService.Start();
+                unpackReady.Set();
 
+                internalService.WaitForStop();
             }
             else
             {
@@ -116,9 +118,8 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
         // Send Install Command to Service to Install
         var clientTask = Task.Run(() =>
         {
-            // Wait for Unpack if running Real Installer.
-            if (!useLocalInstaller)
-                unpackReady.WaitOne();
+            // Wait for Unpack
+            unpackReady.WaitOne();
 
             if (!unpackSuccessful)
                 return new InstallCompleteInfo() { Message = "Unable to Read Package", Result = InstallResult.InvalidFile };

@@ -279,7 +279,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
     private void HandleGetHardwareInformation(AhsokaServiceRequest message)
     {
-        if (deviceSigningKey == null)
+        if (deviceSigningKey == null && !SystemInfo.IsDesktop())
             deviceSigningKey = SystemInfo.HardwareInfo.GetDeviceSigningKey();
 
         var response = new GetHardwareInformationReply()

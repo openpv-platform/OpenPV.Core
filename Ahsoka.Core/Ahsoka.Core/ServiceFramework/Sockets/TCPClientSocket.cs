@@ -1,9 +1,11 @@
-﻿using NetMQ;
+﻿using Ahsoka.Utility;
+using NetMQ;
 using NetMQ.Sockets;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Sockets;
+using System.Security;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -47,23 +49,41 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
                 {
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Sending Client Message from {endPoint.ServiceConfig.ServiceName} ");
 
-                    var socketMessage = sendQueue.Dequeue();
+                    var request = sendQueue.Dequeue();
 
                     // Prepare Response Message 
                     using MemoryStream headerStream = new();
-                    ProtoBuf.Serializer.Serialize(headerStream, socketMessage.Header);
+                    ProtoBuf.Serializer.Serialize(headerStream, request.Header);
 
                     NetMQMessage message = new();
                     message.Append(headerStream.ToArray());
-                    message.Append(socketMessage.MessageData);
+                    message.Append(request.MessageData);
 
-                    socket.TrySendMultipartMessage(message);
+                    var result = socket.TrySendMultipartMessage(message);
 
                     // If this message has a reply, we wait for it.
-                    if (socketMessage.ResponseTimeout > 0)
+                    if (request.ResponseTimeout > 0)
                     {
-                        socketMessage = ReceiveMessage(socket, socketMessage.ResponseTimeout);
-                        responseObjects.Add(socketMessage);
+                        // Recieve Messages Until Transport ID Matches OR we Timeout (null)
+                        var cancelTime = DateTime.Now.Add(TimeSpan.FromMilliseconds(request.ResponseTimeout));
+
+                        AhsokaClientMessage response = ReceiveMessage(socket);
+                       
+                        while (cancelTime > DateTime.Now &&  // Not Timed Out
+                              !(response?.Header.TransportId <= 0) && // Out of Band Exception (Security / Error)
+                              !(response?.Header.TransportId == request.Header.TransportId && response?.Header?.ClientMessageId == request.Header.ClientMessageId)) // Not Our Reply
+                        {
+                            // Route Message to Notification Handler (For Legacy Apps
+                            // that sent Notifications on Main Socket)
+                            if (response != null)
+                                this.endPoint.HandleNotification(response); 
+                            
+                            // Fetch Next Message
+                            response = ReceiveMessage(socket);
+                        }
+
+                        // Add Response Object.
+                        responseObjects.Add(response);
                     }
 
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client Message Completed from {endPoint.ServiceConfig.ServiceName} ");
@@ -133,9 +153,7 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
         socketMessage.ResponseTimeout = timeOutInMs;
         sendQueue.Enqueue(socketMessage);
 
-        var responseObject = responseObjects.Take();
-
-        return responseObject;
+        return responseObjects.Take();
     }
 
     /// <summary>
@@ -148,14 +166,14 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
         sendQueue.Enqueue(socketMessage);
     }
 
-    AhsokaClientMessage ReceiveMessage(DealerSocket recieveSocket, int messageTimeoutInMs = 1000)
+    AhsokaClientMessage ReceiveMessage(DealerSocket recieveSocket)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Client Message on {endPoint.ServiceConfig.ServiceName} ");
         AhsokaClientMessage returnMessage = null;
         NetMQMessage message = new();
         try
         {
-            if (recieveSocket != null && recieveSocket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(messageTimeoutInMs), ref message, 2))
+            if (recieveSocket != null && recieveSocket.TryReceiveMultipartMessage(TimeSpan.FromMilliseconds(1000), ref message, 2))
             {
                 // Decode Request Header
                 using MemoryStream headerData = new(message.Pop().Buffer);

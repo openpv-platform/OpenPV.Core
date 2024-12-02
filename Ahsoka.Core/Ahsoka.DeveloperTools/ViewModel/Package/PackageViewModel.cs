@@ -768,7 +768,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                 }
 
                 // Clear Journal Before App Install
-                if (IsOpenView)
+                if (IsOpenView && !SystemInfo.IsDesktop())
                 {
                     var prep = RemoteTargetToolFactory.GetToolsForPlatform(ParentViewModel.ActiveConnection.Connection.PlatformFamily);
                     prep.ClearJournal(ParentViewModel.ActiveConnection.Connection);

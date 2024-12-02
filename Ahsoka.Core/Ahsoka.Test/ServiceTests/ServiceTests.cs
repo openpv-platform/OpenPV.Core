@@ -130,8 +130,6 @@ public class ServiceTests : LinearTestBase
             systemClient.SetBootLogo(bootLogo);
         }
 
-
-
         systemClient.RequestServiceShutdown();
        
 

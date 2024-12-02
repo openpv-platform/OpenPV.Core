@@ -2,6 +2,7 @@
 using Ahsoka.Installer.InstallEngine;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
+using Ahsoka.Utility;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -42,7 +43,7 @@ public class InstallService : AhsokaServiceBase<InstallMessageTypes.Ids>
         // If the client header is not null another install must be in progress.
         if (clientRequest != null)
         {
-            SendResponse(messageHeader, new InstallCompleteInfo() { Message = "Install in Progress", Result = InstallResult.PreviousInstallInProgress });
+            SendInstallComplete(new InstallCompleteInfo() { Message = "Install in Progress", Result = InstallResult.PreviousInstallInProgress });
             return;
         }
 
@@ -56,6 +57,7 @@ public class InstallService : AhsokaServiceBase<InstallMessageTypes.Ids>
         {
             // Load InstallComponents
             InstallEngineBase createPackageEngine = InstallEngineBase.GetInstallEngine(stream);
+            
             // Package the file.
             result = createPackageEngine.RunInstall(this, installInfo.InstallPassKey);
         }
@@ -72,18 +74,23 @@ public class InstallService : AhsokaServiceBase<InstallMessageTypes.Ids>
             (lastInfo?.Message == info.Message || info.UpdatePercentOnly))
             return; // Don't Send Duplication Notifications
 
-        SendNotification(InstallMessageTypes.Ids.InstallProgress, info);
+        // For Legacy Clients
+        clientRequest.Header.TransportId = InstallMessageTypes.Ids.InstallProgress.EnumToInt();
+        SendResponse(clientRequest, info);
 
         lastInfo = info;
     }
 
     internal void SendLog(InstallLogInfo info)
     {
-        SendNotification(InstallMessageTypes.Ids.InstallLog, info);
+        // For Legacy Clients
+        clientRequest.Header.TransportId = InstallMessageTypes.Ids.InstallLog.EnumToInt();
+        SendResponse(clientRequest, info);
     }
 
     internal void SendInstallComplete(InstallCompleteInfo info)
     {
+        clientRequest.Header.TransportId = InstallMessageTypes.Ids.InstallPackage.EnumToInt();
         SendResponse(clientRequest, info);
 
         // After Complete We Shut Down Runtime

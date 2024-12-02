@@ -350,11 +350,12 @@ public sealed class WiFiNetworkManager
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Getting Adapters 2000");
             var networkAdapters = client.GetNetworkAdapters(2000);
-            var wifiAdapter = networkAdapters.Adapters.FirstOrDefault(x => x.AdapterType == NetworkAdapterType.WifiClient);
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Recieved {networkAdapters.Adapters.Count}  {wifiAdapter != null} Adapters");
+            var wifiAdapter = networkAdapters?.Adapters?.FirstOrDefault(x => x.AdapterType == NetworkAdapterType.WifiClient);
             if (wifiAdapter == null)
                 return false;
 
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Recieved {networkAdapters.Adapters.Count}  {wifiAdapter != null} Adapters");
+           
             defaultAdapterRequest = new AdapterRequest() { AdapterId = wifiAdapter?.AdapterId };
 
             // Configure for DHCP

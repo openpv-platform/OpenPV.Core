@@ -301,10 +301,7 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
             // Check Security
             if (response.Header.TransportId == CoreTransportIds.InvalidToken.EnumToInt())
                 throw new SecurityException("The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked with a valid token");
-
-            if (response.Header.TransportId != transportId.EnumToInt() || response.Header.ClientMessageId != message.Header.ClientMessageId)
-                throw new SecurityException("The Service returned a message out of order.  Either the Transport ID or Roll Count (ClientMessage) Check Failed.");
-
+           
             // Decode Object
             using MemoryStream responseData = new(response.MessageData);
             returnObject = ProtoBuf.Serializer.Deserialize<T>(responseData);

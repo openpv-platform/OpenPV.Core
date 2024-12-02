@@ -37,4 +37,10 @@ public interface IAhsokaClientEndPoint : IAhsokaEndPoint, IDispatchSource
     /// </summary>
     /// <param name="message"></param>
     void HandleNotification(AhsokaClientMessage message);
+
+    /// <summary>
+    /// Method used by Sockets to send Notification Messages to  a Client EndPoint
+    /// </summary>
+    /// <param name="message"></param>
+    void HandleResponse(AhsokaClientMessage message);
 }

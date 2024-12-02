@@ -20,12 +20,5 @@ public interface IAhsokaClientSocket
     /// Send Data over the Socket Transport
     /// </summary>
     /// <param name="message"></param>
-    /// <param name="timeoutInMs"></param>
-    AhsokaClientMessage SendMessageWithResponse(AhsokaClientMessage message, int timeoutInMs);
-
-    /// <summary>
-    /// Send Data over the Socket Transport
-    /// </summary>
-    /// <param name="message"></param>
     void SendMessage(AhsokaClientMessage message);
 }

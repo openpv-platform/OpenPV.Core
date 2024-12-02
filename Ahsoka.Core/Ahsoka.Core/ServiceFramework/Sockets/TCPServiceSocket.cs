@@ -1,10 +1,7 @@
-﻿using GLib;
-using NetMQ;
+﻿using NetMQ;
 using NetMQ.Sockets;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -100,7 +97,7 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 
     }
 
-    void IAhsokaServiceSocket.SendMessage(AhsokaServiceMessage socketMessage, bool isReply)
+    void IAhsokaServiceSocket.SendMessage(AhsokaServiceMessage socketMessage)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Sending Service Message on {endPoint.ServiceConfig.ServiceName} ");
 
@@ -113,14 +110,14 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
         message.Append(headerStream.ToArray());
         message.Append(socketMessage.MessageData);
 
-        if (isReply && socketThreadId != Environment.CurrentManagedThreadId)
-            throw new ApplicationException("Reply Messages must be sent from Receiving Thread");
-
-        // Send if In Recieve Thread...else Queue
-        if (isReply)
+        // If Service Thread, send now, otherwise enqueue for send.
+        if (socketThreadId == Environment.CurrentManagedThreadId)
             socket.TrySendMultipartMessage(message);
-        else
-            sendQueue.Enqueue(message);
+        else if (socketMessage.IsNotification)
+            sendQueue.Enqueue(message); 
+        else 
+            throw new ApplicationException("Reply Messages must be sent from Receiving Thread"); // Reply on separate thread
+
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Sending Service Message on {endPoint.ServiceConfig.ServiceName} ");
     }

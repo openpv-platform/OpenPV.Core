@@ -1,11 +1,8 @@
-﻿using Ahsoka.Utility;
-using NetMQ;
+﻿using NetMQ;
 using NetMQ.Sockets;
 using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Net.Sockets;
-using System.Security;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -18,9 +15,6 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
     NetMQPoller socketPoller = new();
     DealerSocket socket;
     NetMQQueue<AhsokaClientMessage> sendQueue = new();
-
-    // Result Object
-    BlockingCollection<AhsokaClientMessage> responseObjects = new();
 
     // Notification Handler
     NetMQPoller notificationPoller = new();
@@ -41,52 +35,36 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
             socket.Options.Identity = this.endPoint.GetClientId();
             socket.Options.Linger = TimeSpan.FromSeconds(1);
             socket.Connect(this.endPoint.ServiceConfig.DataURI);
+            socketPoller.Add(socket);
             socketPoller.Add(sendQueue);
+
+            socket.ReceiveReady += (o, e) =>
+            {
+                AhsokaClientMessage response = RecieveMessage(socket);
+                endPoint.HandleResponse(response);
+            };
 
             sendQueue.ReceiveReady += (o, e) =>
             {
-                while (sendQueue.Count > 0)
+                while (sendQueue.Count > 0 && isConnected)
                 {
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Sending Client Message from {endPoint.ServiceConfig.ServiceName} ");
-
                     var request = sendQueue.Dequeue();
-
-                    // Prepare Response Message 
-                    using MemoryStream headerStream = new();
-                    ProtoBuf.Serializer.Serialize(headerStream, request.Header);
-
-                    NetMQMessage message = new();
-                    message.Append(headerStream.ToArray());
-                    message.Append(request.MessageData);
-
-                    var result = socket.TrySendMultipartMessage(message);
-
-                    // If this message has a reply, we wait for it.
-                    if (request.ResponseTimeout > 0)
+                    if (request != null)
                     {
-                        // Recieve Messages Until Transport ID Matches OR we Timeout (null)
-                        var cancelTime = DateTime.Now.Add(TimeSpan.FromMilliseconds(request.ResponseTimeout));
+                        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Sending Client Message from {endPoint.ServiceConfig.ServiceName} ");
 
-                        AhsokaClientMessage response = ReceiveMessage(socket);
-                       
-                        while (cancelTime > DateTime.Now &&  // Not Timed Out
-                              !(response?.Header.TransportId <= 0) && // Out of Band Exception (Security / Error)
-                              !(response?.Header.TransportId == request.Header.TransportId && response?.Header?.ClientMessageId == request.Header.ClientMessageId)) // Not Our Reply
-                        {
-                            // Route Message to Notification Handler (For Legacy Apps
-                            // that sent Notifications on Main Socket)
-                            if (response != null)
-                                this.endPoint.HandleNotification(response); 
-                            
-                            // Fetch Next Message
-                            response = ReceiveMessage(socket);
-                        }
+                        // Prepare Response Message 
+                        using MemoryStream headerStream = new();
+                        ProtoBuf.Serializer.Serialize(headerStream, request.Header);
 
-                        // Add Response Object.
-                        responseObjects.Add(response);
+                        NetMQMessage message = new();
+                        message.Append(headerStream.ToArray());
+                        message.Append(request.MessageData);
+
+                        var result = socket.TrySendMultipartMessage(message);
+
+                        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client Message Completed from {endPoint.ServiceConfig.ServiceName} ");
                     }
-
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client Message Completed from {endPoint.ServiceConfig.ServiceName} ");
                 }
             };
 
@@ -101,7 +79,7 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
             notificationSocket.ReceiveReady += (o, e) =>
             {
                 // Receive Message Data
-                AhsokaClientMessage message = ReceiveMessage(notificationSocket);
+                AhsokaClientMessage message = RecieveMessage(notificationSocket);
 
                 // Send to Endpoint to Route / Handle
                 this.endPoint.HandleNotification(message);
@@ -129,7 +107,7 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
                 socket.Disconnect(endPoint.ServiceConfig.DataURI);
                 socketPoller.StopAsync();
                 socketPoller.RemoveAndDispose(sendQueue);
-                socket.Dispose();
+                socketPoller.RemoveAndDispose(socket);
               
                 notificationSocket.Disconnect(endPoint.ServiceConfig.DataURI);
                 notificationPoller.StopAsync();
@@ -142,31 +120,12 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
         }
     }
 
-
-    /// <summary>
-    /// Send Data over the Socket Transport
-    /// </summary>
-    /// <param name="socketMessage"></param>
-    /// <param name="timeOutInMs"></param>
-    AhsokaClientMessage IAhsokaClientSocket.SendMessageWithResponse(AhsokaClientMessage socketMessage, int timeOutInMs)
-    {
-        socketMessage.ResponseTimeout = timeOutInMs;
-        sendQueue.Enqueue(socketMessage);
-
-        return responseObjects.Take();
-    }
-
-    /// <summary>
-    /// Send Data over the Socket Transport
-    /// </summary>
-    /// <param name="socketMessage"></param>
     void IAhsokaClientSocket.SendMessage(AhsokaClientMessage socketMessage)
     {
-        socketMessage.ResponseTimeout = -1;
         sendQueue.Enqueue(socketMessage);
     }
 
-    AhsokaClientMessage ReceiveMessage(DealerSocket recieveSocket)
+    AhsokaClientMessage RecieveMessage(DealerSocket recieveSocket)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Receiving Client Message on {endPoint.ServiceConfig.ServiceName} ");
         AhsokaClientMessage returnMessage = null;

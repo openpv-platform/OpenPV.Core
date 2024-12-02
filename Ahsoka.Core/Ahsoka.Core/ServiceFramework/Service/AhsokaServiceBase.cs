@@ -146,10 +146,10 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             replyObject = new EmptyNotification();
 
         // Prepare Response Message 
-        var messageToSend = CreateSocketMessage(message.Header, replyObject);
-
+        var messageToSend = CreateSocketMessage(message.Header, replyObject,false);
+       
         // Send to Specific Client Or All Cients if Broadcast
-        message.Socket.SendMessage(messageToSend, true);
+        message.Socket.SendMessage(messageToSend);
     }
 
     /// <summary>
@@ -166,20 +166,20 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             message = new EmptyNotification();
 
         // Prepare Response Message 
-        var messageToSend = CreateSocketMessage(new AhsokaMessageHeader() { TransportId = transportId.EnumToInt() }, message);
+        var messageToSend = CreateSocketMessage(new AhsokaMessageHeader() { TransportId = transportId.EnumToInt() }, message, true);
 
         // Send to Specific Client Or All Clients if Broadcast
         if (specificClient != null)
         {
             messageToSend.ClientId = specificClient;
-            validClientIds[specificClient]?.SendMessage(messageToSend, false);
+            validClientIds[specificClient]?.SendMessage(messageToSend);
         }
         else
         {
             foreach (var item in validClientIds)
             {
                 messageToSend.ClientId = item.Key;
-                item.Value.SendMessage(messageToSend, false);
+                item.Value.SendMessage(messageToSend);
             }
         }
     }
@@ -305,11 +305,11 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             throw new Exception("Socket Type is Not Supported");
     }
 
-    private AhsokaServiceMessage CreateSocketMessage(AhsokaMessageHeader header, Object message)
+    private AhsokaServiceMessage CreateSocketMessage(AhsokaMessageHeader header, Object message, bool isNotif)
     {
         using MemoryStream dataStream = new();
         ProtoBuf.Serializer.Serialize(dataStream, message);
-        return new AhsokaServiceMessage() { Header = header, MessageData = dataStream.ToArray() };
+        return new AhsokaServiceMessage() { Header = header, MessageData = dataStream.ToArray(), IsNotification = isNotif };
     }
     #endregion
 }

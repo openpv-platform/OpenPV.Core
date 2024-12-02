@@ -23,5 +23,10 @@ public class AhsokaServiceMessage
         get { return Header.ClientId; }
         set { Header.ClientId = value; }
     }
+
+    /// <summary>
+    /// Indicates if this is a Reply to Request
+    /// </summary>
+    public bool IsNotification { get; set; }   
 }
 

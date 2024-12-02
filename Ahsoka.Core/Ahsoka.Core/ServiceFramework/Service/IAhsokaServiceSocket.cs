@@ -6,11 +6,6 @@
 public interface IAhsokaServiceSocket
 {
     /// <summary>
-    /// Default Timeout for Send / Recieve
-    /// </summary>
-    protected const int MaxTimeoutValue = 7 * 24 * 60 * 1000;
-
-    /// <summary>
     /// Connect and Use Endpoint for Handlign Messages.
     /// </summary>
     /// <param name="endPoint"></param>
@@ -25,6 +20,5 @@ public interface IAhsokaServiceSocket
     /// Send Data over the Socket Transport
     /// </summary>
     /// <param name="message"></param>
-    /// <param name="isReply"></param>
-    void SendMessage(AhsokaServiceMessage message, bool isReply);
+    void SendMessage(AhsokaServiceMessage message);
 }

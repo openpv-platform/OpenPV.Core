@@ -3,6 +3,7 @@ using Ahsoka.Services.Security;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Security;
@@ -24,6 +25,9 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     // Unique ID's for Clients
     byte[] clientId = Guid.NewGuid().ToByteArray();
     byte[] notificationClientId = Guid.NewGuid().ToByteArray();
+
+    // Result Objects
+    BlockingCollection<AhsokaClientMessage> responseObjects = new();
 
     IAhsokaClientSocket socket;
     IAhsokaServiceEndPoint autoStartService = null;
@@ -61,7 +65,6 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
             NotificationReceived -= value.Invoke;
         }
     }
-
     #endregion
 
     #region Methods
@@ -245,6 +248,9 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
             NotificationReceived?.Invoke(this, args);
     }
 
+    void IAhsokaClientEndPoint.HandleResponse(AhsokaClientMessage message) => 
+        responseObjects.Add(message);
+
     /// <summary>
     /// Send an Non-Acked MEssage
     /// </summary>
@@ -252,11 +258,11 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     /// <param name="messageObject"></param>
     public void SendMessage(TTransportIds transportId, object messageObject = null)
     {
-        if (IsStarted)
-        {
-            AhsokaClientMessage message = CreateSocketMessage(transportId, messageObject);
-            socket.SendMessage(message);
-        }
+        if (!IsStarted)
+            Start();
+
+        var message = CreateSocketMessage(transportId, messageObject);
+        socket.SendMessage(message);
     }
 
     /// <summary>
@@ -290,28 +296,52 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
         foreach (IClientEndPointBehavior<TTransportIds> behavior in behaviors)
             behavior.OnSendMessage(transportId, requestObject);
 
-        AhsokaClientMessage message = CreateSocketMessage(transportId, requestObject);
+        AhsokaClientMessage request = CreateSocketMessage(transportId, requestObject);
 
-        T returnObject = null;
+        // Send Message 
+        socket.SendMessage(request);
 
-        // Send Message and Get Response
-        var response = socket.SendMessageWithResponse(message, timeoutInMs);
-        if (response != null)
+        // Calculate End Time
+        var cancelTime = DateTime.Now.Add(TimeSpan.FromMilliseconds(timeoutInMs));
+
+        // While we have time, wait for Messages and Route if needed.
+        AhsokaClientMessage response = null;
+        while (isConnected && cancelTime > DateTime.Now && !IsValidResponse(request, response))
         {
-            // Check Security
-            if (response.Header.TransportId == CoreTransportIds.InvalidToken.EnumToInt())
-                throw new SecurityException("The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked with a valid token");
-           
-            // Decode Object
-            using MemoryStream responseData = new(response.MessageData);
-            returnObject = ProtoBuf.Serializer.Deserialize<T>(responseData);
+            // Wait For a Response Object by 
+            int remainingTimeout = (int)(cancelTime - DateTime.Now).TotalMilliseconds;
+            responseObjects.TryTake(out response, remainingTimeout);
 
-            // Throw Service Errors on Client
-            if (response.Header.TransportId == CoreTransportIds.ServiceErrorThrown.EnumToInt() && returnObject is ServiceErrorThrownResponse errorMessage)
-                throw new SecurityException($"The Service {errorMessage.ServiceName} returned an error. {errorMessage.ErrorInformation}");
+            if (response != null)
+            {
+                // Standard Handling
+                if (response.Header.TransportId > 0 && response.Header.TransportId == request.Header.TransportId)
+                {
+                    // Decode Object for Reply
+                    using MemoryStream responseData = new(response.MessageData);
+                    return ProtoBuf.Serializer.Deserialize<T>(responseData);
+                }
+                else if (response.Header.TransportId > 0)
+                {
+                    // Route to Notification Handler for Legacy and Installer
+                    ((IAhsokaClientEndPoint)this).HandleNotification(response);
+                }
+                else if (response.Header.TransportId == CoreTransportIds.ServiceErrorThrown.EnumToInt())
+                {
+                    // Handle Service Errors
+                    using MemoryStream responseData = new(response.MessageData);
+                    var errorInfo = ProtoBuf.Serializer.Deserialize<ServiceErrorThrownResponse>(responseData);
+                    throw new SecurityException($"The Service {errorInfo.ServiceName} returned an error. {errorInfo.ErrorInformation}");
+                }
+                else if (response.Header.TransportId == CoreTransportIds.InvalidToken.EnumToInt())
+                {
+                    // Handle Security / Token Errors
+                    throw new SecurityException("The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked with a valid token");
+                }
+            }
         }
 
-        return returnObject;
+        return null;
     }
 
     /// <summary>
@@ -320,7 +350,7 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     /// <param name="config"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    protected IAhsokaClientSocket CreateDefaultSocket(ServiceConfiguration config)
+    protected virtual IAhsokaClientSocket CreateDefaultSocket(ServiceConfiguration config)
     {
         if (config.SocketType == TransportSocketTypes.TcpSocket)
             return new TCPClientSocket();
@@ -346,6 +376,13 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
                 ServiceToken = securityToken?.ClientToken
             }
         };
+    }
+
+    bool IsValidResponse(AhsokaClientMessage request, AhsokaClientMessage response)
+    {
+        return response != null &&
+                (response.Header.TransportId <= 0 || //Valid Out of Band Exception (Security / Error)
+                (response.Header.TransportId == request.Header.TransportId && response.Header.ClientMessageId == request.Header.ClientMessageId)); // Valid Return Message
     }
 
     /// <summary>

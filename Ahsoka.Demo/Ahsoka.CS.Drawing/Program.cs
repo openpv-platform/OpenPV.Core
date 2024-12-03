@@ -2,6 +2,7 @@
 using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Dispatch;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System;
 using Ahsoka.System;
 
@@ -47,7 +48,7 @@ internal class Program
 
         // Create Paint Objects for Circle (we show a Gradient Color Here)
         var circlePaint = new DrawingPaint(colorStroke, 2, colorFill, DrawingColors.IndianRed,               // Colors
-                                            new DrawingRect(0,0, cloudPosition.Width, cloudPosition.Height), // Bounds of Circle (Relative to the Matrix when we Draw)
+                                            new DrawingRect(0, 0, cloudPosition.Width, cloudPosition.Height), // Bounds of Circle (Relative to the Matrix when we Draw)
                                             DrawingPaintStyles.Gradient,                                     // Gradient
                                             (float)Math.PI / 4);                                             // Rotate 1/4 PI (45 degrees)
 
@@ -129,7 +130,7 @@ internal class Program
                 }
 
             // Translate to our Star
-            api.PushMatrix(api.CreateTranslateMatrix(60,60));
+            api.PushMatrix(api.CreateTranslateMatrix(60, 60));
             api.DrawPath(path, circlePaint);
             api.PopMatrix();
 
@@ -140,7 +141,7 @@ internal class Program
             api.DrawCircle(cloudPosition.Width / 2, cloudPosition.Height / 2, cloudPosition.Width / 2, touched ? circlePaintTouched : circlePaint);
 
             // Draw the Cloud Icon at its selected Position
-            api.DrawBitmap(cloudTemp, new DrawingRect(0,0,cloudPosition.Width, cloudPosition.Height));
+            api.DrawBitmap(cloudTemp, new DrawingRect(0, 0, cloudPosition.Width, cloudPosition.Height));
 
             // Draw the current time in our circle
             api.DrawText(DateTime.Now.ToString("hh:mm tt"), cloudPosition.Width / 2, cloudPosition.Height / 2 + 32, textInfo);
@@ -154,8 +155,8 @@ internal class Program
         // Now start the Main Drawing Loop 
         // we will block here until the app shuts down.
         window.ShowAndRun();
-        window.Close();
 
-        ApplicationContext.Exit();
+        // Shut Down Dispatcher
+        Dispatcher.Default.Stop();
     }
 }

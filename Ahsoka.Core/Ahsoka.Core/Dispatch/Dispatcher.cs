@@ -370,7 +370,12 @@ public class Dispatcher
 
         // Start AutoStart Objects
         if (autoStopDispatcherSources)
-            foreach (var source in startupObjects) { source.AutoStop(this); }
+        {
+            foreach (var source in startupObjects) 
+                source.AutoStop(this);
+            foreach (var source in endpoints)
+                source.Stop();
+        }
     }
 
     private void InvokeEventItem(EventItem messageData)
@@ -401,7 +406,6 @@ public class Dispatcher
     {
         AddAutoStartInternal(startupItem);
     }
-
     #endregion
 
     #region Internal Types

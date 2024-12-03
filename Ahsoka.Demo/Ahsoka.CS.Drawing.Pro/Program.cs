@@ -171,8 +171,8 @@ internal class Program
         // Now start the Main Drawing Loop 
         // we will block here until the app shuts down.
         window.ShowAndRun();
-        window.Close();
 
-        ApplicationContext.Exit();
+        // Shut Down Dispatcher
+        Dispatcher.Default.Stop();
     }
 }

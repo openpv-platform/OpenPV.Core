@@ -81,12 +81,20 @@ internal class StartState : InstallerUIStateBase
 
             hasNetwork = false;
 
-            DrawingRect usbPosition = new(width * (hasNetwork ? .25f : .38f) - imageSize / 2 - 20,
+            int xPos = (int)(width * (hasNetwork ? .25f : .38f) - imageSize / 2 - 20);
+            if (xPos + imageSize > width / 2)
+                xPos = width / 2 - imageSize - 10;
+
+            DrawingRect usbPosition = new(xPos,
                 height / 2 - imageSize / 2,
                 imageSize,
                 imageSize);
 
-            DrawingRect cloudPosition = new(width * (hasNetwork ? .75f : .64f) - imageSize / 2 + 20,
+            xPos = (int)(width * (hasNetwork ? .75f : .64f) - imageSize / 2 + 20);
+            if (xPos < width / 2)
+                xPos = width / 2 + 10;
+
+            DrawingRect cloudPosition = new(xPos,
                 height / 2 - imageSize / 2,
                 imageSize,
                 imageSize);
@@ -119,16 +127,27 @@ internal class StartState : InstallerUIStateBase
         }
         else if (showHelp)
         {
-            DrawingRect usbPosition = new(width * (.33f) - imageSize / 2 - 20,
-                 height / 2 - imageSize / 2,
-                 imageSize,
-                 imageSize);
+            bool drawCentered = width < height;
+
+            int xPos = (int)(width * (.33f) - imageSize / 2 - 20);
+            if (drawCentered)
+                xPos = width / 2 - imageSize / 2;
+
+            int yPos = (int)(height / 2 - imageSize / 2);
+            if (drawCentered)
+                yPos = height / 2 - imageSize / 2;
+
+            DrawingRect usbPosition = new(xPos,
+                     yPos,
+                     imageSize,
+                     imageSize);
 
             if (qrBitmap == null && File.Exists(pathToImage))
                 qrBitmap = drawingApi.CreateImage(pathToImage);
 
             if (qrBitmap != null)
                 drawingApi.DrawBitmap(qrBitmap, usbPosition);
+
 
             var textPaint = new DrawingTextInfo
             {
@@ -138,19 +157,38 @@ internal class StartState : InstallerUIStateBase
                 Typeface = InstallerDrawingManager.Default.UITypeface
             };
 
-            drawingApi.DrawText($"Need Help with OpenView and OpenPV", width / 2, height / 4 - 40, textPaint);
+            if (drawCentered)
+            {
+                drawingApi.DrawText($"Need Help with ", width / 2, height / 4 - 60, textPaint);
+                drawingApi.DrawText($"OpenView and OpenPV", width / 2, height / 4 - 20, textPaint);
+            }
+            else
+                drawingApi.DrawText($"Need Help with OpenView and OpenPV", width / 2, height / 4 - 40, textPaint);
 
             textPaint.TextSize = 30;
             textPaint.Color = DrawingColors.SteelBlue;
             textPaint.Alignment = DrawingTextAlignment.Left;
 
-            drawingApi.DrawText($"Scan Here for Info", usbPosition.X + usbPosition.Width + 20, usbPosition.Y + 100, textPaint);
-            textPaint.TextSize = 15;
-            textPaint.TextWeight = DrawingTextWeight.Bold;
-            drawingApi.DrawText(url, usbPosition.X + usbPosition.Width + 20, usbPosition.Y + 120, textPaint);
+            if (drawCentered)
+            {
+                textPaint.Alignment = DrawingTextAlignment.Center;
+
+                drawingApi.DrawText($"Scan Here for Info", width / 2, height / 2 + imageSize/2 + 30, textPaint);
+                textPaint.TextSize = 15;
+                textPaint.TextWeight = DrawingTextWeight.Bold;
+                drawingApi.DrawText(url, width / 2, height / 2 + imageSize/2 + 50, textPaint);
+            }
+            else
+            {
+                drawingApi.DrawText($"Scan Here for Info", usbPosition.X + usbPosition.Width + 20, usbPosition.Y + 100, textPaint);
+                textPaint.TextSize = 15;
+                textPaint.TextWeight = DrawingTextWeight.Bold;
+                drawingApi.DrawText(url, usbPosition.X + usbPosition.Width + 20, usbPosition.Y + 120, textPaint);
+            }
 
             DrawingRect rect = new(0, 0, drawingApi.ScreenWidth, drawingApi.ScreenHeight);
             InstallerDrawingManager.Default.AddAction("Support", rect, "");
+
         }
         else if (isDeleting)
         {
@@ -182,7 +220,7 @@ internal class StartState : InstallerUIStateBase
         else if (showResetOptions)
         {
             int dialogHeight = 300;
-            int dialogWidth = 500;
+            int dialogWidth = 450;
 
             DrawingRect dialogPosition = new(width / 2 - dialogWidth / 2,
                     height / 2 - dialogHeight / 2,
@@ -216,12 +254,12 @@ internal class StartState : InstallerUIStateBase
             {
                 if (showAppConfirm)
                 {
-                    drawingApi.DrawText($"Delete App Data - Are you sure?", imagePos.X + imagePos.Width + 10, imagePos.Y + 43, textPaint);
+                    drawingApi.DrawText($"Delete App Data - OK?", imagePos.X + imagePos.Width + 10, imagePos.Y + 43, textPaint);
                     InstallerDrawingManager.Default.AddAction(confirmApp, imagePos, selectImage, DrawingColors.SkyBlue);
                 }
                 if (showFactoryConfirm)
                 {
-                    drawingApi.DrawText($"Delete All Data - Are you sure?", imagePos.X + imagePos.Width + 10, imagePos.Y + 43, textPaint);
+                    drawingApi.DrawText($"Delete All Data - OK?", imagePos.X + imagePos.Width + 10, imagePos.Y + 43, textPaint);
                     InstallerDrawingManager.Default.AddAction(confirmfactory, imagePos, selectImage, DrawingColors.SkyBlue);
                 }
             }

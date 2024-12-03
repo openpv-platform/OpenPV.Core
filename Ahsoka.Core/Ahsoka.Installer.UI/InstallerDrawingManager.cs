@@ -115,7 +115,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
     {
         int width = DrawingApi.ScreenWidth;
         int height = DrawingApi.ScreenHeight;
-
+       
         if (wifiViewModel.AdapterEnabled)
         {
             DrawingTextInfo textInfo = new() { Color = DrawingColors.Black, TextSize = 16, Alignment = DrawingTextAlignment.Left, Typeface = UITypeface };

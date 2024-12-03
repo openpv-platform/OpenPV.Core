@@ -57,19 +57,20 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
     public override void PushClip(List<DrawingRect> rects)
     {
         CurrentContext.Canvas.Save();
-        CurrentContext.Canvas.ClipRegion(rects.AsSKRegion(), SKClipOperation.Intersect);
+        CurrentContext.Canvas.ClipRegion(ConvertRectanglesToScreen(rects), SKClipOperation.Intersect);
     }
 
+    
     public override void PushClip(DrawingRect rects)
     {
         CurrentContext.Canvas.Save();
-        CurrentContext.Canvas.ClipRect(rects.AsSKRect(), SKClipOperation.Intersect);
+        CurrentContext.Canvas.ClipRegion(ConvertRectanglesToScreen([rects]), SKClipOperation.Intersect);
     }
 
     public override void PopClip()
     {
         if (ShowClipRectangles)
-            CurrentContext.Canvas.DrawRegion(frameArgs.ClipRegions.AsSKRegion(), clipRectanglePaint);
+            CurrentContext.Canvas.DrawRegion(ConvertRectanglesToScreen(frameArgs.ClipRegions), clipRectanglePaint);
       
         CurrentContext.Canvas.Restore();
     }
@@ -103,6 +104,36 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
                 break;
 
         }
+    }
+
+    private SKRegion ConvertRectanglesToScreen(List<DrawingRect> rects)
+    {
+        List<SKRectI> list = new();
+        foreach (var item in rects)
+        {
+            if (CurrentOrientation == Orientation.Rotate90)
+            {
+                list.Add(new SKRectI(ScreenHeight - (int)item.Y - (int)item.Height, (int)item.X,
+                                      ScreenHeight - (int)item.Y, (int)item.X + (int)item.Width));
+            }
+            else if (CurrentOrientation == Orientation.Rotate270)
+            {
+                list.Add(new SKRectI((int)item.Y, ScreenWidth - (int)item.X - (int)item.Width,
+                                     (int)item.Y + (int)item.Height, ScreenWidth - (int)item.X));
+            }
+            else if (CurrentOrientation == Orientation.Rotate180)
+            {
+                list.Add(new SKRectI(ScreenWidth - (int)item.X - (int)item.Width, ScreenHeight - (int)item.Y - (int)item.Height,
+                                     ScreenWidth - (int)item.X, ScreenHeight - (int)item.Y));
+            }
+            else
+                list.Add(item.AsSKRectI()); // Default Orientation
+
+        }
+
+        SKRegion region = new SKRegion();
+        region.SetRects(new ReadOnlySpan<SKRectI>(list.ToArray()));
+        return region;
     }
 
     public override void Clear(DrawingColor color)
@@ -318,17 +349,6 @@ internal static class SkiaExtensions
     internal static SKRect AsSKRect(this DrawingRect value)
     {
         return new SKRect(value.X, value.Y, value.X + value.Width, value.Y + value.Height);
-    }
-
-    internal static SKRegion AsSKRegion(this List<DrawingRect> value)
-    {
-        List<SKRectI> list = new();
-        foreach (var item in value)
-            list.Add(item.AsSKRectI());
-
-        SKRegion region = new SKRegion();
-        region.SetRects(new ReadOnlySpan<SKRectI>(list.ToArray()));
-        return region;
     }
 
     internal static SKRectI AsSKRectI(this DrawingRect value)

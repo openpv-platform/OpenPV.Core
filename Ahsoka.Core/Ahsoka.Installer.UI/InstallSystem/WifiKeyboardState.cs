@@ -57,7 +57,12 @@ internal class WiFiKeyboardState : InstallerUIStateBase
         float padding = 4;
         float imageSize = 56;
 
-        int maxColumns = 0;
+        if (width < 500)
+            imageSize = 35;
+        else if (width < 601)
+            imageSize = 44;
+
+            int maxColumns = 0;
         foreach (var item in layout.KeyRow)
             maxColumns = Math.Max(item.KeyInfo.Count, maxColumns);
 
@@ -76,7 +81,7 @@ internal class WiFiKeyboardState : InstallerUIStateBase
 
                 if (keyInfo.State == KeyboardAction.Lower)
                 {
-                    InstallerDrawingManager.Default.AddAction(keyInfo.KeyText, position, null, DrawingColors.DarkGray, "a", 8, 28);
+                    InstallerDrawingManager.Default.AddAction(keyInfo.KeyText, position, null, DrawingColors.DarkGray, "a", 8 , 28);
                     InstallerDrawingManager.Default.AddAction("", position, null, DrawingColors.Transparent, "_", 5, 26);
                 }
                 else if (keyInfo.State == KeyboardAction.Caps)

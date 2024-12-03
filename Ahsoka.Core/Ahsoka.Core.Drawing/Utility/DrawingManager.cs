@@ -10,7 +10,6 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
 {
     #region Fields
     DrawingTypeface defaultTypeface;
-
     protected readonly Dictionary<string, TouchArea> TouchAreas = new();
     private static readonly object syncRoot = new();
     private const int BorderMargin = 20;
@@ -52,6 +51,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
     #region Methods
     public DrawingManager()
     {
+
         try
         {
             AhsokaStopwatch watch = new("DrawingManager");
@@ -176,16 +176,6 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
         DrawingApi.DrawRectangle(new DrawingRect(-1, height - StatusBarHeight, width + 2, height), DrawingColors.Silver, DrawingColors.Gainsboro, 1);
 
         DrawingTextInfo textPaint;
-        if (IsValidSystem == 0)
-        {
-            textPaint = new() { Color = DrawingColors.IndianRed, TextSize = 16, Alignment = DrawingTextAlignment.Center, Typeface = UITypeface };
-            DrawingApi.DrawText($"***Warning: Invalid Factory Data***", width / 2, height - 8, textPaint);
-        }
-        else if (IsValidSystem == 1)
-        {
-            textPaint = new() { Color = DrawingColors.Black, TextSize = 16, Alignment = DrawingTextAlignment.Center, Typeface = UITypeface };
-            DrawingApi.DrawText($"Passed Factory Data Check", width / 2, height - 8, textPaint);
-        }
 
         OnDrawBackground();
 
@@ -194,7 +184,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
         textPaint = new() { Color = new DrawingColor(0xFF111111), TextSize = 14, Typeface = UITypeface };
 
         int xPos = 20;
-        int yOffset = 86;
+        int yOffset = 104;
         DrawingApi.DrawText($"Hardware: {SystemInfo.CurrentPlatform}", xPos, height - yOffset, textPaint);
         yOffset -= 18;
         DrawingApi.DrawText($"App Version: {Assembly.GetEntryAssembly().GetName().Version} ", xPos, height - yOffset, textPaint);
@@ -204,6 +194,19 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
         DrawingApi.DrawText($"Serial #: {SystemInfo.HardwareInfo.FactoryInfo.SerialNumber} ", xPos, height - yOffset, textPaint);
         yOffset -= 18;
         DrawingApi.DrawText($"Device ID: {SystemInfo.HardwareInfo.FactoryInfo.DeviceId} ", xPos, height - yOffset, textPaint);
+        yOffset -= 18;
+        if (IsValidSystem == 0)
+        {
+            textPaint = new() { Color = DrawingColors.IndianRed, TextSize = 14, Typeface = UITypeface };
+            DrawingApi.DrawText($"Validation: ***Warning: Invalid Factory Data***", xPos, height - yOffset, textPaint);
+        }
+        else if (IsValidSystem == 1)
+        {
+            DrawingApi.DrawText($"Validation: Passed Factory Data Check", xPos, height - yOffset, textPaint);
+        }
+        else
+            DrawingApi.DrawText($"Validation: Factory Check in Progress...", xPos, height - yOffset, textPaint);
+
     }
 
     #endregion

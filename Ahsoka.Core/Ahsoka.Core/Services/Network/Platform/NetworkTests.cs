@@ -68,7 +68,7 @@ internal class NetworkTests
             Console.WriteLine();
             Console.WriteLine("Discovered Networks");
             foreach (var item in networkList.Networks)
-                Console.WriteLine($"  {networkIndex++}  SSID:{item.Ssid} Signal:{item.SignalLevel} SecurityType:{item.SecurityType} ");
+                Console.WriteLine($"  {networkIndex++}  SSID:{item.Ssid} Signal:{item.SignalLevel} Status:{item.State}  SecurityType:{item.SecurityType} ");
 
             String ssid = ChooseAP(networkList);
 

@@ -189,10 +189,12 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
     protected override WirelessNetworkInfoList OnGetDiscoveredNetworks(string adapterId)
     {
         Dictionary<string, WirelessNetworkInfo> networkInfoList = new();
+        ESPHostedStationConfig config = new();
 
         List<ESPHostedWifiScanList> list = null;
         using (var wifi = interopList.AquireInterop(adapterId))
         {
+            var result = wifi.ESPInterop.WifiGetConnectionStatus(ref config);
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: Start scanning for networks after InteropLock");
             list = wifi.ESPInterop.WifiStartScanning();
         }
@@ -206,6 +208,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
                     WifiEncryptionMode.WIFI_AUTH_WPA2_PSK or WifiEncryptionMode.WIFI_AUTH_WPA_WPA2_PSK or WifiEncryptionMode.WIFI_AUTH_WPA3_PSK or WifiEncryptionMode.WIFI_AUTH_WPA2_WPA3_PSK => SecurityType.Wpa2,
                     _ => SecurityType.NoSecurity,
                 };
+
                 var net = new WirelessNetworkInfo()
                 {
                     Ssid = item.ssid,
@@ -222,6 +225,15 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
                     networkInfoList[net.Ssid] = net;
                 }
             }
+        }
+
+        // Update Connected Status if Connected
+        if (config.status == "success")
+        {
+            // Trim Garbage
+            string connectedSSID = new string(config.ssid.Where(c => !char.IsControl(c)).ToArray());
+            if (networkInfoList.TryGetValue(connectedSSID, out WirelessNetworkInfo netItem))
+                netItem.State = WirelessConnectionState.ClientConnected;
         }
 
         var returnValue = new WirelessNetworkInfoList()

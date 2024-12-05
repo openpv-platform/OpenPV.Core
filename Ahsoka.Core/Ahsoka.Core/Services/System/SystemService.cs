@@ -160,22 +160,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
                 HandleSetBrightness(request);
                 break;
 
-            case SystemMessageTypes.Ids.GetUsbInfo:
-                HandleGetUsbInfo(request);
-                break;
-
-            case SystemMessageTypes.Ids.SetUsbInfo:
-                HandleSetUsbInfo(request);
-                break;
-
-            case SystemMessageTypes.Ids.SetSerialConfig:
-                HandleSetRS485Config(request);
-                break;
-
-            case SystemMessageTypes.Ids.UpdateTouchTune:
-                HandleUpdateTouchscreen(request);
-                break;
-
             case SystemMessageTypes.Ids.SetBootLogo:
                 HandleSetBootLogo(request);
                 break;
@@ -336,33 +320,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         HandleGetBrightness(message);
     }
 
-    private void HandleGetUsbInfo(AhsokaServiceRequest message)
-    {
-        SendResponse(message, coreInterop.GetUsbInfo());
-    }
-
-    private void HandleSetUsbInfo(AhsokaServiceRequest message)
-    {
-        coreInterop.SetUsbInfo(message.Message as UsbInfo);
-        SendResponse(message);
-    }
-
-    private void HandleSetRS485Config(AhsokaServiceRequest message)
-    {
-        var config = message.Message as RS485ConfigNotification;
-
-        // We are converting the protobuf structure back to it's base type to set the config locally.
-        var serial_rs485_config = new Platform.SerialRS485()
-        {
-            flags = config.Flags,
-            delay_rts_after_send = config.DelayRtsAfterSend,
-            delay_rts_before_send = config.DelayRtsBeforeSend
-        };
-        coreInterop.SetRS485Config(serial_rs485_config);
-
-        SendResponse(message);
-    }
-
     internal List<ServiceStats> GetServiceInfo()
     {
         List<ServiceStats> services = new();
@@ -444,13 +401,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         string file = Path.Combine(path, "settings.json");
         return file;
     }
-
-    private void HandleUpdateTouchscreen(AhsokaServiceRequest message)
-    {
-        var response = coreInterop.UpdateTouchTune(message.Message as TouchTuneInfo);
-        SendResponse(message, response);
-    }
-
+  
     private void HandleSetBootLogo(AhsokaServiceRequest message)
     {
         var bootLogoInfo = message.Message as BootLogoInfo;

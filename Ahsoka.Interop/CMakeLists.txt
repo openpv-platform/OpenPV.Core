@@ -18,7 +18,6 @@ ENDIF()
 
 #Interop Objects for Services
 IF (NOT WIN32)
-    add_subdirectory ("Ahsoka.Services")
     add_subdirectory ("Ahsoka.WiFi.ST")
 ENDIF()
 

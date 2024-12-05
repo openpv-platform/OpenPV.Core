@@ -58,6 +58,14 @@
     },
     {
       "socketType": "TcpSocket",
+      "serviceName": "DeviceService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 5009,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
       "serviceName": "LayerManagerService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",

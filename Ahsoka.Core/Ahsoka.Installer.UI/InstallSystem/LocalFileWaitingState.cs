@@ -16,12 +16,12 @@ internal class LocalFileWaitingState : InstallerUIStateBase
     {
         if (useUsb)
         {
-            Services.System.UsbInfo usbInfo = new()
+            Services.Device.UsbInfo usbInfo = new()
             {
-                Mode = Services.System.UsbMode.Host,
+                Mode = Services.Device.UsbMode.Host,
                 MountPoint = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.WatchFolder)
             };
-            InstallerDrawingManager.Default.SystemClient.SetUsbInfo(usbInfo);
+            InstallerDrawingManager.Default.DeviceClient.SetUsbInfo(usbInfo);
             usbRoleSwapped = true;
         }
 
@@ -38,12 +38,12 @@ internal class LocalFileWaitingState : InstallerUIStateBase
     {
         if (usbRoleSwapped)
         {
-            Services.System.UsbInfo usbInfo = new()
+            Services.Device.UsbInfo usbInfo = new()
             {
-                Mode = Services.System.UsbMode.Device,
+                Mode = Services.Device.UsbMode.Device,
                 MountPoint = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.WatchFolder)
             };
-            InstallerDrawingManager.Default.SystemClient.SetUsbInfo(usbInfo);
+            InstallerDrawingManager.Default.DeviceClient.SetUsbInfo(usbInfo);
         }
     }
 

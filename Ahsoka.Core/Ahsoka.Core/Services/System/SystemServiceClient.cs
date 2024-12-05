@@ -179,67 +179,6 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     }
 
     /// <summary>
-    /// Returns the state of the Default USB Controller 
-    /// </summary>
-    /// <returns>Information about the current Mode (Device / Host) and the Mount Point</returns>
-    public UsbInfo GetUsbInfo()
-    {
-        return SendMessageWithResponse<UsbInfo>(SystemMessageTypes.Ids.GetUsbInfo);
-    }
-
-    /// <summary>
-    /// Sets the USB State to the Specified Info. Used for executing a Role swap or changing the default mount point for USB Mass Storage Devices.
-    /// </summary>
-    /// <param name="usbInfo">Information about the current Mode (Device / Host) and the Mount Point</param>
-    public void SetUsbInfo(UsbInfo usbInfo)
-    {
-        SendMessageWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetUsbInfo, usbInfo);
-    }
-
-    /// <summary>
-    /// Sets the Extended Configuration for the Onboard RS485 Interface
-    /// Standard Serial Configurations are completed using the Language Native Serial API's
-    /// </summary>
-    /// <param name="serialRS485Config">Extended Configration Values to set such as RTS Before / After and any Custom Flags for the Port</param>
-    public void SetRS485Config(Platform.SerialRS485 serialRS485Config)
-    {
-        // Convert the base structure back into the protobuf structure to send it over the line.
-        var send_config = new RS485ConfigNotification()
-        {
-            Flags = serialRS485Config.flags,
-            DelayRtsAfterSend = serialRS485Config.delay_rts_after_send,
-            DelayRtsBeforeSend = serialRS485Config.delay_rts_before_send
-        };
-
-        SendMessageWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetSerialConfig, send_config);
-    }
-
-
-    /// <summary>
-    /// Updates the touchscreen firmware and configuration.
-    /// Modes of operation:
-    ///     No Arguments: Return VendorId and ProductId of touchscreen.
-    ///     Configuration Only: Update configuration and return status.
-    ///     Configuration and Fimrware: Update firmware and configuration and return status.
-    ///     Firmware Only: Invalid.
-    /// </summary>
-    /// <param name="configurationFilename">Filename of configuration update file for touchscreen.</param>
-    /// <param name="firmwareFilename">Filename of firmware update file for touchscreen.</param>
-    /// <returns>
-    /// If configuration and firmware are omitted, returns VendorId and ProductId of touchscreen only.
-    /// </returns>
-    public TouchTuneInfoReply UpdateTouchTune(string configurationFilename = "", string firmwareFilename = "")
-    {
-        var request = new TouchTuneInfo()
-        {
-            ConfigurationFileName = configurationFilename,
-            FirmwareFileName = firmwareFilename
-        };
-
-        return SendMessageWithResponse<TouchTuneInfoReply>(SystemMessageTypes.Ids.UpdateTouchTune, request);
-    }
-
-    /// <summary>
     /// Sets the Boot Logo (Splash) to a given a .png file
     /// </summary>
     /// <param name="bootLogoInfo">Boot logo info such as the path to the .png image file.</param>

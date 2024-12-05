@@ -2,6 +2,7 @@ using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Dispatch;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services;
+using Ahsoka.Services.Device;
 using Ahsoka.Services.Iot;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.System;
@@ -180,7 +181,7 @@ public class ServiceTests : LinearTestBase
     }
 
     [TestMethod]
-    public void TestBaseServiceComponents()
+    public void TestSystemService()
     {
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
@@ -194,11 +195,24 @@ public class ServiceTests : LinearTestBase
         var brightness = systemClient.GetBrightness();
         systemClient.SetBrightness(brightness);
 
-        var usb = systemClient.GetUsbInfo();
-        systemClient.SetUsbInfo(usb);
-
         // Request Service Shutdown
         systemClient.RequestServiceShutdown();
+
+        // Stop the Runtimes
+        AhsokaRuntime.Default.StopAllEndPoints();
+    }
+
+
+    [TestMethod]
+    public void TestDeviceService()
+    {
+        // Create Client Runtime and Add Services
+        DeviceServiceClient systemClient = new();
+        systemClient.Start();
+
+        var usbInfo = systemClient.GetUsbInfo();
+        systemClient.SetUsbInfo(usbInfo);
+
 
         // Stop the Runtimes
         AhsokaRuntime.Default.StopAllEndPoints();

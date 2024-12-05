@@ -90,12 +90,7 @@ public class SystemServiceMessages : AhsokaMessagesBase
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.GetBrightness, typeof(EmptyNotification), typeof(BrightnessInfo));
         this.RegisterServiceRequest(SystemMessageTypes.Ids.SetBrightness, typeof(BrightnessInfo), typeof(BrightnessInfo));
-        this.RegisterServiceRequest(SystemMessageTypes.Ids.GetUsbInfo, typeof(EmptyNotification), typeof(UsbInfo));
-        this.RegisterServiceRequest(SystemMessageTypes.Ids.SetUsbInfo, typeof(UsbInfo), typeof(EmptyNotification));
-
-        this.RegisterServiceRequest(SystemMessageTypes.Ids.SetSerialConfig, typeof(RS485ConfigNotification), typeof(EmptyNotification));
         this.RegisterServiceRequest(SystemMessageTypes.Ids.SetBootLogo, typeof(BootLogoInfo), typeof(EmptyNotification));
-        this.RegisterServiceRequest(SystemMessageTypes.Ids.UpdateTouchTune, typeof(TouchTuneInfo), typeof(TouchTuneInfoReply));
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.RequestShutdown, typeof(ShutdownInformation), typeof(EmptyNotification));
 

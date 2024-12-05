@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+import "Configuration.proto";
+
+package AhsokaDevice;
+option csharp_namespace = "Ahsoka.Services.Device";
+
+message DeviceMessageTypes
+{
+    enum Ids
+	{
+  		NO_MESSAGE = 0;
+
+        GET_BRIGHTNESS = 15;
+		SET_BRIGHTNESS = 17;
+
+		GET_USB_INFO = 18;
+		SET_USB_INFO = 20;
+
+		SET_SERIAL_CONFIG = 23;
+
+		UPDATE_TOUCH_TUNE = 29;
+	}
+}
+
+
+// We aren't going to enumerate every field in the rs485_config because the only other field is padding.
+message RS485ConfigNotification
+{
+    uint32 flags = 1;
+    uint32 delay_rts_before_send = 2;
+    uint32 delay_rts_after_send = 3;
+}
+
+// USB
+message UsbInfo
+{
+	UsbMode mode = 1;
+	string mount_point = 2;
+}
+
+enum UsbMode
+{
+	UNKNOWN = 0;
+	HOST = 1;
+	DEVICE = 2;
+}
+
+message TouchTuneInfo
+{
+	string firmware_file_name = 1;
+	string configuration_file_name = 2;
+}
+
+message TouchTuneInfoReply
+{
+	AhsokaSystem.MessageReplyStatus reply_status = 1;
+	string reply_reason = 2;
+	map<string, string> version_info = 100;
+}

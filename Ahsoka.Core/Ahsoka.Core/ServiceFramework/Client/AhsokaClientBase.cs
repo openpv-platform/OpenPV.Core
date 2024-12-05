@@ -169,20 +169,6 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
             this.socket.Connect(this);
     }
 
-    private void UpdateClientRegistration(CoreTransportIds transportId)
-    {
-        TTransportIds id = transportId.EnumToInt().IntToEnum<TTransportIds>();
-        SendMessage(id, new ClientRegistration()
-        {
-            ClientId = ((IAhsokaClientEndPoint)this).GetNotificationId(),
-        });
-    }
-
-    IAhsokaServiceEndPoint IAhsokaClientEndPoint.CreateDefaultService()
-    {
-        return OnCreateDefaultService();
-    }
-
     /// <summary>
     /// Auto Start Function - Starts a Matching Service if one is not Running.
     /// </summary>
@@ -221,36 +207,6 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
         behaviors.Add(behavior);
     }
 
-    void IAhsokaClientEndPoint.HandleNotification(AhsokaClientMessage message)
-    {
-        // Lookup and Decode Message
-        TTransportIds transportType = message.Header.TransportId.IntToEnum<TTransportIds>();
-        var messageInfo = ServiceMessageInfo.GetMessageInfo(transportType);
-
-        if (messageInfo == null)
-            throw new ApplicationException("Could not Find Matching Message Object in Message List for transport " + transportType);// Not much we can do with a mesage we can't decode
-
-        // Decode the Message Data 
-        using MemoryStream objectData = new(message.MessageData);
-        var args = new AhsokaNotificationArgs()
-        {
-            TransportId = message.Header.TransportId.IntToEnum<TTransportIds>(),
-            NotificationObject = ProtoBuf.Serializer.Deserialize(messageInfo.ReplyType, objectData)
-        };
-
-        foreach (IClientEndPointBehavior<TTransportIds> behavior in behaviors)
-            behavior.OnNotificationMessageRecieved(args.TransportId, args.NotificationObject);
-
-        OnReceiveNotification(args);
-
-        // Raise Event if not Handled
-        if (args.ShouldRaiseEvent)
-            NotificationReceived?.Invoke(this, args);
-    }
-
-    void IAhsokaClientEndPoint.HandleResponse(AhsokaClientMessage message) => 
-        responseObjects.Add(message);
-
     /// <summary>
     /// Send an Non-Acked MEssage
     /// </summary>
@@ -285,7 +241,7 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     /// <param name="timeoutInMs"></param>
     /// <returns></returns>
     /// <exception cref="SecurityException"></exception>
-    public virtual T SendMessageWithResponse<T>(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue) where T : class
+    public T SendMessageWithResponse<T>(TTransportIds transportId, object requestObject = null, int timeoutInMs = int.MaxValue) where T : class
     {
         if (!IsStarted)
             Start();
@@ -358,7 +314,42 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
             throw new Exception("Socket Type is Not Supported");
     }
 
-    private AhsokaClientMessage CreateSocketMessage(TTransportIds transportId, object requestObject)
+    IAhsokaServiceEndPoint IAhsokaClientEndPoint.CreateDefaultService()
+    {
+        return OnCreateDefaultService();
+    }
+
+    void IAhsokaClientEndPoint.HandleNotification(AhsokaClientMessage message)
+    {
+        // Lookup and Decode Message
+        TTransportIds transportType = message.Header.TransportId.IntToEnum<TTransportIds>();
+        var messageInfo = ServiceMessageInfo.GetMessageInfo(transportType);
+
+        if (messageInfo == null)
+            throw new ApplicationException("Could not Find Matching Message Object in Message List for transport " + transportType);// Not much we can do with a mesage we can't decode
+
+        // Decode the Message Data 
+        using MemoryStream objectData = new(message.MessageData);
+        var args = new AhsokaNotificationArgs()
+        {
+            TransportId = message.Header.TransportId.IntToEnum<TTransportIds>(),
+            NotificationObject = ProtoBuf.Serializer.Deserialize(messageInfo.ReplyType, objectData)
+        };
+
+        foreach (IClientEndPointBehavior<TTransportIds> behavior in behaviors)
+            behavior.OnNotificationMessageRecieved(args.TransportId, args.NotificationObject);
+
+        OnReceiveNotification(args);
+
+        // Raise Event if not Handled
+        if (args.ShouldRaiseEvent)
+            NotificationReceived?.Invoke(this, args);
+    }
+
+    void IAhsokaClientEndPoint.HandleResponse(AhsokaClientMessage message) =>
+        responseObjects.Add(message);
+
+    AhsokaClientMessage CreateSocketMessage(TTransportIds transportId, object requestObject)
     {
         if (requestObject == null) 
             requestObject = new EmptyNotification();
@@ -376,6 +367,15 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
                 ServiceToken = securityToken?.ClientToken
             }
         };
+    }
+
+    void UpdateClientRegistration(CoreTransportIds transportId)
+    {
+        TTransportIds id = transportId.EnumToInt().IntToEnum<TTransportIds>();
+        SendMessage(id, new ClientRegistration()
+        {
+            ClientId = ((IAhsokaClientEndPoint)this).GetNotificationId(),
+        });
     }
 
     bool IsValidResponse(AhsokaClientMessage request, AhsokaClientMessage response)

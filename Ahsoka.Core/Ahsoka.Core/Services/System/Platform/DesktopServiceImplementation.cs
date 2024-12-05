@@ -10,8 +10,6 @@ namespace Ahsoka.Services.System.Platform;
 [ExcludeFromCodeCoverage]
 internal class DesktopServiceImplementation : IServiceImplementation
 {
-    UsbInfo usbInfo = new UsbInfo() { Mode = UsbMode.Host };
-
     public string GetHardwareSerialNumber()
     {
         if (OperatingSystem.IsWindows())
@@ -38,17 +36,6 @@ internal class DesktopServiceImplementation : IServiceImplementation
         return 100;
     }
 
-    public UsbInfo GetUsbInfo()
-    {
-        // Not Implemented
-        return usbInfo;
-    }
-
-    public void SetUsbInfo(UsbInfo usbInfo)
-    {
-        this.usbInfo = usbInfo;
-    }
-
     private static string GetWMICValue(string args)
     {
         var processStartInfo = new ProcessStartInfo
@@ -65,8 +52,6 @@ internal class DesktopServiceImplementation : IServiceImplementation
         return output.Substring(output.IndexOf("\r\n")).Replace("\r", "").Replace("\n", "").Trim();
     }
 
-    void IServiceImplementation.SetRS485Config(Platform.SerialRS485 serial_rs485_config) { }
-
     void IServiceImplementation.Reboot()
     {
         // Not Impemented on Windows
@@ -75,16 +60,6 @@ internal class DesktopServiceImplementation : IServiceImplementation
     void IServiceImplementation.ShutdownApplication(int shutDownCode)
     {
         Environment.Exit(shutDownCode);
-    }
-
-    public TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen)
-    {
-        var response = new TouchTuneInfoReply()
-        {
-            ReplyStatus = MessageReplyStatus.Undetermined,
-            ReplyReason = "Not Implemented on Windows"
-        };
-        return response;
     }
 
     public double GetCPUTemp()

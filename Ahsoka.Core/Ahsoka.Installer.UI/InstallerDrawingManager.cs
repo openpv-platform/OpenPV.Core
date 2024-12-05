@@ -3,6 +3,7 @@ using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Installer.UI.InstallSystem;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device;
 using Ahsoka.Services.Install;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.Spark;
@@ -24,6 +25,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
 
     #region Fields
     InstallServiceClient installClient;
+    DeviceServiceClient deviceClient;
     NetworkServiceClient networkClient;
     SystemServiceClient systemClient;
     #endregion
@@ -32,6 +34,8 @@ internal class InstallerDrawingManager : SkiaDrawingManager
     public InstallServiceClient InstallClient { get => installClient; }
 
     public SystemServiceClient SystemClient { get => systemClient; }
+
+    public DeviceServiceClient DeviceClient { get => deviceClient; }
 
     public NetworkServiceClient NetworkClient { get => networkClient; }
 
@@ -55,17 +59,19 @@ internal class InstallerDrawingManager : SkiaDrawingManager
             SystemService systemService = new();
             SparkService sparkService = new();
             NetworkService networkService = new();
+            DeviceService deviceService = new();
 
             systemService.AutoLoadReceived += SystemService_AutoLoadReceived;
 
-            AhsokaRuntime.Default.StartEndPoints(systemService, sparkService, networkService);
+            AhsokaRuntime.Default.StartEndPoints(systemService, sparkService, networkService, deviceService);
 
             // Start Clients
             installClient = new();
             networkClient = new();
             systemClient = new();
+            deviceClient = new();
 
-            AhsokaRuntime.Default.StartEndPoints(installClient, networkClient, systemClient);
+            AhsokaRuntime.Default.StartEndPoints(installClient, networkClient, systemClient, deviceClient);
 
             ApplicationContext.ReleaseStartup();
 

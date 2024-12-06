@@ -271,13 +271,13 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
             if (response != null)
             {
                 // Standard Handling
-                if (response.Header.TransportId > 0 && response.Header.TransportId == request.Header.TransportId)
+                if (response.Header.TransportId >= 0 && response.Header.TransportId == request.Header.TransportId)
                 {
                     // Decode Object for Reply
                     using MemoryStream responseData = new(response.MessageData);
                     return ProtoBuf.Serializer.Deserialize<T>(responseData);
                 }
-                else if (response.Header.TransportId > 0)
+                else if (response.Header.TransportId >= 0)
                 {
                     // Route to Notification Handler for Legacy and Installer
                     ((IAhsokaClientEndPoint)this).HandleNotification(response);

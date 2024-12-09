@@ -83,7 +83,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
 
         }).ContinueWith((result) =>
         {
-            wifiViewModel.Init(networkClient);
+            wifiViewModel.Init(networkClient, deviceClient);
             wifiViewModel.NetworkListChanged += (o, e) => { Invalidate(); };
             wifiViewModel.ConnectionStateChanged += (o, e) => { Invalidate(); };
             wifiViewModel.SelectedNetworkChanged += (o, e) => { Invalidate(); };

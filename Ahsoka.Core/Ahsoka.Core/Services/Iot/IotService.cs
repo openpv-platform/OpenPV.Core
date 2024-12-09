@@ -1,6 +1,4 @@
-﻿#pragma warning disable CS1591
-#pragma warning disable CS0618 // Type or member is obsolete
-
+﻿#pragma warning disable CS0618 // Type or member is obsolete
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using MQTTnet;
@@ -16,26 +14,39 @@ using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Iot;
 
-
+/// <summary>
+/// Service for managing an MQTT Client 
+/// </summary>
 [AhsokaService(Name)]
 public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
 {
     #region Fields
-    public const string Name = "IotService";
+    internal const string Name = "IotService";
     readonly Dictionary<string, InternalClient> clients = new();
     #endregion
 
     #region Methods
+    /// <summary>
+    /// Default CTOR
+    /// </summary>
     public IotService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
     }
 
+    /// <summary>
+    /// CTOR Accepting a customer Configuratoin
+    /// </summary>
+    /// <param name="config"></param>
     public IotService(ServiceConfiguration config) :
         base(config, new IotServiceMessages())
     {
     }
 
+    /// <summary>
+    /// Primary Service Handler Function
+    /// </summary>
+    /// <param name="request"></param>
     protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
         switch (request.TransportId)
@@ -147,6 +158,7 @@ public class IotService : AhsokaServiceBase<IotMessageTypes.Ids>
 
             var keyPair = publicKey.CopyWithPrivateKey(rsa);
             var clientCert = new X509Certificate2(keyPair.Export(X509ContentType.Pfx));
+
             var tlsOptions = new MqttClientOptionsBuilderTlsParameters()
             {
                 UseTls = true,

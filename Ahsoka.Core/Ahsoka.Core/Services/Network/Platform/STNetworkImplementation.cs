@@ -1,4 +1,5 @@
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device.Handlers;
 using Ahsoka.Services.Network.ESPWifi;
 using Ahsoka.System;
 using System;
@@ -17,7 +18,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
 
     CancellationTokenSource tokenSource = null;
     readonly AutoResetEvent disconnectListenerCompleted = new(false);
-    INetworkFirmwareBase firmware;
+    Esp32Handler comboModuleHandler = new Esp32Handler();
 
     protected override List<AdapterInfo> GetAdapterList()
     {
@@ -36,16 +37,8 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
 
             if (connection != null)
             {
-                if (adapter.Module is ModuleType.Esp32 or
-                    ModuleType.None) // Handle Old ST Units.
-                {
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Initializing ESP Firmware");
-                    firmware = new ESPNetworkFirmware();
-                    firmware.Init();
-                }
-
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Booting ESP Module");
-                firmware?.Boot();
+                comboModuleHandler.EnableDevice(null, null); // Legacy Assumes ESP32
 
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Configuring ESP Module");
                 ConfigureAdapter(connection, config);
@@ -74,7 +67,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
             {
                 // Bring Down
                 LinuxNetworkUtilities.StopAdapter(adapter.AdapterId);
-                firmware?.Shutdown();
+                comboModuleHandler?.DisableDevice(null, null);
             }
         }
 

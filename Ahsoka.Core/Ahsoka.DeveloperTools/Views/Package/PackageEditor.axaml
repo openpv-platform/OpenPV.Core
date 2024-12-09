@@ -43,6 +43,14 @@
 				</TabItem.Header>
 				<CustomerTools:DisplayView/>
 			</TabItem>
+			<TabItem >
+				<TabItem.Header>
+					<TextBlock
+						FontSize="18"
+						Text="Hardware"/>
+				</TabItem.Header>
+				<CustomerTools:HardwareConfigView/>
+			</TabItem>
 			<TabItem IsVisible="{Binding SelectedPackage.IsOpenView}" >
 				<TabItem.Header>
 					<TextBlock

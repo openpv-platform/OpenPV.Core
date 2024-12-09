@@ -9,6 +9,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
+using Ahsoka.Services.Device;
 
 namespace Ahsoka.Installer;
 
@@ -40,6 +41,8 @@ public class PackageInformation : PackageHeader
     public ServiceInfo ServiceInfo { get; set; } = new();
 
     public LayerManagerConfiguration ScreenConfiguration { get; set; } = new();
+
+    public HardwareConfiguration HardwareConfiguration { get; set; } = new();
 
     public static PackageInformation LoadPackageInformation(string path)
     {

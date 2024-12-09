@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="640" d:DesignHeight="130"
+         	 xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.HardwareItemView" >
+	<Grid Margin="15,8,8,14" ColumnDefinitions="30,auto" 
+		  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+		<Grid Margin="0,3,0,0"  RowDefinitions="auto,auto,auto" ColumnDefinitions="auto,auto,auto, auto, auto"
+			  HorizontalAlignment="Right" >
+
+			<TextBlock Text="Device Name:"  Margin="0,3,13,0" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+
+			<TextBox Text="{Binding Name}" Background="White"  Margin="3" HorizontalAlignment="Left" Grid.Row="0" Width="200" Grid.Column="1" />
+
+			<TextBlock Text="Device Type:"
+					   Margin="10,3,8,0"
+					   VerticalAlignment="Center" Grid.Column="2"
+					   HorizontalAlignment="Left" FontSize="13"
+					   TextWrapping="1" />
+
+			<ComboBox Height="28" Grid.Row="0" Grid.Column="3" FontSize="12"
+						  SelectedItem="{Binding DeviceType}" ItemsSource="{Binding DeviceTypes}"
+					  HorizontalAlignment="Stretch" Margin="3" Width="250"
+						  HorizontalContentAlignment="Left" CornerRadius="0"
+						  VerticalAlignment="Stretch" BorderBrush="Gray"/>
+
+			<TextBlock Text="Custom Startup:"  Margin="0,3,13,0" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+
+			<TextBox Text="{Binding CustomStartup}" HorizontalAlignment="Left" Margin="3" Background="White" Grid.ColumnSpan="4" Grid.Row="1" Width="580" Grid.Column="1" />
+
+			<TextBlock Text="Supports:"  Margin="0,10,13,10" Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+
+			<TextBlock Text="{Binding SupportedServices}"  FontStyle="Italic" HorizontalAlignment="Left" Margin="0,10,13,10" Grid.ColumnSpan="4" Grid.Row="2" Width="580" Grid.Column="1" />
+		</Grid>
+	</Grid>
+</UserControl>

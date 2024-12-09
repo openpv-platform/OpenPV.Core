@@ -1,25 +1,68 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer.Components;
+using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device.Handlers;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Device;
 
 [ExcludeFromCodeCoverage]
-internal class STServiceImplementation : IServiceImplementation
+internal class STServiceImplementation : IDeviceServiceImplementation
 {
+    Action<DeviceMessageTypes.Ids, object, byte[]> sendNotificationHandler;
     Task task = null;
+    DeviceList deviceList;
     CancellationTokenSource tokenSource = null;
     string currentMountPoint = "";
     readonly string[] logoFileTypes = { ".png", ".jpg" };
-   
+
+    public void Init(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
+    {
+        sendNotificationHandler = sendNotification;
+
+        string fileName = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(Ahsoka.System.Hardware.RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppVersionFile);
+        if (File.Exists(fileName))
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Device Setup Path Found");
+            FileStream fileStream = File.OpenRead(fileName);
+            deviceList = ProtoBuf.Serializer.Deserialize<DeviceList>(fileStream);
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device Service Loaded with {deviceList.Devices.Count} Devices.");
+        }
+        else
+        {
+            // Fall back to Old Combo Module
+            deviceList = new DeviceList()
+            {
+                Devices = { new DeviceInfo()
+                {
+                     Id= (uint)HashCode32.GetHashCode32("ESP32 Onboard Combo Module"),
+                     Name = "ESP32 Onboard Combo Module",
+                     DeviceType = DeviceTypes.OnboardWirelessComboModule
+                } }
+            };
+        }
+    }
+
+    public DeviceList HandleGetDevices(DeviceInfoRequest deviceInfoRequest)
+    {
+        DeviceList list = new DeviceList();
+        foreach (var item in deviceList.Devices)
+        {
+            var services = DeviceInfo.GetSupportedServices(item.DeviceType);
+            if (String.IsNullOrEmpty(deviceInfoRequest.ServiceSearch) || services.Contains(deviceInfoRequest.ServiceSearch))
+                list.Devices.Add(item);
+        }
+        return deviceList;
+    }
+
     public UsbInfo GetUsbInfo()
     {
         UsbInfo usbInfo = new()
@@ -94,8 +137,16 @@ internal class STServiceImplementation : IServiceImplementation
         }
     }
 
-    void IServiceImplementation.SetRS485Config(SerialRS485 serial_rs485_config)
+    void IDeviceServiceImplementation.SetRS485Config(RS485ConfigNotification config)
     {
+        // We are converting the protobuf structure back to it's base type to set the config locally.
+        var serial_rs485_config = new SerialRS485()
+        {
+            flags = config.Flags,
+            delay_rts_after_send = config.DelayRtsAfterSend,
+            delay_rts_before_send = config.DelayRtsBeforeSend
+        };
+
         RS485ConfigUtility.Configure(serial_rs485_config);
     }
 
@@ -154,8 +205,6 @@ internal class STServiceImplementation : IServiceImplementation
         else
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ahsoka.Services (ST): SetPlatformUsbRoleMode succeeded");
     }
-
 }
-
 
 

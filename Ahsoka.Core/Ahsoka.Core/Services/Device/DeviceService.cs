@@ -1,28 +1,27 @@
-#pragma warning disable CS1591
-using Ahsoka.Installer;
-using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
-using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
+using GLib;
+using Gst;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Device;
 
+/// <summary>
+/// Device Service manages USB and Native Device Power Modes
+/// </summary>
 [AhsokaService(Name)]
 public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
 {
     #region Fields
-    public const string Name = "DeviceService";
-    readonly IServiceImplementation coreInterop;
+    internal const string Name = "DeviceService";
+    readonly IDeviceServiceImplementation coreInterop;
+    Dictionary<uint,DeviceState> devices = new();
     #endregion
 
     #region Methods
-    internal static IServiceImplementation GetInterop()
+    internal static IDeviceServiceImplementation GetInterop()
     {
         return SystemInfo.CurrentPlatform switch
         {
@@ -35,12 +34,18 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
         };
     }
 
+    /// <summary>
+    /// Default CTOR
+    /// </summary>
     public DeviceService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
-  
     }
 
+    /// <summary>
+    /// CTOR Accepting Custom Configuration
+    /// </summary>
+    /// <param name="config"></param>
     public DeviceService(ServiceConfiguration config) :
         base(config, new DeviceServiceMessages())
     {
@@ -49,19 +54,18 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
         stopwatch.ResetTiming("Interop Found");
 
         coreInterop = GetInterop();
+
+        coreInterop.Init(SendNotification);
+
         stopwatch.ResetTiming("Settings Loaded");
         stopwatch.ResetTiming("Hardware Info Loaded");
 
-        InitValues();
-
     }
 
-    private void InitValues()
-    {
-       
-    }
-
-
+    /// <summary>
+    /// Default Handler Method for Service Requests
+    /// </summary>
+    /// <param name="request"></param>
     protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
         switch (request.TransportId)
@@ -82,8 +86,48 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
                 HandleUpdateTouchscreen(request);
                 break;
 
+            case DeviceMessageTypes.Ids.GetDevices:
+                HandleGetDevices(request);
+                break;
+
+            case DeviceMessageTypes.Ids.EnableDevice:
+                HandleDeviceEnabled(request);
+                break;
+
+            case DeviceMessageTypes.Ids.DisableDevice:
+                HandleDeviceDisabled(request);
+                break;
         }
     }
+
+    private void HandleGetDevices(AhsokaServiceRequest request)
+    {
+        var result = coreInterop.HandleGetDevices(request.Message as DeviceInfoRequest);
+        foreach (var device in result.Devices)
+            if (devices.TryGetValue(device.Id, out var state))
+                device.State = state;
+
+        SendResponse(request, result);
+    }
+
+    private void HandleDeviceEnabled(AhsokaServiceRequest request)
+    {
+        var deviceInfo = request.Message as DeviceInfo;
+        var handler =  coreInterop.GetDeviceHandler(deviceInfo);
+        handler.EnableDevice(deviceInfo, this.SendNotification);
+        devices[deviceInfo.Id] = DeviceState.Enabled;
+        SendResponse(request);
+    }
+
+    private void HandleDeviceDisabled(AhsokaServiceRequest request)
+    {
+        var deviceInfo = request.Message as DeviceInfo;
+        var handler = coreInterop.GetDeviceHandler(deviceInfo);
+        handler.DisableDevice(deviceInfo, this.SendNotification);
+        devices[deviceInfo.Id] = DeviceState.Disabled;
+        SendResponse(request);
+    }
+
     private void HandleGetUsbInfo(AhsokaServiceRequest message)
     {
         SendResponse(message, coreInterop.GetUsbInfo());
@@ -97,17 +141,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
 
     private void HandleSetRS485Config(AhsokaServiceRequest message)
     {
-        var config = message.Message as RS485ConfigNotification;
-
-        // We are converting the protobuf structure back to it's base type to set the config locally.
-        var serial_rs485_config = new SerialRS485()
-        {
-            flags = config.Flags,
-            delay_rts_after_send = config.DelayRtsAfterSend,
-            delay_rts_before_send = config.DelayRtsBeforeSend
-        };
-        coreInterop.SetRS485Config(serial_rs485_config);
-
+        coreInterop.SetRS485Config(message.Message as RS485ConfigNotification);
         SendResponse(message);
     }
     

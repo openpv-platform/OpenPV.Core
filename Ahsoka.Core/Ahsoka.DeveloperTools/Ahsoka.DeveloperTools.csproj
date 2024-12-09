@@ -92,6 +92,9 @@
 	  <Compile Update="Views\Package\DeveloperView.axaml.cs">
 	    <DependentUpon>DeveloperView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Package\HardwareItemView.axaml.cs">
+	    <DependentUpon>HardwareItemView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Package\DisplayView.axaml.cs">
 	    <DependentUpon>DisplayView.axaml</DependentUpon>
 	  </Compile>
@@ -103,6 +106,9 @@
 	  </Compile>
 	  <Compile Update="Views\Package\ExtensionsView.axaml.cs">
 	    <DependentUpon>ExtensionsView.axaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Package\HardwareConfigView.axaml.cs">
+	    <DependentUpon>HardwareConfigView.axaml</DependentUpon>
 	  </Compile>
 	  <Compile Update="Views\Package\ServiceOptionsView.axaml.cs">
 	    <DependentUpon>ServiceOptionsView.axaml</DependentUpon>

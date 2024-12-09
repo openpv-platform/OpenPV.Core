@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10040",
+  "version": "4.0.1.10050",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Drawing",
   "packageName": "Ahsoka.CS.Drawing",
@@ -45,6 +45,15 @@
     "bootLogoPath": "EnovLogo.png",
     "orientation": "DefaultOrientation",
     "surfaceSetups": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [
+      {
+        "name": "WiFi Combo Module",
+        "deviceType": "OnboardWirelessComboModule",
+        "customStartup": ""
+      }
+    ]
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,

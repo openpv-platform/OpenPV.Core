@@ -1,0 +1,107 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+           	 xmlns:sys="clr-namespace:System;assembly=mscorlib"
+		     mc:Ignorable="d" d:DesignWidth="1085" d:DesignHeight="450"
+             xmlns:VM="clr-namespace:Ahsoka.DeveloperTools.Views"
+             xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.HardwareConfigView">
+
+	<Grid HorizontalAlignment="Stretch" DataContext="{Binding SelectedPackage.HardwareViewModel}" >
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="250"/>
+		</Grid.ColumnDefinitions>
+
+		<Grid.Styles>
+			<StyleInclude Source="/Styles/UserInputStyles.axaml" />
+		</Grid.Styles>
+
+		<StackPanel  Margin="-15" Grid.Column="1"
+			HorizontalAlignment="Center">
+			<TextBlock FontSize="18"
+				   VerticalAlignment="Top"
+				   HorizontalAlignment="Center"
+				   Margin="12" 
+				   Foreground="DimGray"
+			   Text=" Hardware Actions "/>
+			
+			<Button Margin="3,3,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding ResetHardware}">
+					<StackPanel Orientation="Horizontal">
+						<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Sync"></material:MaterialIcon>
+						<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Reset to Defaults "/>
+					</StackPanel>
+			</Button>
+
+			<Button Margin="3,13,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding AddHardware}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Add"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Add Hardware"/>
+				</StackPanel>
+			</Button>
+
+			<Button Margin="3,3,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding RemoveHardware}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Remove"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Remove Hardware "/>
+				</StackPanel>
+			</Button>
+
+		</StackPanel>
+
+		<Grid ColumnDefinitions="205,auto,*" 
+			  RowDefinitions="*,auto,auto,20" Margin="20,0">
+
+			<Border Grid.ColumnSpan="3" Grid.Row="1" BorderBrush="Gainsboro"
+							BorderThickness="1" Background="WhiteSmoke"
+							Margin="20,-10,20,20" Padding="10,10,10,10"
+							HorizontalAlignment="Stretch">
+				<TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Configure Optional Devices in your Hardware.  Once enabled here, you can start and stop your hardware from the DeviceService.   In addition, this service provides notification when new hardware (USB) has been added to your running system."
+					 Foreground="SteelBlue" HorizontalAlignment="Left" />
+			</Border>
+			
+			
+
+			<Border Margin="0,20,0,0" BorderBrush="Gainsboro" BorderThickness="0"
+					Grid.ColumnSpan="3" Grid.Row="0"
+					HorizontalAlignment="Stretch">
+				<Grid ColumnDefinitions="2*,3*" RowDefinitions="auto,*">
+					<TextBlock  FontSize="16"  Margin="18,10,0,0" Foreground="SteelBlue"
+								Text="Configured Hardware in DeviceService" VerticalAlignment="Top"/>
+					<Border VerticalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="3"
+							Margin="20,5,20,20" BorderBrush="Gainsboro" BorderThickness="1">
+						<ListBox  ItemsSource="{Binding HardwareInfoList}" SelectedItem="{Binding SelectedHardwareInfo}" Background="Transparent" >
+							<ListBox.ItemTemplate>
+								<DataTemplate>
+									<Grid Margin="-8,-12" ClipToBounds="True">
+										<Border HorizontalAlignment="Stretch"
+												VerticalAlignment="Stretch" BorderBrush="WhiteSmoke"
+												BorderThickness="0,0,0,1">
+											<VM:HardwareItemView></VM:HardwareItemView>
+										</Border>
+									</Grid>
+								</DataTemplate>
+							</ListBox.ItemTemplate>
+						</ListBox>
+					</Border>
+					
+				</Grid>
+			</Border>
+		</Grid>
+	</Grid>
+	
+</UserControl>
+

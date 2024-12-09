@@ -1,4 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.Network.Platform;
 using Ahsoka.System;
@@ -143,30 +144,41 @@ public class NetworkServiceTest : LinearTestBase
         AutoResetEvent reset = new(false);
 
         // Start client for NetworkService
+        var deviceClient = new DeviceServiceClient(); 
         var client = new NetworkServiceClient();
-        var networkAdapters = client.GetNetworkAdapters();
-        if (networkAdapters.Adapters.Any(x => x.AdapterType == NetworkAdapterType.WifiClient))
+
+        // Find Adapter that Supports This Service
+        var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { ServiceSearch = "WiFiClient" }).Devices.FirstOrDefault();
+        if (wifiDevice != null)
         {
-            WiFiNetworkManager manager = new();
-            manager.Init(client);
+            deviceClient.EnableDevice(wifiDevice);
 
-            manager.ConnectionStateChanged += (o, a) =>
+            var networkAdapters = client.GetNetworkAdapters();
+            if (networkAdapters.Adapters.Any(x => x.AdapterType == NetworkAdapterType.WifiClient))
             {
-                // Connection State will trigger 
-                // once the init is completed and the firrst discover happens if needed.
-                reset.Set();
-            };
-            manager.SelectedNetworkChanged += (o, e) => { };
-            manager.NetworkListChanged += (o, e) => { };
-            manager.AdapterEnabledChanged += (o, e) => { };
+                WiFiNetworkManager manager = new();
+                manager.Init(client, deviceClient);
 
-            // Wait for Init to Complete
-            reset.WaitOne();
+                manager.ConnectionStateChanged += (o, a) =>
+                {
+                    // Connection State will trigger 
+                    // once the init is completed and the firrst discover happens if needed.
+                    reset.Set();
+                };
+                manager.SelectedNetworkChanged += (o, e) => { };
+                manager.NetworkListChanged += (o, e) => { };
+                manager.AdapterEnabledChanged += (o, e) => { };
 
-            manager.MoveDown();
-            manager.MoveUp();
+                // Wait for Init to Complete
+                reset.WaitOne();
+
+                manager.MoveDown();
+                manager.MoveUp();
+            }
+
+            deviceClient.DisableDevice(wifiDevice);
+
         }
-
         // Stop the Runtimes
         AhsokaRuntime.Default.StopAllEndPoints();
     }

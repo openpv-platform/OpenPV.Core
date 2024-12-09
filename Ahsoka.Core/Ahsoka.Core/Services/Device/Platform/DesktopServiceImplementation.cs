@@ -1,16 +1,41 @@
-﻿using Ahsoka.System;
+﻿using Ahsoka.Services.Device.Handlers;
+using Ahsoka.System;
+using Ahsoka.Utility;
+using Microsoft.Extensions.Azure;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
+using System.Linq;
 
 namespace Ahsoka.Services.Device;
 
 [ExcludeFromCodeCoverage]
-internal class DesktopServiceImplementation : IServiceImplementation
+internal class DesktopServiceImplementation : IDeviceServiceImplementation
 {
     UsbInfo usbInfo = new UsbInfo() { Mode = UsbMode.Host };
+    private Action<DeviceMessageTypes.Ids, object, byte[]> sendNotificationHandler;
+    private DeviceList deviceList;
+
+    public void Init(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
+    {
+        sendNotificationHandler = sendNotification;
+        deviceList = new DeviceList()
+        {
+            Devices = { new DeviceInfo() { DeviceType = DeviceTypes.OnboardWifiModule, Id = 1234 } }
+        };
+     }
+
+    public DeviceList HandleGetDevices(DeviceInfoRequest deviceInfoRequest)
+    {
+        DeviceList list = new DeviceList();
+        foreach (var item in deviceList.Devices)
+        {
+            var services = DeviceInfo.GetSupportedServices(item.DeviceType);
+            if (String.IsNullOrEmpty(deviceInfoRequest.ServiceSearch) || services.Contains(deviceInfoRequest.ServiceSearch))
+                list.Devices.Add(item);
+        }
+        return deviceList;
+    }
 
     public UsbInfo GetUsbInfo()
     {
@@ -39,7 +64,7 @@ internal class DesktopServiceImplementation : IServiceImplementation
         return output.Substring(output.IndexOf("\r\n")).Replace("\r", "").Replace("\n", "").Trim();
     }
 
-    void IServiceImplementation.SetRS485Config(SerialRS485 serial_rs485_config) { }
+    void IDeviceServiceImplementation.SetRS485Config(RS485ConfigNotification serial_rs485_config) { }
 
     public TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen)
     {
@@ -49,5 +74,10 @@ internal class DesktopServiceImplementation : IServiceImplementation
             ReplyReason = "Not Implemented on Windows"
         };
         return response;
-    }    
+    }
+
+    public DeviceHandlerBase GetDeviceHandler(DeviceInfo deviceInfo)
+    {
+        return DeviceHandlerBase.GetDeviceHandler(deviceInfo.DeviceType);
+    }
 }

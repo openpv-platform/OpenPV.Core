@@ -112,6 +112,7 @@ internal class SystemTests
             var response = e.NotificationObject as UsbInfo;
             Console.WriteLine($"Current USB Mode is: {response.Mode}");
         }
+
     }
 
     private static void TestUpdateTouchscreen(DeviceServiceClient client)

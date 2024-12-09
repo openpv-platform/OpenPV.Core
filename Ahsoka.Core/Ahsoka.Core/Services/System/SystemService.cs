@@ -1,5 +1,3 @@
-#pragma warning disable CS1591
-using Ahsoka.Installer;
 using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System.Platform;
@@ -10,17 +8,18 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.ServiceModel.Channels;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ahsoka.Services.System;
 
+/// <summary>
+/// System Service manages System Wide features such as Loading Applications, Getting Hardware Information etc.
+/// </summary>
 [AhsokaService(Name)]
 public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 {
     #region Fields
-    public const string Name = "SystemService";
+    internal const string Name = "SystemService";
 
     bool isInstaller;
     static string deviceSigningKey;
@@ -37,6 +36,9 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
     #endregion
 
     #region Events
+    /// <summary>
+    /// Event Handler to notify Installers that a new File has Arrived to be Installed
+    /// </summary>
     public event EventHandler<LoadApplicationCompleteEventArgs> AutoLoadReceived;
     #endregion
 
@@ -54,12 +56,19 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         };
     }
 
+    /// <summary>
+    /// Default CTOR
+    /// </summary>
     public SystemService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
   
     }
 
+    /// <summary>
+    /// Constructor for Overriding Configuration
+    /// </summary>
+    /// <param name="config"></param>
     public SystemService(ServiceConfiguration config) :
         base(config, new SystemServiceMessages())
     {
@@ -84,7 +93,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
     private void InitValues()
     {
-       
         isInstaller = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.InstallerUIExecutablePath).EndsWith(applicationName);
 
         UpdateCacheValue(SystemServiceMessages.Available, true);
@@ -121,6 +129,10 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             UpdateCacheValue(item.Key, item.Value);
     }
 
+    /// <summary>
+    /// Service Handler Method - Raised when Service Messages Arrive
+    /// </summary>
+    /// <param name="request"></param>
     protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
         switch (request.TransportId)
@@ -427,13 +439,19 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
     #endregion
 }
 
-public class SystemSettings
+internal class SystemSettings
 {
     public BrightnessInfo BrightnessInfo { get; set; }
 }
 
+/// <summary>
+/// Brightness Info
+/// </summary>
 public partial class BrightnessInfo
 {
+    /// <summary>
+    /// Default CTOR
+    /// </summary>
     public BrightnessInfo()
     {
         this.Persist = true;

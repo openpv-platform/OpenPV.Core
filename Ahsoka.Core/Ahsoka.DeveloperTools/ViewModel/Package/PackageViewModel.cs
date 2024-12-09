@@ -34,6 +34,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     private DotNetViewModel dotNetModel;
     private StartupOptionsViewModel serviceStartModel;
     private ServiceViewModel dataServiceModel;
+    HardwareViewModel hardwareViewModel;
     ExtensionsViewModel extensionsViewModel;
     DisplayViewModel displayViewModel;
     private CppViewModel cppViewModel;
@@ -453,6 +454,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         set { sparkViewModel = value; OnPropertyChanged(); }
     }
     
+    public HardwareViewModel HardwareViewModel
+    {
+        get { return hardwareViewModel; }
+        set { hardwareViewModel = value; OnPropertyChanged(); }
+    }
+
     public ExtensionsViewModel ExtensionsViewModel 
     { 
         get => extensionsViewModel;
@@ -589,6 +596,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         ServiceViewModel = new ServiceViewModel(this);
         ExtensionsViewModel = new ExtensionsViewModel(this);
         DisplayViewModel = new DisplayViewModel(this);
+        HardwareViewModel = new HardwareViewModel(this);
 
         Deps.CheckDependencies(SystemInfo.CurrentPlatform, PackageInfo.PlatformFamily);
 

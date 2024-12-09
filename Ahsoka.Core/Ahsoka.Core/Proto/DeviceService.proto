@@ -11,18 +11,70 @@ message DeviceMessageTypes
 	{
   		NO_MESSAGE = 0;
 
-        GET_BRIGHTNESS = 15;
-		SET_BRIGHTNESS = 17;
+        GET_BRIGHTNESS = 1;
+		SET_BRIGHTNESS = 2;
 
-		GET_USB_INFO = 18;
-		SET_USB_INFO = 20;
+		GET_USB_INFO = 3;
+		SET_USB_INFO = 4;
+		
+		SET_SERIAL_CONFIG = 5;
 
-		SET_SERIAL_CONFIG = 23;
+		UPDATE_TOUCH_TUNE = 6;
 
-		UPDATE_TOUCH_TUNE = 29;
+		GET_DEVICES = 10;
+
+		ENABLE_DEVICE = 11;
+        DISABLE_DEVICE = 12;
+
+		USB_DEVICE_ADDED = 13;
+		USB_DEVICE_REMOVED = 14;
+
+		DEVICE_ENABLED = 15;
+		DEVICE_DISABLED = 16;
 	}
 }
 
+//---------------------------------
+// Adapter Info
+//---------------------------------
+message DeviceInfoRequest
+{
+	string service_search = 2;
+}
+
+//---------------------------------
+// Adapter Info
+//---------------------------------
+message DeviceList
+{
+	repeated DeviceInfo devices = 1;
+}
+
+//---------------------------------
+// Adapter Info
+//---------------------------------
+message DeviceInfo
+{
+	uint32 id = 1;
+	string name = 2;
+	DeviceState state = 4;
+	DeviceTypes device_type = 5;
+	string custom_startup = 6;
+}
+
+enum DeviceLocation
+{
+	ANY_LOCATION = 0;
+    NATIVE = 1;
+    USB = 2;
+}
+
+enum DeviceState
+{
+	NO_STATE = 0;
+    DISABLED = 1;
+    ENABLED = 2;
+}
 
 // We aren't going to enumerate every field in the rs485_config because the only other field is padding.
 message RS485ConfigNotification
@@ -57,4 +109,36 @@ message TouchTuneInfoReply
 	AhsokaSystem.MessageReplyStatus reply_status = 1;
 	string reply_reason = 2;
 	map<string, string> version_info = 100;
+}
+
+
+
+//---------------------------------
+// Hardware Configuration
+//---------------------------------
+message HardwareConfiguration
+{
+	repeated HardwareItem hardware_items = 1;
+}
+
+//---------------------------------
+// Hardware Configuration Item
+//---------------------------------
+message HardwareItem
+{
+	string name = 1;
+	DeviceTypes device_type = 2;
+	string custom_startup = 6;
+}
+
+
+enum DeviceTypes
+{
+	DEVICE_TYPE_UNKNOWN = 0;
+	ONBOARD_WIRELESS_COMBO_MODULE = 1;
+	ONBOARD_WIFI_MODULE = 2;
+	ONBOARD_BT_MODULE = 3;
+	ONBOARD_ETHERNET = 4;
+	USB_CELLULAR_NETWORK = 5;
+	IO_CONTROL_MODULE = 6;
 }

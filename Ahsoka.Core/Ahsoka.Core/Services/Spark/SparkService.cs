@@ -1,5 +1,4 @@
-﻿#pragma warning disable CS1591
-using Ahsoka.Installer;
+﻿using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System;
 using Ahsoka.Spark;
@@ -17,27 +16,43 @@ using System.Threading;
 
 namespace Ahsoka.Services.Spark;
 
+
+/// <summary>
+/// Spark Service Manages OTA Updates
+/// </summary>
 [AhsokaService(Name)]
 public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 {
     #region Fields
     CancellationTokenSource source = new();
     string autoProvisionAddress = "enovation.powervisionspark.com";
-    public const string Name = "SparkService";
+    internal const string Name = "SparkService";
     static readonly string deviceSigningKey = SystemInfo.HardwareInfo.GetDeviceSigningKey();
     #endregion
 
     #region Methods
+
+    /// <summary>
+    /// Default CTOR
+    /// </summary>
     public SparkService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
     }
 
+    /// <summary>
+    /// CTOR Accepting Custom Configuration
+    /// </summary>
+    /// <param name="config"></param>
     public SparkService(ServiceConfiguration config) :
         base(config, new SparkServiceMessages())
     {
     }
 
+    /// <summary>
+    /// Handles Service Requests from Clients
+    /// </summary>
+    /// <param name="request"></param>
     protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
         switch (request.TransportId)

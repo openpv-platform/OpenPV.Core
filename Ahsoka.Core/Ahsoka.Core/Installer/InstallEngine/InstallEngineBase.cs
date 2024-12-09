@@ -301,7 +301,8 @@ public class InstallEngineBase
             InstallerPlugin.GetApplicationPlugin(PackageInformation.ApplicationType),
             new StartupInstallerPlugin(), // Generates Start Scripts.
             new LayerManagerPlugin(),
-            .. Extensions.GetExtensions<InstallerPlugin>(),
+            new DeviceManagerPlugin(),
+             .. Extensions.GetExtensions<InstallerPlugin>(),
         ];
 
         // Remove Nulls
@@ -480,7 +481,7 @@ public class InstallEngineBase
         // Optional Components.
         components.Add(new StartLogoComponent());
         components.Add(new InstallerUIComponent());
-        components.Add(new NetworkFirmwareComponent());
+        components.Add(new DeviceFirmwareComponent());
 
         // Add any Extensions
         var results = System.Extensions.GetExtensions<InstallEngineComponent>();

@@ -74,4 +74,32 @@ public class DeviceServiceClient : AhsokaClientBase<DeviceMessageTypes.Ids>
     {
         return SendMessageWithResponse<TouchTuneInfoReply>(DeviceMessageTypes.Ids.UpdateTouchTune, info);
     }
+
+    /// <summary>
+    /// Get List of System Devices which can be Enabled or Disabled
+    /// </summary>
+    /// <param name="info"></param>
+    /// <returns></returns>
+    public DeviceList GetDevices(DeviceInfoRequest info)
+    {
+        return SendMessageWithResponse<DeviceList>(DeviceMessageTypes.Ids.GetDevices, info);
+    }
+
+    /// <summary>
+    /// Enable the Specified Device - Uses ID for Identification
+    /// </summary>
+    /// <param name="info"></param>
+    public void EnableDevice(DeviceInfo info)
+    {
+        SendMessageWithResponse(DeviceMessageTypes.Ids.EnableDevice, info);
+    }
+
+    /// <summary>
+    /// Enable the Specified Device - Uses ID for Identification
+    /// </summary>
+    /// <param name="info"></param>
+    public void DisableDevice(DeviceInfo info)
+    {
+        SendMessageWithResponse(DeviceMessageTypes.Ids.DisableDevice, info);
+    }
 }

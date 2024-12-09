@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10043",
+  "version": "4.0.1.10049",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Drawing.Pro",
   "packageName": "Ahsoka.CS.Drawing.Pro",
@@ -33,6 +33,15 @@
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
           "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": "AutoStart"
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "DeviceService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "dataChannel": 5009,
           "isExtension": false,
           "behaviors": "AutoStart"
         }
@@ -70,6 +79,30 @@
           "commitChanges": false
         },
         "surfaceAppName": "DemoApp"
+      }
+    ]
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [
+      {
+        "name": "IO Control Module",
+        "deviceType": "IoControlModule",
+        "customStartup": ""
+      },
+      {
+        "name": "WiFi Module",
+        "deviceType": "OnboardWifiModule",
+        "customStartup": ""
+      },
+      {
+        "name": "Bluetooth Module",
+        "deviceType": "OnboardBtModule",
+        "customStartup": ""
+      },
+      {
+        "name": "Ethernet",
+        "deviceType": "OnboardEthernet",
+        "customStartup": ""
       }
     ]
   },

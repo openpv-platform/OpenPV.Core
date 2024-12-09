@@ -1,5 +1,7 @@
 ﻿using Ahsoka.Dispatch;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
 using Mono.Unix.Native;
 using System;
@@ -20,6 +22,7 @@ namespace Ahsoka.Utility.WiFi;
 public sealed class WiFiNetworkManager
 {
     #region Fields
+    DeviceServiceClient deviceClient;
     NetworkServiceClient client;
     Dispatcher dispatcher;
     AdapterRequest defaultAdapterRequest;
@@ -132,10 +135,12 @@ public sealed class WiFiNetworkManager
     /// Initialize the WiFiManager
     /// </summary>
     /// <param name="client"></param>
+    /// <param name="deviceClient"></param>
     /// <param name="dispatcher"></param>
-    public void Init(NetworkServiceClient client, Dispatcher dispatcher = null)
+    public void Init(NetworkServiceClient client, DeviceServiceClient deviceClient, Dispatcher dispatcher = null)
     {
         this.client = client;
+        this.deviceClient = deviceClient;
         this.dispatcher = dispatcher;
 
         lock (client)
@@ -151,7 +156,7 @@ public sealed class WiFiNetworkManager
         var networkReady = Task.Run(() =>
         {
             using var stopwatch = new AhsokaStopwatch("Start Networking");
-            var result = ConfigureAdapter(client);
+            var result = ConfigureAdapter();
             if (!result)
                 ConnectionStateChanged?.Invoke(this, ConnectionState);
 
@@ -344,7 +349,7 @@ public sealed class WiFiNetworkManager
         ConnectionStateChanged?.Invoke(this, ConnectionState);
     }
 
-    private bool ConfigureAdapter(NetworkServiceClient client)
+    private bool ConfigureAdapter()
     {
         lock (client)
         {

@@ -12,7 +12,6 @@ namespace Ahsoka.Services.Device;
 /// </summary>
 public class DeviceServiceMessages : AhsokaMessagesBase
 {
-   
     /// <InheritDoc/>
     public DeviceServiceMessages()
     {
@@ -21,6 +20,17 @@ public class DeviceServiceMessages : AhsokaMessagesBase
 
         this.RegisterServiceRequest(DeviceMessageTypes.Ids.SetSerialConfig, typeof(RS485ConfigNotification), typeof(EmptyNotification));
         this.RegisterServiceRequest(DeviceMessageTypes.Ids.UpdateTouchTune, typeof(TouchTuneInfo), typeof(TouchTuneInfoReply));
+
+        this.RegisterServiceRequest(DeviceMessageTypes.Ids.GetDevices, typeof(DeviceInfoRequest), typeof(DeviceList));
+
+        this.RegisterServiceRequest(DeviceMessageTypes.Ids.EnableDevice, typeof(DeviceInfo), typeof(EmptyNotification));
+        this.RegisterServiceRequest(DeviceMessageTypes.Ids.DisableDevice, typeof(DeviceInfo), typeof(EmptyNotification));
+
+        this.RegisterServiceNotification(DeviceMessageTypes.Ids.UsbDeviceAdded, typeof(DeviceInfo));
+        this.RegisterServiceNotification(DeviceMessageTypes.Ids.UsbDeviceRemoved, typeof(DeviceInfo));
+
+        this.RegisterServiceNotification(DeviceMessageTypes.Ids.DeviceEnabled, typeof(DeviceInfo));
+        this.RegisterServiceNotification(DeviceMessageTypes.Ids.DeviceDisabled, typeof(DeviceInfo));
     }
 
     /// <InheritDoc/>

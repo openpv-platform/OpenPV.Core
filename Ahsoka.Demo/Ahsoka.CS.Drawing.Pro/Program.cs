@@ -3,6 +3,7 @@ using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Dispatch;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device;
 using Ahsoka.Services.System;
 using Ahsoka.System;
 
@@ -31,7 +32,9 @@ internal class Program
 
         // Add For Communication with Display
         SystemServiceClient client = new();
+        DeviceServiceClient deviceClient = new();
         Dispatcher.Default.AddStartupItem(client);
+        Dispatcher.Default.AddStartupItem(deviceClient);
 
         // Surface ID is used to assign a value which can
         // be use to position via LayoutService or configure the window in OpenPV

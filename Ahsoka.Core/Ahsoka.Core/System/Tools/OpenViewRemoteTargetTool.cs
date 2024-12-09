@@ -1,10 +1,8 @@
 ﻿#pragma warning disable CS1591
-using Ahsoka.Installer.Components;
+using Ahsoka.Services.Device.Handlers;
 using Ahsoka.System.Hardware;
 using Renci.SshNet;
 using System;
-using System.IO;
-using static Ahsoka.System.OpenViewProRemoteTargetTool;
 
 namespace Ahsoka.System;
 
@@ -31,6 +29,6 @@ internal class OpenViewRemoteTargetTool : LinuxRemoteTargetTool
     protected override void InstallNetwork(HardwareInfo info, SshClient sshClient, ScpClient scpClient)
     {
         if (!tokenSource.IsCancellationRequested)
-            NetworkAdapterFirmware.GetPlatformFirmware(info)?.InstallRemote(info, sshClient, scpClient, progress);
+           new Esp32Handler()?.InstallRemote(info, sshClient, scpClient, progress);
     }
 }

@@ -13,6 +13,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,6 +22,10 @@ namespace Ahsoka.Test;
 [TestClass]
 public class ServiceTests : LinearTestBase
 {
+    static AutoResetEvent enabledEvent = new(false);
+    static AutoResetEvent disabledEvent = new(false);
+
+
     public TestContext TestContext { get; set; }
 
     [TestMethod]
@@ -207,15 +212,34 @@ public class ServiceTests : LinearTestBase
     public void TestDeviceService()
     {
         // Create Client Runtime and Add Services
-        DeviceServiceClient systemClient = new();
-        systemClient.Start();
+        DeviceServiceClient deviceClient = new();
+        deviceClient.NotificationReceived += SystemClient_NotificationReceived;
+        deviceClient.Start();
 
-        var usbInfo = systemClient.GetUsbInfo();
-        systemClient.SetUsbInfo(usbInfo);
+        var usbInfo = deviceClient.GetUsbInfo();
+        deviceClient.SetUsbInfo(usbInfo);
 
+
+        var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { ServiceSearch = "WiFiClient" }).Devices.FirstOrDefault();
+        deviceClient.EnableDevice(wifiDevice);
+        Assert.IsTrue(enabledEvent.WaitOne(2000));
+        deviceClient.DisableDevice(wifiDevice);
+        Assert.IsTrue(disabledEvent.WaitOne(2000));
 
         // Stop the Runtimes
         AhsokaRuntime.Default.StopAllEndPoints();
+    }
+
+    private void SystemClient_NotificationReceived(object sender, AhsokaClientBase<DeviceMessageTypes.Ids>.AhsokaNotificationArgs e)
+    {
+        if (e.TransportId == DeviceMessageTypes.Ids.DeviceEnabled)
+        {
+            enabledEvent.Set();
+        }
+        else if (e.TransportId == DeviceMessageTypes.Ids.DeviceDisabled)
+        {
+            disabledEvent.Set();
+        }
     }
 
     [TestMethod]

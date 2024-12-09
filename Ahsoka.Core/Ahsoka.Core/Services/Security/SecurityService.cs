@@ -1,5 +1,4 @@
-﻿
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System.IO;

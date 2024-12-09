@@ -1,26 +1,22 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Installer.Components;
+using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Threading;
 
 namespace Ahsoka.Services.Device;
 
 [ExcludeFromCodeCoverage]
-internal class TIServiceImplementation : IServiceImplementation
+internal class TIServiceImplementation : IDeviceServiceImplementation
 {
     #region Fields
-    //Task task = null;
-    //CancellationTokenSource tokenSource = null;
-    //string currentMountPoint = "";
+    DeviceList deviceList;
     readonly string[] logoFileTypes = { ".png", ".jpg" };
 
-    public const string NativeLibraryName = "AhsokaLib/Ahsoka.Services.ST.so";
     private const string firmwareModelNumberPath = "/sys/firmware/devicetree/base/model";
     private const string firmwareSerialNumberPath = "/sys/block/mmcblk0/device/cid";
    
@@ -59,7 +55,7 @@ internal class TIServiceImplementation : IServiceImplementation
         }
     }
 
-    void IServiceImplementation.SetRS485Config(SerialRS485 serial_rs485_config)
+    void IDeviceServiceImplementation.SetRS485Config(RS485ConfigNotification serial_rs485_config)
     {
         
     }
@@ -126,6 +122,43 @@ internal class TIServiceImplementation : IServiceImplementation
         }
 
         return 0;
+    }
+
+    public DeviceList HandleGetDevices(DeviceInfoRequest deviceInfoRequest)
+    {
+        DeviceList list = new DeviceList();
+        foreach (var item in deviceList.Devices)
+        {
+            var services = DeviceInfo.GetSupportedServices(item.DeviceType);
+            if (String.IsNullOrEmpty(deviceInfoRequest.ServiceSearch) || services.Contains(deviceInfoRequest.ServiceSearch))
+                list.Devices.Add(item);
+        }
+        return deviceList; 
+    }
+
+    public void Init(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
+    {
+        string fileName = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(Ahsoka.System.Hardware.RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppVersionFile);
+        if (File.Exists(fileName))
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Device Setup Path Found");
+            FileStream fileStream = File.OpenRead(fileName);
+            deviceList = ProtoBuf.Serializer.Deserialize<DeviceList>(fileStream);
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device Service Loaded with {deviceList.Devices.Count} Devices.");
+        }
+        else
+        {
+            // Fall back to Old Combo Module
+            deviceList = new DeviceList()
+            {
+                Devices = { new DeviceInfo()
+                {
+                     Id= (uint)HashCode32.GetHashCode32("Wifi Module"),
+                     Name = "Wifi Module",
+                     DeviceType = DeviceTypes.OnboardWifiModule,
+                }}
+            };
+        }
     }
 
     #endregion

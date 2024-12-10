@@ -45,7 +45,7 @@ internal class StartupInstallerPlugin : InstallerPlugin
 
         var builder = AddEnvironmentValues(info);
         if (builder.Length > 0)
-            additionalFiles[$"{ApplicationOutputComponent.ComponentTypeGuid}.{ApplicationOutputComponent.AppEnvironmentScriptName}"] = UTF8Encoding.UTF8.GetBytes(builder.ToString());
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/start/{ApplicationOutputComponent.AppEnvironmentScriptName}"] = UTF8Encoding.UTF8.GetBytes(builder.ToString());
     }
 
     private static StringBuilder AddEnvironmentValues(PackageInformation info)

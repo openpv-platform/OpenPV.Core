@@ -91,14 +91,13 @@ namespace Ahsoka.Properties {
         ///
         ///cd ${ApplicationFolder}
         ///
-        ///if [ -f ../app_env.sh ];
-        ///then
-        ///    . ../app_env.sh
-        ///fi
-        ///
-        ///if [ -f ./start_ui_helper.sh ];
-        ///then
-        ///    ./start_ui_helper.sh
+        ///DIR=&quot;.appinfo/start&quot;
+        ///if [ -d &quot;$DIR&quot; ]; then
+        ///	for FILE in &quot;$DIR&quot;/*; do
+        ///		if [ -f &quot;$FILE&quot; ]; then	    
+        ///			. &quot;$FILE&quot;
+        ///		fi
+        ///	done
         ///fi
         ///
         ///${PreReleaseScript}

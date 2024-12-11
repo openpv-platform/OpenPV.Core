@@ -39,7 +39,7 @@ message DeviceMessageTypes
 //---------------------------------
 message DeviceInfoRequest
 {
-	string service_search = 2;
+	SupportedFeatures feature_search = 2;
 }
 
 //---------------------------------
@@ -129,6 +129,19 @@ message HardwareItem
 	string name = 1;
 	DeviceTypes device_type = 2;
 	string custom_startup = 6;
+}
+
+
+enum SupportedFeatures
+{
+	FEATURES_UNKNOWN = 0;
+	WIFI = 1;
+	BLUETOOTH_CLASSIC = 2;
+	BLUETOOTH_LE = 3;
+	ETHERNET = 4;
+	CELLULAR = 5;
+	CAN = 6;
+	IO = 7;
 }
 
 

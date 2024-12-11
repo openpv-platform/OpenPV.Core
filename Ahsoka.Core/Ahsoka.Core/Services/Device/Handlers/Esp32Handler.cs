@@ -76,9 +76,9 @@ internal class Esp32Handler : DeviceHandlerBase
         if (log != "")
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Network log: {log}");
         if (error != "")
-            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Network error: {error}");*/
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Network error: {error}");
 
-        base.DisableDevice(deviceInfo, sendNotification);
+        base.DisableDevice(deviceInfo, sendNotification);*/
     }
 
     internal override byte[] GetFirmwareData(PlatformFamily platformFamily, string platformQualifier)

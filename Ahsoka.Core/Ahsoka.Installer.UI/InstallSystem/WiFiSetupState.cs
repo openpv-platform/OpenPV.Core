@@ -45,8 +45,6 @@ internal class WiFiSetupState : InstallerUIStateBase
 
     protected override InstallerUIStateBase OnHandleAction(string action)
     {
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "WiFi - " + action);
-
         if (action == "Up")
             InstallerDrawingManager.Default.WiFiViewModel.MoveUp();
         else if (action == "Down")
@@ -78,6 +76,7 @@ internal class WiFiSetupState : InstallerUIStateBase
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Discovering Networks");
             InstallerDrawingManager.Default.WiFiViewModel.DiscoverNetworks();
+            InstallerDrawingManager.Default.Invalidate();
         }
 
         else if (action == "Select")

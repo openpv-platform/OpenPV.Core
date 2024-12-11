@@ -1,10 +1,9 @@
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using GLib;
-using Gst;
 using System;
 using System.Collections.Generic;
+using Usb.Events;
 
 namespace Ahsoka.Services.Device;
 
@@ -15,6 +14,8 @@ namespace Ahsoka.Services.Device;
 public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
 {
     #region Fields
+
+    IUsbEventWatcher usbEventWatcher;
     internal const string Name = "DeviceService";
     readonly IDeviceServiceImplementation coreInterop;
     Dictionary<uint,DeviceState> devices = new();
@@ -40,7 +41,10 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     public DeviceService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
+   
     }
+
+ 
 
     /// <summary>
     /// CTOR Accepting Custom Configuration
@@ -49,16 +53,14 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     public DeviceService(ServiceConfiguration config) :
         base(config, new DeviceServiceMessages())
     {
-        using var stopwatch = new AhsokaStopwatch("Create SystemService");
-
-        stopwatch.ResetTiming("Interop Found");
-
+        using var stopwatch = new AhsokaStopwatch("Create DeviceService");
         coreInterop = GetInterop();
-
         coreInterop.Init(SendNotification);
+        stopwatch.ResetTiming("Init Completed");
 
-        stopwatch.ResetTiming("Settings Loaded");
-        stopwatch.ResetTiming("Hardware Info Loaded");
+        usbEventWatcher = new UsbEventWatcher(false, true, false, false);
+        usbEventWatcher.UsbDeviceRemoved += (_, device) => UsbRemoved(device); 
+        usbEventWatcher.UsbDeviceAdded += (_, device) => UsbAdded(device); 
 
     }
 
@@ -112,6 +114,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
 
     private void HandleDeviceEnabled(AhsokaServiceRequest request)
     {
+       
         var deviceInfo = request.Message as DeviceInfo;
         var handler =  coreInterop.GetDeviceHandler(deviceInfo);
         handler.EnableDevice(deviceInfo, this.SendNotification);
@@ -151,5 +154,15 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
         SendResponse(message, response);
     }
 
+
+    private void UsbAdded(UsbDevice device)
+    {
+        SendNotification(DeviceMessageTypes.Ids.UsbDeviceAdded, new DeviceInfo());
+    }
+
+    private void UsbRemoved(UsbDevice device)
+    {
+        SendNotification(DeviceMessageTypes.Ids.UsbDeviceRemoved, new DeviceInfo());
+    }
     #endregion
 }

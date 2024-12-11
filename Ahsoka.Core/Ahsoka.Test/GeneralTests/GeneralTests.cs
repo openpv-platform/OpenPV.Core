@@ -52,9 +52,9 @@ public class GeneralTests : LinearTestBase
         var systemKeys = knownValues.FirstOrDefault(x => x.Key == SystemService.Name);
         Assert.IsTrue(systemKeys.Value.Any(x=>x.Name == "Available"));
 
-        Assert.IsTrue(knownValues.Any(x => x.Key == NetworkService.Name));
+        Assert.IsTrue(knownValues.Any(x => x.Key == WiFiClientService.Name));
        
-        var networkKeys = knownValues.FirstOrDefault(x => x.Key == NetworkService.Name);
+        var networkKeys = knownValues.FirstOrDefault(x => x.Key == WiFiClientService.Name);
         Assert.IsTrue(networkKeys.Value.Any(x => x.Name == "ClientNetworkName"));
     }
 

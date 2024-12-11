@@ -9,11 +9,11 @@ using System.Diagnostics.CodeAnalysis;
 namespace Ahsoka.Services.Network;
 
 [AhsokaService(Name)]
-public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
+public class WiFiClientService : AhsokaServiceBase<WiFiClientMessageTypes.Ids>
 {
     #region Fields
     readonly NetworkPlatformImplementationBase networkInterface;
-    public const string Name = "NetworkService";
+    public const string Name = "WiFiClientService";
     #endregion
 
     #region Methods
@@ -23,21 +23,21 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
         {
             PlatformFamily.Windows64 => new WindowsNetworkImplementation(),
             PlatformFamily.OpenViewLinux => new STNetworkImplementation(),
-            PlatformFamily.OpenViewLinuxPro => new UbuntuNetworkImplementation(), // Temp
-            PlatformFamily.Ubuntu64 => new UbuntuNetworkImplementation(),
-            PlatformFamily.MacosArm64 => new MacOSNetworkImplementation(),
+            PlatformFamily.OpenViewLinuxPro => new DesktopNetworkImplementation(), 
+            PlatformFamily.Ubuntu64 => new DesktopNetworkImplementation(),
+            PlatformFamily.MacosArm64 => new DesktopNetworkImplementation(),
             _ => throw new NotImplementedException(),
         };
     }
 
-    public NetworkService() :
+    public WiFiClientService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
 
     }
 
-    public NetworkService(ServiceConfiguration config) :
-        base(config, new NetworkServiceMessages())
+    public WiFiClientService(ServiceConfiguration config) :
+        base(config, new WiFiClientServiceMessages())
     {
         using var stopwatch = new AhsokaStopwatch("Create NetworkService");
 
@@ -47,61 +47,60 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
         networkInterface.Init(this);
         stopwatch.StopTiming("Network Init Completed");
 
-        UpdateCacheValue(NetworkServiceMessages.Available, true);
+        UpdateCacheValue(WiFiClientServiceMessages.Available, true);
     }
 
     protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
         switch (request.TransportId)
         {
-            case NetworkMessageTypes.Ids.GetAdapters:
-                GetAdapters(request);
+            case WiFiClientMessageTypes.Ids.GetAdapter:
+                GetAdapterRequest(request);
                 break;
 
-            case NetworkMessageTypes.Ids.GetAdapterConfiguration:
-                GetAdapterConfiguration(request, request.Message as AdapterRequest);
+            case WiFiClientMessageTypes.Ids.GetNetworkConfiguration:
+                GetNetworkConfiguration(request,request.Message as AdapterRequest); 
                 break;
 
-            case NetworkMessageTypes.Ids.SetAdapterConfiguration:
-                SetAdapterConfiguration(request, request.Message as AdapterConfiguration);
+            case WiFiClientMessageTypes.Ids.SetNetworkConfiguration:
+                SetNetworkConfiguration(request, request.Message as AdapterConfiguration);
                 break;
 
-            case NetworkMessageTypes.Ids.EnableAdapter:
-                EnableAdapter(request, request.Message as AdapterRequest);
-                break;
-
-            case NetworkMessageTypes.Ids.DisableAdapter:
-                DisableAdapter(request, request.Message as AdapterRequest);
-                break;
-
-            case NetworkMessageTypes.Ids.DiscoverNetworks:
+            case WiFiClientMessageTypes.Ids.DiscoverNetworks:
                 Discover(request, request.Message as AdapterRequest);
                 break;
 
-            case NetworkMessageTypes.Ids.GetNetworkProfiles:
+            case WiFiClientMessageTypes.Ids.GetNetworkProfiles:
                 GetNetworkProfiles(request, request.Message as ProfileRequest);
                 break;
 
-            case NetworkMessageTypes.Ids.SetNetworkProfiles:
+            case WiFiClientMessageTypes.Ids.SetNetworkProfiles:
                 SetNetworkProfiles(request, request.Message as NetworkProfilesList);
                 break;
 
-            case NetworkMessageTypes.Ids.ConnectToNetwork:
+            case WiFiClientMessageTypes.Ids.ConnectToNetwork:
                 ConnectToNetwork(request, request.Message as WirelessConnectionRequest);
                 break;
 
-            case NetworkMessageTypes.Ids.DisconnectNetwork:
+            case WiFiClientMessageTypes.Ids.DisconnectNetwork:
                 Disconnect(request, request.Message as AdapterRequest);
                 break;
 
-            case NetworkMessageTypes.Ids.GetNetworkInfo:
+            case WiFiClientMessageTypes.Ids.GetNetworkInfo:
                 GetIpInfo(request, request.Message as AdapterRequest);
                 break;
 
-            case NetworkMessageTypes.Ids.AttemptAutoConnect:
+            case WiFiClientMessageTypes.Ids.AttemptAutoConnect:
                 AttemptAutoConnect(request, request.Message as AutoConnectRequest);
                 break;
         }
+    }
+
+    private void GetAdapterRequest(AhsokaServiceRequest request)
+    {
+        // Send Empty Response to Ack.
+        var result = networkInterface.GetAdapter();
+        SendResponse(request, result);
     }
 
     private void AttemptAutoConnect(AhsokaServiceRequest messageHeader, AutoConnectRequest adapterRequest)
@@ -113,24 +112,6 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
     private void GetIpInfo(AhsokaServiceRequest messageHeader, AdapterRequest adapterRequest)
     {
         var response = networkInterface.GetIPInfo(adapterRequest);
-        SendResponse(messageHeader, response);
-    }
-
-    private void EnableAdapter(AhsokaServiceRequest messageHeader, AdapterRequest adapterRequest)
-    {
-        // Send Empty Response to Ack.
-        SendResponse(messageHeader);
-
-        // Execute Enable and Block
-        var response = networkInterface.EnableAdapter(adapterRequest);
-
-        // Send Async Ready Message
-        SendNotification(NetworkMessageTypes.Ids.NetworkAdapterReady, response);
-    }
-
-    private void DisableAdapter(AhsokaServiceRequest messageHeader, AdapterRequest adapterRequest)
-    {
-        var response = networkInterface.DisableAdapter(adapterRequest);
         SendResponse(messageHeader, response);
     }
 
@@ -160,19 +141,13 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
         SendResponse(messageHeader);
     }
 
-    private void GetAdapters(AhsokaServiceRequest messageHeader)
-    {
-        var response = networkInterface.GetAdapters();
-        SendResponse(messageHeader, response);
-    }
-
-    private void GetAdapterConfiguration(AhsokaServiceRequest messageHeader, AdapterRequest request)
+    private void GetNetworkConfiguration(AhsokaServiceRequest messageHeader, AdapterRequest request)
     {
         var response = networkInterface.GetAdapterConfiguration(request.AdapterId);
         SendResponse(messageHeader, response);
     }
 
-    private void SetAdapterConfiguration(AhsokaServiceRequest messageHeader, AdapterConfiguration adapterConfiguration)
+    private void SetNetworkConfiguration(AhsokaServiceRequest messageHeader, AdapterConfiguration adapterConfiguration)
     {
         var result = networkInterface.UpdateConfiguration(adapterConfiguration);
         SendResponse(messageHeader, result);
@@ -187,7 +162,7 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
     [ExcludeFromCodeCoverage]
     internal void SendWirelessNetworkInfo(AhsokaServiceRequest messageHeader, WirelessNetworkInfo info)
     {
-        SendNotification(NetworkMessageTypes.Ids.WirelessSignalChanged, info);
+        SendNotification(WiFiClientMessageTypes.Ids.WirelessSignalChanged, info);
     }
 
     [ExcludeFromCodeCoverage]
@@ -203,23 +178,23 @@ public class NetworkService : AhsokaServiceBase<NetworkMessageTypes.Ids>
 
         var header = new AhsokaMessageHeader()
         {
-            TransportId = NetworkMessageTypes.Ids.ConnectionStateNotification.EnumToInt()
+            TransportId = WiFiClientMessageTypes.Ids.ConnectionStateNotification.EnumToInt()
         };
 
-        SendNotification(NetworkMessageTypes.Ids.ConnectionStateNotification, response);
+        SendNotification(WiFiClientMessageTypes.Ids.ConnectionStateNotification, response);
 
         if (connectionResult is WirelessConnectionState.ClientConnected or WirelessConnectionState.ClientConnectionFailed)
             SendResponse(messageHeader, new WirelessConnectionResponse() { AdapterId = adapterId, Ssid = ssid, State = connectionResult });
 
         //Notify Data Service of State
-        UpdateCacheValue(NetworkServiceMessages.NetworkState, connectionResult.ToString());
+        UpdateCacheValue(WiFiClientServiceMessages.NetworkState, connectionResult.ToString());
 
         if (connectionResult is WirelessConnectionState.ClientConnected)
-            UpdateCacheValue(NetworkServiceMessages.ClientNetworkName, ssid);
+            UpdateCacheValue(WiFiClientServiceMessages.ClientNetworkName, ssid);
         else if (connectionResult is WirelessConnectionState.ClientConnectionFailed or WirelessConnectionState.ClientDisconnected)
         {
-            UpdateCacheValue(NetworkServiceMessages.ClientNetworkName, string.Empty);
-            UpdateCacheValue(NetworkServiceMessages.IPAddress, string.Empty);
+            UpdateCacheValue(WiFiClientServiceMessages.ClientNetworkName, string.Empty);
+            UpdateCacheValue(WiFiClientServiceMessages.IPAddress, string.Empty);
         }
 
     }

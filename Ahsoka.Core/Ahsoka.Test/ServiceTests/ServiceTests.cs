@@ -220,7 +220,7 @@ public class ServiceTests : LinearTestBase
         deviceClient.SetUsbInfo(usbInfo);
 
 
-        var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { ServiceSearch = "WiFiClient" }).Devices.FirstOrDefault();
+        var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch =  SupportedFeatures.Wifi }).Devices.FirstOrDefault();
         deviceClient.EnableDevice(wifiDevice);
         Assert.IsTrue(enabledEvent.WaitOne(2000));
         deviceClient.DisableDevice(wifiDevice);
@@ -335,7 +335,7 @@ public class ServiceTests : LinearTestBase
     {
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
-        NetworkServiceClient netClient = new();
+        WiFiClientServiceClient netClient = new();
 
         Dispatcher.Default.RegisterCallback((o, e) => { }, netClient);
         Dispatcher.Default.RegisterCallback<NotificationEventArgs<SystemMessageTypes.Ids>>(ApplicationServiceClient_NotificationReceived, systemClient);

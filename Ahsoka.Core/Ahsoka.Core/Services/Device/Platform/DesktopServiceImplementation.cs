@@ -31,7 +31,7 @@ internal class DesktopServiceImplementation : IDeviceServiceImplementation
         foreach (var item in deviceList.Devices)
         {
             var services = DeviceInfo.GetSupportedServices(item.DeviceType);
-            if (String.IsNullOrEmpty(deviceInfoRequest.ServiceSearch) || services.Contains(deviceInfoRequest.ServiceSearch))
+            if (deviceInfoRequest.FeatureSearch == SupportedFeatures.FeaturesUnknown  || services.Contains(deviceInfoRequest.FeatureSearch))
                 list.Devices.Add(item);
         }
         return deviceList;

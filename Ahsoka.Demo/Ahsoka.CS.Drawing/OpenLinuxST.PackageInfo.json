@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10050",
+  "version": "4.0.1.10053",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Drawing",
   "packageName": "Ahsoka.CS.Drawing",
@@ -33,6 +33,15 @@
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
           "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": "AutoStart"
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "DeviceService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "dataChannel": 5009,
           "isExtension": false,
           "behaviors": "AutoStart"
         }

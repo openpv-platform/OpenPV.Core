@@ -6,11 +6,11 @@ using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Install;
 using Ahsoka.Services.Network;
-using Ahsoka.Services.Spark;
 using Ahsoka.Services.System;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility.WiFi;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -26,7 +26,6 @@ internal class InstallerDrawingManager : SkiaDrawingManager
     #region Fields
     InstallServiceClient installClient;
     DeviceServiceClient deviceClient;
-    NetworkServiceClient networkClient;
     SystemServiceClient systemClient;
     #endregion
 
@@ -36,8 +35,6 @@ internal class InstallerDrawingManager : SkiaDrawingManager
     public SystemServiceClient SystemClient { get => systemClient; }
 
     public DeviceServiceClient DeviceClient { get => deviceClient; }
-
-    public NetworkServiceClient NetworkClient { get => networkClient; }
 
     public WiFiNetworkManager WiFiViewModel { get { return wifiViewModel; } }
 
@@ -55,38 +52,40 @@ internal class InstallerDrawingManager : SkiaDrawingManager
         // we initialize the services which may take some time.
         Task.Run(() =>
         {
-            // Start Services to Loader UI
-            SystemService systemService = new();
-            SparkService sparkService = new();
-            NetworkService networkService = new();
-            DeviceService deviceService = new();
+            try
+            {
+                // Start Clients
+                installClient = new();
+                systemClient = new();
+                deviceClient = new();
+                AhsokaRuntime.Default.StartEndPoints(installClient, systemClient, deviceClient);
 
-            systemService.AutoLoadReceived += SystemService_AutoLoadReceived;
+                var systemService = AhsokaRuntime.Default.GetService(systemClient.ServiceConfig.ServiceName) as SystemService;
+                systemService.AutoLoadReceived += SystemService_AutoLoadReceived;
 
-            AhsokaRuntime.Default.StartEndPoints(systemService, sparkService, networkService, deviceService);
+                ((StartState)CurrentState).Init(true);
+                Invalidate();
 
-            // Start Clients
-            installClient = new();
-            networkClient = new();
-            systemClient = new();
-            deviceClient = new();
-
-            AhsokaRuntime.Default.StartEndPoints(installClient, networkClient, systemClient, deviceClient);
-
-            ApplicationContext.ReleaseStartup();
-
-            ((StartState)CurrentState).Init(true);
-
-            Invalidate();
-
-            CheckForInternalAutoload();
+                // Release Startup and UX
+                ApplicationContext.ReleaseStartup();
+          
+                CheckForInternalAutoload();
+               
+            }
+            catch (Exception ex)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Startup Exception " + ex.Message +  ex.StackTrace);
+            }
 
         }).ContinueWith((result) =>
         {
-            wifiViewModel.Init(networkClient, deviceClient);
+            wifiViewModel.AdapterEnabledChanged += (o, e) => { Invalidate(); };
             wifiViewModel.NetworkListChanged += (o, e) => { Invalidate(); };
             wifiViewModel.ConnectionStateChanged += (o, e) => { Invalidate(); };
             wifiViewModel.SelectedNetworkChanged += (o, e) => { Invalidate(); };
+
+            // Start Clients....These Use AutoStart
+            wifiViewModel.Start(deviceClient);
         });
     }
 

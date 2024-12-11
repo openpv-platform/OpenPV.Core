@@ -15,7 +15,7 @@ internal static class TestCommands
     [CommandLineMethod(@"     --Test: Run Test Script
             [WiFi] Test WiFi Directly
             [WiFiService] Test WiFi Via Ahsoka Services
-            [WiFiServiceAP] Test WiFi AccessPoint Via Ahsoka Services
+            DISABLED [WiFiServiceAP] Test WiFi AccessPoint Via Ahsoka Services
             [SystemService] Test System Services
             [DeviceService] Test Device Services
             [MonitorIgnitionNotification] Test Ignition Pin Notifications
@@ -27,8 +27,8 @@ internal static class TestCommands
                 ESPTest.RunTest();
             else if (args[0] == "WiFiService")
                 NetworkTests.TestNetworkService();
-            else if (args[0] == "WiFiServiceAP")
-                NetworkTests.TestNetworkServiceAP();
+            //else if (args[0] == "WiFiServiceAP")
+            //    NetworkTests.TestNetworkServiceAP();
             else if (args[0] == "SystemService")
                 SystemTests.TestSystemService();
             else if (args[0] == "DeviceService")

@@ -13,25 +13,25 @@ public partial class DeviceInfo
     /// Get List of Services supporting this Type
     /// </summary>
     /// <returns></returns>
-    public static string[] GetSupportedServices(DeviceTypes deviceTypes)
+    public static SupportedFeatures[] GetSupportedServices(DeviceTypes deviceTypes)
     {
         switch (deviceTypes)
         {
             case DeviceTypes.OnboardWirelessComboModule:
-                return "WiFiClientService, WiFiAPService, BluetoothService, BluetoothDataService, BLEService".Split(',', StringSplitOptions.RemoveEmptyEntries);
+                return [SupportedFeatures.Wifi, SupportedFeatures.BluetoothLe, SupportedFeatures.BluetoothClassic];
             case DeviceTypes.OnboardWifiModule:
-                return "WiFiClientService, WiFiAccessPointService".Split(',', StringSplitOptions.RemoveEmptyEntries);
+                return [SupportedFeatures.Wifi];
             case DeviceTypes.OnboardBtModule:
-                return "BluetoothService, BluetoothDataService, BLEService".Split(',', StringSplitOptions.RemoveEmptyEntries);
+                return [SupportedFeatures.BluetoothLe, SupportedFeatures.BluetoothClassic];
             case DeviceTypes.OnboardEthernet:
-                return "NetworkService".Split(',', StringSplitOptions.RemoveEmptyEntries);
+                return [SupportedFeatures.Ethernet];
             case DeviceTypes.UsbCellularNetwork:
-                return "CellularNetworkService".Split(',', StringSplitOptions.RemoveEmptyEntries);
+                return [SupportedFeatures.Cellular];
             case DeviceTypes.IoControlModule:
-                return "CANService, IOService".Split(',', StringSplitOptions.RemoveEmptyEntries);
+                return [SupportedFeatures.Can, SupportedFeatures.Io];
             case DeviceTypes.DeviceTypeUnknown:
             default:
-                return "NoService".Split(',', StringSplitOptions.RemoveEmptyEntries);
+                return [SupportedFeatures.FeaturesUnknown];
         }
     }
 

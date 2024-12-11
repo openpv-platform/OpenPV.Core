@@ -502,16 +502,6 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] NetworkService {
-            get {
-                object obj = ResourceManager.GetObject("NetworkService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;services&quot;: [
         ///    {
@@ -754,6 +744,16 @@ namespace Ahsoka.Properties {
         internal static string weston_ini {
             get {
                 return ResourceManager.GetString("weston_ini", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] WiFiClientService {
+            get {
+                object obj = ResourceManager.GetObject("WiFiClientService", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         

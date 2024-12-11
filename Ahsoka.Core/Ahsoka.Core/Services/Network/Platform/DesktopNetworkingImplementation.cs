@@ -1,5 +1,6 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.System;
+using Gst.Base;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -8,30 +9,21 @@ using System.Threading;
 namespace Ahsoka.Services.Network.Platform;
 
 [ExcludeFromCodeCoverage]
-internal class MacOSNetworkImplementation : NetworkPlatformImplementationBase
+internal class DesktopNetworkImplementation : NetworkPlatformImplementationBase
 {
     readonly CancellationTokenSource tokenSource = new();
     readonly AutoResetEvent disconnectListenerCompleted = new(false);
+    string adapterId = Guid.NewGuid().ToString();
 
-    protected override List<AdapterInfo> GetAdapterList()
-    {
-        // All Configurable Adapters are Statically Defined 
-        return SystemInfo.HardwareInfo.NetworkInfo.AdapterInfoList;
-    }
-
-    protected override void OnEnableAdapter(AdapterInfo adapter, AdapterConfiguration configuration)
-    {
-        adapter.CurrentState = AdapterState.Enabled;
-    }
-
-    protected override void OnDisableAdapter(AdapterInfo adapter)
-    {
-        adapter.CurrentState = AdapterState.Disabled;
-    }
-
-    protected override void OnCreateAdapterConfiguration(AdapterConfiguration config, AdapterInfo item)
+    protected override void OnStartNetwork(out AdapterConfiguration defaultConfiguration, out AdapterRequest defaultRequest)
     {
         // No Configuration Needed on Windows
+        defaultConfiguration = new AdapterConfiguration() { AdapterId = adapterId, ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp } };
+        defaultRequest = new AdapterRequest() { AdapterId = adapterId };
+    }
+
+    protected override void OnUpdateConfiguration(AdapterConfiguration adapterConfiguration)
+    {
     }
 
     protected override WirelessNetworkInfoList OnGetDiscoveredNetworks(string adapterId)
@@ -57,17 +49,17 @@ internal class MacOSNetworkImplementation : NetworkPlatformImplementationBase
         NetworkProfileHelper.SetNetworkProfiles(profilesList);
     }
 
-    protected override void OnConnect(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override void OnConnect(WiFiClientService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientConnecting, connectionRequest.AdapterId, "");
     }
 
-    protected override void OnDisconnect(NetworkService.AhsokaServiceRequest header, string adapterId)
+    protected override void OnDisconnect(WiFiClientService.AhsokaServiceRequest header, string adapterId)
     {
         NetworkService.SendConnectionStateNotification(header, WirelessConnectionState.ClientDisconnected, adapterId, "");
     }
 
-    protected override bool WaitForTimeSync(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override bool WaitForTimeSync(WiFiClientService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientWaitingForTime, connectionRequest.AdapterId, connectionRequest.Ssid);
         return true;

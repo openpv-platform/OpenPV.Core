@@ -26,41 +26,32 @@ public class NetworkServiceTest : LinearTestBase
     public void TestNetworkService()
     {
         // Start client for NetworkService
-        var client = new NetworkServiceClient();
+        var client = new WiFiClientServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
         client.Start();
 
         string wifiAdapterId = null;
 
         Console.WriteLine($"Getting Network Adapters");
-        var networkAdapters = client.GetNetworkAdapters();
-        Console.WriteLine($"Adapters: {networkAdapters.Adapters.Count()}");
-        foreach (var adapter in networkAdapters.Adapters)
+        var adapter = client.GetAdapter();
+
+        var config = client.GetNetworkConfiguration(new AdapterRequest() { AdapterId = adapter.AdapterId });
+
+        // Configure WiFi network if Wireless Adapter
+        wifiAdapterId = adapter.AdapterId;
+
+        config.ClientConfiguration = new IPConfiguration()
         {
-            Console.WriteLine();
-            Console.WriteLine($"Adapter: {adapter.Description}\r\n is of type {adapter.AdapterType} with AdapterId {adapter.AdapterId}");
+            ConnectionType = IPAddressConfiguration.Dhcp
+        };
 
-            var config = client.GetNetworkConfiguration(new AdapterRequest() { AdapterId = adapter.AdapterId });
+        client.SetNetworkConfiguration(config);
 
-            // Configure WiFi network if Wireless Adapter
-            if (adapter.AdapterType == NetworkAdapterType.WifiClient)
-            {
-                wifiAdapterId = adapter.AdapterId;
+        var updatedConfig = client.GetNetworkConfiguration(new AdapterRequest() { AdapterId = adapter.AdapterId });
 
-                config.ClientConfiguration = new IPConfiguration()
-                {
-                    ConnectionType = IPAddressConfiguration.Dhcp
-                };
-            }
-
-            client.SetNetworkConfiguration(config);
-            client.EnableAdapter(new AdapterRequest() { AdapterId = adapter.AdapterId });
-
-            var updatedConfig = client.GetNetworkConfiguration(new AdapterRequest() { AdapterId = adapter.AdapterId });
-
-            Assert.AreEqual(config.AdapterId, updatedConfig.AdapterId);
-            Assert.AreEqual(config.ClientConfiguration?.ConnectionType, updatedConfig.ClientConfiguration?.ConnectionType);
-        }
+        Assert.AreEqual(config.AdapterId, updatedConfig.AdapterId);
+        Assert.AreEqual(config.ClientConfiguration?.ConnectionType, updatedConfig.ClientConfiguration?.ConnectionType);
+    
 
         if (wifiAdapterId != null)
         {
@@ -130,9 +121,6 @@ public class NetworkServiceTest : LinearTestBase
             }
         }
 
-        if (wifiAdapterId != null)
-            client.DisableAdapter(new AdapterRequest() { AdapterId = wifiAdapterId });
-
         // Stop the Runtimes
         AhsokaRuntime.Default.StopAllEndPoints();
     }
@@ -145,36 +133,33 @@ public class NetworkServiceTest : LinearTestBase
 
         // Start client for NetworkService
         var deviceClient = new DeviceServiceClient(); 
-        var client = new NetworkServiceClient();
+        var client = new WiFiClientServiceClient();
 
         // Find Adapter that Supports This Service
-        var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { ServiceSearch = "WiFiClient" }).Devices.FirstOrDefault();
+        var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch = SupportedFeatures.Wifi }).Devices.FirstOrDefault();
         if (wifiDevice != null)
         {
             deviceClient.EnableDevice(wifiDevice);
 
-            var networkAdapters = client.GetNetworkAdapters();
-            if (networkAdapters.Adapters.Any(x => x.AdapterType == NetworkAdapterType.WifiClient))
+            var adapter = client.GetAdapter();
+            WiFiNetworkManager manager = new();
+            manager.Start(deviceClient, client );
+
+            manager.ConnectionStateChanged += (o, a) =>
             {
-                WiFiNetworkManager manager = new();
-                manager.Init(client, deviceClient);
+                // Connection State will trigger 
+                // once the init is completed and the firrst discover happens if needed.
+                reset.Set();
+            };
+            manager.SelectedNetworkChanged += (o, e) => { };
+            manager.NetworkListChanged += (o, e) => { };
+            manager.AdapterEnabledChanged += (o, e) => { };
 
-                manager.ConnectionStateChanged += (o, a) =>
-                {
-                    // Connection State will trigger 
-                    // once the init is completed and the firrst discover happens if needed.
-                    reset.Set();
-                };
-                manager.SelectedNetworkChanged += (o, e) => { };
-                manager.NetworkListChanged += (o, e) => { };
-                manager.AdapterEnabledChanged += (o, e) => { };
+            // Wait for Init to Complete
+            reset.WaitOne();
 
-                // Wait for Init to Complete
-                reset.WaitOne();
-
-                manager.MoveDown();
-                manager.MoveUp();
-            }
+            manager.MoveDown();
+            manager.MoveUp();
 
             deviceClient.DisableDevice(wifiDevice);
 
@@ -226,17 +211,16 @@ public class NetworkServiceTest : LinearTestBase
         // start network runtimes
 
         // Start client for NetworkService
-        var client = new NetworkServiceClient();
+        var client = new WiFiClientServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
         client.Start();
 
         // Get Adapter
-        var networkAdapters = client.GetNetworkAdapters();
-        var wifiAdapter = networkAdapters.Adapters.FirstOrDefault(x => x.AdapterType == NetworkAdapterType.WifiClient);
-        if (wifiAdapter != null)
+        var networkAdapters = client.GetAdapter();
+        if (networkAdapters != null)
         {
 
-            AdapterRequest defaultAdapterRequest = new() { AdapterId = wifiAdapter.AdapterId };
+            AdapterRequest defaultAdapterRequest = new() { AdapterId = networkAdapters.AdapterId };
             var testPassword = "testPassword";
 
             // Create Request
@@ -298,9 +282,9 @@ public class NetworkServiceTest : LinearTestBase
     }
 
 
-    private void Client_NotificationReceived(object sender, NotificationEventArgs<NetworkMessageTypes.Ids> e)
+    private void Client_NotificationReceived(object sender, NotificationEventArgs<WiFiClientMessageTypes.Ids> e)
     {
-        if (e.TransportId == NetworkMessageTypes.Ids.ConnectionStateNotification)
+        if (e.TransportId == WiFiClientMessageTypes.Ids.ConnectionStateNotification)
         {
             var response = e.NotificationObject as WirelessConnectionNotification;
 

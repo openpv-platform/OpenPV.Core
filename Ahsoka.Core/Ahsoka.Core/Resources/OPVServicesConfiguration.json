@@ -26,7 +26,7 @@
     },
     {
       "socketType": "TcpSocket",
-      "serviceName": "NetworkService",
+      "serviceName": "WiFiClientService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5003,

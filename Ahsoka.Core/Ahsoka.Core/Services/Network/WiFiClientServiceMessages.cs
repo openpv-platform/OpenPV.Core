@@ -8,7 +8,7 @@ namespace Ahsoka.Services.Network;
 /// <summary>
 /// Metadata Class for Network Service
 /// </summary>
-public class NetworkServiceMessages : AhsokaMessagesBase
+public class WiFiClientServiceMessages : AhsokaMessagesBase
 {
 
     /// <summary>
@@ -33,38 +33,35 @@ public class NetworkServiceMessages : AhsokaMessagesBase
 
 
     /// <InheritDoc/>
-    public NetworkServiceMessages()
+    public WiFiClientServiceMessages()
     {
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.GetAdapters, typeof(EmptyNotification), typeof(AvailableAdapters));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.EnableAdapter, typeof(AdapterRequest), typeof(AdapterInfo));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.DisableAdapter, typeof(AdapterRequest), typeof(AdapterInfo));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.GetAdapterConfiguration, typeof(AdapterRequest), typeof(AdapterConfiguration));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.SetAdapterConfiguration, typeof(AdapterConfiguration), typeof(AdapterConfigurationResult));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.DiscoverNetworks, typeof(AdapterRequest), typeof(WirelessNetworkInfoList));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.ConnectToNetwork, typeof(WirelessConnectionRequest), typeof(WirelessConnectionResponse));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.DisconnectNetwork, typeof(AdapterRequest), typeof(WirelessConnectionNotification));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.GetNetworkProfiles, typeof(ProfileRequest), typeof(NetworkProfilesList));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.SetNetworkProfiles, typeof(NetworkProfilesList), typeof(EmptyNotification));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.GetNetworkInfo, typeof(AdapterRequest), typeof(IPInfo));
-        this.RegisterServiceRequest(NetworkMessageTypes.Ids.AttemptAutoConnect, typeof(AutoConnectRequest), typeof(EmptyNotification));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.GetAdapter, typeof(EmptyNotification), typeof(AdapterResult));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.GetNetworkConfiguration, typeof(AdapterRequest), typeof(AdapterConfiguration));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.SetNetworkConfiguration, typeof(AdapterConfiguration), typeof(AdapterResult));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.DiscoverNetworks, typeof(AdapterRequest), typeof(WirelessNetworkInfoList));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.ConnectToNetwork, typeof(WirelessConnectionRequest), typeof(WirelessConnectionResponse));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.DisconnectNetwork, typeof(AdapterRequest), typeof(WirelessConnectionNotification));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.GetNetworkProfiles, typeof(ProfileRequest), typeof(NetworkProfilesList));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.SetNetworkProfiles, typeof(NetworkProfilesList), typeof(EmptyNotification));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.GetNetworkInfo, typeof(AdapterRequest), typeof(IPInfo));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.AttemptAutoConnect, typeof(AutoConnectRequest), typeof(EmptyNotification));
 
-        this.RegisterServiceNotification(NetworkMessageTypes.Ids.ConnectionStateNotification, typeof(WirelessConnectionNotification));
-        this.RegisterServiceNotification(NetworkMessageTypes.Ids.NetworkAdapterReady, typeof(AdapterInfo));
-        this.RegisterServiceNotification(NetworkMessageTypes.Ids.WirelessSignalChanged, typeof(WirelessNetworkInfo));
+        this.RegisterServiceNotification(WiFiClientMessageTypes.Ids.ConnectionStateNotification, typeof(WirelessConnectionNotification));
+        this.RegisterServiceNotification(WiFiClientMessageTypes.Ids.WirelessSignalChanged, typeof(WirelessNetworkInfo));
     }
 
     /// <InheritDoc/>
     protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
         var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\NetworkService.proto", Properties.Resources.NetworkService);
+        result.Add("Ahsoka.Proto\\WiFiClientService.proto", Properties.Resources.WiFiClientService);
         return result;
     }
 
     /// <InheritDoc/>
     protected override void OnGetParameters(out string group, List<ParameterData> values, PackageInformation info)
     {
-        group = NetworkService.Name;
+        group = WiFiClientService.Name;
 
         values.Add(new() { Name = Available, DefaultValue = false, ValueType = ParameterValueTypes.Boolean });
         values.Add(new() { Name = NetworkState, DefaultValue = (int)WirelessConnectionState.ClientReady, ValueType = ParameterValueTypes.UnsignedInteger, Enumerations = EnumExtensions.EnumToDictionary<WirelessConnectionState>() });
@@ -109,18 +106,3 @@ public partial class AutoConnectRequest
     }
 }
 
-
-/// <summary>
-/// Request Object for Requesting a WiFi Connection be Started.
-/// Adds Default Timeout Values for Connection, IP Address and Time Sync.
-/// </summary>
-public partial class AccessPointConfiguration
-{
-    /// <summary>
-    /// Default Constructor
-    /// </summary>
-    public AccessPointConfiguration()
-    {
-        this.ChannelNumber = 1;
-    }
-}

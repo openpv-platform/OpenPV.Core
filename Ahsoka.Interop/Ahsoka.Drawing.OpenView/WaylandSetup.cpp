@@ -35,7 +35,7 @@ static void touch_handle_down(void *data, struct wl_touch *wl_touch,
 	touch_xi = xi;
 	touch_yi = yi;
 
-	if (CAIRO_DEBUG)  
+	if (CAIRO_DEBUG > 1)  
 		printf("Touch Down: X[%i] Y[%i] ID[%i]\r\n", xi, yi, id);
 	
 	enqueue(&t);
@@ -55,7 +55,8 @@ static void touch_handle_up(void *data, struct wl_touch *wl_touch,
 	};
 
 	enqueue(&t);
-	if (CAIRO_DEBUG) printf("Touch UP: X[%i] Y[%i] ID[%i]\r\n", touch_xi, touch_yi, id);
+	if (CAIRO_DEBUG > 1)  
+		printf("Touch UP: X[%i] Y[%i] ID[%i]\r\n", touch_xi, touch_yi, id);
 
 	// reset touch_xi & yi values to make sure we don't 'double' touch
 	touch_xi = 0;

@@ -3,6 +3,7 @@ using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Dispatch;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device;
 using Ahsoka.Services.System;
 using Ahsoka.System;
 
@@ -28,7 +29,9 @@ internal class Program
     {
         // Add For Communication with Display
         SystemServiceClient client = new();
+        DeviceServiceClient deviceClient = new();
         Dispatcher.Default.AddStartupItem(client);
+        Dispatcher.Default.AddStartupItem(deviceClient);
 
         // Create the Ahsoka Drawing API and matching Window
         DrawingWindow window = new(OperatingSystem.IsLinux()); // Surface ID's used on Pro Platform

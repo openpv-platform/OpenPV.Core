@@ -5,17 +5,14 @@ import "protobuf-net/protogen.proto";
 package AhsokaNetwork;
 option csharp_namespace = "Ahsoka.Services.Network";
 
-message NetworkMessageTypes
+message WiFiClientMessageTypes
 {
     enum Ids
     {
         NONE = 0;
-        GET_ADAPTERS = 1;
-        NETWORK_ADAPTER_READY = 2;
-        ENABLE_ADAPTER = 3;
-        DISABLE_ADAPTER = 4;
-        GET_ADAPTER_CONFIGURATION = 6;
-        SET_ADAPTER_CONFIGURATION = 8;
+        GET_ADAPTER = 1;
+        GET_NETWORK_CONFIGURATION = 6;
+        SET_NETWORK_CONFIGURATION = 8;
 
         // Client Only Calls
         DISCOVER_NETWORKS = 9;
@@ -27,48 +24,7 @@ message NetworkMessageTypes
         GET_NETWORK_INFO = 18;
         WIRELESS_SIGNAL_CHANGED = 19;
         ATTEMPT_AUTO_CONNECT = 20;
-
-        // AP Only Calls
-
     }
-}
-
-//---------------------------------
-// Adapter Info
-//---------------------------------
-message AvailableAdapters
-{
-	repeated AdapterInfo adapters = 1;
-}
-
-message AdapterInfo
-{
-    string adapter_id = 1;
-    NetworkAdapterType adapter_type = 2;
-    string description = 3;
-    AdapterState current_state = 5;
-    ModuleType module = 6;
-}
-
-enum AdapterState
-{
-    DISABLED = 0;
-    ENABLED = 1;
-}
-
-
-enum NetworkAdapterType
-{
-    NO_ADAPTER_TYPE = 0;
-    ETHERNET = 1;
-    WIFI_CLIENT = 2;
-    WIFI_ACCESS_POINT = 3;
-}
-
-enum ModuleType
-{
-    NONE = 0;
-    ESP32 = 1;
 }
 
 //---------------------------------
@@ -88,22 +44,18 @@ message AutoConnectRequest
     int32 wait_for_connection_seconds = 8;
     int32 wait_for_ip_address_seconds = 9 [(.protobuf_net.fieldopt).name = "WaitForIPAddressSeconds"];
     int32 wait_for_time_sync_seconds = 10;
-
 }
 
 message AdapterConfiguration
 {
     string adapter_id = 1;
     string description = 2;
-    AdapterMode adapter_mode = 3;
     IPConfiguration client_configuration = 4;
-    AccessPointConfiguration access_point_configuration = 5;
-    DHCPServerConfiguration dhcp_server_configuration = 6;
     string override_mac_address = 7;
     bool save_as_default = 99;
 }
 
-message AdapterConfigurationResult
+message AdapterResult
 {    
     string adapter_id = 1;
     string error_description = 2;
@@ -122,32 +74,6 @@ enum IPAddressConfiguration
 {
     DHCP = 0;
     STATIC_IP = 1 [(.protobuf_net.enumvalopt).name = "StaticIP"];
-}
-
-enum AdapterMode
-{
-    NO_MODE = 0;
-    CLIENT = 1;                 // WiFi station mode
-    ACCESS_POINT = 2;           // WiFi soft-AP mode
-}
-
-message AccessPointConfiguration
-{
-    string ssid = 1;
-    SecurityType security_type = 2;
-    string encryption_pass_key = 5;
-	bool broadcast_ssid = 6;
-    int32 channel_number = 7;
-	
-    DHCPServerConfiguration dhcp_server_configuration = 10 [(.protobuf_net.fieldopt).name = "DHCPServerConfiguration"];
-}
-
-message DHCPServerConfiguration
-{
-    string dhcp_ip_base_address = 1;
-    int32 dhcp_base_offset = 2;
-    int32 dhcp_base_pool_size = 3;
-    string dns = 6;
 }
 
 //---------------------------------

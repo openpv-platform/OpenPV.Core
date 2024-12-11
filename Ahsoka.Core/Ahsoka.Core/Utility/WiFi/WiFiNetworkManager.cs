@@ -3,6 +3,7 @@ using Ahsoka.Installer.InstallEngine;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
+using Gst.Base;
 using Mono.Unix.Native;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ public sealed class WiFiNetworkManager
 {
     #region Fields
     DeviceServiceClient deviceClient;
-    NetworkServiceClient client;
+    WiFiClientServiceClient wifiClient;
     Dispatcher dispatcher;
     AdapterRequest defaultAdapterRequest;
     readonly List<WirelessConnectionRequest> networkProfilesList = new();
@@ -134,23 +135,25 @@ public sealed class WiFiNetworkManager
     /// <summary>
     /// Initialize the WiFiManager
     /// </summary>
-    /// <param name="client"></param>
+    /// <param name="wifiClient"></param>
     /// <param name="deviceClient"></param>
     /// <param name="dispatcher"></param>
-    public void Init(NetworkServiceClient client, DeviceServiceClient deviceClient, Dispatcher dispatcher = null)
+    public void Start(DeviceServiceClient deviceClient = null, WiFiClientServiceClient wifiClient = null, Dispatcher dispatcher = null)
     {
-        this.client = client;
+        if (wifiClient == null)
+            wifiClient = new WiFiClientServiceClient();
+        this.wifiClient = wifiClient;
+
+        if ( deviceClient == null )
+            deviceClient = new DeviceServiceClient();
         this.deviceClient = deviceClient;
+
         this.dispatcher = dispatcher;
 
-        lock (client)
-        {
-            if (dispatcher != null)
-                Dispatcher.Default.RegisterCallback(HandleDataMessage, client); // Route Network Manager
-            else
-                client.NotificationReceived += HandleDataMessage; // use Normal Message Routing
-
-        }
+        if (dispatcher != null)
+            Dispatcher.Default.RegisterCallback(HandleDataMessage, this.wifiClient); // Route Network Manager
+        else
+            this.wifiClient.NotificationReceived += HandleDataMessage; // use Normal Message Routing
 
         // Start Network Async...for performance reasons.
         var networkReady = Task.Run(() =>
@@ -224,8 +227,8 @@ public sealed class WiFiNetworkManager
             request = SelectedNetworkProfile;
 
         // If So Connect
-        lock (client)
-            client.Connect(request);
+        lock (wifiClient)
+            wifiClient.Connect(request);
     }
 
     /// <summary>
@@ -233,8 +236,8 @@ public sealed class WiFiNetworkManager
     /// </summary>
     public void Disconnect()
     {
-        lock (client)
-            client.Disconnect(defaultAdapterRequest);
+        lock (wifiClient)
+            wifiClient.Disconnect(defaultAdapterRequest);
     }
 
     /// <summary>
@@ -242,6 +245,12 @@ public sealed class WiFiNetworkManager
     /// </summary>
     public void DiscoverNetworks()
     {
+        if (!AdapterEnabled)
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Discover Called with Disabled Adapter");
+            return;
+        }
+
         AvailableNetworks.Clear();
         NetworkListChanged?.Invoke(this, EventArgs.Empty);
 
@@ -251,7 +260,7 @@ public sealed class WiFiNetworkManager
             // Invoke Discover in Background then UpdateNetwork List in Dispatcher
             dispatcher.InvokeDispatcherAsync(() =>
             {
-                return client.DiscoverNetworks(defaultAdapterRequest);
+                return wifiClient.DiscoverNetworks(defaultAdapterRequest);
             },
             UpdateNetworkList);
         }
@@ -260,9 +269,9 @@ public sealed class WiFiNetworkManager
             // Run Discover in a thread and Wait for Result (Old Way)
             var task = Task.Run(() =>
             {
-                lock (client)
+                lock (wifiClient)
                 {
-                    return client.DiscoverNetworks(defaultAdapterRequest);
+                    return wifiClient.DiscoverNetworks(defaultAdapterRequest);
                 }
             });
 
@@ -276,7 +285,7 @@ public sealed class WiFiNetworkManager
     /// <returns></returns>
     public IPInfo GetIPInfo()
     {
-        return client.GetIPInfo(defaultAdapterRequest);
+        return wifiClient.GetIPInfo(defaultAdapterRequest);
     }
 
     /// <summary>
@@ -286,7 +295,7 @@ public sealed class WiFiNetworkManager
     /// <param name="args"></param>
     public void HandleDataMessage(object model, EventArgs args)
     {
-        if (args is NetworkServiceClient.AhsokaNotificationArgs e)
+        if (args is WiFiClientServiceClient.AhsokaNotificationArgs e)
         {
             if (e.NotificationObject is WirelessConnectionNotification info)
             {
@@ -316,23 +325,18 @@ public sealed class WiFiNetworkManager
 
                 ConnectionStateChanged?.Invoke(this, ConnectionState);
             }
-            else if (e.TransportId == NetworkMessageTypes.Ids.WirelessSignalChanged)
+            else if (e.TransportId == WiFiClientMessageTypes.Ids.WirelessSignalChanged)
             {
                 WirelessNetworkInfo netInfo = e.NotificationObject as WirelessNetworkInfo;
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Signal: {netInfo.SignalLevel} Network: {netInfo.Ssid}");
             }
-            else if (e.TransportId == NetworkMessageTypes.Ids.NetworkAdapterReady)
-            {
-                AdapterEnabled = true;
-                DiscoverNetworks();
-            }
+          
         }
     }
 
     private void UpdateNetworkList(WirelessNetworkInfoList list)
     {
         AvailableNetworks.Clear();
-
         foreach (var item in list.Networks)
         {
             AvailableNetworks.Add(item);
@@ -351,44 +355,47 @@ public sealed class WiFiNetworkManager
 
     private bool ConfigureAdapter()
     {
-        lock (client)
+        lock (wifiClient)
         {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Getting Adapters 2000");
-            var networkAdapters = client.GetNetworkAdapters(2000);
-            var wifiAdapter = networkAdapters?.Adapters?.FirstOrDefault(x => x.AdapterType == NetworkAdapterType.WifiClient);
-            if (wifiAdapter == null)
+            // See if we have a WiFiClient
+            var listOfDevices = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch =  SupportedFeatures.Wifi });
+            var wiFiDevice = listOfDevices.Devices.FirstOrDefault();
+            if (wiFiDevice == null)
                 return false;
 
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Recieved {networkAdapters.Adapters.Count}  {wifiAdapter != null} Adapters");
-           
-            defaultAdapterRequest = new AdapterRequest() { AdapterId = wifiAdapter?.AdapterId };
+            // Enable te Adapter
+            deviceClient.EnableDevice(wiFiDevice);
+
+            var adapter = wifiClient.GetAdapter(4000);
+            if (adapter == null || !adapter.ConfigurationSuccessful)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"No Adapter Found Adapter:{adapter != null} IsAvailable: {adapter.ConfigurationSuccessful}");
+                return false; // No Working Adapter
+            }
+            
+            defaultAdapterRequest = new AdapterRequest() { AdapterId = adapter?.AdapterId };
+
+            AdapterEnabled = !String.IsNullOrEmpty(adapter?.AdapterId);
+            AdapterEnabledChanged?.Invoke(this, EventArgs.Empty);
 
             // Configure for DHCP
-            var config = client.GetNetworkConfiguration(defaultAdapterRequest);
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Configuring WiFi Adapter");
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Adapter is Configured for {wifiAdapter.AdapterType}");
-            config.ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp };
+            var config = wifiClient.GetNetworkConfiguration(defaultAdapterRequest);
+            if (config.ClientConfiguration.ConnectionType == IPAddressConfiguration.StaticIP)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Reconfiguring Network Setup TO DHCP.");
+                config.ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp };
+                wifiClient.SetNetworkConfiguration(config);
+            }
 
-            // Set Configuration
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "");
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Setting Configuration for {config.AdapterId}");
-            client.SetNetworkConfiguration(config);
-
-            // Get Adapter List
-            networkAdapters = client.GetNetworkAdapters();
-            wifiAdapter = networkAdapters.Adapters.FirstOrDefault(x => x.AdapterType == NetworkAdapterType.WifiClient);
-
-            // Enable Adapter and Fetch to Ensure its Enabled
-            // Wait for Ready to Continue after this
-            client.EnableAdapter(defaultAdapterRequest);
-
-            var list = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = wifiAdapter.AdapterId, UseOSProfiles = OperatingSystem.IsWindows() });
+            var list = wifiClient.GetNetworkProfiles(new ProfileRequest() { AdapterId = defaultAdapterRequest.AdapterId, UseOSProfiles = OperatingSystem.IsWindows() });
             foreach (var item in list.NetworkProfiles)
                 networkProfilesList.Add(item);
 
-            AdapterEnabledChanged?.Invoke(this, EventArgs.Empty);
-
-            return wifiAdapter != null;
+            // Do Initial Discovery
+            var networks =  wifiClient.DiscoverNetworks(defaultAdapterRequest);
+            UpdateNetworkList(networks);
+            
+            return adapter != null;
         }
     }
 
@@ -401,7 +408,7 @@ public sealed class WiFiNetworkManager
     public void AttemptAutoConnect(int waitTime = 30, int ipWaitTime = 60, int timeSyncWaitTime = 60)
     {
         // If So Connect
-        lock (client)
-            client.AttemptAutoConnect(new AutoConnectRequest() { AdapterId = defaultAdapterRequest.AdapterId, WaitForConnectionSeconds = waitTime, WaitForIPAddressSeconds = ipWaitTime, WaitForTimeSyncSeconds = timeSyncWaitTime });
+        lock (wifiClient)
+            wifiClient.AttemptAutoConnect(new AutoConnectRequest() { AdapterId = defaultAdapterRequest.AdapterId, WaitForConnectionSeconds = waitTime, WaitForIPAddressSeconds = ipWaitTime, WaitForTimeSyncSeconds = timeSyncWaitTime });
     }
 }

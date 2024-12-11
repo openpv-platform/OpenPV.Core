@@ -1,4 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device;
 using Ahsoka.System;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -20,41 +21,37 @@ internal class NetworkTests
         Console.WriteLine($"Starting Runtimes");
 
         // Start client for NetworkService
-        var client = new NetworkServiceClient();
+        var client = new WiFiClientServiceClient();
+        var deviceClient = new DeviceServiceClient();
         client.NotificationReceived += Client_NotificationReceived;
         client.Start();
-       
-        Console.WriteLine($"Getting Adapters");
-        var networkAdapters = client.GetNetworkAdapters();
-        Console.WriteLine($"Found {networkAdapters.Adapters.Count} Adapters");
+        deviceClient.Start();
 
-        // Fetch Client Adapter
-        var adapter = networkAdapters.Adapters.First(x => x.AdapterType == NetworkAdapterType.WifiClient);
-        var adapterRequest = new AdapterRequest() { AdapterId = adapter.AdapterId };
+        Console.WriteLine($"Enabling Device");
+        // See if we have a WiFiClient
+        var wiFiDevice = deviceClient.GetDevices(new DeviceInfoRequest() {  FeatureSearch =   SupportedFeatures.Wifi }).Devices.FirstOrDefault();
+        if (wiFiDevice == null)
+        {
+            Console.WriteLine($"Wifi Device Not Found");
+            return;
+        }
 
-        Console.WriteLine();
-        Console.WriteLine($"Adapter: {adapter.Description}\r\n is of type {adapter.AdapterType} with AdapterId {adapter.AdapterId}");
-        var config = client.GetNetworkConfiguration(adapterRequest);
+        // Enable WiFi
+        deviceClient.EnableDevice(wiFiDevice);
 
-        Console.WriteLine();
-        Console.WriteLine($"Adapter is Configured for {adapter.AdapterType}");
+        var adapterResult = client.GetAdapter();
+        var adapter = new AdapterRequest() { AdapterId = adapterResult.AdapterId };
+        var config = client.GetNetworkConfiguration(adapter);
 
         // Configure
-        config.ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp };
-
-        // Set Configuration
-        Console.WriteLine();
-        Console.WriteLine($"Setting Configuration for {config.AdapterId}");
-        client.SetNetworkConfiguration(config);
-
-        // Enable Adapter
-        Console.WriteLine();
-        Console.WriteLine($"Enable Adapter {adapterRequest.AdapterId}");
-        client.EnableAdapter(adapterRequest);
-
-        // Wait for Enable Complete
-        Console.WriteLine($"Waiting for Adapter To Be Ready");
-        enableComplete.WaitOne();
+        if (config.ClientConfiguration.ConnectionType != IPAddressConfiguration.Dhcp)
+        {
+            config.ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp };
+            config.SaveAsDefault = true;
+            Console.WriteLine();
+            Console.WriteLine($"Setting Configuration for {config.AdapterId} to DHCP");
+            client.SetNetworkConfiguration(config);
+        }
 
         string key = "";
 
@@ -62,7 +59,7 @@ internal class NetworkTests
         {
             Console.WriteLine();
             Console.WriteLine($"List Networks in Range");
-            var networkList = client.DiscoverNetworks(adapterRequest);
+            var networkList = client.DiscoverNetworks(adapter);
 
             int networkIndex = 1;
             Console.WriteLine();
@@ -84,7 +81,7 @@ internal class NetworkTests
 
                 WirelessConnectionRequest request = new()
                 {
-                    AdapterId = adapterRequest.AdapterId,
+                    AdapterId = adapter.AdapterId,
                     Ssid = ssid,
                     PassKey = password,
                     Remember = true,
@@ -97,7 +94,7 @@ internal class NetworkTests
                 connectComplete.WaitOne();
 
                 // Wait for IP Address
-                IPInfo info = client.GetIPInfo(adapterRequest);
+                IPInfo info = client.GetIPInfo(adapter);
                 Console.WriteLine($"  Address is {info.IPAddress}");
 
                 Console.WriteLine();
@@ -109,111 +106,19 @@ internal class NetworkTests
 
                 Console.WriteLine();
                 Console.WriteLine("Disconnecting Network:" + ssid);
-                client.Disconnect(adapterRequest);
+                client.Disconnect(adapter);
                 disconnectComplete.WaitOne();
             }
-
-            client.DisableAdapter(adapterRequest);
         }
 
         Console.WriteLine();
         Console.WriteLine("Network Profiles");
-        var profiles = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = adapterRequest.AdapterId });
+        var profiles = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = adapter.AdapterId });
         foreach (var item in profiles.NetworkProfiles)
             Console.WriteLine($"   SSID:{item.Ssid} SecurityType:{item.PassKey}");
 
         // Empty the List
-        client.SetNetworkProfiles(new NetworkProfilesList() { AdapterId = adapterRequest.AdapterId });
-
-        // Stop the Runtimes
-        AhsokaRuntime.Default.StopAllEndPoints();
-    }
-
-    internal static void TestNetworkServiceAP()
-    {
-        // Start NetworkService
-        Console.WriteLine($"Starting Runtimes");
-
-        // Start client for NetworkService
-        var client = new NetworkServiceClient();
-        client.NotificationReceived += Client_NotificationReceived;
-        client.Start();
-
-        Console.WriteLine($"Getting Adapters");
-        var networkAdapters = client.GetNetworkAdapters();
-        Console.WriteLine($"Found {networkAdapters.Adapters.Count} Adapters");
-
-        // Fetch Client Adapter
-        var adapter = networkAdapters.Adapters.First(x => x.AdapterType == NetworkAdapterType.WifiAccessPoint);
-        var adapterRequest = new AdapterRequest() { AdapterId = adapter.AdapterId };
-
-        Console.WriteLine();
-        Console.WriteLine($"Adapter: {adapter.Description}\r\n is of type {adapter.AdapterType} with AdapterId {adapter.AdapterId}");
-        var config = client.GetNetworkConfiguration(adapterRequest);
-
-        Console.WriteLine();
-        Console.WriteLine($"Adapter is Configured for {adapter.AdapterType}");
-
-        bool configurationResult = false;
-        while (!configurationResult)
-        {
-            Console.WriteLine($"Enter SSID:");
-            String ssid;
-            if ((ssid = Console.ReadLine()) == null)
-                ssid = "MyDisplay";
-
-            Console.WriteLine($"Enter password for {ssid}:");
-            String password;
-            if ((password = Console.ReadLine()) == null)
-                password = "password";
-
-            Console.WriteLine($"Enter channel for {ssid}:");
-            String channel;
-            if ((channel = Console.ReadLine()) == null)
-                channel = "1";
-
-            int.TryParse(channel, out int channelInt); 
-
-            // Configure
-            config.AccessPointConfiguration = new()
-            {
-                BroadcastSsid = true,
-                Ssid = ssid,
-                SecurityType = SecurityType.Wpa2,
-                EncryptionPassKey = password,
-                ChannelNumber = channelInt
-            };
-
-            // Configure
-            config.DhcpServerConfiguration = new()
-            {
-                DhcpIpBaseAddress = "192.168.5.1/24",
-                Dns = "8.8.8.8",
-                DhcpBasePoolSize = 10,
-                DhcpBaseOffset = 50,
-            };
-
-            // Set Configuration
-            Console.WriteLine();
-            Console.WriteLine($"Setting Configuration for {config.AdapterId}");
-            var result = client.SetNetworkConfiguration(config);
-
-            configurationResult = result.ConfigurationSuccessful;
-            if (!configurationResult)
-                Console.WriteLine(result.ErrorDescription);
-        }
-
-        // Enable Adapter
-        Console.WriteLine();
-        Console.WriteLine($"Enable Adapter {adapterRequest.AdapterId}");
-        client.EnableAdapter(adapterRequest);
-
-        // Wait for Enable Complete
-        Console.WriteLine($"Waiting for Adapter To Be Ready");
-        enableComplete.WaitOne();
-
-        Console.WriteLine($"Press Enter to End Test");
-        Console.ReadLine();
+        client.SetNetworkProfiles(new NetworkProfilesList() { AdapterId = adapter.AdapterId });
 
         // Stop the Runtimes
         AhsokaRuntime.Default.StopAllEndPoints();
@@ -236,9 +141,9 @@ internal class NetworkTests
         return chosenSSID;
     }
 
-    private static void Client_NotificationReceived(object sender, NotificationEventArgs<NetworkMessageTypes.Ids> e)
+    private static void Client_NotificationReceived(object sender, NotificationEventArgs<WiFiClientMessageTypes.Ids> e)
     {
-        if (e.TransportId == NetworkMessageTypes.Ids.ConnectionStateNotification)
+        if (e.TransportId == WiFiClientMessageTypes.Ids.ConnectionStateNotification)
         {
             var response = e.NotificationObject as WirelessConnectionNotification;
 
@@ -250,10 +155,6 @@ internal class NetworkTests
 
             if (response.State == WirelessConnectionState.ClientDisconnected)
                 disconnectComplete.Set();
-        }
-        else if (e.TransportId == NetworkMessageTypes.Ids.NetworkAdapterReady)
-        {
-            enableComplete.Set();
         }
     }
 

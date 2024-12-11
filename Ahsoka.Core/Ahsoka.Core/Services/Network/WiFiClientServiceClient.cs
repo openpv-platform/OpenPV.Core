@@ -7,13 +7,13 @@ namespace Ahsoka.Services.Network;
 /// <summary>
 /// Client for managing Network Interfaces and WiFi Connections.
 /// </summary>
-public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
+public class WiFiClientServiceClient : AhsokaClientBase<WiFiClientMessageTypes.Ids>
 {
     /// <summary>
     /// Default Constructor which uses the Default Service Configuration
     /// </summary>
-    public NetworkServiceClient() :
-        this(ConfigurationLoader.GetServiceConfig(NetworkService.Name))
+    public WiFiClientServiceClient() :
+        this(ConfigurationLoader.GetServiceConfig(WiFiClientService.Name))
     {
 
     }
@@ -22,8 +22,8 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// Constructor used for using a Custom Service Configuration
     /// </summary>
     /// <param name="config">Service Configuration</param>
-    public NetworkServiceClient(ServiceConfiguration config) :
-        base(config, new NetworkServiceMessages())
+    public WiFiClientServiceClient(ServiceConfiguration config) :
+        base(config, new WiFiClientServiceMessages())
     {
 
     }
@@ -34,49 +34,20 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     protected override IAhsokaServiceEndPoint OnCreateDefaultService()
     {
-        return new NetworkService(this.ServiceConfig);
+        return new WiFiClientService(this.ServiceConfig);
     }
 
-
-
-    /// <summary>
-    ///  Turns on and Enables the Adapter Specified
-    /// </summary>
-    /// <param name="adapterRequest">Adapter to Enable</param>
-    public void EnableAdapter(AdapterRequest adapterRequest)
-    {
-        SendMessageWithResponse<EmptyNotification>(NetworkMessageTypes.Ids.EnableAdapter, adapterRequest);
-    }
-
-    /// <summary>
-    /// Turns off and Disables the Adapter Specfied
-    /// </summary>
-    /// <param name="adapterRequest">Adapter to Disable</param>
-    public void DisableAdapter(AdapterRequest adapterRequest)
-    {
-        SendMessageWithResponse<EmptyNotification>(NetworkMessageTypes.Ids.DisableAdapter, adapterRequest);
-    }
 
     /// <summary>
     /// Get a list of Network Adapters on the system.
     /// </summary>
     /// <param name="timeoutInMs">How long to wait for the adapter list.</param>
     /// <returns></returns>
-    public AvailableAdapters GetNetworkAdapters(int timeoutInMs = int.MaxValue)
+    public AdapterResult GetAdapter(int timeoutInMs = int.MaxValue)
     {
-        return SendMessageWithResponse<AvailableAdapters>(NetworkMessageTypes.Ids.GetAdapters, null, timeoutInMs);
+        return SendMessageWithResponse<AdapterResult>(WiFiClientMessageTypes.Ids.GetAdapter, null, timeoutInMs);
     }
 
-    /// <summary>
-    /// Get the full configuration for a single Adapter
-    /// </summary>
-    /// <param name="adapterConfigurationRequest">Adapter to Return</param>
-    /// <param name="timeoutInMs">How long to wait for the configuration to return.</param>
-    /// <returns></returns>
-    public AdapterConfiguration GetNetworkConfiguration(AdapterRequest adapterConfigurationRequest, int timeoutInMs = int.MaxValue)
-    {
-        return SendMessageWithResponse<AdapterConfiguration>(NetworkMessageTypes.Ids.GetAdapterConfiguration, adapterConfigurationRequest, timeoutInMs);
-    }
 
     /// <summary>
     /// Get the IP Information for the Specified Adapter.  Allows the client to get information about the IP Network and Address.
@@ -86,7 +57,19 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public IPInfo GetIPInfo(AdapterRequest adapterConfigurationRequest, int timeoutInMs = int.MaxValue)
     {
-        return SendMessageWithResponse<IPInfo>(NetworkMessageTypes.Ids.GetNetworkInfo, adapterConfigurationRequest, timeoutInMs);
+        return SendMessageWithResponse<IPInfo>(WiFiClientMessageTypes.Ids.GetNetworkInfo, adapterConfigurationRequest, timeoutInMs);
+    }
+
+
+    /// <summary>
+    /// Get the full configuration for a single Adapter
+    /// </summary>
+    /// <param name="adapterConfigurationRequest">Adapter to Return</param>
+    /// <param name="timeoutInMs">How long to wait for the configuration to return.</param>
+    /// <returns></returns>
+    public AdapterConfiguration GetNetworkConfiguration(AdapterRequest adapterConfigurationRequest, int timeoutInMs = int.MaxValue)
+    {
+        return SendMessageWithResponse<AdapterConfiguration>(WiFiClientMessageTypes.Ids.GetNetworkConfiguration, adapterConfigurationRequest, timeoutInMs);
     }
 
     /// <summary>
@@ -95,10 +78,11 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <param name="adapterConfiguration">Configuration</param>
     /// <param name="timeoutInMs">How long to wait before returning if the service does not reply</param>
     /// <returns></returns>
-    public AdapterConfigurationResult SetNetworkConfiguration(AdapterConfiguration adapterConfiguration, int timeoutInMs = int.MaxValue)
+    public AdapterResult SetNetworkConfiguration(AdapterConfiguration adapterConfiguration, int timeoutInMs = int.MaxValue)
     {
-       return SendMessageWithResponse<AdapterConfigurationResult>(NetworkMessageTypes.Ids.SetAdapterConfiguration, adapterConfiguration, timeoutInMs);
+        return SendMessageWithResponse<AdapterResult>(WiFiClientMessageTypes.Ids.SetNetworkConfiguration, adapterConfiguration, timeoutInMs);
     }
+
 
     /// <summary>
     /// Gets a list of Local Networks which can be discovered by a WiFi Adapter.
@@ -107,7 +91,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public WirelessNetworkInfoList DiscoverNetworks(AdapterRequest adapterRequest)
     {
-        return SendMessageWithResponse<WirelessNetworkInfoList>(NetworkMessageTypes.Ids.DiscoverNetworks, adapterRequest);
+        return SendMessageWithResponse<WirelessNetworkInfoList>(WiFiClientMessageTypes.Ids.DiscoverNetworks, adapterRequest);
     }
 
     /// <summary>
@@ -118,7 +102,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public NetworkProfilesList GetNetworkProfiles(ProfileRequest profileRequest, int timeoutInMs = int.MaxValue)
     {
-        return SendMessageWithResponse<NetworkProfilesList>(NetworkMessageTypes.Ids.GetNetworkProfiles, profileRequest, timeoutInMs);
+        return SendMessageWithResponse<NetworkProfilesList>(WiFiClientMessageTypes.Ids.GetNetworkProfiles, profileRequest, timeoutInMs);
     }
 
     /// <summary>
@@ -128,7 +112,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <param name="timeoutInMs">How long to wait before returning if the service does not reply</param>
     public void SetNetworkProfiles(NetworkProfilesList profiles, int timeoutInMs = int.MaxValue)
     {
-        SendMessageWithResponse<EmptyNotification>(NetworkMessageTypes.Ids.SetNetworkProfiles, profiles);
+        SendMessageWithResponse<EmptyNotification>(WiFiClientMessageTypes.Ids.SetNetworkProfiles, profiles);
     }
 
     /// <summary>
@@ -138,7 +122,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     [ExcludeFromCodeCoverage]
     public void Connect(WirelessConnectionRequest connection)
     {
-        SendMessageWithResponse<WirelessConnectionResponse>(NetworkMessageTypes.Ids.ConnectToNetwork, connection);
+        SendMessageWithResponse<WirelessConnectionResponse>(WiFiClientMessageTypes.Ids.ConnectToNetwork, connection);
     }
 
     /// <summary>
@@ -148,7 +132,7 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     [ExcludeFromCodeCoverage]
     public void Disconnect(AdapterRequest adapterRequest)
     {
-        SendMessageWithResponse(NetworkMessageTypes.Ids.DisconnectNetwork, adapterRequest);
+        SendMessageWithResponse(WiFiClientMessageTypes.Ids.DisconnectNetwork, adapterRequest);
     }
 
 
@@ -160,6 +144,6 @@ public class NetworkServiceClient : AhsokaClientBase<NetworkMessageTypes.Ids>
     /// <returns></returns>
     public void AttemptAutoConnect(AutoConnectRequest connectRequest, int timeoutInMs = int.MaxValue)
     {
-        SendMessageWithResponse<NetworkProfilesList>(NetworkMessageTypes.Ids.AttemptAutoConnect, connectRequest, timeoutInMs);
+        SendMessageWithResponse<NetworkProfilesList>(WiFiClientMessageTypes.Ids.AttemptAutoConnect, connectRequest, timeoutInMs);
     }
 }

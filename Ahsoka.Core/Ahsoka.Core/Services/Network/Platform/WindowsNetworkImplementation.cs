@@ -1,4 +1,6 @@
 ﻿using Ahsoka.ServiceFramework;
+using Gst.Base;
+using SimpleWifi;
 using SimpleWifi.Win32;
 using SimpleWifi.Win32.Interop;
 using System;
@@ -17,57 +19,34 @@ namespace Ahsoka.Services.Network.Platform;
 internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
 {
     WlanClient client;
-    readonly Dictionary<Guid, WlanInterface> interfaceList = new();
+    string adapterId = Guid.NewGuid().ToString();
+    WlanInterface wlanInterface;
     readonly AutoResetEvent connectionListenerCompleted = new(false);
 
-    protected override List<AdapterInfo> GetAdapterList()
+    protected override void OnStartNetwork(out AdapterConfiguration defaultConfiguration, out AdapterRequest defaultRequest)
     {
-        var adapterList = new List<AdapterInfo>();
-
         client = new WlanClient();
         if (client.Interfaces != null)
             foreach (var item in client.Interfaces)
             {
-                interfaceList[item.InterfaceGuid] = item;
-
-                if (item != null)
-                {
-                    adapterList.Add(new AdapterInfo()
-                    {
-                        AdapterType = NetworkAdapterType.WifiClient,
-                        Description = item.InterfaceDescription,
-                        AdapterId = item.InterfaceGuid.ToString()
-                    });
-                }
-            }
-
-        return adapterList;
-    }
-
-    protected override void OnEnableAdapter(AdapterInfo adapter, AdapterConfiguration configuration)
-    {
-        adapter.CurrentState = AdapterState.Enabled;
-
-        Thread.Sleep(5000); // Simulate Slow Adapter Enable
-    }
-
-    protected override void OnDisableAdapter(AdapterInfo adapter)
-    {
-        adapter.CurrentState = AdapterState.Disabled;
-    }
-
-    protected override void OnCreateAdapterConfiguration(AdapterConfiguration config, AdapterInfo item)
-    {
+                adapterId = item.InterfaceGuid.ToString();
+                wlanInterface = item;
+                break; // Uses  First Interface Found
+            } 
+        
         // No Configuration Needed on Windows
+        defaultConfiguration = new AdapterConfiguration() { AdapterId = adapterId, ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp } };
+        defaultRequest = new AdapterRequest() { AdapterId = adapterId };
     }
 
     protected override WirelessNetworkInfoList OnGetDiscoveredNetworks(string adapterId)
     {
-        var wifi = interfaceList[Guid.Parse(adapterId)];
+        if (wlanInterface == null)
+            return new WirelessNetworkInfoList();
 
         Dictionary<string, WirelessNetworkInfo> networkInfoList = new();
-        wifi.Scan();
-        foreach (var item in wifi.GetAvailableNetworkList(0))
+        wlanInterface.Scan();
+        foreach (var item in wlanInterface.GetAvailableNetworkList(0))
         {
             var net = new WirelessNetworkInfo
             {
@@ -112,7 +91,7 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
             return NetworkProfileHelper.GetNetworkProfiles(profileRequest.AdapterId);
 
         // Windows Profiles..if needed.
-        var connection = interfaceList[Guid.Parse(profileRequest.AdapterId)];
+        var connection = wlanInterface;
         if (connection != null)
         {
             // Setup Profile List
@@ -141,25 +120,33 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
         NetworkProfileHelper.SetNetworkProfiles(profilesList);
     }
 
-    protected override void OnConnect(NetworkService.AhsokaServiceRequest header, WirelessConnectionRequest connectionRequest)
+    protected override void OnUpdateConfiguration(AdapterConfiguration adapterConfiguration)
     {
-        var adapter = interfaceList[Guid.Parse(connectionRequest.AdapterId)];
 
-        var profiles = adapter.GetProfiles();
-        if (Array.Exists<WlanProfileInfo>(profiles, x => x.profileName == connectionRequest.Ssid))
-            ManageConnection(header, adapter, connectionRequest);
     }
 
-    protected override void OnDisconnect(NetworkService.AhsokaServiceRequest header, string adapterId)
-    {
-        var adapter = interfaceList[Guid.Parse(adapterId)];
 
-        adapter.Disconnect();
+    protected override void OnConnect(WiFiClientService.AhsokaServiceRequest header, WirelessConnectionRequest connectionRequest)
+    {
+        if (wlanInterface == null)
+            return;
+
+        var profiles = wlanInterface.GetProfiles();
+        if (Array.Exists<WlanProfileInfo>(profiles, x => x.profileName == connectionRequest.Ssid))
+            ManageConnection(header, wlanInterface, connectionRequest);
+    }
+
+    protected override void OnDisconnect(WiFiClientService.AhsokaServiceRequest header, string adapterId)
+    {
+        if (wlanInterface == null)
+            return;
+
+        wlanInterface.Disconnect();
 
         NetworkService.SendConnectionStateNotification(header, WirelessConnectionState.ClientDisconnected, adapterId, String.Empty);
     }
 
-    private void ManageConnection(NetworkService.AhsokaServiceRequest header, WlanInterface adapter, WirelessConnectionRequest connectionRequest)
+    private void ManageConnection(WiFiClientService.AhsokaServiceRequest header, WlanInterface adapter, WirelessConnectionRequest connectionRequest)
     {
         // Wire up a connection Listener
         adapter.WlanConnectionNotification -= ConnectionListener;
@@ -252,7 +239,7 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
 
     }
 
-    protected override bool WaitForTimeSync(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override bool WaitForTimeSync(WiFiClientService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientWaitingForTime, connectionRequest.AdapterId, connectionRequest.Ssid);
         return true;

@@ -15,14 +15,7 @@ public partial class AdapterInfo : ICanDeserializeBase
     /// <param name="value"></param>
     internal override void SetProperty(string propertyName, string value)
     {
-        if (propertyName == "adapterId")
-            this.AdapterId = value;
-        else if (propertyName == "adapterType")
-            AdapterType = Enum.Parse<NetworkAdapterType>(value, true);
-        else if (propertyName == "module")
-            Module = Enum.Parse<ModuleType>(value, true);
-        else if (propertyName == "description")
-            Description = value;
+        
     }
 
 }

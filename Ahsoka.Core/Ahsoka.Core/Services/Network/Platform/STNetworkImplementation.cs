@@ -18,87 +18,24 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
 
     CancellationTokenSource tokenSource = null;
     readonly AutoResetEvent disconnectListenerCompleted = new(false);
-    Esp32Handler comboModuleHandler = new Esp32Handler();
+    string adapterId = "ethsta0";
 
-    protected override List<AdapterInfo> GetAdapterList()
+    protected override void OnStartNetwork(out AdapterConfiguration defaultConfiguration, out AdapterRequest defaultRequest)
     {
-        // All Configurable Adapters are Statically Defined 
-        return SystemInfo.HardwareInfo.NetworkInfo.AdapterInfoList;
-    }
-
-    protected override void OnEnableAdapter(AdapterInfo adapter, AdapterConfiguration config)
-    {
-        // Don't create interop for Ethernet Devices
-        if (adapter.AdapterType == NetworkAdapterType.WifiClient || 
-            adapter.AdapterType == NetworkAdapterType.WifiAccessPoint)
-        {
-            //Set MAC, Bring UP
-            using var connection = interopList.AquireInterop(adapter.AdapterId);
-
-            if (connection != null)
-            {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Booting ESP Module");
-                comboModuleHandler.EnableDevice(null, null); // Legacy Assumes ESP32
-
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Configuring ESP Module");
-                ConfigureAdapter(connection, config);
-
-                if (config.AdapterMode == AdapterMode.Client)
-                {
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "STNetImp: Starting Network Adapter Client");
-                    LinuxNetworkUtilities.StartAdapter(adapter.AdapterId);
-                }
-            }
-        }
-
-        // Set Adapter State
-        adapter.CurrentState = AdapterState.Enabled;
-    }
-
-    protected override void OnDisableAdapter(AdapterInfo adapter)
-    {
-        if (adapter.AdapterType == NetworkAdapterType.WifiClient ||
-            adapter.AdapterType == NetworkAdapterType.WifiAccessPoint)
-        {
-            //Set MAC, Bring UP
-            using var connection = interopList.AquireInterop(adapter.AdapterId);
-
-            if (connection != null)
-            {
-                // Bring Down
-                LinuxNetworkUtilities.StopAdapter(adapter.AdapterId);
-                comboModuleHandler?.DisableDevice(null, null);
-            }
-        }
-
-        // Set Adapter State
-        adapter.CurrentState = AdapterState.Disabled;
-    }
-
-    protected override void OnCreateAdapterConfiguration(AdapterConfiguration config, AdapterInfo item)
-    {
-        // Don't create interop for Ethernet Devices
-        if (config.AdapterMode == AdapterMode.NoMode)
-            return;
-
-        interopList.Add(item);
+        defaultRequest = new AdapterRequest() {  AdapterId = adapterId };
+        defaultConfiguration = new() { AdapterId = adapterId, ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp } };
 
         // Configure Adapter 
-        using var connection = interopList.AquireInterop(config.AdapterId);
-
+        interopList.Add(adapterId);
+        using var connection = interopList.AquireInterop(adapterId);
         if (connection != null)
         {
             // Read Configurations if Already Saved Somewhere.
-            if (config.AdapterMode == AdapterMode.Client)
-            {
-                // Look for Network File for Client
-                NetworkServiceHelper.ReadClientConfiguration(config);
-            }
-            else
-            {
-                // Look for Network File for Client
-                NetworkServiceHelper.ReadAPConfiguration(config);
-            }
+            // Look for Network File for Client
+            NetworkServiceHelper.ReadClientConfiguration(defaultConfiguration);
+
+            // Configure and Write Configuratoin
+            ConfigureAdapter(connection, defaultConfiguration);
         }
     }
 
@@ -107,76 +44,38 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
         if (connection != null)
         {
             var value = WifiMode.WIFI_MODE_STA;
-
-            if (updateConfiguration.AdapterMode == AdapterMode.AccessPoint)
-                value = WifiMode.WIFI_MODE_AP;
-
+           
             string mac = connection.ESPInterop.WifiGetMAC(value);
+            
             int tries = 0;
             while (String.IsNullOrEmpty(mac))
             {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"STNetImp: Failed to Read Module - Retrying {tries}");
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"WiFiClientService: Failed to Read Module - Retrying {tries}");
                 mac = connection.ESPInterop.WifiGetMAC(value);
                 Thread.Sleep(100);
                 tries++;
 
                 if (tries > 25) // 2.5s
-                    throw new ApplicationException("STNetImp: Could not initialize WiFi Module");
+                    throw new ApplicationException("WiFiClientService: Could not initialize WiFi Module");
             }
 
             updateConfiguration.OverrideMacAddress = mac;
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"STNetImp: Using built in MAC {mac}");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"WiFiClientService: Using built in MAC {mac}");
 
-            // Set new Mode.
-            var mode = (AdapterMode)connection.ESPInterop.WifiGetMode();
-            if (mode != updateConfiguration.AdapterMode)
-                connection.ESPInterop.WifiSetMode((WifiMode)updateConfiguration.AdapterMode);
+            // Set to Client Mode
+            var mode = connection.ESPInterop.WifiGetMode();
+            if (mode != WifiMode.WIFI_MODE_STA)
+                connection.ESPInterop.WifiSetMode(WifiMode.WIFI_MODE_STA);
 
             // Configure Network SystemD for our System
-            if (updateConfiguration.AdapterMode.HasFlag(AdapterMode.Client))
-                if (updateConfiguration.ClientConfiguration != null)
-                {
-                    // Enable Station Mode
-                    CommandResult result = connection.ESPInterop.WifiSetMode(WifiMode.WIFI_MODE_STA);
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: Set WiFi mode to STA ({result})");
-
-                    NetworkServiceHelper.WriteClientConfiguration(updateConfiguration);
-                }
-
-            // Client is configured during Connection Initiation.
-            if (updateConfiguration.AdapterMode.HasFlag(AdapterMode.AccessPoint))
-                if (updateConfiguration.AccessPointConfiguration != null)
-                {
-                    // Enable AP Mode
-                    CommandResult result = connection.ESPInterop.WifiSetMode(WifiMode.WIFI_MODE_AP);
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"STNetImp: Set WiFi mode to AP ({result})");
-
-                    ESPHostedSoftAPConfig config = new ESPHostedSoftAPConfig()
-                    {
-                        ssidHidden = false,
-                        MaxConnections = 10,
-                        bandwidth = WifiBandwidth.WIFI_BANDWIDTH_HT20,
-                        ssid = updateConfiguration.AccessPointConfiguration.Ssid,
-                        encryptionMode = (int)WifiSupportedEncryptionMode.WIFI_AP_AUTH_WPA_WPA2_PSK,
-                        password = updateConfiguration.AccessPointConfiguration.EncryptionPassKey,
-                        channel = updateConfiguration.AccessPointConfiguration.ChannelNumber
-                    };
-
-                    connection.ESPInterop.WifiSetAPConfiguration(config);
-                    connection.ESPInterop.WifiGetAPConfiguration(ref config);
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium,"Current AP Config:");
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"  SSID: {config.ssid}");
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"  SSID Hidden? {config.ssidHidden}");
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"  Password: {config.password}");
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"  Channel: {config.channel}");
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"  Bandwidth: {config.bandwidth}");
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"  Encryption Mode: {config.encryptionMode}");
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium,"");
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, config.ToString());
-
-                    NetworkServiceHelper.WriteAccessPointConfiguration(updateConfiguration);
-                }
+            if (updateConfiguration.ClientConfiguration != null)
+                NetworkServiceHelper.WriteClientConfiguration(updateConfiguration);
         }
+    }
+
+    protected override void OnUpdateConfiguration(AdapterConfiguration adapterConfiguration)
+    {
+        NetworkServiceHelper.WriteClientConfiguration(adapterConfiguration);
     }
 
     protected override WirelessNetworkInfoList OnGetDiscoveredNetworks(string adapterId)
@@ -188,9 +87,10 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
         using (var wifi = interopList.AquireInterop(adapterId))
         {
             var result = wifi.ESPInterop.WifiGetConnectionStatus(ref config);
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: Start scanning for networks after InteropLock");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"WiFiClientService: Start scanning for networks after InteropLock");
             list = wifi.ESPInterop.WifiStartScanning();
         }
+
         foreach (var item in list)
         {
             if (!String.IsNullOrEmpty(item.ssid))
@@ -236,7 +136,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
 
         returnValue.Networks.AddRange(networkInfoList.Values);
 
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: Finished scanning for networks");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"WiFiClientService: Finished scanning for networks");
         return returnValue;
     }
 
@@ -258,26 +158,19 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
         NetworkProfileHelper.SetNetworkProfiles(profilesList);
     }
 
-    protected override void OnConnect(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override void OnConnect(WiFiClientService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
-        // Get Configuration and Check that we are a Client
-        var configuration = GetAdapterConfiguration(connectionRequest.AdapterId);
-        if (configuration.AdapterMode == AdapterMode.AccessPoint)
-        {
-            NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientConnectionFailed, connectionRequest.AdapterId, connectionRequest.Ssid);
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: OnConnect Failed - AdapterMode is in AccessPoint mode");
-        }
-
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"WiFiClientService: Starting OnConnect after InteropLock - {connectionRequest.Ssid}");
         // Get Adapter
         using var adapter = interopList.AquireInterop(connectionRequest.AdapterId);
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: Starting OnConnect after InteropLock - {connectionRequest.Ssid}");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"WiFiClientService: Starting OnConnect after InteropLock - {connectionRequest.Ssid}");
 
         // Check if Remembered Network...if so always use that one.
         var existingRequest = NetworkProfileHelper.GetNetworkProfiles(connectionRequest.AdapterId).NetworkProfiles.FirstOrDefault(x=>x.Ssid == connectionRequest.Ssid);
         if (existingRequest != null)
         {
             connectionRequest = existingRequest;
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"STNetImp: Logging in with Cached Profile for Network - {connectionRequest.Ssid}");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"WiFiClientService: Logging in with Cached Profile for Network - {connectionRequest.Ssid}");
         }
 
         var networkDecrypted = NetworkProfileHelper.DecryptNetwork(connectionRequest);
@@ -320,7 +213,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
                 {
                     Disconnect(messageHeader, connectionRequest.AdapterId);
                     NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientConnectionFailed, connectionRequest.AdapterId, connectionRequest.Ssid);
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: OnConnect Failed - WaitForTimeSync Failed");
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"WiFiClientService: OnConnect Failed - WaitForTimeSync Failed");
                 }
 
                 // Listen Indefinitely for Disconnect
@@ -330,19 +223,19 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
             {
                 Disconnect(messageHeader, connectionRequest.AdapterId);
                 NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientConnectionFailed, connectionRequest.AdapterId, connectionRequest.Ssid);
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: OnConnect Failed - WaitForIPAddress Failed");
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"WiFiClientService: OnConnect Failed - WaitForIPAddress Failed");
             }
         }
         else
         {
             NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientConnectionFailed, connectionRequest.AdapterId, connectionRequest.Ssid);
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: OnConnect Failed - ESPInterop.WifiConnect Failed - {result}");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"WiFiClientService: OnConnect Failed - ESPInterop.WifiConnect Failed - {result}");
         }
 
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: Finished OnConnect - {connectionRequest.Ssid}");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"WiFiClientService: Finished OnConnect - {connectionRequest.Ssid}");
     }
 
-    protected override void OnDisconnect(NetworkService.AhsokaServiceRequest header, string adapterId)
+    protected override void OnDisconnect(WiFiClientService.AhsokaServiceRequest header, string adapterId)
     {
         using var adapter = interopList.AquireInterop(adapterId);
 
@@ -353,17 +246,17 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
             disconnectListenerCompleted.WaitOne();
         }
         CommandResult result = adapter.ESPInterop.WifiDisconnect();
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"OnDisconnect: Disconnect {result}");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"WiFiClientService: OnDisconnect {result}");
         if (result == CommandResult.Success)
             NetworkService.SendConnectionStateNotification(header, WirelessConnectionState.ClientDisconnected, adapterId, "");
         else
         {
             NetworkService.SendConnectionStateNotification(header, WirelessConnectionState.ClientConnectionFailed, adapterId, "");
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: OnDisconnect Failed - WifiDisconnect() {result}");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"WiFiClientService: OnDisconnect Failed - WifiDisconnect() {result}");
         }
     }
 
-    protected override bool WaitForTimeSync(NetworkService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
+    protected override bool WaitForTimeSync(WiFiClientService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
         NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientWaitingForTime, connectionRequest.AdapterId, connectionRequest.Ssid);
 
@@ -371,7 +264,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
     }
 
     #region Private Methods
-    private void ListenForDisconnect(NetworkService.AhsokaServiceRequest header, WirelessConnectionRequest connectionRequest)
+    private void ListenForDisconnect(WiFiClientService.AhsokaServiceRequest header, WirelessConnectionRequest connectionRequest)
     {
         // Create New TokenSource
         tokenSource = new CancellationTokenSource();
@@ -459,13 +352,13 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
     {
         internal void Lock()
         {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: Acquiring Lock on {AdapterID}");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"WiFiClientService: Acquiring Lock on {AdapterID}");
             Mutex.WaitOne();
         }
 
         void IDisposable.Dispose()
         {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"STNetImp: Releasing Lock on {AdapterID}");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"WiFiClientService: Releasing Lock on {AdapterID}");
             Mutex.ReleaseMutex();
         }
 
@@ -475,9 +368,9 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
     {
         static readonly Dictionary<string, InteropData> interfaceList = new();
 
-        internal void Add(AdapterInfo item)
+        internal void Add(string adapterId)
         {
-            interfaceList[item.AdapterId] = new(item.AdapterId);
+            interfaceList[adapterId] = new(adapterId);
         }
 
         internal InteropLock AquireInterop(string adapterId)

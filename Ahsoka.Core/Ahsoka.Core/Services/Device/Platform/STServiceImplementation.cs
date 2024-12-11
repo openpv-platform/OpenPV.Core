@@ -1,6 +1,5 @@
 ﻿using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Device.Handlers;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
@@ -28,16 +27,24 @@ internal class STServiceImplementation : IDeviceServiceImplementation
     {
         sendNotificationHandler = sendNotification;
 
-        string fileName = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(Ahsoka.System.Hardware.RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppVersionFile);
-        if (File.Exists(fileName))
+        string fileName = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(Ahsoka.System.Hardware.RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, "DeviceConfiguration.pbuff");
+        if (File.Exists(fileName) && AppDomain.CurrentDomain.FriendlyName != "Ahsoka.Installer.UI")
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Device Setup Path Found");
-            FileStream fileStream = File.OpenRead(fileName);
-            deviceList = ProtoBuf.Serializer.Deserialize<DeviceList>(fileStream);
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device Service Loaded with {deviceList.Devices.Count} Devices.");
+            try
+            {
+                FileStream fileStream = File.OpenRead(fileName);
+                deviceList = ProtoBuf.Serializer.Deserialize<DeviceList>(fileStream);
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device Service Loaded with {deviceList.Devices.Count} Devices.");
+            }
+            catch (Exception ex)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, ex.Message);
+            }
         }
         else
         {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Device Setup Path Not Found, Adding Default Modules");
             // Fall back to Old Combo Module
             deviceList = new DeviceList()
             {
@@ -49,6 +56,7 @@ internal class STServiceImplementation : IDeviceServiceImplementation
                 } }
             };
         }
+
     }
 
     public DeviceList HandleGetDevices(DeviceInfoRequest deviceInfoRequest)
@@ -57,10 +65,10 @@ internal class STServiceImplementation : IDeviceServiceImplementation
         foreach (var item in deviceList.Devices)
         {
             var services = DeviceInfo.GetSupportedServices(item.DeviceType);
-            if (String.IsNullOrEmpty(deviceInfoRequest.ServiceSearch) || services.Contains(deviceInfoRequest.ServiceSearch))
+            if (deviceInfoRequest.FeatureSearch == SupportedFeatures.FeaturesUnknown || services.Contains(deviceInfoRequest.FeatureSearch))
                 list.Devices.Add(item);
         }
-        return deviceList;
+        return list;
     }
 
     public UsbInfo GetUsbInfo()

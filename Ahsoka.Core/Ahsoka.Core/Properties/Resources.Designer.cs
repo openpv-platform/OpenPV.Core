@@ -750,6 +750,16 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] WiFiAPService {
+            get {
+                object obj = ResourceManager.GetObject("WiFiAPService", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] WiFiClientService {
             get {
                 object obj = ResourceManager.GetObject("WiFiClientService", resourceCulture);

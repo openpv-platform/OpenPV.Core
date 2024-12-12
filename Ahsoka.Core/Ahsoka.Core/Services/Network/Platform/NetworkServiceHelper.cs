@@ -105,6 +105,107 @@ internal class NetworkServiceHelper
         };
     }
 
+    public static void WriteAccessPointConfiguration(AccessPointServiceConfiguration updateConfiguration)
+    {
+        // Paths
+        GetPaths(updateConfiguration.AdapterId, out string pathToUserLinuxNetDFile, out string pathToSystemLinuxNetDFile);
+        string pathToLoad;
+
+        if (updateConfiguration.SaveAsDefault)
+        {
+            // Load System ONLY
+            pathToLoad = pathToSystemLinuxNetDFile;
+
+            // Remove any Runtime file.
+            if (File.Exists(pathToUserLinuxNetDFile))
+                File.Delete(pathToUserLinuxNetDFile);
+        }
+        else
+        {
+            // Save Runtime Folder
+            pathToLoad = pathToUserLinuxNetDFile;
+        }
+
+
+        string fileContents;
+        if (updateConfiguration.DhcpServerConfiguration != null)
+        {
+            fileContents = Properties.Resources.WirelessAP;
+            fileContents = fileContents.Replace("<ADAPTERID>", updateConfiguration.AdapterId);
+            fileContents = fileContents.Replace("<MAC>", updateConfiguration.OverrideMacAddress);
+            fileContents = fileContents.Replace("<DHCPServer>", "YES");
+            fileContents = fileContents.Replace("<ADDRESS>", updateConfiguration.DhcpServerConfiguration.DhcpIpBaseAddress);
+            fileContents = fileContents.Replace("<DNS>", updateConfiguration.DhcpServerConfiguration.Dns);
+            fileContents = fileContents.Replace("<START_OF_POOL>", updateConfiguration.DhcpServerConfiguration.DhcpBaseOffset.ToString());
+            fileContents = fileContents.Replace("<POOL_SIZE>", updateConfiguration.DhcpServerConfiguration.DhcpBasePoolSize.ToString());
+
+            fileContents = fileContents.Replace("<SSID>", updateConfiguration.AccessPointConfiguration.Ssid);
+            fileContents = fileContents.Replace("<CHANNEL_NUMBER>", updateConfiguration.AccessPointConfiguration.ChannelNumber.ToString());
+            fileContents = fileContents.Replace("<SECURITY_TYPE>", updateConfiguration.AccessPointConfiguration.SecurityType.ToString());
+            fileContents = fileContents.Replace("<PASS_KEY>", updateConfiguration.AccessPointConfiguration.EncryptionPassKey);
+        }
+        else
+        {
+            fileContents = Properties.Resources.WirelessAPNoDHCP;
+            fileContents = fileContents.Replace("<ADAPTERID>", updateConfiguration.AdapterId);
+            fileContents = fileContents.Replace("<MAC>", updateConfiguration.OverrideMacAddress);
+
+            fileContents = fileContents.Replace("<SSID>", updateConfiguration.AccessPointConfiguration.Ssid);
+            fileContents = fileContents.Replace("<CHANNEL_NUMBER>", updateConfiguration.AccessPointConfiguration.ChannelNumber.ToString());
+            fileContents = fileContents.Replace("<SECURITY_TYPE>", updateConfiguration.AccessPointConfiguration.SecurityType.ToString());
+            fileContents = fileContents.Replace("<PASS_KEY>", updateConfiguration.AccessPointConfiguration.EncryptionPassKey);
+        }
+
+        // Do I need to reload?
+        string directoryPath = Path.GetDirectoryName(pathToLoad);
+        if (!Directory.Exists(directoryPath))
+            Directory.CreateDirectory(directoryPath);
+
+        AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Network Configuration for {updateConfiguration.AdapterId} written to {pathToLoad}");
+        File.WriteAllText(pathToLoad, fileContents);
+
+        // Restart Network Service in SystemD
+        RestartNetworkServices();
+    }
+
+    public static void ReadAccessPointConfiguration(AccessPointServiceConfiguration updateConfiguration, bool readDefault = false)
+    {
+        // Paths
+        GetPaths(updateConfiguration.AdapterId, out string pathToUserLinuxNetDFile, out string pathToSystemLinuxNetDFile);
+
+        // Determine Path
+        string pathToLoad = pathToUserLinuxNetDFile;
+        if (!File.Exists(pathToUserLinuxNetDFile) || readDefault)
+            pathToLoad = pathToSystemLinuxNetDFile;
+
+        Dictionary<string, Dictionary<string, string>> networkUnitData = ParseNetworkFile(pathToLoad);
+        try
+        {
+            bool isDhcpEnabled = networkUnitData[networkSection][dhcpServer] == "YES" ? true : false;
+
+            if (isDhcpEnabled)
+                updateConfiguration.DhcpServerConfiguration = new()
+                {
+                    DhcpIpBaseAddress = networkUnitData[networkSection][ipAddressName],
+                    DhcpBaseOffset = int.Parse(networkUnitData[dhcpServerSection][poolOffset]),
+                    DhcpBasePoolSize = int.Parse(networkUnitData[dhcpServerSection][poolSize]),
+                    Dns = networkUnitData[dhcpServerSection][dnsName]
+                };
+
+            updateConfiguration.AccessPointConfiguration = new()
+            {
+                Ssid = networkUnitData[miscSection][ssid],
+                ChannelNumber = int.Parse(networkUnitData[miscSection][channelNumber]),
+                EncryptionPassKey = networkUnitData[miscSection][passKey],
+                SecurityType = SecurityType.Wpa2
+            };
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
     public static bool RestartNetworkServices()
     {
         // Network Services are only managed with SystemD on Linux.

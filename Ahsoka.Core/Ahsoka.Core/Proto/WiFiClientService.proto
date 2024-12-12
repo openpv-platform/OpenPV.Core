@@ -10,7 +10,7 @@ message WiFiClientMessageTypes
     enum Ids
     {
         NONE = 0;
-        GET_ADAPTER = 1;
+        GET_ADAPTERS = 1;
         GET_NETWORK_CONFIGURATION = 6;
         SET_NETWORK_CONFIGURATION = 8;
 
@@ -25,6 +25,14 @@ message WiFiClientMessageTypes
         WIRELESS_SIGNAL_CHANGED = 19;
         ATTEMPT_AUTO_CONNECT = 20;
     }
+}
+
+//---------------------------------
+//  Adapter Configuration
+//---------------------------------
+message AdapterRequestList
+{
+    repeated AdapterRequest adapters = 1;
 }
 
 //---------------------------------

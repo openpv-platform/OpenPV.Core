@@ -1,7 +1,6 @@
 using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Device.Handlers;
 using Ahsoka.Services.Network.ESPWifi;
-using Ahsoka.System;
+using Ahsoka.Services.Network.Platform;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -9,10 +8,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ahsoka.Services.Network.Platform;
+namespace Ahsoka.Services.Network.Client.Implementation;
 
 [ExcludeFromCodeCoverage]
-internal class STNetworkImplementation : NetworkPlatformImplementationBase
+internal class STImplementation : ImplementationBase
 {
     static readonly InteropList interopList = new();
 
@@ -22,7 +21,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
 
     protected override void OnStartNetwork(out AdapterConfiguration defaultConfiguration, out AdapterRequest defaultRequest)
     {
-        defaultRequest = new AdapterRequest() {  AdapterId = adapterId };
+        defaultRequest = new AdapterRequest() { AdapterId = adapterId };
         defaultConfiguration = new() { AdapterId = adapterId, ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp } };
 
         // Configure Adapter 
@@ -44,11 +43,11 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
         if (connection != null)
         {
             var value = WifiMode.WIFI_MODE_STA;
-           
+
             string mac = connection.ESPInterop.WifiGetMAC(value);
-            
+
             int tries = 0;
-            while (String.IsNullOrEmpty(mac))
+            while (string.IsNullOrEmpty(mac))
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"WiFiClientService: Failed to Read Module - Retrying {tries}");
                 mac = connection.ESPInterop.WifiGetMAC(value);
@@ -93,7 +92,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
 
         foreach (var item in list)
         {
-            if (!String.IsNullOrEmpty(item.ssid))
+            if (!string.IsNullOrEmpty(item.ssid))
             {
                 var mode = (WifiEncryptionMode)item.encryptionMode;
                 var securityType = mode switch
@@ -166,7 +165,7 @@ internal class STNetworkImplementation : NetworkPlatformImplementationBase
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"WiFiClientService: Starting OnConnect after InteropLock - {connectionRequest.Ssid}");
 
         // Check if Remembered Network...if so always use that one.
-        var existingRequest = NetworkProfileHelper.GetNetworkProfiles(connectionRequest.AdapterId).NetworkProfiles.FirstOrDefault(x=>x.Ssid == connectionRequest.Ssid);
+        var existingRequest = NetworkProfileHelper.GetNetworkProfiles(connectionRequest.AdapterId).NetworkProfiles.FirstOrDefault(x => x.Ssid == connectionRequest.Ssid);
         if (existingRequest != null)
         {
             connectionRequest = existingRequest;

@@ -12,7 +12,6 @@ namespace Ahsoka.Installer.InstallEngine;
 
 internal class DeviceManagerPlugin : InstallerPlugin
 {
-
     public override void AddAdditionalApplicationFiles(string buildLocation,
         Dictionary<string, string> attributes,
         Dictionary<string, byte[]> additionalFiles,
@@ -35,7 +34,7 @@ internal class DeviceManagerPlugin : InstallerPlugin
        
         var configJsonContents = JsonUtility.Serialize(list);
         var protobufferStream = new MemoryStream();
-        ProtoBuf.Serializer.Serialize(protobufferStream, info.ScreenConfiguration);
+        ProtoBuf.Serializer.Serialize(protobufferStream, list);
 
         additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/DeviceConfiguration.pbuff"] = protobufferStream.ToArray();
         additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/DeviceConfiguration.pbuff.json"] = Encoding.UTF8.GetBytes(configJsonContents);

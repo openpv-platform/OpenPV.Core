@@ -366,13 +366,14 @@ public sealed class WiFiNetworkManager
             // Enable te Adapter
             deviceClient.EnableDevice(wiFiDevice);
 
-            var adapter = wifiClient.GetAdapter(4000);
-            if (adapter == null || !adapter.ConfigurationSuccessful)
+            var adapterList= wifiClient.GetAdapters(4000);
+            if (adapterList == null || adapterList.Adapters.Count == 0)
             {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"No Adapter Found Adapter:{adapter != null} IsAvailable: {adapter.ConfigurationSuccessful}");
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"No Adapter Found Adapter:{adapterList != null} IsAvailable: {adapterList.Adapters.Count == 0}");
                 return false; // No Working Adapter
             }
             
+            var adapter = adapterList.Adapters[0];
             defaultAdapterRequest = new AdapterRequest() { AdapterId = adapter?.AdapterId };
 
             AdapterEnabled = !String.IsNullOrEmpty(adapter?.AdapterId);

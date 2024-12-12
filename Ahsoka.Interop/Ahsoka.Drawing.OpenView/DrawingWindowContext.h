@@ -12,7 +12,7 @@
 #include "XdgTouch.h"
 
 #define MAX_SEATS 10
-#define CAIRO_DEBUG 1
+#define CAIRO_DEBUG 0
 
 typedef struct 
 {

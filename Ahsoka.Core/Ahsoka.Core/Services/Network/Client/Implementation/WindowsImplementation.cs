@@ -1,6 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
-using Gst.Base;
-using SimpleWifi;
+using Ahsoka.Services.Network.Platform;
 using SimpleWifi.Win32;
 using SimpleWifi.Win32.Interop;
 using System;
@@ -12,11 +11,11 @@ using System.Text;
 using System.Threading;
 using System.Xml.Linq;
 
-namespace Ahsoka.Services.Network.Platform;
+namespace Ahsoka.Services.Network.Client.Implementation;
 
 // Exclude since we can't use wifi hardware on build servers.
 [ExcludeFromCodeCoverage]
-internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
+internal class WindowsImplementation : ImplementationBase
 {
     WlanClient client;
     string adapterId = Guid.NewGuid().ToString();
@@ -32,8 +31,8 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
                 adapterId = item.InterfaceGuid.ToString();
                 wlanInterface = item;
                 break; // Uses  First Interface Found
-            } 
-        
+            }
+
         // No Configuration Needed on Windows
         defaultConfiguration = new AdapterConfiguration() { AdapterId = adapterId, ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp } };
         defaultRequest = new AdapterRequest() { AdapterId = adapterId };
@@ -50,20 +49,20 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
         {
             var net = new WirelessNetworkInfo
             {
-                Ssid = UTF8Encoding.UTF8.GetString(item.dot11Ssid.SSID).Trim('\0'),
+                Ssid = Encoding.UTF8.GetString(item.dot11Ssid.SSID).Trim('\0'),
                 SignalLevel = (int)item.wlanSignalQuality,
                 State = item.flags.HasFlag(WlanAvailableNetworkFlags.Connected) ?
                                         WirelessConnectionState.ClientConnected :
                                         WirelessConnectionState.ClientDisconnected,
                 SecurityType = item.dot11DefaultAuthAlgorithm switch
                 {
-                    SimpleWifi.Win32.Interop.Dot11AuthAlgorithm.IEEE80211_Open => SecurityType.NoSecurity,
-                    SimpleWifi.Win32.Interop.Dot11AuthAlgorithm.RSNA_PSK or SimpleWifi.Win32.Interop.Dot11AuthAlgorithm.WPA_PSK => SecurityType.Wpa2,
-                    SimpleWifi.Win32.Interop.Dot11AuthAlgorithm.WPA => SecurityType.Wpa2,
+                    Dot11AuthAlgorithm.IEEE80211_Open => SecurityType.NoSecurity,
+                    Dot11AuthAlgorithm.RSNA_PSK or Dot11AuthAlgorithm.WPA_PSK => SecurityType.Wpa2,
+                    Dot11AuthAlgorithm.WPA => SecurityType.Wpa2,
                     _ => SecurityType.NotSupportedType,
                 }
             };
-            if (!String.IsNullOrEmpty(net.Ssid))
+            if (!string.IsNullOrEmpty(net.Ssid))
             {
                 if (!networkInfoList.ContainsKey(net.Ssid))
                     networkInfoList[net.Ssid] = net;
@@ -106,7 +105,7 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
                     Remember = true,
                     Ssid = profile.profileName,
                     AdapterId = profileRequest.AdapterId,
-                    PassKey = String.Empty,
+                    PassKey = string.Empty,
                     Encrypted = false
                 });
             }
@@ -132,7 +131,7 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
             return;
 
         var profiles = wlanInterface.GetProfiles();
-        if (Array.Exists<WlanProfileInfo>(profiles, x => x.profileName == connectionRequest.Ssid))
+        if (Array.Exists(profiles, x => x.profileName == connectionRequest.Ssid))
             ManageConnection(header, wlanInterface, connectionRequest);
     }
 
@@ -143,7 +142,7 @@ internal class WindowsNetworkImplementation : NetworkPlatformImplementationBase
 
         wlanInterface.Disconnect();
 
-        NetworkService.SendConnectionStateNotification(header, WirelessConnectionState.ClientDisconnected, adapterId, String.Empty);
+        NetworkService.SendConnectionStateNotification(header, WirelessConnectionState.ClientDisconnected, adapterId, string.Empty);
     }
 
     private void ManageConnection(WiFiClientService.AhsokaServiceRequest header, WlanInterface adapter, WirelessConnectionRequest connectionRequest)

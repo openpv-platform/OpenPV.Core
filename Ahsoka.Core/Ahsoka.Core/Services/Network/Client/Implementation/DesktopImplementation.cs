@@ -1,15 +1,12 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Gst.Base;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Ahsoka.Services.Network.Platform;
 
-namespace Ahsoka.Services.Network.Platform;
+namespace Ahsoka.Services.Network.Client.Implementation;
 
 [ExcludeFromCodeCoverage]
-internal class DesktopNetworkImplementation : NetworkPlatformImplementationBase
+internal class DesktopImplementation : ImplementationBase
 {
     readonly CancellationTokenSource tokenSource = new();
     readonly AutoResetEvent disconnectListenerCompleted = new(false);

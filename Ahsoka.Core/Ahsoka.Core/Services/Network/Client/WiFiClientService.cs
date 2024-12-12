@@ -1,6 +1,6 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Network.Platform;
+using Ahsoka.Services.Network.Client.Implementation;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
@@ -12,20 +12,20 @@ namespace Ahsoka.Services.Network;
 public class WiFiClientService : AhsokaServiceBase<WiFiClientMessageTypes.Ids>
 {
     #region Fields
-    readonly NetworkPlatformImplementationBase networkInterface;
+    readonly ImplementationBase networkInterface;
     public const string Name = "WiFiClientService";
     #endregion
 
     #region Methods
-    internal static NetworkPlatformImplementationBase GetInterop()
+    internal static ImplementationBase GetInterop()
     {
         return SystemInfo.CurrentPlatform switch
         {
-            PlatformFamily.Windows64 => new WindowsNetworkImplementation(),
-            PlatformFamily.OpenViewLinux => new STNetworkImplementation(),
-            PlatformFamily.OpenViewLinuxPro => new DesktopNetworkImplementation(), 
-            PlatformFamily.Ubuntu64 => new DesktopNetworkImplementation(),
-            PlatformFamily.MacosArm64 => new DesktopNetworkImplementation(),
+            PlatformFamily.Windows64 => new WindowsImplementation(),
+            PlatformFamily.OpenViewLinux => new STImplementation(),
+            PlatformFamily.OpenViewLinuxPro => new DesktopImplementation(), 
+            PlatformFamily.Ubuntu64 => new DesktopImplementation(),
+            PlatformFamily.MacosArm64 => new DesktopImplementation(),
             _ => throw new NotImplementedException(),
         };
     }
@@ -54,7 +54,7 @@ public class WiFiClientService : AhsokaServiceBase<WiFiClientMessageTypes.Ids>
     {
         switch (request.TransportId)
         {
-            case WiFiClientMessageTypes.Ids.GetAdapter:
+            case WiFiClientMessageTypes.Ids.GetAdapters:
                 GetAdapterRequest(request);
                 break;
 
@@ -99,7 +99,7 @@ public class WiFiClientService : AhsokaServiceBase<WiFiClientMessageTypes.Ids>
     private void GetAdapterRequest(AhsokaServiceRequest request)
     {
         // Send Empty Response to Ack.
-        var result = networkInterface.GetAdapter();
+        var result = networkInterface.GetAdapters();
         SendResponse(request, result);
     }
 

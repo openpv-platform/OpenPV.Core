@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10053",
+  "version": "4.0.1.10048",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Drawing",
   "packageName": "Ahsoka.CS.Drawing",

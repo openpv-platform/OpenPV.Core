@@ -33,7 +33,7 @@ public class NetworkServiceTest : LinearTestBase
         string wifiAdapterId = null;
 
         Console.WriteLine($"Getting Network Adapters");
-        var adapter = client.GetAdapter();
+        var adapter = client.GetAdapters().Adapters.FirstOrDefault();
 
         var config = client.GetNetworkConfiguration(new AdapterRequest() { AdapterId = adapter.AdapterId });
 
@@ -141,7 +141,7 @@ public class NetworkServiceTest : LinearTestBase
         {
             deviceClient.EnableDevice(wifiDevice);
 
-            var adapter = client.GetAdapter();
+            var adapter = client.GetAdapters();
             WiFiNetworkManager manager = new();
             manager.Start(deviceClient, client );
 
@@ -216,7 +216,7 @@ public class NetworkServiceTest : LinearTestBase
         client.Start();
 
         // Get Adapter
-        var networkAdapters = client.GetAdapter();
+        var networkAdapters = client.GetAdapters().Adapters.FirstOrDefault();
         if (networkAdapters != null)
         {
 

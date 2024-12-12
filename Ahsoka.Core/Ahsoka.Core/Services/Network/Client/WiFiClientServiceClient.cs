@@ -43,9 +43,9 @@ public class WiFiClientServiceClient : AhsokaClientBase<WiFiClientMessageTypes.I
     /// </summary>
     /// <param name="timeoutInMs">How long to wait for the adapter list.</param>
     /// <returns></returns>
-    public AdapterResult GetAdapter(int timeoutInMs = int.MaxValue)
+    public AdapterRequestList GetAdapters(int timeoutInMs = int.MaxValue)
     {
-        return SendMessageWithResponse<AdapterResult>(WiFiClientMessageTypes.Ids.GetAdapter, null, timeoutInMs);
+        return SendMessageWithResponse<AdapterRequestList>(WiFiClientMessageTypes.Ids.GetAdapters, null, timeoutInMs);
     }
 
 

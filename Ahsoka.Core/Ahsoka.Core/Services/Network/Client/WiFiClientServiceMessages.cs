@@ -35,7 +35,7 @@ public class WiFiClientServiceMessages : AhsokaMessagesBase
     /// <InheritDoc/>
     public WiFiClientServiceMessages()
     {
-        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.GetAdapter, typeof(EmptyNotification), typeof(AdapterResult));
+        this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.GetAdapters, typeof(EmptyNotification), typeof(AdapterRequestList));
         this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.GetNetworkConfiguration, typeof(AdapterRequest), typeof(AdapterConfiguration));
         this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.SetNetworkConfiguration, typeof(AdapterConfiguration), typeof(AdapterResult));
         this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.DiscoverNetworks, typeof(AdapterRequest), typeof(WirelessNetworkInfoList));

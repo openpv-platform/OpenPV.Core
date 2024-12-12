@@ -1,16 +1,13 @@
 ﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Utility;
-using Gst.Base;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
 
-namespace Ahsoka.Services.Network;
+namespace Ahsoka.Services.Network.Client.Implementation;
 
-internal abstract class NetworkPlatformImplementationBase
+internal abstract class ImplementationBase
 {
     #region Fields
     bool autoConnectInProgress = false;
@@ -23,7 +20,7 @@ internal abstract class NetworkPlatformImplementationBase
     #endregion
 
     #region Methods
-    public NetworkPlatformImplementationBase()
+    public ImplementationBase()
     {
 
     }
@@ -34,7 +31,7 @@ internal abstract class NetworkPlatformImplementationBase
     }
 
 
-    internal AdapterResult GetAdapter()
+    internal AdapterRequestList GetAdapters()
     {
         if (networkConfiguration == null)
         {
@@ -45,7 +42,10 @@ internal abstract class NetworkPlatformImplementationBase
             OnStartNetwork(out networkConfiguration, out networkAdapter);
         }
      
-        return new AdapterResult() { AdapterId = networkAdapter?.AdapterId, ConfigurationSuccessful = !string.IsNullOrEmpty(networkAdapter.AdapterId) };
+        return new AdapterRequestList()
+        { 
+            Adapters = { new AdapterRequest() { AdapterId = networkAdapter?.AdapterId} }
+        };
     }
 
     internal AdapterConfiguration GetAdapterConfiguration(string adapterId)

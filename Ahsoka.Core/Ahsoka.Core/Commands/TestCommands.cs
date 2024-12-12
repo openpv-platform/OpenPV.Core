@@ -27,8 +27,8 @@ internal static class TestCommands
                 ESPTest.RunTest();
             else if (args[0] == "WiFiService")
                 NetworkTests.TestNetworkService();
-            //else if (args[0] == "WiFiServiceAP")
-            //    NetworkTests.TestNetworkServiceAP();
+            else if (args[0] == "WiFiServiceAP")
+                NetworkTests.TestNetworkServiceAP();
             else if (args[0] == "SystemService")
                 SystemTests.TestSystemService();
             else if (args[0] == "DeviceService")

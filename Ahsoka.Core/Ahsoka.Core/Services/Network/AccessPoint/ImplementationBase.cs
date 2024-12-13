@@ -91,7 +91,7 @@ internal abstract class ImplementationBase
                 }
 
             }
-            catch { } // Handle Token Cancellation
+            catch (OperationCanceledException) { } // Handle Token Cancellation
         });
 
         return result;

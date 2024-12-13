@@ -2,8 +2,10 @@
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -15,6 +17,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     where TTransportIds : Enum, new()
 {
     #region Fields
+    object syncRoot = new object();
     private string publisherId => ServiceConfig.ServiceName;
     int messageReceiveCount = 0;
     int messageSendCount = 0;
@@ -23,6 +26,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     // Socket Management
     IAhsokaServiceSocket[] handledSockets;
     Dictionary<byte[], IAhsokaServiceSocket> validClientIds = new();
+
     #endregion
 
     #region Service Request Object
@@ -94,7 +98,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
         if (!isServiceStarted)
         {
             if (sockets == null || sockets.Length == 0)
-                sockets = [CreateDefaultSocket(ServiceConfig)];
+                sockets = [((IAhsokaServiceEndPoint)this).CreateDefaultSocket(ServiceConfig)];
 
             handledSockets = sockets;
          
@@ -232,51 +236,55 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             Header = message.Header
         };
 
-        // Handle Global Notification Registration
-        if (recievedMessage.Header.TransportId == CoreTransportIds.RegisterClient.EnumToInt())
+        // Protect Multiple Sockets Calling HandleResponse Concurrently (LocalSocket, TCPSocket, Any IAhsokaSocket)
+        lock (syncRoot)
         {
-            var registration = recievedMessage.Message as ClientRegistration;
-            validClientIds[registration.ClientId] = serviceSocket;
-
-            // Raise Call when Client is Connected
-            OnClientConnected();
-
-            return;
-        }
-        else if (recievedMessage.Header.TransportId == CoreTransportIds.DeregisterClient.EnumToInt())
-        {
-            var registration = recievedMessage.Message as ClientRegistration;
-            validClientIds.Remove(registration.ClientId);
-            return;
-        }
-
-        // Validate Security If Enabled
-        if (this.ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.SecurityEnabled) && messageInfo.RequiresSecurity)
-        {
-            if (recievedMessage.Header.ServiceToken == null || !TokenSource.Default.IsTokenValid(message.Header.ServiceToken, message.Header.ClientId))
+            // Handle Global Notification Registration
+            if (recievedMessage.Header.TransportId == CoreTransportIds.RegisterClient.EnumToInt())
             {
-                // Send Invalid Transport Value
-                recievedMessage.Header.TransportId = CoreTransportIds.InvalidToken.EnumToInt();
-                SendResponse(recievedMessage, new InvalidResponseNotification());
+                var registration = recievedMessage.Message as ClientRegistration;
+                validClientIds[registration.ClientId] = serviceSocket;
+
+                // Raise Call when Client is Connected
+                OnClientConnected();
+
                 return;
             }
-        }
-
-        try
-        {
-            // Handle Standard Message / Response Messages
-            // Handler is responsible for callign Reply if needed.
-            OnHandleServiceRequest(recievedMessage);
-        }
-        catch (Exception ex)
-        {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"An error occured while handling a service message in {this.ServiceConfig.ServiceName} \r\n {ex.ToString()}");
-            recievedMessage.Header.TransportId = CoreTransportIds.ServiceErrorThrown.EnumToInt();
-            SendResponse(recievedMessage, new ServiceErrorThrownResponse()
+            else if (recievedMessage.Header.TransportId == CoreTransportIds.DeregisterClient.EnumToInt())
             {
-                ServiceName = this.ServiceConfig.ServiceName,
-                ErrorInformation = ex.Message,
-            });
+                var registration = recievedMessage.Message as ClientRegistration;
+                validClientIds.Remove(registration.ClientId);
+                return;
+            }
+
+            // Validate Security If Enabled
+            if (this.ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.SecurityEnabled) && messageInfo.RequiresSecurity)
+            {
+                if (recievedMessage.Header.ServiceToken == null || !TokenSource.Default.IsTokenValid(message.Header.ServiceToken, message.Header.ClientId))
+                {
+                    // Send Invalid Transport Value
+                    recievedMessage.Header.TransportId = CoreTransportIds.InvalidToken.EnumToInt();
+                    SendResponse(recievedMessage, new InvalidResponseNotification());
+                    return;
+                }
+            }
+
+            try
+            {
+                // Handle Standard Message / Response Messages
+                // Handler is responsible for callign Reply if needed.
+                OnHandleServiceRequest(recievedMessage);
+            }
+            catch (Exception ex)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"An error occured while handling a service message in {this.ServiceConfig.ServiceName} \r\n {ex.ToString()}");
+                recievedMessage.Header.TransportId = CoreTransportIds.ServiceErrorThrown.EnumToInt();
+                SendResponse(recievedMessage, new ServiceErrorThrownResponse()
+                {
+                    ServiceName = this.ServiceConfig.ServiceName,
+                    ErrorInformation = ex.Message,
+                });
+            }
         }
     }
 
@@ -297,7 +305,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     /// <param name="config"></param>
     /// <returns></returns>
     /// <exception cref="Exception"></exception>
-    protected IAhsokaServiceSocket CreateDefaultSocket(ServiceConfiguration config)
+    IAhsokaServiceSocket IAhsokaServiceEndPoint.CreateDefaultSocket(ServiceConfiguration config)
     {
         if (config.SocketType == TransportSocketTypes.TcpSocket)
             return new TCPServiceSocket();

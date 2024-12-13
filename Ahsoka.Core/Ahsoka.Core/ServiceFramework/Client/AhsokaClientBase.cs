@@ -29,6 +29,7 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     // Result Objects
     BlockingCollection<AhsokaClientMessage> responseObjects = new();
 
+    bool autoStartAllowed = false;
     IAhsokaClientSocket socket;
     IAhsokaServiceEndPoint autoStartService = null;
     Token securityToken = null;
@@ -73,10 +74,11 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     /// </summary>
     /// <param name="config"></param>
     /// <param name="messages"></param>
-    protected AhsokaClientBase(ServiceConfiguration config, AhsokaMessagesBase messages) :
+    /// <param name="allowServiceAutoStart"></param>
+    protected AhsokaClientBase(ServiceConfiguration config, AhsokaMessagesBase messages, bool allowServiceAutoStart = true) :
         base(config, messages)
     {
-
+        autoStartAllowed = allowServiceAutoStart;
     }
 
     /// <summary>
@@ -96,7 +98,8 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     /// </summary>
     public override void Start()
     {
-        Start(CreateDefaultSocket(this.ServiceConfig));
+        var socket = CreateDefaultSocket(this.ServiceConfig);
+        Start(socket);
     }
 
     /// <summary>
@@ -110,9 +113,8 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
             // Before Connecting
             OnEndPointStarting();
 
-            AutoStartServiceIfNeeded();
-
-            socket = clientSocket;
+            // AutoStart.  Returns the correct socket to connect (may use LocalSocket)
+            socket = AutoStartServiceIfNeeded(clientSocket);
             socket.Connect(this);
 
             ((IAhsokaEndPoint)this).CurrentRuntime = AhsokaRuntime.Default;
@@ -172,20 +174,30 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     /// <summary>
     /// Auto Start Function - Starts a Matching Service if one is not Running.
     /// </summary>
-    protected virtual void AutoStartServiceIfNeeded()
+    protected IAhsokaClientSocket AutoStartServiceIfNeeded(IAhsokaClientSocket clientSocket)
     {
         // Handle AutoStartServices
-        if (autoStartService == null && ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.AutoStart))
+        if (autoStartAllowed && autoStartService == null && ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.AutoStart))
         {
             // Find a matching Service if Available
             var existingServiceMatch = AhsokaRuntime.Default.GetService(this.ServiceConfig.ServiceName, this.ServiceConfig.DataChannel);
             if (existingServiceMatch != null && existingServiceMatch.IsStarted)
-                return;
+                return clientSocket;
 
-            // Create a Service 
+            // Create a Service
+            // TODO: Get Default Socket from Service
+            LocalSocket localSocket = new LocalSocket(); // Start a Local Socket and TCP
             autoStartService = ((IAhsokaClientEndPoint)this).CreateDefaultService();
-            autoStartService.Start();
+            var defaultSocket = autoStartService.CreateDefaultSocket(autoStartService.ServiceConfig);
+
+            // Start Service with Local and Default Socket
+            autoStartService.Start(localSocket, defaultSocket);
+
+            // Use Local Socket
+            return localSocket;
         }
+
+        return clientSocket;
     }
 
     /// <summary>
@@ -346,8 +358,7 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
             NotificationReceived?.Invoke(this, args);
     }
 
-    void IAhsokaClientEndPoint.HandleResponse(AhsokaClientMessage message) =>
-        responseObjects.Add(message);
+    void IAhsokaClientEndPoint.HandleResponse(AhsokaClientMessage message) => responseObjects.Add(message);
 
     AhsokaClientMessage CreateSocketMessage(TTransportIds transportId, object requestObject)
     {

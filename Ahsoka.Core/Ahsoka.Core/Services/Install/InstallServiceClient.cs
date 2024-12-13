@@ -34,7 +34,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
     /// Default Constructor using Default Service Configuration
     /// </summary>
     public InstallServiceClient()
-        : base(ConfigurationLoader.GetServiceConfig(InstallService.Name), new InstallServiceMessages())
+        : base(ConfigurationLoader.GetServiceConfig(InstallService.Name), new InstallServiceMessages(), false)
     {
 
     }
@@ -48,13 +48,6 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
         return new InstallService(this.ServiceConfig);
     }
 
-    /// <summary>
-    /// Override and Disable AutoStart
-    /// </summary>
-    protected override void AutoStartServiceIfNeeded()
-    {
-        // Configuration Service Always Requires Manual Start
-    }
 
     /// <summary>
     /// Creates an install service and notifies it to begin the install process. 

@@ -322,7 +322,7 @@ public class ServiceTests : LinearTestBase
     {
         Task.Run(() =>
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(10);
             ApplicationContext.Exit();
         });
 

@@ -143,46 +143,84 @@ public class ServiceTests : LinearTestBase
         AhsokaRuntime.Default.StopAllEndPoints();
     }
 
-    readonly Semaphore messageReceived = new(0, 1);
-
+    
     [TestMethod]
     public void TestNotifications()
     {
+        int receiveConcurrentCount = 0;
+        int receiveCount = 0;
+
+        // Create and Start Service
         SystemServiceClient systemClient = new();
         systemClient.Start();
+        
+        Stopwatch watch = new();
+        watch.Start();
+        
+        // Start a Thread and Run Test
+        var task1 = Task.Run(() =>
+        {
+            RunTest(systemClient, out receiveCount);
+        });
 
-        var receiveCount = 0;
-        var totalRuns = 100000;
+        // Create Confurrent Client and Run Test
+        // This should use the local service / with a local socket.
+        var task2 = Task.Run(() =>
+        {
+            SystemServiceClient secondClient = new();
+            secondClient.Start();
+
+            RunTest(secondClient, out receiveConcurrentCount);
+
+            secondClient.Stop();
+        });
+
+        // Wait for Concurrent Task to Finish
+        Task.WaitAll(task1, task2);
+
+        watch.Stop();
+
+        Console.WriteLine("");
+        Console.WriteLine($"Performance Test: {(receiveCount + receiveConcurrentCount)} Request/Response Calls completed in {watch.ElapsedMilliseconds}ms");
+        Console.WriteLine($"                : {((float)(receiveCount + receiveConcurrentCount) / watch.ElapsedMilliseconds) * 1000} Calls Per Second");
+        Console.WriteLine("");
+
+        systemClient.Stop();
+
+        AhsokaRuntime.Default.StopAllEndPoints();
+    }
+
+    private void RunTest(SystemServiceClient systemClient, out int receiveCount)
+    {
+        Semaphore messageReceived = new(0, 1);
+        
+        int totalRuns;
+
+        int receiveCountLocal = 0;
+        totalRuns = 100000;
 
         // List to Message Notifications
         systemClient.NotificationReceived += (sender, args) =>
         {
             if (args.TransportId == SystemMessageTypes.Ids.TestNotif)
             {
-                receiveCount++;
-                if (receiveCount == totalRuns)
+                receiveCountLocal++;
+                if (receiveCountLocal == totalRuns)
                     messageReceived.Release();
             }
         };
 
-        Stopwatch watch = new();
-        watch.Start();
         for (int i = 0; i < totalRuns; i++)
         {
-            systemClient.EchoNotif("Test Value"); 
+            systemClient.EchoNotif("Test Value");
         }
 
         messageReceived.WaitOne(30000);
 
-        if (receiveCount == totalRuns)
-            Assert.AreEqual(totalRuns, receiveCount);
+        Assert.AreEqual(totalRuns, receiveCountLocal);
+        
+        receiveCount = receiveCountLocal;
 
-        watch.Stop();
-
-        Console.WriteLine("");
-        Console.WriteLine($"Performance Test: {receiveCount} Request/Response Calls completed in {watch.ElapsedMilliseconds}ms");
-        Console.WriteLine($"                : {((float)receiveCount / watch.ElapsedMilliseconds) * 1000} Calls Per Second");
-        Console.WriteLine("");
     }
 
     [TestMethod]

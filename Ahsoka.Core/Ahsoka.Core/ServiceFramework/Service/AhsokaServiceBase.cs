@@ -5,6 +5,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 namespace Ahsoka.ServiceFramework;
@@ -24,8 +25,10 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     bool isServiceStarted = false;
 
     // Socket Management
-    IAhsokaServiceSocket[] handledSockets;
-    Dictionary<byte[], IAhsokaServiceSocket> validClientIds = new();
+    List<IAhsokaServiceSocket> handledSockets;
+
+    Dictionary<byte[], byte[]> clientIdToNotificationIds = [];
+    Dictionary<byte[], IAhsokaServiceSocket> validNotificationIds = [];
 
     #endregion
 
@@ -100,7 +103,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             if (sockets == null || sockets.Length == 0)
                 sockets = [((IAhsokaServiceEndPoint)this).CreateDefaultSocket(ServiceConfig)];
 
-            handledSockets = sockets;
+            handledSockets = sockets.ToList();
          
             // Raise Before Connecting
             OnEndPointStarting();
@@ -117,6 +120,32 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
 
             isServiceStarted = true;
         }
+    }
+
+    /// <summary>
+    /// Add a Local Socket to this Service
+    /// </summary>
+    /// <param name="socket"></param>
+    void IAhsokaServiceEndPoint.AddLocalSocket(IAhsokaServiceSocket socket)
+    {
+        if (!(socket is LocalSocket))
+            throw new ArgumentException("Socket must be of type 'LocalSocket'");
+
+        lock(syncRoot)
+            handledSockets.Add(socket);
+    }
+
+    /// <summary>
+    /// Remove a Local Socket to this Service
+    /// </summary>
+    /// <param name="socket"></param>
+    void IAhsokaServiceEndPoint.RemoveLocalSocket(IAhsokaServiceSocket socket)
+    {
+        if (!(socket is LocalSocket))
+            throw new ArgumentException("Socket must be of type 'LocalSocket'");
+
+        lock (syncRoot)
+            handledSockets.Remove(socket);
     }
 
     /// <summary>
@@ -175,17 +204,26 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
         // Send to Specific Client Or All Clients if Broadcast
         if (specificClient != null)
         {
-            messageToSend.ClientId = specificClient;
-            validClientIds[specificClient]?.SendMessage(messageToSend);
+            validNotificationIds[specificClient]?.SendMessage(messageToSend);
         }
         else
         {
-            foreach (var item in validClientIds)
+            foreach (var item in validNotificationIds)
             {
                 messageToSend.ClientId = item.Key;
                 item.Value.SendMessage(messageToSend);
             }
         }
+    }
+
+    /// <summary>
+    /// Translate a ClientID to its Notification ChannelID
+    /// </summary>
+    /// <param name="clientId"></param>
+    /// <returns></returns>
+    public byte[] GetClientNotificationId(byte[] clientId)
+    {
+        return clientIdToNotificationIds[clientId];
     }
 
     /// <summary>
@@ -243,7 +281,8 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             if (recievedMessage.Header.TransportId == CoreTransportIds.RegisterClient.EnumToInt())
             {
                 var registration = recievedMessage.Message as ClientRegistration;
-                validClientIds[registration.ClientId] = serviceSocket;
+                validNotificationIds[registration.ClientId] = serviceSocket;
+                clientIdToNotificationIds[recievedMessage.Header.ClientId] = registration.ClientId;
 
                 // Raise Call when Client is Connected
                 OnClientConnected();
@@ -253,7 +292,9 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             else if (recievedMessage.Header.TransportId == CoreTransportIds.DeregisterClient.EnumToInt())
             {
                 var registration = recievedMessage.Message as ClientRegistration;
-                validClientIds.Remove(registration.ClientId);
+                validNotificationIds.Remove(registration.ClientId);
+                clientIdToNotificationIds.Remove(recievedMessage.Header.ClientId);
+
                 return;
             }
 
@@ -319,6 +360,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
         ProtoBuf.Serializer.Serialize(dataStream, message);
         return new AhsokaServiceMessage() { Header = header, MessageData = dataStream.ToArray(), IsNotification = isNotif };
     }
+
     #endregion
 }
 

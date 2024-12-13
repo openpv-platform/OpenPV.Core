@@ -176,17 +176,24 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     /// </summary>
     protected IAhsokaClientSocket AutoStartServiceIfNeeded(IAhsokaClientSocket clientSocket)
     {
+        // Find a matching Service if Available
+        var existingServiceMatch = AhsokaRuntime.Default.GetService(this.ServiceConfig.ServiceName, this.ServiceConfig.DataChannel);
+        if (existingServiceMatch != null && existingServiceMatch.IsStarted)
+        {
+            LocalSocket localSocket = new(); // Start a Local Socket and TCP
+
+            // Found an existing Service so we want to use that BUT we need / want to add the LocalSocket to the list
+            localSocket.Connect(existingServiceMatch);
+            existingServiceMatch.AddLocalSocket(localSocket);
+
+            return localSocket;
+        }
+
         // Handle AutoStartServices
         if (autoStartAllowed && autoStartService == null && ServiceConfig.Behaviors.HasFlag(EndPointBehaviors.AutoStart))
         {
-            // Find a matching Service if Available
-            var existingServiceMatch = AhsokaRuntime.Default.GetService(this.ServiceConfig.ServiceName, this.ServiceConfig.DataChannel);
-            if (existingServiceMatch != null && existingServiceMatch.IsStarted)
-                return clientSocket;
-
             // Create a Service
-            // TODO: Get Default Socket from Service
-            LocalSocket localSocket = new LocalSocket(); // Start a Local Socket and TCP
+            LocalSocket localSocket = new(); // Start a Local Socket and TCP
             autoStartService = ((IAhsokaClientEndPoint)this).CreateDefaultService();
             var defaultSocket = autoStartService.CreateDefaultSocket(autoStartService.ServiceConfig);
 

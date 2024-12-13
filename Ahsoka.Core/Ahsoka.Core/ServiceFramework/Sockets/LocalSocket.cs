@@ -46,6 +46,8 @@ internal sealed class LocalSocket : IAhsokaServiceSocket, IAhsokaClientSocket
     {
         tokenSource.Cancel();
         notifTask.Wait();
+
+        serviceEndPoint.RemoveLocalSocket(this);
     }
 
     // Handle Sending Messages to Clients

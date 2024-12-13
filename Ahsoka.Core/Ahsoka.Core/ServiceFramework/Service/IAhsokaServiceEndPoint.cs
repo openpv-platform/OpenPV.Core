@@ -26,6 +26,20 @@ public interface IAhsokaServiceEndPoint : IAhsokaEndPoint
     IAhsokaServiceSocket CreateDefaultSocket(ServiceConfiguration config);
 
     /// <summary>
+    /// Add Local Socket to this EndPoint
+    /// </summary>
+    /// <param name="socket"></param>
+    /// <returns></returns>
+    void AddLocalSocket(IAhsokaServiceSocket socket);
+
+    /// <summary>
+    /// Add Local Socket to this EndPoint
+    /// </summary>
+    /// <param name="socket"></param>
+    /// <returns></returns>
+    void RemoveLocalSocket(IAhsokaServiceSocket socket);
+
+    /// <summary>
     /// Start EndPoint with List of Sockets
     /// </summary>
     /// <param name="sockets"></param>

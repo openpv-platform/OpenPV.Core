@@ -23,7 +23,7 @@ public interface IAhsokaEndPoint
 
     void Stop();
 
-    int EndPointId { get; }
+    uint EndPointId { get; }
 
     void WaitForStop();
 
@@ -34,13 +34,13 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
     where TTransportIds : Enum
 {
     #region Fields
-    int endpointId = 0;
+    uint endpointId = 0;
     readonly AhsokaMessagesBase serviceMessageInfo;
     readonly ManualResetEventSlim shutdownWaiter = new(false);
     #endregion
 
     #region Properties
-    int IAhsokaEndPoint.EndPointId { get => endpointId; }
+    uint IAhsokaEndPoint.EndPointId { get => endpointId; }
     AhsokaRuntime IAhsokaEndPoint.CurrentRuntime { get; set; }
     public ServiceConfiguration ServiceConfig { get; protected set; }
     public AhsokaMessagesBase ServiceMessageInfo => serviceMessageInfo;
@@ -49,7 +49,7 @@ public abstract class AhsokaEndPoint<TTransportIds> : IAhsokaEndPoint
 
     public AhsokaEndPoint(ServiceConfiguration config, AhsokaMessagesBase messages)
     {
-        this.endpointId = HashCode32.GetHashCode32(config.ServiceName);
+        this.endpointId = (uint)HashCode32.GetHashCode32(config.ServiceName);
 
         ServiceConfig = config;
         serviceMessageInfo = messages;

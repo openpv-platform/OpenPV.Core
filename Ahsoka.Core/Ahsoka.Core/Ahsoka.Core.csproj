@@ -44,7 +44,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Proto\WiFiAPService.proto" />
 	  <None Remove="Resources\CommandLine\Publish.xmlpub.template" />
 	</ItemGroup>
 	<ItemGroup>

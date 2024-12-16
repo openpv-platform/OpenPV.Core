@@ -104,11 +104,11 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
                 sockets = [((IAhsokaServiceEndPoint)this).CreateDefaultSocket(ServiceConfig)];
 
             handledSockets = sockets.ToList();
-         
+
             // Raise Before Connecting
             OnEndPointStarting();
 
-            foreach (var item in sockets)
+            foreach (var item in handledSockets)
                 item.Connect(this);
 
             // Add Self to Runtime
@@ -128,10 +128,10 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     /// <param name="socket"></param>
     void IAhsokaServiceEndPoint.AddLocalSocket(IAhsokaServiceSocket socket)
     {
-        if (!(socket is LocalSocket))
-            throw new ArgumentException("Socket must be of type 'LocalSocket'");
+        if (!(socket is LocalSocket || socket is GatewaySocket))
+            throw new ArgumentException("Socket must be of type 'LocalSocket' or 'GatewaySocket'");
 
-        lock(syncRoot)
+        lock (syncRoot)
             handledSockets.Add(socket);
     }
 
@@ -141,8 +141,8 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     /// <param name="socket"></param>
     void IAhsokaServiceEndPoint.RemoveLocalSocket(IAhsokaServiceSocket socket)
     {
-        if (!(socket is LocalSocket))
-            throw new ArgumentException("Socket must be of type 'LocalSocket'");
+        if (!(socket is LocalSocket || socket is GatewaySocket))
+            throw new ArgumentException("Socket must be of type 'LocalSocket' or 'GatewaySocket'");
 
         lock (syncRoot)
             handledSockets.Remove(socket);
@@ -179,8 +179,8 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             replyObject = new EmptyNotification();
 
         // Prepare Response Message 
-        var messageToSend = CreateSocketMessage(message.Header, replyObject,false);
-       
+        var messageToSend = CreateSocketMessage(message.Header, replyObject, false);
+
         // Send to Specific Client Or All Cients if Broadcast
         message.Socket.SendMessage(messageToSend);
     }
@@ -254,8 +254,18 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
         return IServiceEvent.Default.SendEvent(serviceEvent, state);
     }
 
+    /// <summary>
+    /// Internal Raw Service Handler
+    /// </summary>
+    /// <param name="serviceSocket"></param>
+    /// <param name="message"></param>
+    /// <exception cref="ApplicationException"></exception>
     void IAhsokaServiceEndPoint.HandleServiceRequest(IAhsokaServiceSocket serviceSocket, AhsokaServiceMessage message)
     {
+        // Allows for Capturing Raw Messages
+        if (OnInterseptMessage(serviceSocket, message))
+            return;
+
         messageReceiveCount++;
 
         // Lookup and Decode Message
@@ -334,11 +344,19 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     /// </summary>
     /// <param name="message"></param>
     /// <returns></returns>
-    protected virtual partial void OnHandleServiceRequest(AhsokaServiceRequest message);
+    protected virtual void OnHandleServiceRequest(AhsokaServiceRequest message) { }
 
     /// Raised when a Clients Connects to the Service
     /// </summary>
     protected virtual void OnClientConnected() { }
+
+    /// <summary>
+    /// Allows Service to InterseptRawMessage and Handle it externally.
+    /// </summary>
+    /// <param name="serviceSocket"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    protected virtual internal bool OnInterseptMessage(IAhsokaServiceSocket serviceSocket, AhsokaServiceMessage message) { return false; }
 
     /// <summary>
     /// Creates a Socket when no Socket is Specified
@@ -360,7 +378,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
         ProtoBuf.Serializer.Serialize(dataStream, message);
         return new AhsokaServiceMessage() { Header = header, MessageData = dataStream.ToArray(), IsNotification = isNotif };
     }
-
-    #endregion
 }
+
+#endregion
 

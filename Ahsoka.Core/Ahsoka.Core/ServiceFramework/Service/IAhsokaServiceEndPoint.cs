@@ -11,12 +11,12 @@ public interface IAhsokaServiceEndPoint : IAhsokaEndPoint
     /// <summary>
     /// Messages Received by Service
     /// </summary>
-    int MessageReceiveCount { get;  }
+    int MessageReceiveCount { get; }
 
     /// <summary>
     /// Messages Sent by Service
     /// </summary>
-    int MessageSendCount { get;  }
+    int MessageSendCount { get; }
 
     /// <summary>
     /// Create the Default Socket required by the Configuration

@@ -367,7 +367,13 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
 
     void IAhsokaClientEndPoint.HandleResponse(AhsokaClientMessage message) => responseObjects.Add(message);
 
-    AhsokaClientMessage CreateSocketMessage(TTransportIds transportId, object requestObject)
+    /// <summary>
+    /// Creates a Message 
+    /// </summary>
+    /// <param name="transportId"></param>
+    /// <param name="requestObject"></param>
+    /// <returns></returns>
+    protected virtual  AhsokaClientMessage CreateSocketMessage(TTransportIds transportId, object requestObject)
     {
         if (requestObject == null) 
             requestObject = new EmptyNotification();

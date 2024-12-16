@@ -60,6 +60,12 @@ public partial class AhsokaRuntime
         return ServiceEndPoints.Where(x=>x.ServiceConfig.ServiceName == serviceName && (dataChannel == 0 || dataChannel == x.ServiceConfig.DataChannel)).FirstOrDefault();
     }
 
+    internal IAhsokaServiceEndPoint GetServiceByEndPointId(uint endpointId)
+    {
+        return ServiceEndPoints.Where(x => x.EndPointId == endpointId).FirstOrDefault();
+    }
+
+
     /// <summary>
     /// Get a reference to a Client Available in the Runtime
     /// </summary>
@@ -283,6 +289,7 @@ public partial class AhsokaRuntime
         },
         tokenSource.Token);
     }
+
 
     #endregion
 

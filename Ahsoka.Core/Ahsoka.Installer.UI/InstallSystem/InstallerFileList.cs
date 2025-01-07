@@ -111,8 +111,6 @@ internal class InstallerFileList
                     fileList?.Add(item);
         }
 
-        Console.WriteLine("Refresh() items");
-
         if (!tempList.SequenceEqual(fileList))
         {
             FileChanged?.Invoke(this, EventArgs.Empty);

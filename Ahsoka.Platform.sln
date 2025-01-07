@@ -111,6 +111,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Extension.Test", "Ah
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.CS.Drawing.Pro", "Ahsoka.Demo\Ahsoka.CS.Drawing.Pro\Ahsoka.CS.Drawing.Pro.csproj", "{2A07226F-7375-423A-9D36-A3EE88123134}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.CS.Devices", "Ahsoka.Demo\Ahsoka.CS.Devices\Ahsoka.CS.Devices.csproj", "{88DC9C48-4026-4BC4-B95C-3652FFD468AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -450,6 +452,18 @@ Global
 		{2A07226F-7375-423A-9D36-A3EE88123134}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2A07226F-7375-423A-9D36-A3EE88123134}.Release|x64.ActiveCfg = Release|Any CPU
 		{2A07226F-7375-423A-9D36-A3EE88123134}.Release|x64.Build.0 = Release|Any CPU
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Debug|x64.ActiveCfg = Debug|x64
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Debug|x64.Build.0 = Debug|x64
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Mac-Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Mac-Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Mac-Debug|x64.ActiveCfg = Debug|x64
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Mac-Debug|x64.Build.0 = Debug|x64
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Release|x64.ActiveCfg = Release|x64
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -475,6 +489,7 @@ Global
 		{CCE0FCFC-832E-476C-A7C1-D458BB3EF7B4} = {B68F5390-4032-4D7C-9FC6-E00A4AF4ADE2}
 		{36E3A737-9635-4837-8B0E-C4D2B9AEA373} = {62A620AB-498B-4E5A-9848-1E43E171A5BF}
 		{2A07226F-7375-423A-9D36-A3EE88123134} = {B68F5390-4032-4D7C-9FC6-E00A4AF4ADE2}
+		{88DC9C48-4026-4BC4-B95C-3652FFD468AB} = {B68F5390-4032-4D7C-9FC6-E00A4AF4ADE2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {92A702AC-B84D-4A04-9D84-3817A9398F42}

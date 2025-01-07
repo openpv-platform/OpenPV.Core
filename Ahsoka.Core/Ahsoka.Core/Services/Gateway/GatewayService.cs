@@ -35,13 +35,7 @@ public class GatewayService : GatewayServiceBase<GatewayMessageTypes.Ids>
 
     }
 
-
-    /// <summary>
-    ///  Route Messages to Gateway Socket if EndPoint doesn't match
-    /// </summary>
-    /// <param name="serviceSocket"></param>
-    /// <param name="message"></param>
-    /// <returns></returns>
+    /// <inheritdoc/>
     protected internal override bool OnInterseptMessage(IAhsokaServiceSocket serviceSocket, AhsokaServiceMessage message)
     {
         // If GatewayEnabled, route any EndPoint Messages to the Gateway
@@ -49,6 +43,11 @@ public class GatewayService : GatewayServiceBase<GatewayMessageTypes.Ids>
         return true;
     }
 
+    /// <inheritdoc/>
+    protected override void OnHandleGatewayMessage(IAhsokaServiceSocket registeredSocket, AhsokaServiceMessage message)
+    {
+        base.OnHandleGatewayMessage(registeredSocket, message);
+    }
 
     #endregion
 }

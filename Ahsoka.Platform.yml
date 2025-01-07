@@ -274,7 +274,8 @@ stages:
 - stage: SparkUpload
   dependsOn:
     - PCBuild
-   
+    - MACBuild
+ 
   jobs:
   - job: FinalizeBuild
     pool: 'OpenPV Pool'  

@@ -19,7 +19,9 @@
 		<RemoveDir Directories="$(InteropSource_Root)\BuildOutputs\SDK" />
 		<RemoveDir Directories="$(InteropSource_Root)\BuildOutputs\StoryboardLib" />
 	</Target>
-	
+
+	<Import Project="../Ahsoka.DownloadBSP/BSP.Targets" />
+
 	<Target Name="BuildInteropLibs" AfterTargets="PostBuildEvent" Condition="!Exists('$(InteropSource_Root)\BuildOutputs\Ahsoka.Services\Ahsoka.Services.OpenViewLinux.so')">
 
 		<Message Text="Stopping Containers" Importance="high" />
@@ -27,15 +29,15 @@
 		<Exec ContinueOnError="true" IgnoreExitCode="true" WorkingDirectory="$(InteropSource_Root)" Command="docker kill Ahsoka.CoreBuilderPro" />
 
 		<Message Text="Building OpenView Interop Libraries at $(InteropSource_Root)" Importance="high" />
-		<Exec Condition="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openview_sdk_3_0" />
+		<Exec Condition="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openview_sdk_4_0:$(OpenViewBSP)" />
 		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(InteropSource_Root)/Ahsoka.Interop/build_setup.sh" />
-		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Interop/build_setup.sh&quot; --name Ahsoka.CoreBuilder openpv/openview_sdk_3_0" />
+		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Interop/build_setup.sh&quot; --name Ahsoka.CoreBuilder openpv/openview_sdk_4_0:$(OpenViewBSP)" />
 		
 		
 		<Message Text="Building OpenViewPro Interop Libraries at $(InteropSource_Root)" Importance="high" />
-		<Exec Condition="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openviewpro_sdk_4_0" />
+		<Exec Condition="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openviewpro_sdk_4_0:$(OpenViewProBSP)" />
 		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(InteropSource_Root)/Ahsoka.Interop/build_setup_pro.sh" />
-		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Interop/build_setup_pro.sh&quot; --name Ahsoka.CoreBuilderPro openpv/openviewpro_sdk_4_0" />
+		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Interop/build_setup_pro.sh&quot; --name Ahsoka.CoreBuilderPro openpv/openviewpro_sdk_4_0:$(OpenViewProBSP)" />
 
 	</Target>
 	

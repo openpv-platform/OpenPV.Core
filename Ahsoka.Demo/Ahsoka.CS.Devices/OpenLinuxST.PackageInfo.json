@@ -1,0 +1,70 @@
+{
+  "version": "4.0.1.10055",
+  "applicationType": "Dotnet",
+  "execCommand": "Ahsoka.CS.Devices",
+  "packageName": "Ahsoka.CS.Devices",
+  "packageDescription": "Example of Manages Devices (Such as USB Cell Modems)",
+  "applicationVersion": "1.0",
+  "packageApplicationFolder": "publish",
+  "packageOutputDirectory": "../PackageOutput",
+  "licenses": [],
+  "optimizedServiceManager": true,
+  "customPackageInfo": {
+    "includeApplication": false,
+    "includeBootLogo": false,
+    "includeInstallerUI": false,
+    "includeFirmwareUpdate": false
+  },
+  "dotNetInfo": {
+    "projectPath": "Ahsoka.CS.Devices.csproj",
+    "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
+  },
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensionInfo": [],
+      "startupDelay": 3,
+      "requireChallenge": "NotRequired",
+      "services": [
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": "AutoStart"
+        }
+      ]
+    },
+    "environmentValues": []
+  },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "",
+    "orientation": "DefaultOrientation",
+    "surfaceSetups": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [
+      {
+        "name": "WiFi Combo Module",
+        "deviceType": "OnboardWirelessComboModule",
+        "customStartup": ""
+      },
+      {
+        "name": "Cellular Modem",
+        "deviceType": "UsbCellularNetwork",
+        "customStartup": ""
+      }
+    ]
+  },
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
+  "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "components": []
+}

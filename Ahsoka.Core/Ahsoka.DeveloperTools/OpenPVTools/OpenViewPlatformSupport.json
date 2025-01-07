@@ -32,7 +32,7 @@
     },
     {
       "Name": "OpenViewSelect SDK Container",
-      "Version": "3.2024-08-06T111839.openview.kirkstone.284a364",
+      "Version": "4.2025-01-06T213736.openview.kirkstone.cbc3092",
       "Description": "OpenViewSelect SDK Container",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewSelectSDKContainerTool",
       "CanLaunch": true,
@@ -40,7 +40,7 @@
     },
     {
       "Name": "OpenViewSelect QT5 Container",
-      "Version": "3.2024-08-06T111839.openview.kirkstone.284a364",
+      "Version": "4.2025-01-06T213736.openview.kirkstone.cbc3092",
       "Description": "OpenViewSelect QT5 Container",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewSelectQT5ContainerTool",
       "CanLaunch": true,
@@ -48,7 +48,7 @@
     },
     {
       "Name": "OpenViewPro SDK Container",
-      "Version": "3.2024-08-06T110843.openviewpro.kirkstone.6d309b5",
+      "Version": "4.2024-11-05T221051.openviewpro.kirkstone.2f7eff7",
       "Description": "OpenViewPro SDK Container",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewProSDKContainerTool",
       "CanLaunch": true,
@@ -56,7 +56,7 @@
     },
     {
       "Name": "OpenViewPro QT5 Container",
-      "Version": "3.2024-08-06T110843.openviewpro.kirkstone.6d309b5",
+      "Version": "4.2024-11-05T221051.openviewpro.kirkstone.2f7eff7",
       "Description": "OpenViewPro QT5 Container",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewProQT5ContainerTool",
       "CanLaunch": true,

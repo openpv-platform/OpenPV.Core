@@ -111,7 +111,11 @@ public class WiFiClientService : AhsokaServiceBase<WiFiClientMessageTypes.Ids>
 
     private void GetIpInfo(AhsokaServiceRequest messageHeader, AdapterRequest adapterRequest)
     {
-        var response = networkInterface.GetIPInfo(adapterRequest);
+        var response = ImplementationBase.GetIPInfo(adapterRequest);
+
+        // Update IPAddress 
+        this.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, response.IPAddress);
+
         SendResponse(messageHeader, response);
     }
 

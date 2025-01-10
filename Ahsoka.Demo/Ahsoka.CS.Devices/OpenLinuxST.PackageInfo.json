@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10055",
+  "version": "4.0.1.10056",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Devices",
   "packageName": "Ahsoka.CS.Devices",
@@ -8,7 +8,7 @@
   "packageApplicationFolder": "publish",
   "packageOutputDirectory": "../PackageOutput",
   "licenses": [],
-  "optimizedServiceManager": true,
+  "optimizedServiceManager": false,
   "customPackageInfo": {
     "includeApplication": false,
     "includeBootLogo": false,

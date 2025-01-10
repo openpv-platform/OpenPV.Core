@@ -23,6 +23,7 @@
 			<DEMO_SERVICES Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Services\**" />
 			<DEMO_DRAWING Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Drawing\**" />
 			<DEMO_DRAWING_PRO Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Drawing.Pro\**" />
+			<DEMO_DEVICES Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Devices\**" />
 			<DEMO_BROWSER Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Browser\**" />
 		</ItemGroup>
 
@@ -32,6 +33,7 @@
 		<Copy SourceFiles="@(DEMO_SERVICES)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\%(RecursiveDir)" />
 		<Copy SourceFiles="@(DEMO_DRAWING)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Drawing\%(RecursiveDir)" />
 		<Copy SourceFiles="@(DEMO_DRAWING_PRO)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Drawing.Pro\%(RecursiveDir)" />
+		<Copy SourceFiles="@(DEMO_DEVICES)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Devices\%(RecursiveDir)" />
 		<Copy SourceFiles="@(DEMO_BROWSER)" DestinationFolder="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Browser\%(RecursiveDir)" />
 
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Blank.Basic\bin\" />
@@ -59,6 +61,11 @@
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Drawing.Pro\.vs\" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Drawing.Pro\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Drawing.Pro.zip" />
 
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Devices\bin\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Devices\obj\" />
+		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Devices\.vs\" />
+		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Devices\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Devices.zip" />
+		
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\bin\" />
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\obj\" />
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Services\.vs\" />

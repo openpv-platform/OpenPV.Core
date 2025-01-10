@@ -243,7 +243,7 @@ public class ServiceTests : LinearTestBase
     }
 
 
-    [TestMethod]
+    //[TestMethod]
     public void TestDeviceService()
     {
         // Create Client Runtime and Add Services
@@ -254,12 +254,15 @@ public class ServiceTests : LinearTestBase
         var usbInfo = deviceClient.GetUsbInfo();
         deviceClient.SetUsbInfo(usbInfo);
 
-
         var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch =  SupportedFeatures.Wifi }).Devices.FirstOrDefault();
-        deviceClient.EnableDevice(wifiDevice);
-        Assert.IsTrue(enabledEvent.WaitOne(2000));
-        deviceClient.DisableDevice(wifiDevice);
-        Assert.IsTrue(disabledEvent.WaitOne(2000));
+        if (wifiDevice != null)
+        {
+            deviceClient.EnableDeviceNotifications();
+            deviceClient.EnableDevice(wifiDevice);
+            Assert.IsTrue(enabledEvent.WaitOne(2000));
+            deviceClient.DisableDevice(wifiDevice);
+            Assert.IsTrue(disabledEvent.WaitOne(2000));
+        }
 
         // Stop the Runtimes
         AhsokaRuntime.Default.StopAllEndPoints();

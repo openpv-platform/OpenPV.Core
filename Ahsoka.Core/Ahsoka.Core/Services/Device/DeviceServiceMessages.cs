@@ -26,8 +26,13 @@ public class DeviceServiceMessages : AhsokaMessagesBase
         this.RegisterServiceRequest(DeviceMessageTypes.Ids.EnableDevice, typeof(DeviceInfo), typeof(EmptyNotification));
         this.RegisterServiceRequest(DeviceMessageTypes.Ids.DisableDevice, typeof(DeviceInfo), typeof(EmptyNotification));
 
-        this.RegisterServiceNotification(DeviceMessageTypes.Ids.UsbDeviceAdded, typeof(DeviceInfo));
-        this.RegisterServiceNotification(DeviceMessageTypes.Ids.UsbDeviceRemoved, typeof(DeviceInfo));
+        // This Enables Device Notifications - Otherwise the Clients must use Polling
+        // Causes all devices to notify state as well.
+        this.RegisterServiceRequest(DeviceMessageTypes.Ids.EnableDeviceNotifications, typeof(EmptyNotification), typeof(EmptyNotification));
+
+        this.RegisterServiceNotification(DeviceMessageTypes.Ids.OnboardDeviceReady, typeof(DeviceInfo));
+        this.RegisterServiceNotification(DeviceMessageTypes.Ids.UsbDeviceAdded, typeof(UsbDeviceInfo));
+        this.RegisterServiceNotification(DeviceMessageTypes.Ids.UsbDeviceRemoved, typeof(UsbDeviceInfo));
 
         this.RegisterServiceNotification(DeviceMessageTypes.Ids.DeviceEnabled, typeof(DeviceInfo));
         this.RegisterServiceNotification(DeviceMessageTypes.Ids.DeviceDisabled, typeof(DeviceInfo));

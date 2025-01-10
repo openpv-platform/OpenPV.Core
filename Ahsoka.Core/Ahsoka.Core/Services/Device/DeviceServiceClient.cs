@@ -86,6 +86,15 @@ public class DeviceServiceClient : AhsokaClientBase<DeviceMessageTypes.Ids>
     }
 
     /// <summary>
+    /// Start Notifications for USB and Onboard Devices
+    /// </summary>
+    public void EnableDeviceNotifications()
+    {
+        SendMessageWithResponse(DeviceMessageTypes.Ids.EnableDeviceNotifications);
+    }
+
+
+    /// <summary>
     /// Enable the Specified Device - Uses ID for Identification
     /// </summary>
     /// <param name="info"></param>

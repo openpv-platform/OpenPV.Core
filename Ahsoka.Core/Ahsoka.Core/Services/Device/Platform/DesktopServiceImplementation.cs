@@ -1,7 +1,5 @@
 ﻿using Ahsoka.Services.Device.Handlers;
 using Ahsoka.System;
-using Ahsoka.Utility;
-using Microsoft.Extensions.Azure;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
@@ -10,42 +8,33 @@ using System.Linq;
 namespace Ahsoka.Services.Device;
 
 [ExcludeFromCodeCoverage]
-internal class DesktopServiceImplementation : IDeviceServiceImplementation
+internal class DesktopServiceImplementation : DeviceServiceImplementation
 {
     UsbInfo usbInfo = new UsbInfo() { Mode = UsbMode.Host };
     private Action<DeviceMessageTypes.Ids, object, byte[]> sendNotificationHandler;
-    private DeviceList deviceList;
 
-    public void Init(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
+    internal override void OnInit(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, DeviceList list)
     {
         sendNotificationHandler = sendNotification;
-        deviceList = new DeviceList()
-        {
-            Devices = { new DeviceInfo() { DeviceType = DeviceTypes.OnboardWifiModule, Id = 1234 } }
-        };
-     }
-
-    public DeviceList HandleGetDevices(DeviceInfoRequest deviceInfoRequest)
-    {
-        DeviceList list = new DeviceList();
-        foreach (var item in deviceList.Devices)
-        {
-            var services = DeviceInfo.GetSupportedServices(item.DeviceType);
-            if (deviceInfoRequest.FeatureSearch == SupportedFeatures.FeaturesUnknown  || services.Contains(deviceInfoRequest.FeatureSearch))
-                list.Devices.Add(item);
-        }
-        return deviceList;
+        if (list.Devices.Count == 0)
+            list.Devices.Add(new DeviceInfo() { DeviceType = DeviceTypes.OnboardWifiModule, Id = 1234, State = DeviceState.Ready });
     }
 
-    public UsbInfo GetUsbInfo()
+
+    internal override UsbInfo GetUsbInfo()
     {
         // Not Implemented
         return usbInfo;
     }
 
-    public void SetUsbInfo(UsbInfo usbInfo)
+    internal override void SetUsbInfo(UsbInfo usbInfo)
     {
         this.usbInfo = usbInfo;
+    }
+
+    internal override void SetUsbRoleMode(UsbMode mode)
+    {
+
     }
 
     private static string GetWMICValue(string args)
@@ -64,9 +53,9 @@ internal class DesktopServiceImplementation : IDeviceServiceImplementation
         return output.Substring(output.IndexOf("\r\n")).Replace("\r", "").Replace("\n", "").Trim();
     }
 
-    void IDeviceServiceImplementation.SetRS485Config(RS485ConfigNotification serial_rs485_config) { }
+    internal override void SetRS485Config(RS485ConfigNotification serial_rs485_config) { }
 
-    public TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen)
+    internal override TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen)
     {
         var response = new TouchTuneInfoReply()
         {
@@ -76,8 +65,4 @@ internal class DesktopServiceImplementation : IDeviceServiceImplementation
         return response;
     }
 
-    public DeviceHandlerBase GetDeviceHandler(DeviceInfo deviceInfo)
-    {
-        return DeviceHandlerBase.GetDeviceHandler(deviceInfo.DeviceType);
-    }
 }

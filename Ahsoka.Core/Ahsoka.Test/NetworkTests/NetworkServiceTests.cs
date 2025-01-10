@@ -21,6 +21,39 @@ public class NetworkServiceTest : LinearTestBase
     readonly AutoResetEvent disconnectComplete = new(false);
     public TestContext TestContext { get; set; }
 
+    [TestMethod]
+    public void TestCellularService()
+    {
+        // Start NetworkService
+        AutoResetEvent reset = new(false);
+
+        // Start client for NetworkService
+        var cellService = new CellularServiceClient();
+
+        cellService.NotificationReceived += CellService_NotificationReceived;
+
+        // Find Adapter that Supports This Service
+        var adapterInfo = cellService.GetAdapters().Adapters.FirstOrDefault();
+        if (adapterInfo != null)
+        {
+            cellService.StartNetwork(new() { AdapterId = adapterInfo.AdapterId, Apn="Generic"});
+
+            connectComplete.WaitOne(4000);
+
+            var networkInfo = cellService.GetNetworkInformation(adapterInfo);
+
+            cellService.StopNetwork(adapterInfo);
+
+        }
+        // Stop the Runtimes
+        AhsokaRuntime.Default.StopAllEndPoints();
+    }
+
+    private void CellService_NotificationReceived(object sender, AhsokaClientBase<CellularMessageTypes.Ids>.AhsokaNotificationArgs e)
+    {
+        if(e.TransportId == CellularMessageTypes.Ids.NetworkStateChanged)
+            connectComplete.Set();
+    }
 
     [TestMethod]
     public void TestNetworkService()

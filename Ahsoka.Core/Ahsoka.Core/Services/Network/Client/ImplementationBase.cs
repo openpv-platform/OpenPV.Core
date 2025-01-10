@@ -1,4 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
+using Azure;
 using System;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -97,7 +98,7 @@ internal abstract class ImplementationBase
             OnDisconnect(messageHeader, adapterId);
     }
 
-    internal IPInfo GetIPInfo(AdapterRequest adapterRequest)
+    internal static IPInfo GetIPInfo(AdapterRequest adapterRequest)
     {
         IPInfo ipInfo = new();
         foreach (NetworkInterface netif in NetworkInterface.GetAllNetworkInterfaces())
@@ -125,9 +126,7 @@ internal abstract class ImplementationBase
 
         }
 
-        // Update IPAddress 
-        this.NetworkService.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, ipInfo.IPAddress);
-
+       
         return ipInfo;
     }
 
@@ -145,8 +144,11 @@ internal abstract class ImplementationBase
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Waiting for IPAddress - {timeout} Remaining");
                 var info = GetIPInfo(new AdapterRequest() { AdapterId = connectionRequest.AdapterId });
-
+                
                 ipAddressFound = !String.IsNullOrEmpty(info.IPAddress);
+
+                if (ipAddressFound)    // Update IPAddress 
+                    this.NetworkService.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, info.IPAddress); 
 
                 if (!ipAddressFound)
                     Thread.Sleep(1000);
@@ -155,6 +157,10 @@ internal abstract class ImplementationBase
 
                 timeout--;
             }
+
+
+        
+
         }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Returning from Wait For WiFi {ipAddressFound}");

@@ -142,11 +142,15 @@ public sealed class WiFiNetworkManager
     {
         if (wifiClient == null)
             wifiClient = new WiFiClientServiceClient();
+
         this.wifiClient = wifiClient;
 
-        if ( deviceClient == null )
+        if (deviceClient == null)
             deviceClient = new DeviceServiceClient();
+
         this.deviceClient = deviceClient;
+        this.deviceClient.NotificationReceived += DeviceClient_NotificationReceived;
+        this.deviceClient.EnableDeviceNotifications();
 
         this.dispatcher = dispatcher;
 
@@ -155,15 +159,6 @@ public sealed class WiFiNetworkManager
         else
             this.wifiClient.NotificationReceived += HandleDataMessage; // use Normal Message Routing
 
-        // Start Network Async...for performance reasons.
-        var networkReady = Task.Run(() =>
-        {
-            using var stopwatch = new AhsokaStopwatch("Start Networking");
-            var result = ConfigureAdapter();
-            if (!result)
-                ConnectionStateChanged?.Invoke(this, ConnectionState);
-
-        });
     }
 
     /// <summary>
@@ -353,26 +348,47 @@ public sealed class WiFiNetworkManager
         ConnectionStateChanged?.Invoke(this, ConnectionState);
     }
 
-    private bool ConfigureAdapter()
+    private void DeviceClient_NotificationReceived(object sender, AhsokaClientBase<DeviceMessageTypes.Ids>.AhsokaNotificationArgs e)
     {
+        if (e.TransportId == DeviceMessageTypes.Ids.OnboardDeviceReady)
+        {
+            DeviceInfo info = e.NotificationObject as DeviceInfo;
+            if (info.DeviceType == DeviceTypes.OnboardWifiModule || info.DeviceType == DeviceTypes.OnboardWirelessComboModule)
+            {
+                if (!AdapterEnabled)
+                {
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"OnboardDeviceReady Ready Receieved, Enabling Adapter if Needed {info.State}");
+              
+                    if (info.State != DeviceState.Enabled)
+                        deviceClient.EnableDevice(info);
+                    else if (info.State == DeviceState.Enabled)
+                        InitWiFiAdapter(); // Enabled Already
+                }
+            }
+        }
+        else if (e.TransportId == DeviceMessageTypes.Ids.DeviceEnabled)
+        {
+            DeviceInfo info = e.NotificationObject as DeviceInfo;
+            if (info.DeviceType == DeviceTypes.OnboardWifiModule || info.DeviceType == DeviceTypes.OnboardWirelessComboModule)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"WiFi Enabled Receieved, Configuring Wireless");
+                InitWiFiAdapter();
+            }
+        }
+    }
+
+    private void InitWiFiAdapter()
+    {
+        // Enable WiFi
         lock (wifiClient)
         {
-            // See if we have a WiFiClient
-            var listOfDevices = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch =  SupportedFeatures.Wifi });
-            var wiFiDevice = listOfDevices.Devices.FirstOrDefault();
-            if (wiFiDevice == null)
-                return false;
-
-            // Enable te Adapter
-            deviceClient.EnableDevice(wiFiDevice);
-
-            var adapterList= wifiClient.GetAdapters(4000);
+            var adapterList = wifiClient.GetAdapters(4000);
             if (adapterList == null || adapterList.Adapters.Count == 0)
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"No Adapter Found Adapter:{adapterList != null} IsAvailable: {adapterList.Adapters.Count == 0}");
-                return false; // No Working Adapter
+                return; // No Working Adapter
             }
-            
+
             var adapter = adapterList.Adapters[0];
             defaultAdapterRequest = new AdapterRequest() { AdapterId = adapter?.AdapterId };
 
@@ -393,10 +409,10 @@ public sealed class WiFiNetworkManager
                 networkProfilesList.Add(item);
 
             // Do Initial Discovery
-            var networks =  wifiClient.DiscoverNetworks(defaultAdapterRequest);
+            var networks = wifiClient.DiscoverNetworks(defaultAdapterRequest);
             UpdateNetworkList(networks);
-            
-            return adapter != null;
+
+            deviceClient.NotificationReceived -= DeviceClient_NotificationReceived;
         }
     }
 

@@ -23,14 +23,18 @@ message DeviceMessageTypes
 
 		GET_DEVICES = 10;
 
-		ENABLE_DEVICE = 11;
-        DISABLE_DEVICE = 12;
+		ENABLE_DEVICE_NOTIFICATIONS = 11;
 
-		USB_DEVICE_ADDED = 13;
-		USB_DEVICE_REMOVED = 14;
+		ENABLE_DEVICE = 12;
+        DISABLE_DEVICE = 13;
 
-		DEVICE_ENABLED = 15;
-		DEVICE_DISABLED = 16;
+		ONBOARD_DEVICE_READY = 14;
+	
+		USB_DEVICE_ADDED = 15;
+		USB_DEVICE_REMOVED = 16;
+
+		DEVICE_ENABLED = 17;
+		DEVICE_DISABLED = 18;
 	}
 }
 
@@ -48,6 +52,14 @@ message DeviceInfoRequest
 message DeviceList
 {
 	repeated DeviceInfo devices = 1;
+}
+
+message UsbDeviceInfo
+{
+	string device_path = 1;
+	DeviceInfo device_info = 2;
+	uint32 vendor_id = 3;
+	uint32 product_id = 4;
 }
 
 //---------------------------------
@@ -72,8 +84,9 @@ enum DeviceLocation
 enum DeviceState
 {
 	NO_STATE = 0;
-    DISABLED = 1;
-    ENABLED = 2;
+	READY = 1;
+    DISABLED = 2;
+    ENABLED = 3;
 }
 
 // We aren't going to enumerate every field in the rs485_config because the only other field is padding.

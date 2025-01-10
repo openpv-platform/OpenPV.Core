@@ -1,9 +1,12 @@
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device.Handlers;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Usb.Events;
+using Globalization = System.Globalization.NumberStyles;
 
 namespace Ahsoka.Services.Device;
 
@@ -14,15 +17,16 @@ namespace Ahsoka.Services.Device;
 public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
 {
     #region Fields
-
     IUsbEventWatcher usbEventWatcher;
     internal const string Name = "DeviceService";
-    readonly IDeviceServiceImplementation coreInterop;
+    readonly DeviceServiceImplementation coreInterop;
     Dictionary<uint,DeviceState> devices = new();
+    bool notificationsEnabled = false;
+    Dictionary<string,UsbDeviceId> activeDevices = new ();
     #endregion
 
     #region Methods
-    internal static IDeviceServiceImplementation GetInterop()
+    internal static DeviceServiceImplementation GetInterop()
     {
         return SystemInfo.CurrentPlatform switch
         {
@@ -44,7 +48,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
    
     }
 
- 
+
 
     /// <summary>
     /// CTOR Accepting Custom Configuration
@@ -55,13 +59,14 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     {
         using var stopwatch = new AhsokaStopwatch("Create DeviceService");
         coreInterop = GetInterop();
-        coreInterop.Init(SendNotification);
+        coreInterop.Init(SendNotificationIfEnabled);
         stopwatch.ResetTiming("Init Completed");
+    }
 
-        usbEventWatcher = new UsbEventWatcher(false, true, false, false);
-        usbEventWatcher.UsbDeviceRemoved += (_, device) => UsbRemoved(device); 
-        usbEventWatcher.UsbDeviceAdded += (_, device) => UsbAdded(device); 
-
+    private void SendNotificationIfEnabled(DeviceMessageTypes.Ids transportId, Object message, byte[] specificClient = null)
+    {
+        if (notificationsEnabled)
+            SendNotification(transportId, message, specificClient);
     }
 
     /// <summary>
@@ -72,6 +77,10 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     {
         switch (request.TransportId)
         {
+            case DeviceMessageTypes.Ids.EnableDeviceNotifications:
+                HandleEnableNotifications(request);
+                break;
+
             case DeviceMessageTypes.Ids.GetUsbInfo:
                 HandleGetUsbInfo(request);
                 break;
@@ -102,9 +111,39 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
         }
     }
 
+    private void HandleEnableNotifications(AhsokaServiceRequest request)
+    {
+        if (!notificationsEnabled && !SystemInfo.IsDesktop())
+        {
+            usbEventWatcher = new UsbEventWatcher(true, true, false, false);
+            usbEventWatcher.UsbDeviceRemoved += (_, device) => UsbRemoved(device);
+            usbEventWatcher.UsbDeviceAdded += (_, device) => UsbAdded(device);
+        }
+
+        notificationsEnabled = true;
+
+        // Send Notifications to Clients for Existing Onboard Devices
+        foreach (var item in coreInterop.HandleGetDevices().Devices)
+            if (item.State != DeviceState.NoState)
+                if (item.DeviceType.ToString().ToLower().Contains("onboard")) // USB Devices will come from the USB Watcher
+                    SendNotification(DeviceMessageTypes.Ids.OnboardDeviceReady, item, GetClientNotificationId(request.Header.ClientId));
+
+        SendResponse(request, new EmptyNotification());
+    }
+
     private void HandleGetDevices(AhsokaServiceRequest request)
     {
-        var result = coreInterop.HandleGetDevices(request.Message as DeviceInfoRequest);
+        var requestInfo = request.Message as DeviceInfoRequest;
+        var result = coreInterop.HandleGetDevices();
+
+        DeviceList list = new DeviceList();
+        foreach (var item in result.Devices)
+        {
+            var services = DeviceInfo.GetSupportedServices(item.DeviceType);
+            if (requestInfo.FeatureSearch == SupportedFeatures.FeaturesUnknown || services.Contains(requestInfo.FeatureSearch))
+                list.Devices.Add(item);
+        }
+
         foreach (var device in result.Devices)
             if (devices.TryGetValue(device.Id, out var state))
                 device.State = state;
@@ -114,10 +153,9 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
 
     private void HandleDeviceEnabled(AhsokaServiceRequest request)
     {
-       
         var deviceInfo = request.Message as DeviceInfo;
         var handler =  coreInterop.GetDeviceHandler(deviceInfo);
-        handler.EnableDevice(deviceInfo, this.SendNotification);
+        handler.EnableDevice(deviceInfo, this.SendNotificationIfEnabled);
         devices[deviceInfo.Id] = DeviceState.Enabled;
         SendResponse(request);
     }
@@ -126,7 +164,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     {
         var deviceInfo = request.Message as DeviceInfo;
         var handler = coreInterop.GetDeviceHandler(deviceInfo);
-        handler.DisableDevice(deviceInfo, this.SendNotification);
+        handler.DisableDevice(deviceInfo, this.SendNotificationIfEnabled);
         devices[deviceInfo.Id] = DeviceState.Disabled;
         SendResponse(request);
     }
@@ -154,15 +192,41 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
         SendResponse(message, response);
     }
 
-
     private void UsbAdded(UsbDevice device)
     {
-        SendNotification(DeviceMessageTypes.Ids.UsbDeviceAdded, new DeviceInfo());
+        ushort.TryParse(device.ProductID, Globalization.HexNumber, null, out ushort pid);
+        ushort.TryParse(device.VendorID, Globalization.HexNumber, null, out ushort vid);
+       
+        var usbDevice = new UsbDeviceId() { ProductId = pid, VendorId = vid };
+        var deviceInfo = coreInterop.GetUsbDevice(usbDevice);
+        if (deviceInfo != null)
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device Added VendorId: {vid} Product: {pid} - {device.DeviceName}");
+
+            activeDevices[device.DeviceName] = usbDevice;
+            SendNotificationIfEnabled(DeviceMessageTypes.Ids.UsbDeviceAdded, new UsbDeviceInfo() { ProductId = (ushort)pid, VendorId = (ushort)vid, DevicePath = device.DeviceName, DeviceInfo = deviceInfo });
+        }
     }
 
     private void UsbRemoved(UsbDevice device)
     {
-        SendNotification(DeviceMessageTypes.Ids.UsbDeviceRemoved, new DeviceInfo());
+        if (activeDevices.TryGetValue(device.DeviceName, out var usbDevice))
+        {
+            activeDevices.Remove(device.DeviceName);
+
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device Removed VendorId: {usbDevice.VendorId} Product: {usbDevice.VendorId} - {device.DeviceName}");
+
+            var deviceInfo = coreInterop.GetUsbDevice(usbDevice);
+            if (deviceInfo != null)
+                SendNotificationIfEnabled(DeviceMessageTypes.Ids.UsbDeviceRemoved, new UsbDeviceInfo() { ProductId = (ushort)usbDevice.ProductId, VendorId = (ushort)usbDevice.VendorId, DevicePath = device.DeviceName, DeviceInfo = deviceInfo });
+        }
     }
     #endregion
+}
+
+
+struct UsbDeviceId
+{
+    public ushort VendorId;
+    public ushort ProductId;
 }

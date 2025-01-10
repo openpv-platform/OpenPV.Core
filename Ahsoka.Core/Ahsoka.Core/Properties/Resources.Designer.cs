@@ -236,6 +236,16 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] CellularService {
+            get {
+                object obj = ResourceManager.GetObject("CellularService", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] CMakeLists {
             get {
                 object obj = ResourceManager.GetObject("CMakeLists", resourceCulture);
@@ -467,7 +477,7 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;flamencist@mail.ru&quot;],&quot;Description&quot;:&quot;Doxygen.exe for build documentation.&quot;,&quot;LicenseUrl&quot;:&quot;&quot;,&quot;LicenseType&quot;:&quot;&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;EnovationCloud.Core&quot;,&quot;PackageVersion&quot;:&quot;4.8.0&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;EnovationCloud.Core&quot;],&quot;Description&quot;:&quot;Package Description&quot;,&quot;LicenseUrl&quot;:&quot;https://www.nuget.org/packages/EnovationCloud.Core/4.8.0/License&quot;,&quot;LicenseType&quot;:&quot;LICEN [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;flamencist@mail.ru&quot;],&quot;Description&quot;:&quot;Doxygen.exe for build documentation.&quot;,&quot;LicenseUrl&quot;:&quot;&quot;,&quot;LicenseType&quot;:&quot;&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;EnovationCloud.Core&quot;,&quot;PackageVersion&quot;:&quot;4.9.0&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;EnovationCloud.Core&quot;],&quot;Description&quot;:&quot;Package Description&quot;,&quot;LicenseUrl&quot;:&quot;https://www.nuget.org/packages/EnovationCloud.Core/4.9.0/License&quot;,&quot;LicenseType&quot;:&quot;LICEN [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Licenses {
             get {

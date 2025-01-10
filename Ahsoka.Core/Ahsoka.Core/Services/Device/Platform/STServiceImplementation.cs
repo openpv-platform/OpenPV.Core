@@ -1,5 +1,6 @@
 ﻿using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.Device.Handlers;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
@@ -7,71 +8,40 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Device;
 
 [ExcludeFromCodeCoverage]
-internal class STServiceImplementation : IDeviceServiceImplementation
+internal class STServiceImplementation : DeviceServiceImplementation
 {
     Action<DeviceMessageTypes.Ids, object, byte[]> sendNotificationHandler;
     Task task = null;
-    DeviceList deviceList;
     CancellationTokenSource tokenSource = null;
     string currentMountPoint = "";
     readonly string[] logoFileTypes = { ".png", ".jpg" };
 
-    public void Init(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
+    internal override void OnInit(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, DeviceList deviceList)
     {
         sendNotificationHandler = sendNotification;
 
-        string fileName = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(Ahsoka.System.Hardware.RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, "DeviceConfiguration.pbuff");
-        if (File.Exists(fileName) && AppDomain.CurrentDomain.FriendlyName != "Ahsoka.Installer.UI")
-        {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Device Setup Path Found");
-            try
-            {
-                FileStream fileStream = File.OpenRead(fileName);
-                deviceList = ProtoBuf.Serializer.Deserialize<DeviceList>(fileStream);
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device Service Loaded with {deviceList.Devices.Count} Devices.");
-            }
-            catch (Exception ex)
-            {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, ex.Message);
-            }
-        }
-        else
+        // Fall back to Old Combo Module
+        if (deviceList.Devices.Count == 0)
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Device Setup Path Not Found, Adding Default Modules");
-            // Fall back to Old Combo Module
-            deviceList = new DeviceList()
+
+            deviceList.Devices.Add(new DeviceInfo()
             {
-                Devices = { new DeviceInfo()
-                {
-                     Id= (uint)HashCode32.GetHashCode32("ESP32 Onboard Combo Module"),
-                     Name = "ESP32 Onboard Combo Module",
-                     DeviceType = DeviceTypes.OnboardWirelessComboModule
-                } }
-            };
+                Id = (uint)HashCode32.GetHashCode32("ESP32 Onboard Combo Module"),
+                Name = "ESP32 Onboard Combo Module",
+                DeviceType = DeviceTypes.OnboardWirelessComboModule
+            });
         }
-
     }
 
-    public DeviceList HandleGetDevices(DeviceInfoRequest deviceInfoRequest)
-    {
-        DeviceList list = new DeviceList();
-        foreach (var item in deviceList.Devices)
-        {
-            var services = DeviceInfo.GetSupportedServices(item.DeviceType);
-            if (deviceInfoRequest.FeatureSearch == SupportedFeatures.FeaturesUnknown || services.Contains(deviceInfoRequest.FeatureSearch))
-                list.Devices.Add(item);
-        }
-        return list;
-    }
-
-    public UsbInfo GetUsbInfo()
+  
+    internal override UsbInfo GetUsbInfo()
     {
         UsbInfo usbInfo = new()
         {
@@ -89,7 +59,7 @@ internal class STServiceImplementation : IDeviceServiceImplementation
         return usbInfo;
     }
 
-    public void SetUsbInfo(UsbInfo usbInfo)
+    internal override void SetUsbInfo(UsbInfo usbInfo)
     {
         if (usbInfo.Mode == UsbMode.Host)
         {
@@ -145,7 +115,7 @@ internal class STServiceImplementation : IDeviceServiceImplementation
         }
     }
 
-    void IDeviceServiceImplementation.SetRS485Config(RS485ConfigNotification config)
+    internal override void SetRS485Config(RS485ConfigNotification config)
     {
         // We are converting the protobuf structure back to it's base type to set the config locally.
         var serial_rs485_config = new SerialRS485()
@@ -158,7 +128,7 @@ internal class STServiceImplementation : IDeviceServiceImplementation
         RS485ConfigUtility.Configure(serial_rs485_config);
     }
 
-    public TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen)
+    internal override TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen)
     {
         var response = new TouchTuneInfoReply()
         {
@@ -203,7 +173,7 @@ internal class STServiceImplementation : IDeviceServiceImplementation
         return response;
     }
 
-    private void SetUsbRoleMode(UsbMode mode)
+    internal override void SetUsbRoleMode(UsbMode mode)
     {
         int returnCode = 0;
         returnCode = USBRoleSwap.ChangeModes(mode);

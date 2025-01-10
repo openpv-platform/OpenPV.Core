@@ -61,7 +61,7 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
                         message.Append(headerStream.ToArray());
                         message.Append(request.MessageData);
 
-                        var result = socket.TrySendMultipartMessage(message);
+                        var result = socket?.TrySendMultipartMessage(message);
 
                         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client Message Completed from {endPoint.ServiceConfig.ServiceName} ");
                     }

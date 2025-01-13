@@ -63,24 +63,44 @@
 		</StackPanel>
 
 		<Grid ColumnDefinitions="205,auto,*" 
-			  RowDefinitions="*,auto,auto,20" Margin="20,0">
+			  RowDefinitions="auto,*,auto,auto,20" Margin="20,0">
 
-			<Border Grid.ColumnSpan="3" Grid.Row="1" BorderBrush="Gainsboro"
+
+			<Grid 	Grid.ColumnSpan="3" Grid.Row="0" ColumnDefinitions="2*,3*" RowDefinitions="auto,*">
+				<TextBlock  FontSize="16"  Margin="18,10,0,0" Foreground="SteelBlue"
+							Text="Device Service Startup Configuration" VerticalAlignment="Top"/>
+
+				<StackPanel Grid.Row="1" Orientation="Horizontal" Margin="45,15,0,0">
+					<TextBlock Text="Primary USB Startup:"  Margin="0,3,13,0"  ToolTip.Tip="Specifies the default state when the Device Service Starts"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+					<ComboBox Height="28" Grid.Row="0" Grid.Column="3" FontSize="12"
+							  SelectedItem="{Binding UsbStartStatePrimary}" ItemsSource="{Binding UsbStates}"
+							  HorizontalAlignment="Stretch" Margin="3" Width="150"
+							  HorizontalContentAlignment="Left" 
+							  VerticalAlignment="Stretch" BorderBrush="Gray"/>
+					<TextBlock Text="Secondary USB Startup:" ToolTip.Tip="Specifies the default state when the Device Service Starts" Margin="10,3,13,0"  VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="13" TextWrapping="1" />
+					<ComboBox Height="28" Grid.Row="0" Grid.Column="3" FontSize="12"
+							  SelectedItem="{Binding UsbStartStateSecondary}" ItemsSource="{Binding UsbStates}"
+							  HorizontalAlignment="Stretch" Margin="3" Width="150"
+							  HorizontalContentAlignment="Left" 
+							  VerticalAlignment="Stretch" BorderBrush="Gray"/>
+				</StackPanel>
+
+			</Grid>
+			
+			<Border Grid.ColumnSpan="3" Grid.Row="2" BorderBrush="Gainsboro"
 							BorderThickness="1" Background="WhiteSmoke"
 							Margin="20,-10,20,20" Padding="10,10,10,10"
 							HorizontalAlignment="Stretch">
 				<TextBlock Grid.Row="2" TextWrapping="Wrap" Text="Configure Optional Devices in your Hardware.  Once enabled here, you can start and stop your hardware from the DeviceService.   In addition, this service provides notification when new hardware (USB) has been added to your running system."
 					 Foreground="SteelBlue" HorizontalAlignment="Left" />
 			</Border>
-			
-			
 
 			<Border Margin="0,20,0,0" BorderBrush="Gainsboro" BorderThickness="0"
-					Grid.ColumnSpan="3" Grid.Row="0"
+					Grid.ColumnSpan="3" Grid.Row="1"
 					HorizontalAlignment="Stretch">
 				<Grid ColumnDefinitions="2*,3*" RowDefinitions="auto,*">
 					<TextBlock  FontSize="16"  Margin="18,10,0,0" Foreground="SteelBlue"
-								Text="Configured Hardware in DeviceService" VerticalAlignment="Top"/>
+								Text="Supported Devices for DeviceService" VerticalAlignment="Top"/>
 					<Border VerticalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="3"
 							Margin="20,5,20,20" BorderBrush="Gainsboro" BorderThickness="1">
 						<ListBox  ItemsSource="{Binding HardwareInfoList}" SelectedItem="{Binding SelectedHardwareInfo}" Background="Transparent" >

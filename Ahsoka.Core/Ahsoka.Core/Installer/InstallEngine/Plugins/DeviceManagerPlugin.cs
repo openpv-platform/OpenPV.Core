@@ -18,23 +18,11 @@ internal class DeviceManagerPlugin : InstallerPlugin
         PackageInformation info,
         IProgress<PackageProgressInfo> progress)
     {
-        DeviceList list = new();
-        foreach (var item in info.HardwareConfiguration.HardwareItems)
-        {
-            list.Devices.Add(new DeviceInfo()
-            {
-                Id = (uint)HashCode32.GetHashCode32(item.Name),
-                CustomStartup = item.CustomStartup,
-                Name = item.Name,
-                State = DeviceState.NoState,
-                DeviceType = item.DeviceType
-            });
-
-        }
        
-        var configJsonContents = JsonUtility.Serialize(list);
+       
+        var configJsonContents = JsonUtility.Serialize(info.HardwareConfiguration);
         var protobufferStream = new MemoryStream();
-        ProtoBuf.Serializer.Serialize(protobufferStream, list);
+        ProtoBuf.Serializer.Serialize(protobufferStream, info.HardwareConfiguration);
 
         additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/DeviceConfiguration.pbuff"] = protobufferStream.ToArray();
         additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/DeviceConfiguration.pbuff.json"] = Encoding.UTF8.GetBytes(configJsonContents);

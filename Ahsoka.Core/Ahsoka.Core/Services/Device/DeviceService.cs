@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Usb.Events;
+using static NetMQ.NetMQSelector;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 using Globalization = System.Globalization.NumberStyles;
 
 namespace Ahsoka.Services.Device;
@@ -75,39 +77,42 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     /// <param name="request"></param>
     protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
-        switch (request.TransportId)
+        lock (devices)
         {
-            case DeviceMessageTypes.Ids.EnableDeviceNotifications:
-                HandleEnableNotifications(request);
-                break;
+            switch (request.TransportId)
+            {
+                case DeviceMessageTypes.Ids.EnableDeviceNotifications:
+                    HandleEnableNotifications(request);
+                    break;
 
-            case DeviceMessageTypes.Ids.GetUsbInfo:
-                HandleGetUsbInfo(request);
-                break;
+                case DeviceMessageTypes.Ids.GetUsbInfo:
+                    HandleGetUsbInfo(request);
+                    break;
 
-            case DeviceMessageTypes.Ids.SetUsbInfo:
-                HandleSetUsbInfo(request);
-                break;
+                case DeviceMessageTypes.Ids.SetUsbInfo:
+                    HandleSetUsbInfo(request);
+                    break;
 
-            case DeviceMessageTypes.Ids.SetSerialConfig:
-                HandleSetRS485Config(request);
-                break;
+                case DeviceMessageTypes.Ids.SetSerialConfig:
+                    HandleSetRS485Config(request);
+                    break;
 
-            case DeviceMessageTypes.Ids.UpdateTouchTune:
-                HandleUpdateTouchscreen(request);
-                break;
+                case DeviceMessageTypes.Ids.UpdateTouchTune:
+                    HandleUpdateTouchscreen(request);
+                    break;
 
-            case DeviceMessageTypes.Ids.GetDevices:
-                HandleGetDevices(request);
-                break;
+                case DeviceMessageTypes.Ids.GetDevices:
+                    HandleGetDevices(request);
+                    break;
 
-            case DeviceMessageTypes.Ids.EnableDevice:
-                HandleDeviceEnabled(request);
-                break;
+                case DeviceMessageTypes.Ids.EnableDevice:
+                    HandleDeviceEnabled(request);
+                    break;
 
-            case DeviceMessageTypes.Ids.DisableDevice:
-                HandleDeviceDisabled(request);
-                break;
+                case DeviceMessageTypes.Ids.DisableDevice:
+                    HandleDeviceDisabled(request);
+                    break;
+            }
         }
     }
 
@@ -125,8 +130,17 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
         // Send Notifications to Clients for Existing Onboard Devices
         foreach (var item in coreInterop.HandleGetDevices().Devices)
             if (item.State != DeviceState.NoState)
+            {
                 if (item.DeviceType.ToString().ToLower().Contains("onboard")) // USB Devices will come from the USB Watcher
                     SendNotification(DeviceMessageTypes.Ids.OnboardDeviceReady, item, GetClientNotificationId(request.Header.ClientId));
+
+                // Execute Auto Enable
+                if (item.State != DeviceState.Enabled && item.AutoEnable)
+                {
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Auto-Enabling  {item.Name}");
+                    coreInterop.GetDeviceHandler(item).EnableDevice(item, SendNotificationIfEnabled);
+                }
+            }
 
         SendResponse(request, new EmptyNotification());
     }
@@ -171,7 +185,8 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
 
     private void HandleGetUsbInfo(AhsokaServiceRequest message)
     {
-        SendResponse(message, coreInterop.GetUsbInfo());
+        var usbInfo = coreInterop.GetUsbInfo();
+        SendResponse(message, usbInfo);
     }
 
     private void HandleSetUsbInfo(AhsokaServiceRequest message)
@@ -205,6 +220,17 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
 
             activeDevices[device.DeviceName] = usbDevice;
             SendNotificationIfEnabled(DeviceMessageTypes.Ids.UsbDeviceAdded, new UsbDeviceInfo() { ProductId = (ushort)pid, VendorId = (ushort)vid, DevicePath = device.DeviceName, DeviceInfo = deviceInfo });
+
+            if (deviceInfo.AutoEnable)
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Auto-Enabling  {deviceInfo.Name}");
+
+                var handler = coreInterop.GetDeviceHandler(deviceInfo);
+                handler.EnableDevice(deviceInfo, this.SendNotificationIfEnabled);
+                lock(devices)
+                    devices[deviceInfo.Id] = DeviceState.Enabled;
+            }
+
         }
     }
 

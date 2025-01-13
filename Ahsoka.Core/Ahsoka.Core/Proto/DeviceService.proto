@@ -43,7 +43,7 @@ message DeviceMessageTypes
 //---------------------------------
 message DeviceInfoRequest
 {
-	SupportedFeatures feature_search = 2;
+	SupportedFeatures feature_search = 1;
 }
 
 //---------------------------------
@@ -72,6 +72,7 @@ message DeviceInfo
 	DeviceState state = 4;
 	DeviceTypes device_type = 5;
 	string custom_startup = 6;
+	bool auto_enable = 7;
 }
 
 enum DeviceLocation
@@ -100,13 +101,21 @@ message RS485ConfigNotification
 // USB
 message UsbInfo
 {
-	UsbMode mode = 1;
-	string mount_point = 2;
+	UsbPort device = 1;
+	UsbMode mode = 2;
+	string mount_point = 3;
+}
+
+
+enum UsbPort
+{
+	PRIMARY = 0;
+	SECONDARY = 1;
 }
 
 enum UsbMode
 {
-	UNKNOWN = 0;
+	DEFAULT = 0;
 	HOST = 1;
 	DEVICE = 2;
 }
@@ -132,6 +141,8 @@ message TouchTuneInfoReply
 message HardwareConfiguration
 {
 	repeated HardwareItem hardware_items = 1;
+	UsbMode usb_start_state_primary = 2;
+	UsbMode usb_start_state_secondary = 3;
 }
 
 //---------------------------------
@@ -142,6 +153,7 @@ message HardwareItem
 	string name = 1;
 	DeviceTypes device_type = 2;
 	string custom_startup = 6;
+	bool auto_enable = 7;
 }
 
 

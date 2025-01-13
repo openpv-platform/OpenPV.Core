@@ -24,8 +24,14 @@ public class Program
         
         deviceServiceClient.NotificationReceived += DeviceServiceClient_NotificationReceived;
 
-        // Role Swap...TEMP CODE UNTIL DEFAULTS ARE CREATED
-        deviceServiceClient.SetUsbInfo(new UsbInfo() { Mode = UsbMode.Host });
+        // Start All Services
+        AhsokaRuntime.Default.StartEndPoints(systemServiceClient, deviceServiceClient, cellService);
+
+
+        // Note that this app is configured to role swap to "Host" in the configuration
+        // but you can do it here if you change the configuration back to Device or Default
+        // Host on Primary (Secondary on Pro) is required for handling external devices 
+        //deviceServiceClient.SetUsbInfo(new UsbInfo() { Mode = UsbMode.Host });
        
         // Startup Ready
         ApplicationContext.ReleaseStartup();
@@ -39,11 +45,25 @@ public class Program
         var modem = cellService.GetAdapters().Adapters.First();
         cellService.StopNetwork(modem);
 
+        // Use Exit to Shutdown All Services.
         ApplicationContext.Exit();
     }
 
     private static void DeviceServiceClient_NotificationReceived(object sender, AhsokaClientBase<DeviceMessageTypes.Ids>.AhsokaNotificationArgs e)
     {
+        if (e.TransportId == DeviceMessageTypes.Ids.DeviceEnabled)
+        {
+            DeviceServiceClient deviceServiceClient = sender as DeviceServiceClient;
+            DeviceInfo info = e.NotificationObject as DeviceInfo;
+
+            if (info.DeviceType == DeviceTypes.UsbCellularNetwork)
+            {
+                // Enable Cellular Modem
+                Console.WriteLine($"Starting Cell Network");
+                StartCellNetwork();
+            }
+        }
+
         if (e.TransportId == DeviceMessageTypes.Ids.UsbDeviceAdded)
         {
             DeviceServiceClient deviceServiceClient = sender as DeviceServiceClient;
@@ -52,10 +72,10 @@ public class Program
             if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularNetwork)
             { 
                 // Enable Cellular Modem
-                Console.WriteLine($"Enabling Cell Modem Device if Disabled");
-                deviceServiceClient.EnableDevice(info.DeviceInfo); // Start client for NetworkService
+                Console.WriteLine($"NOT Enabling Cell Modem Device (Using auto Enable)");
+               // deviceServiceClient.EnableDevice(info.DeviceInfo); // Start client for NetworkService
 
-                StartCellNetwork();
+                //StartCellNetwork();
             }
         }
         if (e.TransportId == DeviceMessageTypes.Ids.UsbDeviceRemoved)

@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10056",
+  "version": "4.0.1.10055",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Devices",
   "packageName": "Ahsoka.CS.Devices",
@@ -51,14 +51,18 @@
       {
         "name": "WiFi Combo Module",
         "deviceType": "OnboardWirelessComboModule",
-        "customStartup": ""
+        "customStartup": "",
+        "autoEnable": true
       },
       {
         "name": "Cellular Modem",
         "deviceType": "UsbCellularNetwork",
-        "customStartup": ""
+        "customStartup": "",
+        "autoEnable": true
       }
-    ]
+    ],
+    "usbStartStatePrimary": "Host",
+    "usbStartStateSecondary": "Default"
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,

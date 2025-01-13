@@ -1,20 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Device.Handlers;
 using Ahsoka.System;
+using Ahsoka.Utility;
 
 namespace Ahsoka.Services.Device;
 
 internal abstract class DeviceServiceImplementation
 {
     Dictionary<UsbDeviceId, KeyValuePair<DeviceInfo, DeviceHandlerBase>> usbDevices = new();
-    DeviceList deviceList;
+    DeviceList deviceList = new();
 
     internal void Init(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
     {
+        HardwareConfiguration config = null;
+
         string fileName = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(Ahsoka.System.Hardware.RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, "DeviceConfiguration.pbuff");
         if (File.Exists(fileName) && AppDomain.CurrentDomain.FriendlyName != "Ahsoka.Installer.UI")
         {
@@ -22,8 +26,8 @@ internal abstract class DeviceServiceImplementation
             try
             {
                 FileStream fileStream = File.OpenRead(fileName);
-                deviceList = ProtoBuf.Serializer.Deserialize<DeviceList>(fileStream);
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device Service Loaded with {deviceList.Devices.Count} Devices.");
+                config = ProtoBuf.Serializer.Deserialize<HardwareConfiguration>(fileStream);
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device Service Loaded with {config.HardwareItems.Count} Devices.");
             }
             catch (Exception ex)
             {
@@ -31,8 +35,20 @@ internal abstract class DeviceServiceImplementation
             }
         }
 
-        if (deviceList == null)
-            deviceList = new();
+        if (config == null)
+            config = new();
+
+        // Load Devices
+        foreach(var item in config.HardwareItems)
+            deviceList.Devices.Add(new DeviceInfo()
+            {
+                Id = (uint)HashCode32.GetHashCode32(item.Name),
+                CustomStartup = item.CustomStartup,
+                Name = item.Name,
+                State = DeviceState.NoState,
+                DeviceType = item.DeviceType,
+                AutoEnable = item.AutoEnable,
+            });
 
         OnInit(sendNotification, deviceList);
 
@@ -44,6 +60,14 @@ internal abstract class DeviceServiceImplementation
                 foreach (var usbItem in usbDeviceList)
                     usbDevices[usbItem] = new KeyValuePair<DeviceInfo, DeviceHandlerBase>(item, handler);
         }
+
+        if (config.UsbStartStatePrimary != UsbMode.Default || config.UsbStartStateSecondary != UsbMode.Default)
+            Task.Run(() =>
+            {
+                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Setting Primary USB to {config.UsbStartStatePrimary}");
+                SetUsbRoleMode(config.UsbStartStatePrimary);
+                // Secondary coming Later.
+            });
     }
    
     public DeviceInfo GetUsbDevice(UsbDeviceId id)

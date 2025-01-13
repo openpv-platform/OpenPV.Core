@@ -9,8 +9,10 @@ namespace Ahsoka.DeveloperTools;
 
 internal class HardwareViewModel : ChildViewModelBase<PackageViewModel>
 {
-    HardwareInfoViewModel selectedService;
-    
+    HardwareInfoViewModel selectedItem;
+
+    public UsbMode[] UsbStates { get; init; } = Enum.GetValues<UsbMode>();
+
     public ObservableCollection<HardwareInfoViewModel> HardwareInfoList
     {
         get;
@@ -19,10 +21,30 @@ internal class HardwareViewModel : ChildViewModelBase<PackageViewModel>
 
     public HardwareInfoViewModel SelectedHardwareInfo
     {
-        get { return selectedService; }
+        get { return selectedItem; }
         set
         {
-            selectedService = value;
+            selectedItem = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public UsbMode UsbStartStatePrimary
+    {
+        get { return ParentViewModel.PackageInfo.HardwareConfiguration.UsbStartStatePrimary; }
+        set
+        {
+            ParentViewModel.PackageInfo.HardwareConfiguration.UsbStartStatePrimary = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public UsbMode UsbStartStateSecondary
+    {
+        get { return ParentViewModel.PackageInfo.HardwareConfiguration.UsbStartStateSecondary; }
+        set
+        {
+            ParentViewModel.PackageInfo.HardwareConfiguration.UsbStartStateSecondary = value;
             OnPropertyChanged();
         }
     }
@@ -96,6 +118,18 @@ internal class HardwareInfoViewModel : ChildViewModelBase<HardwareViewModel>
 
     public DeviceTypes[] DeviceTypes { get; init; } = Enum.GetValues<DeviceTypes>();
 
+    public bool AutoEnableDevice
+    {
+        get
+        {
+            return HardwareModel.AutoEnable;
+        }
+        set
+        {
+            HardwareModel.AutoEnable = value;
+            OnPropertyChanged();
+        }
+    }
 
     public DeviceTypes DeviceType
     {

@@ -54,7 +54,7 @@ internal class STServiceImplementation : DeviceServiceImplementation
         else if ("none" == usbRole)
             usbInfo.Mode = UsbMode.Device;
         else
-            usbInfo.Mode = UsbMode.Unknown;
+            usbInfo.Mode = UsbMode.Default;
 
         return usbInfo;
     }

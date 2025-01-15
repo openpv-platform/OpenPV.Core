@@ -27,8 +27,9 @@ internal class STServiceImplementation : DeviceServiceImplementation
         sendNotificationHandler = sendNotification;
 
         // Apply Defaults (Support WiFi and Cell Modems if No Device File Found
-        if (config.HardwareItems.Count == 0 && isInstaller)
+        if (isInstaller)
         {
+            config.HardwareItems.Clear();
             config.UsbStartStatePrimary = UsbMode.Device;
 
             config.HardwareItems.Add(new()

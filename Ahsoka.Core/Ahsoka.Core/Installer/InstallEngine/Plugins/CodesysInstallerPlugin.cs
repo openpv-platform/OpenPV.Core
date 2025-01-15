@@ -38,7 +38,7 @@ internal class CodesysInstallerPlugin : InstallerPlugin
         }
     }
 
-    internal override void PrepareApplicationArea(ref string buildLocation, 
+    public override void PrepareApplicationArea(ref string buildLocation, 
         PackageInformation info, 
         IProgress<PackageProgressInfo> progress = null)
     {
@@ -86,8 +86,8 @@ internal class CodesysInstallerPlugin : InstallerPlugin
         attributes[StartupInstallerPlugin.OverrideApplicationName] = "codesyscontrol";                //ExecStart=/usr/bin/codesys/codesyscontrol
     }
 
-   
-    internal override void CleanupApplication(string buildLocation, PackageInformation info, IProgress<PackageProgressInfo> progress)
+
+    public override void CleanupApplication(string buildLocation, PackageInformation info, IProgress<PackageProgressInfo> progress)
     {
         if (info.ApplicationType != ApplicationType.CODESYS)
             return;
@@ -98,7 +98,7 @@ internal class CodesysInstallerPlugin : InstallerPlugin
             Directory.Delete(buildLocation, true);
     }
 
-    internal override void ModifyTargetInstall(string installDirectory, string applicationName)
+    public override void ModifyTargetInstall(string installDirectory, string applicationName)
     {
         // Read the CODESYSControl.cfg File adn Point to our new App.
         foreach (var file in Directory.EnumerateFiles("/usr/bin/codesys", "CODESYSControl*.cfg"))

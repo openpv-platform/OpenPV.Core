@@ -28,7 +28,10 @@ internal class Esp32Handler : DeviceHandlerBase
         {
             ActivateESPModule();
             deviceInfo.State = GetDeviceState();
-            sendNotification(DeviceMessageTypes.Ids.OnboardDeviceReady, deviceInfo,null);
+            sendNotification(DeviceMessageTypes.Ids.OnboardDeviceReady, deviceInfo, null);
+            if(deviceInfo.State == DeviceState.Enabled)
+                sendNotification(DeviceMessageTypes.Ids.DeviceEnabled, deviceInfo, null);
+
         });
 
         return new();

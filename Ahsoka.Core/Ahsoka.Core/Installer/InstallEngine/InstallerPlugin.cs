@@ -33,7 +33,13 @@ public class InstallerPlugin
     /// <param name="token"></param>
     public virtual void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token) { }
 
-    internal virtual void PrepareApplicationArea(ref string buildLocation, PackageInformation info, IProgress<PackageProgressInfo> progress) { }
+    /// <summary>
+    /// Prepare the Application Folder Prior to adding to Package
+    /// </summary>
+    /// <param name="buildLocation"></param>
+    /// <param name="info"></param>
+    /// <param name="progress"></param>
+    public virtual void PrepareApplicationArea(ref string buildLocation, PackageInformation info, IProgress<PackageProgressInfo> progress) { }
 
     /// <summary>
     /// Add any additional files required by the Application
@@ -49,7 +55,18 @@ public class InstallerPlugin
         PackageInformation info, 
         IProgress<PackageProgressInfo> progress) { }
 
-    internal virtual void CleanupApplication(string buildLocation, PackageInformation info, IProgress<PackageProgressInfo> progress) { }
+    /// <summary>
+    /// Clean the App Area after Building
+    /// </summary>
+    /// <param name="buildLocation"></param>
+    /// <param name="info"></param>
+    /// <param name="progress"></param>
+    public virtual void CleanupApplication(string buildLocation, PackageInformation info, IProgress<PackageProgressInfo> progress) { }
 
-    internal virtual void ModifyTargetInstall(string installDirectory, string applicationName) { }
+    /// <summary>
+    /// Make any Target Modfications
+    /// </summary>
+    /// <param name="installDirectory"></param>
+    /// <param name="applicationName"></param>
+    public virtual void ModifyTargetInstall(string installDirectory, string applicationName) { }
 }

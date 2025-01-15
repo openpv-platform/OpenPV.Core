@@ -1,6 +1,4 @@
-﻿using Ahsoka.Installer.Components;
-using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Device.Handlers;
+﻿using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
@@ -8,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,24 +19,40 @@ internal class STServiceImplementation : DeviceServiceImplementation
     Task task = null;
     CancellationTokenSource tokenSource = null;
     string currentMountPoint = "";
+    bool hasUsbEth;
     readonly string[] logoFileTypes = { ".png", ".jpg" };
 
-    internal override void OnInit(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, DeviceList deviceList)
+    internal override void OnInitConfiguration(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, HardwareConfiguration config, bool isInstaller)
     {
         sendNotificationHandler = sendNotification;
 
-        // Fall back to Old Combo Module
-        if (deviceList.Devices.Count == 0)
+        // Apply Defaults (Support WiFi and Cell Modems if No Device File Found
+        if (config.HardwareItems.Count == 0 && isInstaller)
         {
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Device Setup Path Not Found, Adding Default Modules");
+            config.UsbStartStatePrimary = UsbMode.Device;
 
-            deviceList.Devices.Add(new DeviceInfo()
+            config.HardwareItems.Add(new()
             {
-                Id = (uint)HashCode32.GetHashCode32("ESP32 Onboard Combo Module"),
                 Name = "ESP32 Onboard Combo Module",
-                DeviceType = DeviceTypes.OnboardWirelessComboModule
+                DeviceType = DeviceTypes.OnboardWirelessComboModule,
+                AutoEnable = true,
+            });
+
+            config.HardwareItems.Add(new()
+            {
+                Name = "USB Cell Modem Module",
+                DeviceType = DeviceTypes.UsbCellularNetwork,
+                AutoEnable = false,
             });
         }
+
+        if (!config.HardwareItems.Any(x=>x.DeviceType == DeviceTypes.UsbEthernet))
+            config.HardwareItems.Add(new()
+            {
+                Name = "USB Ethernet",
+                DeviceType = DeviceTypes.UsbEthernet,
+                AutoEnable = false, // Ignored.
+            });
     }
 
   
@@ -63,32 +78,18 @@ internal class STServiceImplementation : DeviceServiceImplementation
     {
         if (usbInfo.Mode == UsbMode.Host)
         {
-            SetUsbRoleMode(UsbMode.Host);
+            SetUsbRoleMode(usbInfo.Port, UsbMode.Host);
 
             tokenSource = new CancellationTokenSource();
             task = Task.Run(() =>
             {
-                string blockCommand = "/sbin/blkid -l -t TYPE=\"{0}\" -o device";
-
+               
                 while (!tokenSource.IsCancellationRequested)
                 {
-                    // Try fat and exfat
-                    ProcessUtility.RunProcessScript(string.Format(blockCommand, "vfat"), null, out string stdout, out string stderr);
-                    if (stdout == "")
-                        ProcessUtility.RunProcessScript(string.Format(blockCommand, "exfat"), null, out stdout, out stderr);
+                    CheckForMountPoint(usbInfo);
 
-                    if (stdout != "")
-                    {
-                        string usbDevice = stdout.Trim();
-                        Console.WriteLine($"Found USB Stick at {usbDevice}");
+                    CheckForUsbEthernet(usbInfo);
 
-                        var output = Process.Start("mount", $"{usbDevice} {usbInfo.MountPoint}");
-                        output.WaitForExit();
-                        Console.WriteLine($"Mounted USB Stick at {usbDevice} on {usbInfo.MountPoint}");
-                        currentMountPoint = usbInfo.MountPoint;
-
-                        return;
-                    }
                     Thread.Sleep(1000);
                 }
             }, tokenSource.Token);
@@ -111,7 +112,51 @@ internal class STServiceImplementation : DeviceServiceImplementation
                 }
             }
 
-            SetUsbRoleMode(UsbMode.Device);
+            SetUsbRoleMode(usbInfo.Port, usbInfo.Mode);
+        }
+    }
+
+    private void CheckForUsbEthernet(UsbInfo usbInfo)
+    {
+        string command = "networkctl list eth0";
+
+        // Try fat and exfat
+        ProcessUtility.RunProcessScript(command, null, out string stdout, out string stderr);
+        bool hasEth = stdout.Contains("routable") && stdout.Contains("configured");
+
+        if (hasEth != hasUsbEth)
+        {
+            var info = GetDevices().Devices.FirstOrDefault(x => x.DeviceType == DeviceTypes.UsbEthernet);
+          
+            hasUsbEth = hasEth;
+            if (hasEth)
+                GetDeviceHandler(info).EnableDevice(info,sendNotificationHandler);
+            else
+                GetDeviceHandler(info).DisableDevice(info, sendNotificationHandler);
+            
+            Console.WriteLine($"USB Ethernet State Changed {hasUsbEth}");
+        }
+    }
+
+    private void CheckForMountPoint(UsbInfo usbInfo)
+    {
+        string blockCommand = "/sbin/blkid -l -t TYPE=\"{0}\" -o device";
+        // Try fat and exfat
+        ProcessUtility.RunProcessScript(string.Format(blockCommand, "vfat"), null, out string stdout, out string stderr);
+        if (stdout == "")
+            ProcessUtility.RunProcessScript(string.Format(blockCommand, "exfat"), null, out stdout, out stderr);
+
+        if (stdout != "")
+        {
+            string usbDevice = stdout.Trim();
+            Console.WriteLine($"Found USB Stick at {usbDevice}");
+
+            var output = Process.Start("mount", $"{usbDevice} {usbInfo.MountPoint}");
+            output.WaitForExit();
+            Console.WriteLine($"Mounted USB Stick at {usbDevice} on {usbInfo.MountPoint}");
+            currentMountPoint = usbInfo.MountPoint;
+
+            return;
         }
     }
 
@@ -173,10 +218,10 @@ internal class STServiceImplementation : DeviceServiceImplementation
         return response;
     }
 
-    internal override void SetUsbRoleMode(UsbMode mode)
+    internal override void SetUsbRoleMode(UsbPort port, UsbMode mode)
     {
         int returnCode = 0;
-        returnCode = USBRoleSwap.ChangeModes(mode);
+        returnCode = USBRoleSwap.ChangeModes(port, mode);
 
         if (returnCode != 0)
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Ahsoka.Services (ST): SetPlatformUsbRoleMode failed: returnCode{returnCode}");

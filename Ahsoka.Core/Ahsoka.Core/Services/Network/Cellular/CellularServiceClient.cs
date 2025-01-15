@@ -13,7 +13,7 @@ public class CellularServiceClient : AhsokaClientBase<CellularMessageTypes.Ids>
     /// Default Constructor which uses the Default Service Configuration
     /// </summary>
     public CellularServiceClient() :
-        this(ConfigurationLoader.GetServiceConfig(WiFiClientService.Name))
+        this(ConfigurationLoader.GetServiceConfig(CellularService.Name))
     {
 
     }

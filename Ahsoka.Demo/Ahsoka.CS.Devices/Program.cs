@@ -27,11 +27,10 @@ public class Program
         // Start All Services
         AhsokaRuntime.Default.StartEndPoints(systemServiceClient, deviceServiceClient, cellService);
 
-
         // Note that this app is configured to role swap to "Host" in the configuration
         // but you can do it here if you change the configuration back to Device or Default
         // Host on Primary (Secondary on Pro) is required for handling external devices 
-        //deviceServiceClient.SetUsbInfo(new UsbInfo() { Mode = UsbMode.Host });
+        //deviceServiceClient.SetUsbInfo(new UsbInfo() { Mode = UsbMode.Host, Device = UsbPort.Primary });
        
         // Startup Ready
         ApplicationContext.ReleaseStartup();
@@ -51,6 +50,7 @@ public class Program
 
     private static void DeviceServiceClient_NotificationReceived(object sender, AhsokaClientBase<DeviceMessageTypes.Ids>.AhsokaNotificationArgs e)
     {
+        // Since we are using Auto Enable, we can simply wait for Enabled
         if (e.TransportId == DeviceMessageTypes.Ids.DeviceEnabled)
         {
             DeviceServiceClient deviceServiceClient = sender as DeviceServiceClient;
@@ -63,9 +63,9 @@ public class Program
                 StartCellNetwork();
             }
         }
-
-        if (e.TransportId == DeviceMessageTypes.Ids.UsbDeviceAdded)
+        else if (e.TransportId == DeviceMessageTypes.Ids.UsbDeviceAdded)
         {
+            // When not using Auto Enable, this is where you could enable the USB Device
             DeviceServiceClient deviceServiceClient = sender as DeviceServiceClient;
             UsbDeviceInfo info = e.NotificationObject as UsbDeviceInfo;
             
@@ -74,11 +74,9 @@ public class Program
                 // Enable Cellular Modem
                 Console.WriteLine($"NOT Enabling Cell Modem Device (Using auto Enable)");
                // deviceServiceClient.EnableDevice(info.DeviceInfo); // Start client for NetworkService
-
-                //StartCellNetwork();
             }
         }
-        if (e.TransportId == DeviceMessageTypes.Ids.UsbDeviceRemoved)
+        else if (e.TransportId == DeviceMessageTypes.Ids.UsbDeviceRemoved)
         {
             DeviceServiceClient deviceServiceClient = sender as DeviceServiceClient;
             UsbDeviceInfo info = e.NotificationObject as UsbDeviceInfo;

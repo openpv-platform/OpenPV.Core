@@ -44,6 +44,8 @@ public abstract class SkiaDrawingManager : DrawingManager<SkiaDrawingApi>, IDraw
     void IDrawingManager.ShowAndRun()
     {
         ahsokaWindow.ShowAndRun();
+
+        OnClose();
     }
 
     protected override void OnClose(int result = 0)

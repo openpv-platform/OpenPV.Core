@@ -19,8 +19,10 @@ internal abstract class DeviceServiceImplementation
     {
         HardwareConfiguration config = null;
 
+        bool isInstaller = AppDomain.CurrentDomain.FriendlyName == "Ahsoka.Installer.UI";
+
         string fileName = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(Ahsoka.System.Hardware.RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, "DeviceConfiguration.pbuff");
-        if (File.Exists(fileName) && AppDomain.CurrentDomain.FriendlyName != "Ahsoka.Installer.UI")
+        if (File.Exists(fileName) && !isInstaller)
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Device Setup Path Found");
             try
@@ -38,38 +40,49 @@ internal abstract class DeviceServiceImplementation
         if (config == null)
             config = new();
 
+
+        OnInitConfiguration(sendNotification, config, isInstaller);
+
         // Load Devices
-        foreach(var item in config.HardwareItems)
-            deviceList.Devices.Add(new DeviceInfo()
+        foreach (var item in config.HardwareItems)
+        {
+            var newDevice = new DeviceInfo()
             {
                 Id = (uint)HashCode32.GetHashCode32(item.Name),
                 CustomStartup = item.CustomStartup,
                 Name = item.Name,
-                State = DeviceState.NoState,
+                State = item.DefaultState,
                 DeviceType = item.DeviceType,
                 AutoEnable = item.AutoEnable,
-            });
+            };
 
-        OnInit(sendNotification, deviceList);
+            deviceList.Devices.Add(newDevice); 
 
-        foreach (var item in deviceList.Devices)
-        {
-            var handler = GetDeviceHandler(item);
-            var usbDeviceList = handler.Init(item, sendNotification);
+            var handler = GetDeviceHandler(newDevice);
+            var usbDeviceList = handler.Init(newDevice, sendNotification);
             if (usbDeviceList != null)
                 foreach (var usbItem in usbDeviceList)
-                    usbDevices[usbItem] = new KeyValuePair<DeviceInfo, DeviceHandlerBase>(item, handler);
+                    usbDevices[usbItem] = new KeyValuePair<DeviceInfo, DeviceHandlerBase>(newDevice, handler);
+
         }
 
         if (config.UsbStartStatePrimary != UsbMode.Default || config.UsbStartStateSecondary != UsbMode.Default)
             Task.Run(() =>
             {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Setting Primary USB to {config.UsbStartStatePrimary}");
-                SetUsbRoleMode(config.UsbStartStatePrimary);
-                // Secondary coming Later.
+                if (config.UsbStartStatePrimary != UsbMode.Default)
+                {
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Setting Primary USB to {config.UsbStartStatePrimary}");
+                    SetUsbRoleMode(UsbPort.Primary, config.UsbStartStatePrimary);
+                }
+
+                if (config.UsbStartStateSecondary != UsbMode.Default)
+                {
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Setting Secondary USB to {config.UsbStartStatePrimary}");
+                    SetUsbRoleMode(UsbPort.Secondary, config.UsbStartStateSecondary);
+                }
             });
     }
-   
+
     public DeviceInfo GetUsbDevice(UsbDeviceId id)
     {
         if (usbDevices.TryGetValue(id, out var deviceInfo))
@@ -78,7 +91,7 @@ internal abstract class DeviceServiceImplementation
         return null;
     }
 
-    public DeviceList HandleGetDevices()
+    public DeviceList GetDevices()
     {
         return deviceList;
     }
@@ -88,11 +101,11 @@ internal abstract class DeviceServiceImplementation
         return DeviceHandlerBase.GetDeviceHandler(deviceInfo.DeviceType);
     }
 
-    internal abstract void OnInit(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, DeviceList list);
+    internal abstract void OnInitConfiguration(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, HardwareConfiguration config, bool isInstaller);
 
     internal abstract UsbInfo GetUsbInfo();
 
-    internal abstract void SetUsbRoleMode(UsbMode mode);
+    internal abstract void SetUsbRoleMode(UsbPort port, UsbMode mode);
 
     internal abstract  void SetUsbInfo(UsbInfo usbInfo);
 

@@ -26,6 +26,8 @@ internal class SparkConnectionState : InstallerUIStateBase
     const int completeBarSizeInPixels = 350;
     string installPath;
 
+    public InstallerUIStateBase RestoreState { get; set; }
+
     public SparkConnectionState()
     {
         client = CreateClient();
@@ -283,9 +285,15 @@ internal class SparkConnectionState : InstallerUIStateBase
 
     protected override InstallerUIStateBase OnHandleAction(string action)
     {
-        if (InstallerDrawingManager.Default.WiFiViewModel.ConnectionState != WirelessConnectionState.ClientConnected)
+        bool isConnected = InstallerDrawingManager.Default.HasEthernet || InstallerDrawingManager.Default.HasCellModem || 
+                           InstallerDrawingManager.Default.WiFiViewModel.ConnectionState != WirelessConnectionState.ClientConnected;
+
+        if (!isConnected)
         {
-            return new WiFiSetupState();
+            if (RestoreState != null)
+                return RestoreState;
+            else
+                return new WiFiSetupState();
         }
         else if (action == refreshAction)
         {
@@ -296,6 +304,11 @@ internal class SparkConnectionState : InstallerUIStateBase
             if (state == SparkState.PackageReady)
             {
                 state = SparkState.Ready;
+            }
+            else if (RestoreState != null)
+            {
+                StopClient();
+                return RestoreState;
             }
             else
             {

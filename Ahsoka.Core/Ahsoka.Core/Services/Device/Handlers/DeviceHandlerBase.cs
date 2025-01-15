@@ -44,6 +44,8 @@ internal class DeviceHandlerBase
                 return new EthernetHandler();
             case DeviceTypes.UsbCellularNetwork:
                 return new CellularHandler();
+            case DeviceTypes.UsbEthernet:
+                return new UsbEthernetHandler();
             case DeviceTypes.IoControlModule:
             case DeviceTypes.DeviceTypeUnknown:
             default:

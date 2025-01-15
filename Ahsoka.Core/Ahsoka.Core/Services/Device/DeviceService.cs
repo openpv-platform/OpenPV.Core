@@ -128,7 +128,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
         notificationsEnabled = true;
 
         // Send Notifications to Clients for Existing Onboard Devices
-        foreach (var item in coreInterop.HandleGetDevices().Devices)
+        foreach (var item in coreInterop.GetDevices().Devices)
             if (item.State != DeviceState.NoState)
             {
                 if (item.DeviceType.ToString().ToLower().Contains("onboard")) // USB Devices will come from the USB Watcher
@@ -140,6 +140,11 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Auto-Enabling  {item.Name}");
                     coreInterop.GetDeviceHandler(item).EnableDevice(item, SendNotificationIfEnabled);
                 }
+                else if (item.AutoEnable) // Already Enabled
+                {
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Device {item.Name} Already Enabled...sending Enabled Message");
+                    SendNotificationIfEnabled(DeviceMessageTypes.Ids.DeviceEnabled, item, null);
+                }
             }
 
         SendResponse(request, new EmptyNotification());
@@ -148,7 +153,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     private void HandleGetDevices(AhsokaServiceRequest request)
     {
         var requestInfo = request.Message as DeviceInfoRequest;
-        var result = coreInterop.HandleGetDevices();
+        var result = coreInterop.GetDevices();
 
         DeviceList list = new DeviceList();
         foreach (var item in result.Devices)
@@ -162,7 +167,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
             if (devices.TryGetValue(device.Id, out var state))
                 device.State = state;
 
-        SendResponse(request, result);
+        SendResponse(request, list);
     }
 
     private void HandleDeviceEnabled(AhsokaServiceRequest request)

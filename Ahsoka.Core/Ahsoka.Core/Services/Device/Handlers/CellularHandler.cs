@@ -3,12 +3,14 @@ using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 
 namespace Ahsoka.Services.Device.Handlers;
 
 internal class CellularHandler : DeviceHandlerBase
 {
     string device = "/dev/cdc-wdm0";
+    string network = "wwan0";
 
     internal override List<UsbDeviceId> Init(DeviceInfo deviceInfo,  Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
     {
@@ -21,7 +23,10 @@ internal class CellularHandler : DeviceHandlerBase
     internal override DeviceState GetDeviceState()
     {
         if (!Path.Exists(device))
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Device {device} Not Ready");
             return DeviceState.NoState;
+        }
 
         string command = $"qmicli -d {device}  --dms-get-operating-mode";
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, command);
@@ -52,6 +57,24 @@ internal class CellularHandler : DeviceHandlerBase
 
     internal override void EnableDevice(DeviceInfo deviceInfo, Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
     {
+        bool wwanReady = false;
+        int i = 0;
+
+        while(!wwanReady && i < 5)
+        {
+            string waitCommand = $"networkctl list {network}";
+            ProcessUtility.RunProcess("/bin/sh", $"-c \"{waitCommand}", null, out string output, out string errorOutput);
+
+            wwanReady = !errorOutput.Contains("Interface \"wwan0\" not found.");
+
+            if (!wwanReady)
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Cellular Network Not Ready {output} {errorOutput}");
+            else
+                Thread.Sleep(1000);
+
+            i++;
+        }
+      
         string command = $"qmicli -d {device} --dms-set-operating-mode='online'";
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, command);
 

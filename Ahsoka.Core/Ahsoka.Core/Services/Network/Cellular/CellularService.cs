@@ -46,7 +46,7 @@ public class CellularService : AhsokaServiceBase<CellularMessageTypes.Ids>
 
         stopwatch.StopTiming("Cellular Init Completed");
 
-        UpdateCacheValue(WiFiClientServiceMessages.Available, true);
+        UpdateCacheValue(CellularServiceMessages.Available, true);
     }
 
     protected override void OnHandleServiceRequest(AhsokaServiceRequest request)

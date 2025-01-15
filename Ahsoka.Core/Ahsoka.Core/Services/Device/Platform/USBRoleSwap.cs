@@ -28,8 +28,14 @@ internal static class USBRoleSwap
     const uint GPIO_GET_LINEHANDLE_IOCTL = 3245126659; // 0xC16CB403 _IOWR(0xB4, 0x03, struct gpiohandle_request)
     const uint GPIOHANDLE_SET_LINE_VALUES_IOCTL = 3225465865; // C040B409 _IOWR(0xB4, 0x09, struct gpiohandle_data)
 
-    internal unsafe static int ChangeModes(UsbMode device_role)
+    internal unsafe static int ChangeModes(UsbPort port, UsbMode device_role)
     {
+        if (port == UsbPort.Secondary)
+        {
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Secondary Port Not Supported on this Platform");
+            return -1;
+        }
+
         int ret = 0;
 
         string usb_role_write = null;

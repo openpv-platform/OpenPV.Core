@@ -18,12 +18,12 @@ internal class TIServiceImplementation : DeviceServiceImplementation
     #endregion
 
     #region Interface
-    internal override void OnInit(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, DeviceList list)
+    internal override void OnInitConfiguration(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, HardwareConfiguration deviceList, bool isInstaller)
     {
 
     }
 
-    internal override void SetUsbRoleMode(UsbMode mode)
+    internal override void SetUsbRoleMode(UsbPort port, UsbMode mode)
     {
         
     }

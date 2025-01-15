@@ -66,6 +66,22 @@
     },
     {
       "socketType": "TcpSocket",
+      "serviceName": "CellularService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 5010,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "WiFiAPService",
+      "tcpListenAddress": "*",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 5011,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
       "serviceName": "LayerManagerService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",

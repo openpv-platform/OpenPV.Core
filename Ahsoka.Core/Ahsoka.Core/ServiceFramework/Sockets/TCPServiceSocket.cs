@@ -90,8 +90,10 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
         if (socketPoller.IsRunning)
             socketPoller.StopAsync();
 
-        socketPoller.RemoveAndDispose(socket);
-        socketPoller.RemoveAndDispose(sendQueue);
+        if (!socket.IsDisposed)
+            socketPoller.RemoveAndDispose(socket);
+        if (!sendQueue.IsDisposed)
+            socketPoller.RemoveAndDispose(sendQueue);
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
 

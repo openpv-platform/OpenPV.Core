@@ -235,6 +235,7 @@ internal class STImplementation : ImplementationBase
             // Shutdown Network Status
             cancellationTokenSource.Cancel();
             connectionTask.Wait(2500);
+            connectionTask = null;
         }
         catch { }
 

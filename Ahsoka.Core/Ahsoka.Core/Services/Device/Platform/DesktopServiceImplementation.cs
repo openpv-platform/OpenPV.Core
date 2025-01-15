@@ -1,9 +1,7 @@
-﻿using Ahsoka.Services.Device.Handlers;
-using Ahsoka.System;
+﻿using Ahsoka.System;
 using System;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 
 namespace Ahsoka.Services.Device;
 
@@ -13,11 +11,11 @@ internal class DesktopServiceImplementation : DeviceServiceImplementation
     UsbInfo usbInfo = new UsbInfo() { Mode = UsbMode.Host };
     private Action<DeviceMessageTypes.Ids, object, byte[]> sendNotificationHandler;
 
-    internal override void OnInit(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, DeviceList list)
+    internal override void OnInitConfiguration(Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification, HardwareConfiguration config, bool isInstaller)
     {
         sendNotificationHandler = sendNotification;
-        if (list.Devices.Count == 0)
-            list.Devices.Add(new DeviceInfo() { DeviceType = DeviceTypes.OnboardWifiModule, Id = 1234, State = DeviceState.Ready });
+        config.HardwareItems.Clear();
+        config.HardwareItems.Add(new() { AutoEnable = true, DefaultState = DeviceState.Ready, Name = "WiFi Module", DeviceType = DeviceTypes.OnboardWifiModule });
     }
 
 
@@ -32,7 +30,7 @@ internal class DesktopServiceImplementation : DeviceServiceImplementation
         this.usbInfo = usbInfo;
     }
 
-    internal override void SetUsbRoleMode(UsbMode mode)
+    internal override void SetUsbRoleMode(UsbPort port, UsbMode mode)
     {
 
     }

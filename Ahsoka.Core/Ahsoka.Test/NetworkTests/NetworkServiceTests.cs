@@ -175,9 +175,10 @@ public class NetworkServiceTest : LinearTestBase
             deviceClient.EnableDevice(wifiDevice);
 
             var adapter = client.GetAdapters();
+
             WiFiNetworkManager manager = new();
             manager.Start(deviceClient, client );
-
+           
             manager.ConnectionStateChanged += (o, a) =>
             {
                 // Connection State will trigger 
@@ -188,8 +189,10 @@ public class NetworkServiceTest : LinearTestBase
             manager.NetworkListChanged += (o, e) => { };
             manager.AdapterEnabledChanged += (o, e) => { };
 
+            deviceClient.EnableDeviceNotifications();
+          
             // Wait for Init to Complete
-            reset.WaitOne();
+            reset.WaitOne(5000);
 
             manager.MoveDown();
             manager.MoveUp();

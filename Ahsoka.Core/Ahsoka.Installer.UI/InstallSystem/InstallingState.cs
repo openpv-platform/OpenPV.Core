@@ -190,7 +190,7 @@ internal class InstallingState : InstallerUIStateBase, IInstallerUI
         }
         else if (action == "Cancel")
         {
-            return new LocalFileWaitingState();
+            return new UsbHostState();
         }
         else
         {

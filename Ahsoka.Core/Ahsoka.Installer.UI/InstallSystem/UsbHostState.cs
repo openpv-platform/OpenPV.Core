@@ -6,13 +6,14 @@ using System.IO;
 
 namespace Ahsoka.Installer.UI.InstallSystem;
 
-internal class LocalFileWaitingState : InstallerUIStateBase
+internal class UsbHostState : InstallerUIStateBase
 {
     readonly InstallerFileList fileList;
     const string refresh = "RefreshFiles";
+    const string spark = "ConnectSpark";
     readonly bool usbRoleSwapped = false;
 
-    public LocalFileWaitingState(bool useUsb = false)
+    public UsbHostState(bool useUsb = false)
     {
         if (useUsb)
         {
@@ -49,6 +50,7 @@ internal class LocalFileWaitingState : InstallerUIStateBase
 
     protected override void OnDrawState(DrawFrameArgs args)
     {
+        // Check for Dongle
         IDrawingApi drawingApi = args.DrawingApi;
         int width = args.Width;
         int height = args.Height;
@@ -77,10 +79,28 @@ internal class LocalFileWaitingState : InstallerUIStateBase
             Typeface = InstallerDrawingManager.Default.UITypeface
         };
 
+       
         drawingApi.DrawText($"Waiting for USB Files", width / 2, height * .333f, textPaint);
 
         var cancel = drawingApi.CreateImage("Assets/ArrowLeft.png");
         InstallerDrawingManager.Default.AddAction("Cancel", InstallerDrawingManager.Default.GetActionPosition(4, cancel.Width), cancel);
+
+        textPaint.TextSize = 16;
+        if (InstallerDrawingManager.Default.HasCellModem)
+            drawingApi.DrawText($"Cellular Device Available", width / 2, height * .666f - 15, textPaint);
+        else
+            drawingApi.DrawText($"Cellular Device Not Detected", width / 2, height * .666f - 15, textPaint);
+
+        if (InstallerDrawingManager.Default.HasEthernet)
+            drawingApi.DrawText($"USB Ethernet Available", width / 2, height * .666f + 10, textPaint);
+        else
+            drawingApi.DrawText($"USB Ethernet Not Detected", width / 2, height * .666f + 10, textPaint);
+
+        if (InstallerDrawingManager.Default.HasCellModem || InstallerDrawingManager.Default.HasEthernet)
+        {
+            var cloudImage = drawingApi.CreateImage("Assets/Cloud.png");
+            InstallerDrawingManager.Default.AddAction("ConnectSpark", InstallerDrawingManager.Default.GetActionPosition(5, cancel.Width), cloudImage, DrawingColors.LightSkyBlue);
+        }
     }
 
     private void DrawSelectFile(IDrawingApi drawingApi, int width, int height)
@@ -116,6 +136,13 @@ internal class LocalFileWaitingState : InstallerUIStateBase
     {
         if (action == refresh)
             return this;
+        else if (action == spark)
+        {
+            if (InstallerDrawingManager.Default.HasEthernet)
+                return new SparkConnectionState() { RestoreState = this };
+            else if(InstallerDrawingManager.Default.HasCellModem)
+                return new SparkConnectionState() { RestoreState = this };
+        }
         else if (action == "Up")
             fileList.MoveUp();
         else if (action == "Down")

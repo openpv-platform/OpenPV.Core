@@ -150,7 +150,6 @@ public sealed class WiFiNetworkManager
 
         this.deviceClient = deviceClient;
         this.deviceClient.NotificationReceived += DeviceClient_NotificationReceived;
-        this.deviceClient.EnableDeviceNotifications();
 
         this.dispatcher = dispatcher;
 
@@ -355,9 +354,9 @@ public sealed class WiFiNetworkManager
             DeviceInfo info = e.NotificationObject as DeviceInfo;
             if (info.DeviceType == DeviceTypes.OnboardWifiModule || info.DeviceType == DeviceTypes.OnboardWirelessComboModule)
             {
-                if (!AdapterEnabled)
+                if (!AdapterEnabled && !info.AutoEnable)
                 {
-                    AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"OnboardDeviceReady Ready Receieved, Enabling Adapter if Needed {info.State}");
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"OnboardDeviceReady Ready Receieved, Enabling Adapter if Needed {info.State}");
               
                     if (info.State != DeviceState.Enabled)
                         deviceClient.EnableDevice(info);
@@ -369,6 +368,7 @@ public sealed class WiFiNetworkManager
         else if (e.TransportId == DeviceMessageTypes.Ids.DeviceEnabled)
         {
             DeviceInfo info = e.NotificationObject as DeviceInfo;
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"DeviceEnabled Enabled Receieved, Configuring Wireless {info.DeviceType}");
             if (info.DeviceType == DeviceTypes.OnboardWifiModule || info.DeviceType == DeviceTypes.OnboardWirelessComboModule)
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"WiFi Enabled Receieved, Configuring Wireless");

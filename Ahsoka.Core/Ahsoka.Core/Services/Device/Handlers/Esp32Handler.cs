@@ -52,7 +52,10 @@ internal class Esp32Handler : DeviceHandlerBase
     {
         // If we are already booted, then no point in going through this function.
         if (GetDeviceState() == DeviceState.Enabled)
+        {
+            sendNotification(DeviceMessageTypes.Ids.DeviceEnabled, deviceInfo, null);
             return;
+        }
 
         Task.Run(() =>
         {

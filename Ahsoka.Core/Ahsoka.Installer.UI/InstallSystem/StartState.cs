@@ -292,9 +292,9 @@ internal class StartState : InstallerUIStateBase
             timer.Stop();
 
         if (action == usb)
-            return new LocalFileWaitingState(true);
+            return new UsbHostState(true);
         else if (action == ethernet)
-            return new LocalFileWaitingState();
+            return new UsbHostState();
         else if (action == cloud)
             return new WiFiSetupState();
         else if (action == shutdown)

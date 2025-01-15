@@ -101,7 +101,7 @@ message RS485ConfigNotification
 // USB
 message UsbInfo
 {
-	UsbPort device = 1;
+	UsbPort port = 1;
 	UsbMode mode = 2;
 	string mount_point = 3;
 }
@@ -152,8 +152,10 @@ message HardwareItem
 {
 	string name = 1;
 	DeviceTypes device_type = 2;
+	DeviceState default_state = 4;
 	string custom_startup = 6;
 	bool auto_enable = 7;
+
 }
 
 
@@ -178,5 +180,7 @@ enum DeviceTypes
 	ONBOARD_BT_MODULE = 3;
 	ONBOARD_ETHERNET = 4;
 	USB_CELLULAR_NETWORK = 5;
-	IO_CONTROL_MODULE = 6;
+	USB_ETHERNET = 6;
+	IO_CONTROL_MODULE = 10;
+
 }

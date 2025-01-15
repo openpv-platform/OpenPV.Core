@@ -35,7 +35,6 @@ internal abstract class ImplementationBase
         {
             // Init
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Starting Cellular Networking...");
-
             OnInitNetwork(out networkConfiguration, out networkAdapter);
         }
      
@@ -43,11 +42,6 @@ internal abstract class ImplementationBase
         { 
             Adapters = { new AdapterRequest() { AdapterId = networkAdapter?.AdapterId} }
         };
-    }
-
-    internal CellularServiceConfiguration GetAdapterConfiguration(string adapterId)
-    {
-        return networkConfiguration;
     }
 
     internal CellularConnectionResult StartNetwork(CellularService.AhsokaServiceRequest messageHeader, CellularServiceConfiguration connectionRequest)

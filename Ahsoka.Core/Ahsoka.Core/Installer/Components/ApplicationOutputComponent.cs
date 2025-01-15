@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 
@@ -188,10 +189,22 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Application Type {projectType} found with app command {appCommand}" });
 
+            List<InstallerPlugin> installedPlugins =
+            [
+                // Add App Plugins Last
+                InstallerPlugin.GetApplicationPlugin(projectType),
+                    .. Extensions.GetExtensions<InstallerPlugin>(),
+            ];
 
-            // Run Installer Plugin to handle 
-            InstallerPlugin appPlugin = InstallerPlugin.GetApplicationPlugin(projectType);
-            appPlugin?.ModifyTargetInstall(workingDirectory, appCommand);
+            // Remove Nulls
+            installedPlugins = installedPlugins.Where(x => x != null).ToList();
+
+            // Run Prerequisite Checks
+            foreach (var appPlugin in installedPlugins)
+            {
+                context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Running Installer Plugin - {appPlugin.GetType().Name}" });
+                appPlugin.ModifyTargetInstall(workingDirectory, appCommand);
+            }
 
             // Should we use add the CommandLine App?
             var autoStart = File.Exists(Path.Combine(workingDirectory, ApplicationOutputConstants.AppInfoFolder,"AutoStartEnabled"));

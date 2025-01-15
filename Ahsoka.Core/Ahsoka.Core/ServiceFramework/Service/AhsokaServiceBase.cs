@@ -155,7 +155,8 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     {
         if (isServiceStarted)
         {
-            foreach (var item in handledSockets)
+            // Don't operate on Collection in case Disconnect Removes a Socket
+            foreach (var item in handledSockets.ToArray())
                 item.Disconnect();
 
             AhsokaRuntime.Default.RemoveEndPointInternal(this);

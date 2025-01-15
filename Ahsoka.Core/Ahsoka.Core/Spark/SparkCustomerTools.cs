@@ -142,7 +142,7 @@ public static class SparkCustomerTools
     {
 
         // Update Container name
-        uploadInfo.ContainerName = uploadInfo.ReleaseName + " " + uploadInfo.ContainerVersion;
+        uploadInfo.ContainerName = $"{uploadInfo.ReleaseName}_{team.TeamID.ToString().Substring(0,8)}";
 
         // File Names
         string outputFilePath = uploadInfo.Contents.First().Path;

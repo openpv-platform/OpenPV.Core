@@ -1,19 +1,16 @@
-﻿using Ahsoka.DeveloperTools.Views;
-using Ahsoka.Spark;
-using EnovationCloud.Core.DataTransferObjects;
-using Ahsoka.Utility;
-using Avalonia.Controls;
-using Avalonia.Threading;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using EnovationCloud.Core.Client;
-using System;
-using Ahsoka.Services.System;
-using static SkiaSharp.HarfBuzz.SKShaper;
-using System.IO;
+using Ahsoka.DeveloperTools.Views;
+using Ahsoka.Spark;
 using Ahsoka.System;
+using Ahsoka.Utility;
+using Avalonia.Controls;
+using Avalonia.Threading;
+using EnovationCloud.Core.Client;
+using EnovationCloud.Core.DataTransferObjects;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -22,7 +19,7 @@ namespace Ahsoka.DeveloperTools;
 /// </summary>
 internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkProjectViewModel>
 {
-    ApplicationViewModel noSubscribeVM =  new ApplicationViewModel(new ContainerDTO() { ContainerName = "Don't Subcribe to OTA" });
+    ApplicationViewModel noSubscribeVM =  new ApplicationViewModel(new ContainerDTO() { ContainerName = "Don't Subcribe to OTA" }, "00000000");
 
     string provisionDeviceFile, provisionSerialNumber, provisionPartNumber, provisionDeviceId = string.Empty;
     System.PlatformFamily provisionDeviceFamily = System.PlatformFamily.OpenViewLinux;

@@ -88,7 +88,7 @@ internal partial class SparkProjectApplicationViewModel : ChildViewModelBase<Spa
                 foreach (var item in result)
                 {
                     item.ContainerName = item.ContainerName.Replace(item.ContainerVersion, "");
-                    this.Applications.Add(new ApplicationViewModel(item));
+                    this.Applications.Add(new ApplicationViewModel(item, this.ParentViewModel.Model.TeamID.ToString().Substring(0, 8)));
                 }
                
                 SelectedApplication = this.Applications.FirstOrDefault(x => x.DTO.ContainerName == tempApp?.DTO.ContainerName && x.DTO.ContainerVersion == tempApp?.DTO.ContainerVersion);
@@ -196,12 +196,22 @@ internal partial class SparkProjectApplicationViewModel : ChildViewModelBase<Spa
 internal class ApplicationViewModel
 {
     ContainerDTO dto;
+    string teamId;
+
+    public string ContainerName 
+    { 
+        get 
+        { 
+            return dto.ContainerName.Replace($"_{teamId}",""); 
+        } 
+    }
 
     internal ContainerDTO DTO { get { return dto; } }
 
-    internal ApplicationViewModel(ContainerDTO dto)
+    internal ApplicationViewModel(ContainerDTO dto, string teamId)
     {
         this.dto = dto;
+        this.teamId = teamId;
     }
 
     public override string ToString()

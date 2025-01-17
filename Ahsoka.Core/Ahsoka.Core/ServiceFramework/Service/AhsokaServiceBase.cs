@@ -200,7 +200,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             message = new EmptyNotification();
 
         // Prepare Response Message 
-        var messageToSend = CreateSocketMessage(new AhsokaMessageHeader() { TransportId = transportId.EnumToInt() }, message, true);
+        var messageToSend = CreateSocketMessage(new AhsokaMessageHeader() { TransportId = transportId.EnumToInt(), EndpointId = ((IAhsokaEndPoint)this).EndPointId }, message, true);
 
         // Send to Specific Client Or All Clients if Broadcast
         if (specificClient != null)

@@ -6,12 +6,15 @@ namespace Ahsoka.ServiceFramework;
 /// <summary>
 /// Gateway Socket
 /// </summary>
-public sealed class GatewaySocket : IAhsokaServiceSocket
+public class GatewaySocket : IAhsokaServiceSocket
 {
     IAhsokaGatewayEndPoint gatewayOrigin;
     Dictionary<uint, KeyValuePair<IAhsokaServiceEndPoint, IAhsokaServiceSocket>> endpoints = new();
 
-    internal GatewaySocket()
+    /// <summary>
+    /// Gateway Socket
+    /// </summary>
+    public GatewaySocket()
     {
 
     }
@@ -33,7 +36,7 @@ public sealed class GatewaySocket : IAhsokaServiceSocket
                 socketInfo = endpoints[message.Header.EndpointId] = new(endPoint, originSocket);
             }
         }
-
+         
         if (socketInfo.Key == null)
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Gateway Service Received a messsage for EndPoint {message.Header.EndpointId} but no IGatewayEndPoint was found to Service this Message.");
         else

@@ -92,6 +92,10 @@
 	  <Compile Update="Views\Package\DeveloperView.axaml.cs">
 	    <DependentUpon>DeveloperView.axaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Views\Package\ServiceView.axaml.cs">
+	    <SubType>Code</SubType>
+	    <DependentUpon>ServiceView.axaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\Package\HardwareItemView.axaml.cs">
 	    <DependentUpon>HardwareItemView.axaml</DependentUpon>
 	  </Compile>
@@ -238,5 +242,11 @@
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <AvaloniaXaml Update="Views\Package\ServiceView.axaml">
+	    <SubType>Designer</SubType>
+	  </AvaloniaXaml>
 	</ItemGroup>
 </Project>

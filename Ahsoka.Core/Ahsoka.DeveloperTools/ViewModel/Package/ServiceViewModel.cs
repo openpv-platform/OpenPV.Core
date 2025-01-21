@@ -187,6 +187,28 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
         get { return ParentViewModel.ParentViewModel.ServiceConfiguration.Services.FirstOrDefault(x => x.ServiceName == this.ServiceName); }
     }
 
+    public bool LocalOnly
+    {
+        get
+        {
+            if (CurrentServiceConfiguration != null)
+                return CurrentServiceConfiguration.TcpListenAddress == "localhost";
+            else
+                return true;
+        }
+        set
+        {
+            if (CurrentServiceConfiguration != null)
+            {
+                if (value)
+                    CurrentServiceConfiguration.TcpListenAddress = "localhost";
+                else
+                    CurrentServiceConfiguration.TcpListenAddress = "*";
+            }
+            OnPropertyChanged();
+        }
+    }
+
     public bool IsIncluded
     {
         get
@@ -208,7 +230,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                     DataChannel = defaultValues.DataChannel,
                     IsExtension = defaultValues.IsExtension,
                     Behaviors = defaultValues.Behaviors,
-                    SocketType = defaultValues.SocketType
+                    SocketType = defaultValues.SocketType,
                 };
 
                 ParentViewModel.ParentViewModel.ServiceConfiguration.Services.Add(item);
@@ -242,7 +264,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
             OnPropertyChanged();
         }
     }
-
 
     public bool ServiceAutoStart
     {

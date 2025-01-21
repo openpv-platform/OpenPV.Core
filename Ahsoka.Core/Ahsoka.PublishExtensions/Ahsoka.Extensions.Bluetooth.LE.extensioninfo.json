@@ -5,7 +5,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "BLEService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 6108,
       "behaviors": "AutoStart"

@@ -7,7 +7,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "DiagnosticService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 6106,
       "behaviors": "AutoStart"

@@ -3,7 +3,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "InstallService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5000,
       "behaviors": "AutoStart"
@@ -27,7 +27,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "WiFiClientService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5003,
       "behaviors": "AutoStart"
@@ -35,7 +35,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "IotService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5005,
       "behaviors": "AutoStart"
@@ -43,7 +43,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "SecurityService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5007,
       "behaviors": "AutoStart"
@@ -51,7 +51,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "VideoService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5008,
       "behaviors": "AutoStart"
@@ -59,7 +59,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "DeviceService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5009,
       "behaviors": "AutoStart"
@@ -67,7 +67,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "CellularService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5010,
       "behaviors": "AutoStart"
@@ -75,7 +75,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "WiFiAPService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5011,
       "behaviors": "AutoStart"
@@ -83,7 +83,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "LayerManagerService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 5100,
       "behaviors": "AutoStart"

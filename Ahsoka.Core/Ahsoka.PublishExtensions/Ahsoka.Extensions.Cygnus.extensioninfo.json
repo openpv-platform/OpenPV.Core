@@ -1,29 +1,13 @@
 ﻿{
-  "extensionName": "Cygnus Reach Service Extension",
+  "extensionName": "Reach Service Extension",
   "packageName": "Ahsoka.Extensions.CygnusReach",
   "uxpackageName": "Ahsoka.Extensions.CygnusReach.UX.Desktop",
   "uxViewModelName": "CygnusReachSetupViewModel",
   "serviceConfigurations": [
     {
       "socketType": "TcpSocket",
-      "serviceName": "CygnusServerInterfaceService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "dataChannel": 6110,
-      "behaviors": "AutoStart"
-    },
-    {
-      "socketType": "TcpSocket",
-      "serviceName": "CygnusServerService",
+      "serviceName": "ReachService",
       "tcpListenAddress": "localhost",
-      "tcpConnectionAddress": "localhost",
-      "dataChannel": 6111,
-      "behaviors": "AutoStart"
-    },
-    {
-      "socketType": "TcpSocket",
-      "serviceName": "CygnusService",
-      "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 6112,
       "behaviors": "AutoStart"

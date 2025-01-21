@@ -3,7 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
            	 xmlns:sys="clr-namespace:System;assembly=mscorlib"
-		     mc:Ignorable="d" d:DesignWidth="1085" d:DesignHeight="450"
+		     xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
+             mc:Ignorable="d" d:DesignWidth="1085" d:DesignHeight="450"
              xmlns:material="using:Material.Icons.Avalonia"
              x:Class="Ahsoka.DeveloperTools.Views.ServiceOptionsView">
 
@@ -61,76 +62,10 @@
 								Text="Configured Services" VerticalAlignment="Top"/>
 					<Border VerticalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="3"
 							Margin="20,5,20,20" BorderBrush="Gainsboro" BorderThickness="1">
-						<ListBox  ItemsSource="{Binding Services}" SelectedItem="{Binding SelectedService}" Background="Transparent" >
+						<ListBox ItemsSource="{Binding Services}" SelectedItem="{Binding SelectedService}" Background="Transparent" >
 							<ListBox.ItemTemplate>
 								<DataTemplate>
-									<Grid ColumnDefinitions="30,*,auto,auto,auto,auto,auto,auto,auto,auto" Margin="-5" 
-										  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-										<Button IsVisible="{Binding !IsExtension}" Margin="0,3,0,0" 
-												HorizontalAlignment="Left"
-												 BorderThickness="0"
-												 Width="24"
-												 Height="24"
-												 VerticalContentAlignment="Center"
-												ToolTip.Tip="Check to to include Configuration in Service Config."
-												 Command="{Binding IncludeChanged}">
-											<Grid>
-												<material:MaterialIcon IsVisible="{Binding IsIncluded}" Width="20" Height="20" Foreground="SteelBlue" Kind="CheckboxMarked"></material:MaterialIcon>
-												<material:MaterialIcon IsVisible="{Binding !IsIncluded}" Width="20" Height="20" Foreground="Gray" Kind="CheckboxBlank"></material:MaterialIcon>
-											</Grid>
-										</Button>
-										<Grid
-											ToolTip.Tip="Automatically Included based on Imported Extension."
-											HorizontalAlignment="Left" Width="24"
-											Height="24" Margin="0,3,0,0" IsVisible="{Binding IsExtension}">
-											<material:MaterialIcon Width="20" Height="20" Foreground="DarkGray" Kind="CheckboxMarked"></material:MaterialIcon>
-										</Grid>
-
-										<TextBlock Text="{Binding ServiceNameFull}" ToolTip.Tip="{Binding ServiceNameFull}"
-												   Margin="0,3,0,0"  HorizontalAlignment="Stretch" 
-												   FontSize="14" Grid.Column="1" TextWrapping="NoWrap" />
-
-										<TextBlock IsVisible="{Binding IsIncluded}" Text="Auto Start Service:" 
-												   Margin="0,3,20,0"  HorizontalAlignment="Stretch" 
-												   FontSize="14" Grid.Column="2" TextWrapping="1" />
-										<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding ServiceAutoStart}"
-												 Margin="-20,-1,10,-4"  HorizontalAlignment="Left" ToolTip.Tip="Auto Start a Service Instance on First Access.  Note that Dispatcher will always start your client runtime regardless of this setting."
-												 Grid.Column="3" VerticalAlignment="Center">
-											<CheckBox.RenderTransform>
-												<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
-											</CheckBox.RenderTransform>
-										</CheckBox>
-										
-										<TextBlock IsVisible="{Binding IsIncluded}" Text="Secure:"
-												   Margin="0,3,20,0"  HorizontalAlignment="Stretch"
-												   FontSize="14" Grid.Column="4" TextWrapping="1" />
-										<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding UseSecurity}"
-												 Margin="-20,-1,10,-4"  HorizontalAlignment="Left"
-												 Grid.Column="5" VerticalAlignment="Center">
-											<CheckBox.RenderTransform>
-												<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
-											</CheckBox.RenderTransform>
-										</CheckBox>
-										
-										
-
-
-										<TextBlock IsVisible="{Binding IsIncluded}" Text="Port:" Margin="0,3,0,0"  
-												   HorizontalAlignment="Stretch" FontSize="14" Grid.Column="6" 
-												   TextWrapping="1" />
-										<TextBox IsVisible="{Binding IsIncluded}" Text="{Binding ServicePort}"
-												 Margin="0,0,0,0"  HorizontalAlignment="Left"
-												 TextAlignment="Center" FontSize="12" Grid.Column="7"
-												 MaxHeight="24" Height="24" MinHeight="24" Padding="3"
-												 TextWrapping="1" />
-
-										<TextBlock IsVisible="false" Text="UUID:" Margin="15,3,0,0"  HorizontalAlignment="Stretch" 
-												   FontSize="14" Grid.Column="6" TextWrapping="1" />
-										<TextBox IsVisible="false" Text="{Binding ServiceUUID}"
-												 MaxHeight="24" Height="24" MinHeight="24" Padding="3"
-												 Width="300" Margin="0,3,0,0"  HorizontalAlignment="Left"
-												 TextAlignment="Center" FontSize="12" Grid.Column="6" TextWrapping="1" />
-									</Grid>
+									<CustomerTools:ServiceView/>
 								</DataTemplate>
 							</ListBox.ItemTemplate>
 						</ListBox>
@@ -139,7 +74,7 @@
 				</Grid>
 			</Border>
 		</Grid>
-		<Border Grid.ColumnSpan="2" IsVisible="{Binding SecurityShown, FallbackValue=true}"
+		<Border Grid.ColumnSpan="2" IsVisible="{Binding SecurityShown, FallbackValue=false}"
 				 BorderBrush="DarkGray" Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
 			<Border VerticalAlignment="Center" Background="Transparent">
 				<Grid VerticalAlignment="Top" HorizontalAlignment="Center" MaxHeight="500" Margin="30">

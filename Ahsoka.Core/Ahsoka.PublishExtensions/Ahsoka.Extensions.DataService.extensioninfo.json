@@ -7,7 +7,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "DataService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "dataChannel": 6109,
       "behaviors": "AutoStart"

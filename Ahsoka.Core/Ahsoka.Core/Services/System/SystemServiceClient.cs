@@ -57,10 +57,10 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     }
 
     /// <summary>
-    /// Internall Testing Notificaiton
+    /// Testing Notificaiton
     /// </summary>
     /// <param name="dataValue"></param>
-    internal void EchoNotif(string dataValue)
+    public void EchoNotif(string dataValue)
     {
         EchoValue request = new() { DataValue = dataValue };
         SendMessageWithResponse<EmptyNotification>(SystemMessageTypes.Ids.RequestNotif, request);

@@ -186,7 +186,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
     {
         SendResponse(message, message.Message);
 
-        SendNotification(SystemMessageTypes.Ids.TestNotif, message.Message, GetClientNotificationId(message.Header.ClientId)); // Send ONLY to Registered Client
+        SendNotification(SystemMessageTypes.Ids.TestNotif, message.Message, message.Header.ClientId); // Send ONLY to Registered Client
     }
 
     private void HandleShutdown(AhsokaServiceRequest message)

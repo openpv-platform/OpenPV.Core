@@ -27,8 +27,8 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
     // Socket Management
     List<IAhsokaServiceSocket> handledSockets;
 
-    Dictionary<byte[], byte[]> clientIdToNotificationIds = [];
-    Dictionary<byte[], IAhsokaServiceSocket> validNotificationIds = [];
+    Dictionary<Guid, Guid> clientIdToNotificationIds = [];
+    Dictionary<Guid, IAhsokaServiceSocket> validNotificationIds = [];
 
     #endregion
 
@@ -205,26 +205,17 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
         // Send to Specific Client Or All Clients if Broadcast
         if (specificClient != null)
         {
-            validNotificationIds[specificClient]?.SendMessage(messageToSend);
+            var notifId = clientIdToNotificationIds[new Guid(specificClient)];
+            validNotificationIds[notifId]?.SendMessage(messageToSend);
         }
         else
         {
             foreach (var item in validNotificationIds)
             {
-                messageToSend.ClientId = item.Key;
+                messageToSend.ClientId = item.Key.ToByteArray();
                 item.Value.SendMessage(messageToSend);
             }
         }
-    }
-
-    /// <summary>
-    /// Translate a ClientID to its Notification ChannelID
-    /// </summary>
-    /// <param name="clientId"></param>
-    /// <returns></returns>
-    public byte[] GetClientNotificationId(byte[] clientId)
-    {
-        return clientIdToNotificationIds[clientId];
     }
 
     /// <summary>
@@ -292,8 +283,9 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             if (recievedMessage.Header.TransportId == CoreTransportIds.RegisterClient.EnumToInt())
             {
                 var registration = recievedMessage.Message as ClientRegistration;
-                validNotificationIds[registration.ClientId] = serviceSocket;
-                clientIdToNotificationIds[recievedMessage.Header.ClientId] = registration.ClientId;
+                var notifId = new Guid(registration.ClientId);
+                validNotificationIds[notifId] = serviceSocket;
+                clientIdToNotificationIds[new Guid(recievedMessage.Header.ClientId)] = notifId;
 
                 // Raise Call when Client is Connected
                 OnClientConnected();
@@ -303,8 +295,8 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
             else if (recievedMessage.Header.TransportId == CoreTransportIds.DeregisterClient.EnumToInt())
             {
                 var registration = recievedMessage.Message as ClientRegistration;
-                validNotificationIds.Remove(registration.ClientId);
-                clientIdToNotificationIds.Remove(recievedMessage.Header.ClientId);
+                validNotificationIds.Remove(new Guid(registration.ClientId));
+                clientIdToNotificationIds.Remove(new Guid(recievedMessage.Header.ClientId));
 
                 return;
             }

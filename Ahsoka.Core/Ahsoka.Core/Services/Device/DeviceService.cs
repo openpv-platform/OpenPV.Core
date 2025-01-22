@@ -132,7 +132,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
             if (item.State != DeviceState.NoState)
             {
                 if (item.DeviceType.ToString().ToLower().Contains("onboard")) // USB Devices will come from the USB Watcher
-                    SendNotification(DeviceMessageTypes.Ids.OnboardDeviceReady, item, GetClientNotificationId(request.Header.ClientId));
+                    SendNotification(DeviceMessageTypes.Ids.OnboardDeviceReady, item, request.Header.ClientId);
 
                 // Execute Auto Enable
                 if (item.State != DeviceState.Enabled && item.AutoEnable)

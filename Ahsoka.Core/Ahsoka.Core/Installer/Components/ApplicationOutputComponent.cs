@@ -128,6 +128,12 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)
     {
+        //Clear Legacy Startup Files
+        string envFile = SystemInfo.HardwareInfo.TargetPathInfo.GetAhsokaPath(ApplicationOutputComponent.AppEnvironmentScriptName);
+        string startFile = SystemInfo.HardwareInfo.TargetPathInfo.GetAhsokaPath(ApplicationOutputComponent.UIHelperScriptName);
+        if (File.Exists(envFile)) File.Delete(envFile);
+        if (File.Exists(startFile)) File.Delete(startFile);
+
         var valid = ValidateLicenses(context, item);
         if (!valid)
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"One or more licenses were not valid." });

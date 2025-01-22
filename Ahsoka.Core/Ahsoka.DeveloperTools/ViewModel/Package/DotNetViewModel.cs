@@ -20,11 +20,11 @@ internal class DotNetViewModel : ViewModelBase
 {
     private readonly MainViewModel parentViewModel;
     private readonly PackageInformation packageInfo;
-   
+
     public bool SdkNeedsUpdate
-    { 
-        get; 
-        set; 
+    {
+        get;
+        set;
     }
 
     public void UpdateSDK()
@@ -65,7 +65,7 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-   
+
     public string ProjectPath
     {
         get { return packageInfo.DotNetInfo.ProjectPath; }
@@ -75,7 +75,7 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-    
+
     public string PublishProfile
     {
         get { return packageInfo.DotNetInfo.PublishProfile; }
@@ -148,6 +148,17 @@ internal class DotNetViewModel : ViewModelBase
                                  parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Count() == 0;
         var frameworkInfo = GetFrameworkInfo();
         var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion();
+
+        if (frameworkInfo != null)
+            if (new Version(frameworkInfo.FrameworkVersion).Major < new Version(parentViewModel.GetVersion()).Major)
+            {
+                string packageExtensionFolder = parentViewModel.SelectedPackage.PackageInfo.GetPackageExtentionFolder();
+                if (Directory.Exists(packageExtensionFolder))
+                    Directory.Delete(packageExtensionFolder, true);
+
+                foreach (var item in parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions)
+                    item.InstalledVersion = "0.0";
+            }
 
         if (!cliExists || !extensionsUpToDate || frameworkNeedsUpdate)
             SdkNeedsUpdate = true;

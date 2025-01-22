@@ -99,7 +99,7 @@ internal class InstallerFileList
 
         fileList.Clear();
 
-        selectedFile = fileList.IndexOf(currentSelectedItem);
+        selectedFile = tempList.IndexOf(currentSelectedItem);
 
         if (selectedFile < 0)
             selectedFile = 0;

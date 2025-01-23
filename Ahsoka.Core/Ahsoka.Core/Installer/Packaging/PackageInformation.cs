@@ -129,7 +129,10 @@ public class PackageInformation : PackageHeader
     internal string GetPackageExtentionFolder()
     {
         if (ApplicationType == Installer.ApplicationType.Dotnet)
-            return Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()),"obj", Extensions.ExtensionsFolder);
+        {
+            string projectFolder = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()),DotNetInfo.ProjectPath));
+            return Path.Combine(projectFolder, "obj", Extensions.ExtensionsFolder);
+        }
         else
             return Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), Extensions.ExtensionsFolder);
 

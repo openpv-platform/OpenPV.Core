@@ -1,14 +1,15 @@
 {
-  "version": "4.0.1.10048",
+  "version": "4.0.1.10065",
   "applicationType": "Dotnet",
-  "execCommand": "Ahsoka.CS.Drawing",
-  "packageName": "Ahsoka.CS.Drawing",
-  "packageDescription": "Drawing and Touch With SKIA using Ahsoka DrawingAPI",
+  "execCommand": "Ahsoka.CS.Blank.Advanced",
+  "packageName": "Ahsoka.CS.Blank.Advanced",
+  "packageDescription": "Advanced Ahsoka Starter Project",
   "applicationVersion": "3.0",
-  "packageApplicationFolder": "publish",
-  "packageOutputDirectory": "../PackageOutput",
+  "packageApplicationFolder": "../Platform_OpenView/publish",
+  "packageOutputDirectory": "PackageOutput",
+  "packageSigningCertFile": "No Value",
   "licenses": [],
-  "optimizedServiceManager": false,
+  "optimizedServiceManager": true,
   "customPackageInfo": {
     "includeApplication": false,
     "includeBootLogo": false,
@@ -16,15 +17,16 @@
     "includeFirmwareUpdate": false
   },
   "dotNetInfo": {
-    "projectPath": "Ahsoka.CS.Drawing.csproj",
-    "publishProfile": "Properties\\PublishProfiles\\LinuxProfile.pubxml"
+    "projectPath": "../Ahsoka.CS.Blank.Advanced.csproj",
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfile.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
       "extensionInfo": [],
-      "startupDelay": 0,
+      "startupDelay": 3,
+      "serviceKey": "ServiceKey",
       "requireChallenge": "NotRequired",
       "services": [
         {
@@ -34,14 +36,14 @@
           "tcpConnectionAddress": "localhost",
           "dataChannel": 5001,
           "isExtension": false,
-          "behaviors": "AutoStart"
+          "behaviors": 3
         },
         {
           "socketType": "TcpSocket",
-          "serviceName": "DeviceService",
+          "serviceName": "SecurityService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
-          "dataChannel": 5009,
+          "dataChannel": 5007,
           "isExtension": false,
           "behaviors": "AutoStart"
         }
@@ -51,24 +53,20 @@
   },
   "screenConfiguration": {
     "showUnknownSurfaces": false,
-    "bootLogoPath": "EnovLogo.png",
+    "bootLogoPath": "",
     "orientation": "DefaultOrientation",
     "surfaceSetups": []
   },
   "hardwareConfiguration": {
-    "hardwareItems": [
-      {
-        "name": "WiFi Combo Module",
-        "deviceType": "OnboardWirelessComboModule",
-        "customStartup": ""
-      }
-    ]
+    "hardwareItems": [],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinux",
   "platformQualifier": "S70",
   "securityMode": "None",
-  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "applicationId": "6e05ae42-c6be-40df-ae8f-d138273ba3f7",
   "components": []
 }

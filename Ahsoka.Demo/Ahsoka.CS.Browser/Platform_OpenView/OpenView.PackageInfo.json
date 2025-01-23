@@ -1,22 +1,23 @@
 {
-  "version": "3.6.1.10007",
+  "version": "4.0.1.10065",
   "applicationType": "Dotnet",
-  "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Browser",
   "packageName": "Ahsoka.CS.Browser",
   "packageDescription": "Browser Project with Razor / WebAPI Backend",
   "applicationVersion": "3.0",
-  "packageApplicationFolder": "publish",
-  "packageOutputDirectory": "../PackageOutput",
+  "packageApplicationFolder": "../Platform_OpenView/publish",
+  "packageOutputDirectory": "PackageOutput",
   "licenses": [],
-  "includeApplication": false,
-  "includeBootLogo": false,
-  "includeInstallerUI": false,
-  "includeFirmwareUpdate": true,
   "optimizedServiceManager": true,
+  "customPackageInfo": {
+    "includeApplication": false,
+    "includeBootLogo": false,
+    "includeInstallerUI": false,
+    "includeFirmwareUpdate": false
+  },
   "dotNetInfo": {
-    "projectPath": "Ahsoka.CS.Browser.csproj",
-    "publishProfile": "Properties\\PublishProfiles\\FolderProfile.pubxml"
+    "projectPath": "../Ahsoka.CS.Browser.csproj",
+    "publishProfile": "../Properties/PublishProfiles/FolderProfile.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
@@ -31,7 +32,6 @@
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "isExtension": false,
           "behaviors": "AutoStart"
@@ -39,6 +39,17 @@
       ]
     },
     "environmentValues": []
+  },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "",
+    "orientation": "DefaultOrientation",
+    "surfaceSetups": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,

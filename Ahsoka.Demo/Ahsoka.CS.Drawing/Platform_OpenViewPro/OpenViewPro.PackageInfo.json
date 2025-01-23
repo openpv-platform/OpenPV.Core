@@ -1,12 +1,12 @@
 {
-  "version": "4.0.1.10049",
+  "version": "4.0.1.10065",
   "applicationType": "Dotnet",
-  "execCommand": "Ahsoka.CS.Drawing.Pro",
+  "execCommand": "Ahsoka.CS.Drawing",
   "packageName": "Ahsoka.CS.Drawing.Pro",
   "packageDescription": "Drawing, LayerManager, and Touch With SKIA using Ahsoka DrawingAPI",
   "applicationVersion": "3.0",
-  "packageApplicationFolder": "publish",
-  "packageOutputDirectory": "../PackageOutput",
+  "packageApplicationFolder": "../Platform_OpenViewPro/publish",
+  "packageOutputDirectory": "PackageOutput",
   "licenses": [],
   "optimizedServiceManager": false,
   "customPackageInfo": {
@@ -16,8 +16,8 @@
     "includeFirmwareUpdate": true
   },
   "dotNetInfo": {
-    "projectPath": "Ahsoka.CS.Drawing.Pro.csproj",
-    "publishProfile": "Properties\\PublishProfiles\\LinuxProfilePro.pubxml"
+    "projectPath": "..\\Ahsoka.CS.Drawing.csproj",
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfilePro.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
@@ -33,15 +33,6 @@
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
           "dataChannel": 5001,
-          "isExtension": false,
-          "behaviors": "AutoStart"
-        },
-        {
-          "socketType": "TcpSocket",
-          "serviceName": "DeviceService",
-          "tcpListenAddress": "*",
-          "tcpConnectionAddress": "localhost",
-          "dataChannel": 5009,
           "isExtension": false,
           "behaviors": "AutoStart"
         }
@@ -87,24 +78,34 @@
       {
         "name": "IO Control Module",
         "deviceType": "IoControlModule",
-        "customStartup": ""
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": false
       },
       {
         "name": "WiFi Module",
         "deviceType": "OnboardWifiModule",
-        "customStartup": ""
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": false
       },
       {
         "name": "Bluetooth Module",
         "deviceType": "OnboardBtModule",
-        "customStartup": ""
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": false
       },
       {
         "name": "Ethernet",
         "deviceType": "OnboardEthernet",
-        "customStartup": ""
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": false
       }
-    ]
+    ],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,

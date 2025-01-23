@@ -1,4 +1,5 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core.Drawing.Utility;
+using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.System;
@@ -37,12 +38,16 @@ public class Program
 
         // Start Device Notifications.  Any Ready Devices will send OnReady (in case ready before now), USB Devices will begin notifying on insert.
         deviceServiceClient.EnableDeviceNotifications();
-        
-        ApplicationContext.WaitForExitSignal();
+      
+        DrawUI ui = new DrawUI();
+        ui.StartAndRun(Dispatch.Dispatcher.Default, "OpenPV Device Demo");
 
         Console.WriteLine($"Stopping Network");
         var modem = cellService.GetAdapters().Adapters.First();
         cellService.StopNetwork(modem);
+
+
+       
 
         // Use Exit to Shutdown All Services.
         ApplicationContext.Exit();

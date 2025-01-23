@@ -154,16 +154,16 @@ public class PackagingTests : LinearTestBase
 
         Environment.CurrentDirectory = appOutputs;
 
-        string packagefile = Path.Combine(appOutputs, "OpenLinuxST.PackageInfo.json");
+        string packagefile = Path.Combine(appOutputs,"Platform_OpenView", "OpenView.PackageInfo.json");
         PackageInformation package = JsonUtility.Deserialize<PackageInformation>(File.ReadAllText(packagefile));
         package.OptimizedServiceManager = optimized;
 
         if (asCodesys)
         {
             package.ApplicationType = ApplicationType.CODESYS;
-            Directory.CreateDirectory(appOutputs + "\\publish");
-            string appname = Path.Combine(appOutputs, "publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".app");
-            string crc = Path.Combine(appOutputs, "publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".crc");
+            Directory.CreateDirectory(appOutputs + "\\Platform_OpenView\\publish");
+            string appname = Path.Combine(appOutputs, "Platform_OpenView\\publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".app");
+            string crc = Path.Combine(appOutputs, "Platform_OpenView\\publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".crc");
             File.WriteAllText(appname, string.Empty);
             File.WriteAllText(crc, string.Empty);
         }
@@ -183,7 +183,7 @@ public class PackagingTests : LinearTestBase
         package.PackageOutputDirectory = "OutputFolder";
 
         // Write Fake Exe so we don't have to build
-        string appFolder = Path.Combine(appOutputs, package.PackageApplicationFolder);
+        string appFolder = Path.Combine(appOutputs, "Platform_OpenView", package.PackageApplicationFolder);
         if (!Directory.Exists(appFolder))
             Directory.CreateDirectory(appFolder);
 

@@ -1,25 +1,29 @@
 {
-  "version": "3.1.1.20025",
+  "version": "4.0.1.10065",
   "applicationType": "Dotnet",
-  "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Services",
   "packageName": "Ahsoka.CS.Services",
   "packageDescription": "Example of creating a Custom Ahsoka Service",
   "applicationVersion": "1.0",
-  "packageApplicationFolder": "publish",
-  "packageOutputDirectory": "../PackageOutput",
-  "includeInstallerUI": false,
-  "includeFirmwareUpdate": false,
+  "packageApplicationFolder": "../Platform_OpenView/publish",
+  "packageOutputDirectory": "PackageOutput",
   "licenses": [],
+  "optimizedServiceManager": true,
+  "customPackageInfo": {
+    "includeApplication": false,
+    "includeBootLogo": false,
+    "includeInstallerUI": false,
+    "includeFirmwareUpdate": false
+  },
   "dotNetInfo": {
-    "projectPath": "Ahsoka.CS.Services.csproj",
-    "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
+    "projectPath": "../Ahsoka.CS.Services.csproj",
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfile.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
-      "extensions": [],
+      "extensionInfo": [],
       "startupDelay": 3,
       "requireChallenge": "NotRequired",
       "services": [
@@ -28,15 +32,24 @@
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "isExtension": false,
-          "behaviors": "AutoStart",
-          "configurationFile": ""
+          "behaviors": "AutoStart"
         }
       ]
     },
     "environmentValues": []
+  },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "",
+    "orientation": "DefaultOrientation",
+    "surfaceSetups": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,

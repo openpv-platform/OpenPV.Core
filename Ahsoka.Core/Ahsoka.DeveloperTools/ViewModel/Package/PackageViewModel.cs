@@ -1119,9 +1119,17 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         string pathToCommand = string.Empty;
 
         // Run Machine / Tools Downloads
-        string pathToKits = Path.GetDirectoryName(PackageInfo.GetPackageInfoPath());
+        string pathToKits;  
         if (ApplicationType == ApplicationType.Dotnet)
-            pathToKits = Path.Combine(pathToKits, "obj");
+        {
+            string projectPath = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), PackageInfo.DotNetInfo.ProjectPath));
+            pathToKits = Path.Combine(projectPath, "obj");
+        }
+        else
+        {
+            pathToKits = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), PackageInfo.CppInfo.ProjectPath));
+        }
+
 
         pathToCommand = Path.Combine(pathToKits, PlatformSupportPathInfo.PlatformSupportRootFolderName_App, PlatformSupportPathInfo.GetPlatformFolderName(SystemInfo.CurrentPlatform), "CommandLine", "Ahsoka.CommandLine");
 

@@ -7,13 +7,13 @@
   "packageName": "Ahsoka.CS.Blank.Basic",
   "packageDescription": "Basic Ahsoka Starter Project",
   "applicationVersion": "3.0",
-  "packageApplicationFolder": "publish",
-  "packageOutputDirectory": "../PackageOutput",
+  "packageApplicationFolder": "../Platform_OpenView/publish",
+  "packageOutputDirectory": "PackageOutput",
   "includeInstallerUI": false,
   "licenses": [],
   "dotNetInfo": {
-    "projectPath": "Ahsoka.CS.Blank.Basic.csproj",
-    "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
+    "projectPath": "../Ahsoka.CS.Blank.Basic.csproj",
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfile.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {

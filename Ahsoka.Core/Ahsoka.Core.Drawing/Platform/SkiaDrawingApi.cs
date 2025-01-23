@@ -1,10 +1,9 @@
 ﻿using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
+using Ahsoka.Services.LayerManager;
 using Ahsoka.System;
 using SkiaSharp;
-using Ahsoka.Services.LayerManager;
 
 public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 {
@@ -203,7 +202,7 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
         var paint = new SKPaint
         {
             Color = textInfo.Color.AsSKColor(),
-            BlendMode = SKBlendMode.Multiply,
+           // BlendMode = SKBlendMode.Overlay,
             IsAntialias = true,
         };
 

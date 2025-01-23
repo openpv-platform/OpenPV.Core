@@ -1,13 +1,15 @@
 ﻿using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Dispatch;
-using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Device;
-using Ahsoka.Services.System;
-using Ahsoka.System;
+using System;
 
-internal class Program
+namespace Ahsoka.Core.Drawing.Utility;
+
+/// <summary>
+/// Simple Class for Drawing a Background (Checkerboard) with Animation
+/// Mostly used for a background on demo applications
+/// </summary>
+public class DrawUI
 {
     // Enabling this will enable use the DamageRectangle Algorithm 
     // to draw only changed parts of the screen.  This is helpfull when drawing complex
@@ -21,54 +23,31 @@ internal class Program
     static readonly DrawingColor colorFillTouched = new(0xFF444444);
     static readonly DrawingColor colorStroke = new(0xFF111111);
 
-
     /// <summary>
     /// Simple Example of Drawing with AhsokaDrawing
     /// </summary>
     /// <param name="args"></param>
-    private static void Main(string[] args)
+    public void StartAndRun(Dispatcher defaultDispatcher, string title)
     {
-        DrawingRect originalBounds = DrawingRect.Empty;
-
-        // Add For Communication with Display
-        SystemServiceClient client = new();
-        DeviceServiceClient deviceClient = new();
-        Dispatcher.Default.AddStartupItem(client);
-        Dispatcher.Default.AddStartupItem(deviceClient);
-
-        // Surface ID is used to assign a value which can
-        // be use to position via LayoutService or configure the window in OpenPV
-        int surfaceId = 121212;
-        
-        // Create the Ahsoka Drawing API and matching Window
-        DrawingWindow window = new(surfaceId, "AhsokaDrawingWindow"); // Surface ID's used on Pro Platform
-        var api = window.GetApi();
-
-        AhsokaLogging.LogMessage( AhsokaVerbosity.Medium, "Window Surface ID = " + window.GetSurfaceId());
+        // Create the Ahsoka Cairo Drawing API and matching Window
+        DrawingWindow window = new(OperatingSystem.IsLinux());
+        SkiaDrawingApi api = window.GetSkiaApi();
 
         // Setup Drawing Objects and Values
         var cloudTemp = api.CreateImage("Cloud.png");
 
+        // This is our screen bounds
+        DrawingSize bounds = window.Size;
+
         // This is the start position of our Circle / Cloud
-        DrawingRect cloudPosition = new((api.ScreenWidth / 2.0f - cloudTemp.Width / 2.0f),
-                                        (api.ScreenHeight / 2.0f - cloudTemp.Height / 2.0f),
-                                        cloudTemp.Width, cloudTemp.Height);
+        DrawingRect cloudPosition = new(bounds.Width / 2.0f - cloudTemp.Width / 2.0f,
+                            bounds.Height / 2.0f - cloudTemp.Height / 2.0f,
+                            cloudTemp.Width, cloudTemp.Height);
+
 
         // Load our Font.  These can be used for any Text Infos your app creates
         // and disposed when no longer used.
         var typeface = api.LoadTypeface("Font.ttf", "Droid Sans");
-
-        // Create Paint Objects for Circle (we show a Gradient Color Here)
-        var circlePaint = new DrawingPaint(colorStroke, 2, colorFill, DrawingColors.IndianRed,               // Colors
-                                            new DrawingRect(0,0, cloudPosition.Width, cloudPosition.Height), // Bounds of Circle (Relative to the Matrix when we Draw)
-                                            DrawingPaintStyles.Gradient,                                     // Gradient
-                                            (float)Math.PI / 4);                                             // Rotate 1/4 PI (45 degrees)
-
-        var circlePaintTouched = new DrawingPaint(colorStroke, 2, colorFillTouched);
-        var checkerPaint = new DrawingPaint(DrawingColors.Empty, 0, DrawingColors.DarkGray);
-
-        // Create a simple Path (Just a square using the SVG Syntax
-        var path = api.CreatePath("M20.388,10.918L32,12.118l-8.735,7.749L25.914,31.4l-9.893-6.088L6.127,31.4l2.695-11.533L0,12.118 l11.547-1.2L16.026,0.6L20.388,10.918z");
 
         // Create a Text Info to describe our font / text attributes
         DrawingTextInfo textInfo = new()
@@ -79,9 +58,30 @@ internal class Program
             Typeface = typeface
         };
 
+        // Create a Text Info to describe our font / text attributes
+        DrawingTextInfo titleTextInfo = new()
+        {
+            Alignment = DrawingTextAlignment.Left,
+            Color = DrawingColors.White,
+            TextSize = 42,
+            Typeface = typeface
+        };
+
         float velocity = 8.0f;
         float angle = (float)Math.PI * 4;
         bool touched = false;
+
+        // Create Paint Objects for Circle (we show a Gradient Color Here)
+        var circlePaint = new DrawingPaint(colorStroke, 2, colorFill, DrawingColors.IndianRed,               // Colors
+                                            new DrawingRect(0, 0, cloudPosition.Width, cloudPosition.Height), // Bounds of Circle (Relative to the Matrix when we Draw)
+                                            DrawingPaintStyles.Gradient,                                     // Gradient
+                                            (float)Math.PI / 4);                                             // Rotate 1/4 PI (45 degrees)
+
+        // Create a simple Path (Just a square using the SVG Syntax
+        var path = api.CreatePath("M20.388,10.918L32,12.118l-8.735,7.749L25.914,31.4l-9.893-6.088L6.127,31.4l2.695-11.533L0,12.118 l11.547-1.2L16.026,0.6L20.388,10.918z");
+
+        var circlePaintTouched = new DrawingPaint(colorStroke, 2, colorFillTouched);
+        var checkerPaint = new DrawingPaint(DrawingColors.Empty, 0, DrawingColors.DarkGray);
 
         window.PrepareFrame += (o, args) =>
         {
@@ -89,16 +89,9 @@ internal class Program
             foreach (var eventItem in args.Events)
             {
                 if (eventItem.Event == TouchEvent.Pressed)
-                {
-                    originalBounds = window.GetSurfaceLocation(window.GetSurfaceId());
-                    window.UpdateLocationRectangle(121212, (int)originalBounds.X + eventItem.X - 100, (int)originalBounds.Y + eventItem.Y - 100, 200, 200, true);
                     touched = true;
-                }
                 else if (eventItem.Event == TouchEvent.Released)
-                {
-                    window.UpdateLocationRectangle(121212, (int)originalBounds.X, (int)originalBounds.Y, (int)originalBounds.Width, (int)originalBounds.Height, true);
                     touched = false;
-                }
             }
 
             // Push Previous Frames Cloud Position since we moved the cloud.
@@ -108,7 +101,7 @@ internal class Program
                 args.ClipRegions.Add(cloudPosition.GetInflatedRectangle(4, 4));
 
             // Calculate new Cloud Position
-            float x = cloudPosition.X + (velocity * (float)Math.Cos(angle * Math.PI / 180f));
+            float x = cloudPosition.X + velocity * (float)Math.Cos(angle * Math.PI / 180f);
             float y = cloudPosition.Y + velocity * (float)Math.Sin(angle * Math.PI / 180f);
 
             // Collision Detection.
@@ -129,8 +122,6 @@ internal class Program
             args.ShouldRender = true;
         };
 
-
-
         // Handle the Draw Frame.
         window.RenderFrame += (o, args) =>
         {
@@ -149,8 +140,10 @@ internal class Program
                 }
 
             // Translate to our Star
-            api.PushMatrix(api.CreateTranslateMatrix(60,60));
-            api.DrawPath(path, circlePaint);
+            api.PushMatrix(api.CreateTranslateMatrix(60, 60));
+            api.DrawPath(path,circlePaint);
+            api.DrawText(title, 45, titleTextInfo.TextSize - 12, titleTextInfo);
+          
             api.PopMatrix();
 
             // Translate to our Circle Position
@@ -160,7 +153,7 @@ internal class Program
             api.DrawCircle(cloudPosition.Width / 2, cloudPosition.Height / 2, cloudPosition.Width / 2, touched ? circlePaintTouched : circlePaint);
 
             // Draw the Cloud Icon at its selected Position
-            api.DrawBitmap(cloudTemp, new DrawingRect(0,0,cloudPosition.Width, cloudPosition.Height));
+            api.DrawBitmap(cloudTemp, new DrawingRect(0, 0, cloudPosition.Width, cloudPosition.Height));
 
             // Draw the current time in our circle
             api.DrawText(DateTime.Now.ToString("hh:mm tt"), cloudPosition.Width / 2, cloudPosition.Height / 2 + 32, textInfo);
@@ -168,14 +161,11 @@ internal class Program
             api.PopMatrix();
         };
 
-        // Start Dispatcher for System with Our Window Invoker
-        Dispatcher.Default.StartAndRun(window.Invoke);
+        // Start the Dispatcher and Use Our Windows Invoker
+        defaultDispatcher.StartAndRun(window.Invoke);
 
         // Now start the Main Drawing Loop 
         // we will block here until the app shuts down.
         window.ShowAndRun();
-
-        // Shut Down Dispatcher
-        Dispatcher.Default.Stop();
     }
 }

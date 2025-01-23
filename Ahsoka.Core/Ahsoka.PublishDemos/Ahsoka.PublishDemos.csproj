@@ -22,7 +22,6 @@
 			<DEMO_Blank_Advanced Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Blank.Advanced\**" />
 			<DEMO_SERVICES Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Services\**" />
 			<DEMO_DRAWING Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Drawing\**" />
-			<DEMO_DRAWING_PRO Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Drawing.Pro\**" />
 			<DEMO_DEVICES Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Devices\**" />
 			<DEMO_BROWSER Include="$(DemoRoot)Ahsoka.Demo\Ahsoka.CS.Browser\**" />
 		</ItemGroup>
@@ -55,11 +54,6 @@
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Drawing\obj\" />
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Drawing\.vs\" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Drawing\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Drawing.zip" />
-
-		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Drawing.Pro\bin\" />
-		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Drawing.Pro\obj\" />
-		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Drawing.Pro\.vs\" />
-		<ZipDirectory Overwrite="true" SourceDirectory="$(DemoRoot)BuildOutputs\Ahsoka.CS.Drawing.Pro\" DestinationFile="$(DemoRoot)\SparkUpload\Ahsoka.CS.Drawing.Pro.zip" />
 
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Devices\bin\" />
 		<RemoveDir ContinueOnError="true" Directories="$(DemoRoot)\BuildOutputs\Ahsoka.CS.Devices\obj\" />

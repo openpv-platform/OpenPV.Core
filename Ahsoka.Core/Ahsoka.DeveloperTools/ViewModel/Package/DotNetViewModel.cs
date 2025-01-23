@@ -128,7 +128,8 @@ internal class DotNetViewModel : ViewModelBase
 
     private string GetFrameworkInfoPath()
     {
-        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), $"obj/{PlatformSupportPathInfo.PlatformSupportRootFolderName_App}/AhsokaFrameworkInfo.json");
+        string projectPath = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ProjectPath));
+        return Path.Combine(projectPath, $"obj/{PlatformSupportPathInfo.PlatformSupportRootFolderName_App}/AhsokaFrameworkInfo.json");
     }
 
     public DotNetViewModel(MainViewModel parentViewModel, PackageInformation packageInfo)
@@ -147,7 +148,7 @@ internal class DotNetViewModel : ViewModelBase
         var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => !x.IsInstalled) ||
                                  parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Count() == 0;
         var frameworkInfo = GetFrameworkInfo();
-        var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion();
+        var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || frameworkInfo?.PlatformFamily != parentViewModel.SelectedPackage.PlatformFamily;
 
         if (frameworkInfo != null)
             if (new Version(frameworkInfo.FrameworkVersion).Major < new Version(parentViewModel.GetVersion()).Major)
@@ -189,7 +190,7 @@ internal class DotNetViewModel : ViewModelBase
         string result = "Process Ended";
         try
         {
-            string projectPath = Path.GetDirectoryName(packageInfo.GetPackageInfoPath());
+            string projectPath = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ProjectPath));
             if (!Directory.Exists(Path.Combine(projectPath)))
             {
                 parentViewModel.Console.AddConsoleLine("Please Select a Project Path.");
@@ -249,7 +250,7 @@ internal class DotNetViewModel : ViewModelBase
 
             parentViewModel.Console.AddConsoleLine($" ");
 
-            string fileInfo = JsonUtility.Serialize(new CppFrameworkInfo() { FrameworkVersion = parentViewModel.GetVersion() });
+            string fileInfo = JsonUtility.Serialize(new CppFrameworkInfo() { FrameworkVersion = parentViewModel.GetVersion(), PlatformFamily = packageInfo.PlatformFamily });
             File.WriteAllText(GetFrameworkInfoPath(), fileInfo);
             OnPropertyChanged(nameof(InstalledFramework));
             OnPropertyChanged(nameof(FrameworkButtonText));

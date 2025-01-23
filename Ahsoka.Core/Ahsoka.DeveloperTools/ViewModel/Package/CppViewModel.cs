@@ -344,4 +344,5 @@ internal class CppViewModel : ViewModelBase
 public class CppFrameworkInfo
 {
     public string FrameworkVersion { get; set; }
+    public PlatformFamily PlatformFamily { get; set; }
 }

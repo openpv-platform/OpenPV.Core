@@ -21,22 +21,40 @@ internal class Program
     static readonly DrawingColor colorFillTouched = new(0xFF444444);
     static readonly DrawingColor colorStroke = new(0xFF111111);
 
+
     /// <summary>
     /// Simple Example of Drawing with AhsokaDrawing
     /// </summary>
     /// <param name="args"></param>
     private static void Main(string[] args)
     {
+        DrawingRect originalBounds = DrawingRect.Empty;
+
         // Add For Communication with Display
         SystemServiceClient client = new();
-        DeviceServiceClient deviceClient = new();
         Dispatcher.Default.AddStartupItem(client);
-        Dispatcher.Default.AddStartupItem(deviceClient);
-
+       
         // Create the Ahsoka Drawing API and matching Window
-        DrawingWindow window = new(OperatingSystem.IsLinux()); // Surface ID's used on Pro Platform
+        DrawingWindow window;
+        int surfaceId = 0;
+        bool supportLayerManager = (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro);
+        if (supportLayerManager)
+        {
+            // Layer Manager Support (Pro, etc)
+            surfaceId = 121212;
+            window = new(surfaceId, "AhsokaDrawingWindow"); // Surface ID's used on Pro Platform
+            AhsokaLogging.LogMessage( AhsokaVerbosity.Medium, "Window Surface ID = " + window.GetSurfaceId());
+        }
+        else
+        {
+            // Non Layer Manager (Windows, OpenView)
+            window = new DrawingWindow(OperatingSystem.IsLinux());
+        }
+        
+        // Fetch the API from the Window for Drawing.
         var api = window.GetApi();
 
+       
         // Setup Drawing Objects and Values
         var cloudTemp = api.CreateImage("Cloud.png");
 
@@ -51,7 +69,7 @@ internal class Program
 
         // Create Paint Objects for Circle (we show a Gradient Color Here)
         var circlePaint = new DrawingPaint(colorStroke, 2, colorFill, DrawingColors.IndianRed,               // Colors
-                                            new DrawingRect(0, 0, cloudPosition.Width, cloudPosition.Height), // Bounds of Circle (Relative to the Matrix when we Draw)
+                                            new DrawingRect(0,0, cloudPosition.Width, cloudPosition.Height), // Bounds of Circle (Relative to the Matrix when we Draw)
                                             DrawingPaintStyles.Gradient,                                     // Gradient
                                             (float)Math.PI / 4);                                             // Rotate 1/4 PI (45 degrees)
 
@@ -80,9 +98,24 @@ internal class Program
             foreach (var eventItem in args.Events)
             {
                 if (eventItem.Event == TouchEvent.Pressed)
+                {
+                    // Resize the Window on Pro
+                    if (surfaceId > 0)
+                    {
+                        originalBounds = window.GetSurfaceLocation(window.GetSurfaceId());
+                        window.UpdateLocationRectangle(121212, (int)originalBounds.X + eventItem.X - 100, (int)originalBounds.Y + eventItem.Y - 100, 200, 200, true);
+                    }
+
                     touched = true;
+                }
                 else if (eventItem.Event == TouchEvent.Released)
+                {
+
+                    if (surfaceId > 0)
+                        window.UpdateLocationRectangle(121212, (int)originalBounds.X, (int)originalBounds.Y, (int)originalBounds.Width, (int)originalBounds.Height, true);
+
                     touched = false;
+                }
             }
 
             // Push Previous Frames Cloud Position since we moved the cloud.
@@ -133,7 +166,7 @@ internal class Program
                 }
 
             // Translate to our Star
-            api.PushMatrix(api.CreateTranslateMatrix(60, 60));
+            api.PushMatrix(api.CreateTranslateMatrix(60,60));
             api.DrawPath(path, circlePaint);
             api.PopMatrix();
 
@@ -144,7 +177,7 @@ internal class Program
             api.DrawCircle(cloudPosition.Width / 2, cloudPosition.Height / 2, cloudPosition.Width / 2, touched ? circlePaintTouched : circlePaint);
 
             // Draw the Cloud Icon at its selected Position
-            api.DrawBitmap(cloudTemp, new DrawingRect(0, 0, cloudPosition.Width, cloudPosition.Height));
+            api.DrawBitmap(cloudTemp, new DrawingRect(0,0,cloudPosition.Width, cloudPosition.Height));
 
             // Draw the current time in our circle
             api.DrawText(DateTime.Now.ToString("hh:mm tt"), cloudPosition.Width / 2, cloudPosition.Height / 2 + 32, textInfo);

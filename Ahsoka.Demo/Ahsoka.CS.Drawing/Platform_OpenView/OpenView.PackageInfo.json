@@ -1,16 +1,14 @@
 {
-  "version": "3.7.5.0",
+  "version": "4.0.1.10065",
   "applicationType": "Dotnet",
-  "systemOrientation": "DefaultOrientation",
-  "execCommand": "Ahsoka.CS.Blank.Advanced",
-  "packageName": "Ahsoka.CS.Blank.Advanced",
-  "packageDescription": "Advanced Ahsoka Starter Project",
+  "execCommand": "Ahsoka.CS.Drawing",
+  "packageName": "Ahsoka.CS.Drawing.Select",
+  "packageDescription": "Drawing and Touch With SKIA using Ahsoka DrawingAPI",
   "applicationVersion": "3.0",
-  "packageApplicationFolder": "publish",
-  "packageOutputDirectory": "../PackageOutput",
-  "packageSigningCertFile": "No Value",
+  "packageApplicationFolder": "../Platform_OpenView/publish",
+  "packageOutputDirectory": "PackageOutput",
   "licenses": [],
-  "optimizedServiceManager": true,
+  "optimizedServiceManager": false,
   "customPackageInfo": {
     "includeApplication": false,
     "includeBootLogo": false,
@@ -18,16 +16,15 @@
     "includeFirmwareUpdate": false
   },
   "dotNetInfo": {
-    "projectPath": "Ahsoka.CS.Blank.Advanced.csproj",
-    "publishProfile": "Properties/PublishProfiles/LinuxProfile.pubxml"
+    "projectPath": "../Ahsoka.CS.Drawing.csproj",
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfile.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
       "extensionInfo": [],
-      "startupDelay": 3,
-      "serviceKey": "ServiceKey",
+      "startupDelay": 0,
       "requireChallenge": "NotRequired",
       "services": [
         {
@@ -35,18 +32,16 @@
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "isExtension": false,
-          "behaviors": 3
+          "behaviors": "AutoStart"
         },
         {
           "socketType": "TcpSocket",
-          "serviceName": "SecurityService",
+          "serviceName": "DeviceService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-          "dataChannel": 5007,
+          "dataChannel": 5009,
           "isExtension": false,
           "behaviors": "AutoStart"
         }
@@ -54,11 +49,22 @@
     },
     "environmentValues": []
   },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "EnovLogo.png",
+    "orientation": "DefaultOrientation",
+    "surfaceSetups": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
+  },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
   "platformFamily": "OpenViewLinux",
   "platformQualifier": "S70",
   "securityMode": "None",
-  "applicationId": "6e05ae42-c6be-40df-ae8f-d138273ba3f7",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
   "components": []
 }

@@ -245,7 +245,7 @@ internal class DotNetViewModel : ViewModelBase
                         parentViewModel.Console.AddConsoleText(info.Message);
                 });
 
-                RunSdkCommands(projectPath, parentViewModel, progress);
+                RunSdkCommands(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), parentViewModel, progress);
             });
 
             parentViewModel.Console.AddConsoleLine($" ");

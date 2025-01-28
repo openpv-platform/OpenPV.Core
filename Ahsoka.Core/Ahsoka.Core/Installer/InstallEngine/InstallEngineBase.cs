@@ -302,7 +302,7 @@ public class InstallEngineBase
             new StartupInstallerPlugin(), // Generates Start Scripts.
             new LayerManagerPlugin(),
             new DeviceManagerPlugin(),
-             .. Extensions.GetExtensions<InstallerPlugin>(),
+             .. InstallerPlugin.GetExtensionPlugins(this.packageInfo.PlatformFamily),
         ];
 
         // Remove Nulls
@@ -484,7 +484,7 @@ public class InstallEngineBase
         components.Add(new DeviceFirmwareComponent());
 
         // Add any Extensions
-        var results = System.Extensions.GetExtensions<InstallEngineComponent>();
+        var results = InstallEngineComponent.GetExtensionPlugins(packedComponentData.PlatformFamily);
         foreach(var item in results)
         {
             components.Add(item);

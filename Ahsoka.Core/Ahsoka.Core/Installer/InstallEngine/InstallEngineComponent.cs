@@ -1,6 +1,8 @@
 ﻿using Ahsoka.Services.Install;
+using Ahsoka.System;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 
 
@@ -17,6 +19,11 @@ public abstract class InstallEngineComponent
     /// GUID Used to Track Components
     /// </summary>
     public abstract Guid ComponentType { get; }
+
+    /// <summary>
+    /// GUID Used to Track Components
+    /// </summary>
+    public virtual List<PlatformFamily> SupportedPlatforms { get; } = [PlatformFamily.Any];
 
     /// <summary>
     /// Name of the Component / Slot
@@ -68,6 +75,11 @@ public abstract class InstallEngineComponent
         context.Log?.Report(new InstallLogInfo() { LogMessage = $"Install '{ComponentName}' Completed with Result: {result}", LogMessageType = LogMessageType.Information });
 
         return result;
+    }
+
+    internal static List<InstallEngineComponent> GetExtensionPlugins(PlatformFamily platformFamily)
+    {
+        return Extensions.GetExtensions<InstallEngineComponent>().Where(x => x.SupportedPlatforms.Contains(platformFamily) || x.SupportedPlatforms.Contains(PlatformFamily.Any)).ToList();
     }
     #endregion
 

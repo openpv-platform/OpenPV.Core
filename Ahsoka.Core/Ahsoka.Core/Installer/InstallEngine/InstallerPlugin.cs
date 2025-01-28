@@ -3,6 +3,7 @@ using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 
 namespace Ahsoka.Installer.InstallEngine;
@@ -12,6 +13,11 @@ namespace Ahsoka.Installer.InstallEngine;
 /// </summary>
 public class InstallerPlugin
 {
+    /// <summary>
+    /// GUID Used to Track Components
+    /// </summary>
+    public virtual List<PlatformFamily> SupportedPlatforms { get; } = [PlatformFamily.Any];
+
     internal static InstallerPlugin GetApplicationPlugin(ApplicationType applicationType)
     {
         switch (applicationType)
@@ -69,4 +75,9 @@ public class InstallerPlugin
     /// <param name="installDirectory"></param>
     /// <param name="applicationName"></param>
     public virtual void ModifyTargetInstall(string installDirectory, string applicationName) { }
+
+    internal static List<InstallerPlugin> GetExtensionPlugins(PlatformFamily platformFamily)
+    {
+       return Extensions.GetExtensions<InstallerPlugin>().Where(x=>x.SupportedPlatforms.Contains(platformFamily) || x.SupportedPlatforms.Contains(PlatformFamily.Any)).ToList();
+    }
 }

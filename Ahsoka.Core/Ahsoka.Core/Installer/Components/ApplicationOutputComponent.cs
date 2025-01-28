@@ -199,7 +199,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             [
                 // Add App Plugins Last
                 InstallerPlugin.GetApplicationPlugin(projectType),
-                    .. Extensions.GetExtensions<InstallerPlugin>(),
+                .. InstallerPlugin.GetExtensionPlugins(SystemInfo.CurrentPlatform),
             ];
 
             // Remove Nulls

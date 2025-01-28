@@ -255,7 +255,6 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged(nameof(InstalledFramework));
             OnPropertyChanged(nameof(FrameworkButtonText));
 
-            File.WriteAllText(Path.Combine(projectPath, "Directory.Build.props"), Properties.Resources.BuildProps);
             finishedInstall = true;
         }
         catch (IOException)

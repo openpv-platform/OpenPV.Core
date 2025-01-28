@@ -5,7 +5,7 @@
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 		<Platforms>AnyCPU;x64</Platforms>
 		<TargetFramework>net8.0</TargetFramework>
-		<RootNamespace>Ahsoka.Services.Demo</RootNamespace>
+		<RootNamespace>Ahsoka.CS.Devices</RootNamespace>
 	</PropertyGroup>
 
 	<Import Label="Ahsoka Local Build Properties" Condition="Exists('../Demo.Build.props')" Project="../Demo.Build.props" />
@@ -22,11 +22,6 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-	</ItemGroup>
-	<ItemGroup>
-	  <None Update="Cloud.png">
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </None>
 	</ItemGroup>
 	
 </Project>

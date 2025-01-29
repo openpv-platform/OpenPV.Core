@@ -78,7 +78,7 @@ internal class DesktopServiceImplementation : IServiceImplementation
         // Not Impemented on Windows
         if (!File.Exists(logoPath))
             throw new FileNotFoundException("Logo Path does not Exist");
-     
+
         string installPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.BootLogoFileName);
         if (!Directory.Exists(Path.GetDirectoryName(installPath)))
             Directory.CreateDirectory(Path.GetDirectoryName(installPath));
@@ -86,5 +86,5 @@ internal class DesktopServiceImplementation : IServiceImplementation
         File.Copy(logoPath, installPath, true);
 
     }
-                
+
 }

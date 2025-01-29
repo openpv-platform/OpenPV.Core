@@ -1,5 +1,4 @@
 ﻿using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing.Platform;
 using System.Runtime.InteropServices;
 
 namespace Ahsoka.Core.Drawing.Platform;
@@ -17,7 +16,7 @@ internal class TIWindow : LinuxWindow
         public const string NativeLibraryName = "AhsokaLib/Ahsoka.Drawing.OpenViewLinuxPro.so";
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        internal static extern int InitWindowWithSize(bool fullscreen, int width, int height, [MarshalAs(UnmanagedType.LPStr)] string appid);     
+        internal static extern int InitWindowWithSize(bool fullscreen, int width, int height, [MarshalAs(UnmanagedType.LPStr)] string appid);
         internal override int InitNativeWindowWithSize(bool fullscreen, int width, int height, string appId)
         {
             if (String.IsNullOrEmpty(appId))
@@ -42,7 +41,7 @@ internal class TIWindow : LinuxWindow
         {
             GetWindowDimensions(ref w, ref h);
         }
-     
+
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl)]
         internal static extern IntPtr GetSurfaceInfo(ref int samples, ref int stencilBits, ref uint gl_format);
         internal override void GetSurfaceInformation(ref int sampleCount, ref int stencilBits, ref uint gl_format)

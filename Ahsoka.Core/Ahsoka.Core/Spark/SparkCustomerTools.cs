@@ -15,7 +15,7 @@ namespace Ahsoka.Spark;
 
 public static class SparkCustomerTools
 {
-   
+
     public static bool ProvisionDisplayInSpark(ITargetConnectionInfo connectionInfo,
                                                 SparkConnectionInfo sparkInfo,
                                                 IProvisionDisplayRequest provisioningInfo,
@@ -63,7 +63,7 @@ public static class SparkCustomerTools
         try
         {
             var licenseInfo = PushSparkLicenseInfo(sub, teamDto.TeamID, teamDto.ReleaseDeviceGroup, provisioningInfo, progress, false);
-            
+
             // Push License List to Display
             progress.Report("Loading License File onto Target");
             client.UpdateLicenseInfo(licenseInfo);
@@ -112,7 +112,7 @@ public static class SparkCustomerTools
 
         // Get Module Info and Check if Valid
         progress.Report("Sending License List to Spark for Signing.");
-        ProvisioningResult result = SparkAccountClient.SharedSparkClient.ProvisionDeviceLicenses(teamID.ToString(), subInfo.DeviceId, new ProvisioningInfo() { ModuleLicenseList = list, DeviceInfo = deviceDto});
+        ProvisioningResult result = SparkAccountClient.SharedSparkClient.ProvisionDeviceLicenses(teamID.ToString(), subInfo.DeviceId, new ProvisioningInfo() { ModuleLicenseList = list, DeviceInfo = deviceDto });
 
         if (!RSAEncryption.VerifyDataSignature(result.ModuleLicenseInfo.Signature, result.ModuleLicenseInfo.LicenseData, Properties.Resources.ModuleLicensePublicKeyPEM))
         {
@@ -131,7 +131,7 @@ public static class SparkCustomerTools
 
         // Check if OTA License is Included
         if (result.DeviceInfo != null)
-        {        
+        {
             progress.Report($"Device Provisioned to Group - {result.DeviceInfo.GroopName}");
         }
 
@@ -142,7 +142,7 @@ public static class SparkCustomerTools
     {
 
         // Update Container name
-        uploadInfo.ContainerName = $"{uploadInfo.ReleaseName}_{team.TeamID.ToString().Substring(0,8)}";
+        uploadInfo.ContainerName = $"{uploadInfo.ReleaseName}_{team.TeamID.ToString().Substring(0, 8)}";
 
         // File Names
         string outputFilePath = uploadInfo.Contents.First().Path;

@@ -59,7 +59,7 @@ internal class DependenciesCheckViewModel : ChildViewModelBase<MainViewModel>
 
         if (currentPlatform == PlatformFamily.Any)
             MissingDependenciesText.Add($"- {currentPlatform} Is Not valid. Please check the Platform Family Drop Down.");
-        if (platformFamily.Any(x=>x == PlatformFamily.Any))
+        if (platformFamily.Any(x => x == PlatformFamily.Any))
             MissingDependenciesText.Add($"- {platformFamily} Is Not a valid Platform. Please check the Platform Family Drop Down.");
 
         if (MissingDependenciesText.Count > 0)
@@ -85,7 +85,7 @@ internal class DependenciesCheckViewModel : ChildViewModelBase<MainViewModel>
             MissingDependenciesText.Add($"- {currentPlatform} Platform Support Package.");
 
 
-        if (!platformFamily.Any(x=>x == PlatformFamily.PowerVision)) // PowerVision Is Not Directly Supported
+        if (!platformFamily.Any(x => x == PlatformFamily.PowerVision)) // PowerVision Is Not Directly Supported
         {
             foreach (var item in platformFamily)
             {

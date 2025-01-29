@@ -1,7 +1,6 @@
 ﻿#pragma warning disable CS1591
-using Ahsoka.System;
-using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Ahsoka.System;
 

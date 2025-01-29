@@ -11,7 +11,7 @@ namespace Ahsoka.Services.Security;
 /// </summary>
 internal class AppKeyTokenSource : ITokenSource
 {
-    Dictionary<Guid,TokenInfo> clientInfo = new();
+    Dictionary<Guid, TokenInfo> clientInfo = new();
     SecurityConfiguration configuration;
 
     public AppKeyTokenSource(SecurityConfiguration configuration, string pathToDeviceInfoFile = null)
@@ -23,7 +23,7 @@ internal class AppKeyTokenSource : ITokenSource
     {
         if (configuration.TokenPublicKey == null)
             throw new ApplicationException("Private Key is not available on target devices, API Keys can only be created by the OpenPV Developer Toolkit.");
-        
+
         var tokenData = ECDsaEncryption.GetSignatureWithKey(appId, configuration.TokenPrivateKey);
         return Convert.ToBase64String(tokenData);
     }
@@ -89,7 +89,7 @@ internal class AppKeyTokenSource : ITokenSource
         if (clientToken == null)
             return false;
 
-        if (clientInfo.TryGetValue(clientToken.ToGuid(),out TokenInfo validToken))
+        if (clientInfo.TryGetValue(clientToken.ToGuid(), out TokenInfo validToken))
         {
             if (validToken.ClientIDs.Contains(clientId.ToGuid()))
                 return validToken.IsUnlocked;

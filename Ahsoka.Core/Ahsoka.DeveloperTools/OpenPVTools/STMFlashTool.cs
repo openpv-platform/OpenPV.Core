@@ -82,11 +82,11 @@ internal class STMFlashTool : OpenPVToolBase
                 selecting = await toolVM.MainViewModel.Dialog.ShowDialog("No directory selected", "Try again", "Cancel");
             else if (path.Contains("STM32CubeProgrammer.app"))
             {
-                toolVM.MainViewModel.Settings.STMExecutable = Path.Combine(path,"Contents","MacOs","bin","STM32_Programmer_CLI");
+                toolVM.MainViewModel.Settings.STMExecutable = Path.Combine(path, "Contents", "MacOs", "bin", "STM32_Programmer_CLI");
                 toolVM.MainViewModel.SaveSettings();
                 return;
             }
-            else if (path.Contains("STM32_Programmer_CLI") )
+            else if (path.Contains("STM32_Programmer_CLI"))
             {
                 toolVM.MainViewModel.Settings.STMExecutable = path;
                 toolVM.MainViewModel.SaveSettings();

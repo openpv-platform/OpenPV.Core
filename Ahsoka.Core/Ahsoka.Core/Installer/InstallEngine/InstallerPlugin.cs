@@ -1,6 +1,5 @@
 ﻿using Ahsoka.Services.Install;
 using Ahsoka.System;
-using Ahsoka.System.Hardware;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,11 +54,12 @@ public class InstallerPlugin
     /// <param name="additionalFiles"></param>
     /// <param name="info"></param>
     /// <param name="progress"></param>
-    public virtual void AddAdditionalApplicationFiles(string buildLocation, 
-        Dictionary<string, string> attributes, 
+    public virtual void AddAdditionalApplicationFiles(string buildLocation,
+        Dictionary<string, string> attributes,
         Dictionary<string, byte[]> additionalFiles,
-        PackageInformation info, 
-        IProgress<PackageProgressInfo> progress) { }
+        PackageInformation info,
+        IProgress<PackageProgressInfo> progress)
+    { }
 
     /// <summary>
     /// Clean the App Area after Building
@@ -78,6 +78,6 @@ public class InstallerPlugin
 
     internal static List<InstallerPlugin> GetExtensionPlugins(PlatformFamily platformFamily)
     {
-       return Extensions.GetExtensions<InstallerPlugin>().Where(x=>x.SupportedPlatforms.Contains(platformFamily) || x.SupportedPlatforms.Contains(PlatformFamily.Any)).ToList();
+        return Extensions.GetExtensions<InstallerPlugin>().Where(x => x.SupportedPlatforms.Contains(platformFamily) || x.SupportedPlatforms.Contains(PlatformFamily.Any)).ToList();
     }
 }

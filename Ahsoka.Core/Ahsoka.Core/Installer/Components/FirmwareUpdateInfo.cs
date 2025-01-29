@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Ahsoka.DeveloperTools.OpenPVTools;
 
-internal class FirmwareUpdateInfo 
+internal class FirmwareUpdateInfo
 {
     #region Properties
     public PlatformFamily PlatformFamily { get; set; }

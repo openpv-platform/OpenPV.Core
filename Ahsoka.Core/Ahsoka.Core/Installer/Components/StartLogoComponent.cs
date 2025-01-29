@@ -3,8 +3,6 @@ using Ahsoka.Services.Install;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO;

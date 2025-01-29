@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
-using System.Text;
 
 namespace Ahsoka.Utility;
 
@@ -58,7 +57,7 @@ internal class AesEncryption
         byte[] iv = new byte[16]; // 128-bit IV
 
         byte[] keyData = originalBytes.ToArray();
-        
+
         Array.Copy(keyData, key, 32);
         Array.Copy(keyData, 8, iv, 0, 8);
         Array.Copy(keyData, 0, iv, 8, 8);

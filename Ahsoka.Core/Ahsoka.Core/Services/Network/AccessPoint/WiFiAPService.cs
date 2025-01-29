@@ -4,7 +4,6 @@ using Ahsoka.Services.Network.AP.Implementation;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Ahsoka.Services.Network;
 
@@ -23,7 +22,7 @@ public class WiFiAPService : AhsokaServiceBase<WiFiAPMessageTypes.Ids>
         {
             PlatformFamily.Windows64 => new DesktopImplementation(),
             PlatformFamily.OpenViewLinux => new STImplementation(),
-            PlatformFamily.OpenViewLinuxPro => new DesktopImplementation(), 
+            PlatformFamily.OpenViewLinuxPro => new DesktopImplementation(),
             PlatformFamily.Ubuntu64 => new DesktopImplementation(),
             PlatformFamily.MacosArm64 => new DesktopImplementation(),
             _ => throw new NotImplementedException(),
@@ -67,7 +66,7 @@ public class WiFiAPService : AhsokaServiceBase<WiFiAPMessageTypes.Ids>
                 break;
 
             case WiFiAPMessageTypes.Ids.GetNetworkConfiguration:
-                GetNetworkConfiguration(request,request.Message as AdapterRequest); 
+                GetNetworkConfiguration(request, request.Message as AdapterRequest);
                 break;
 
             case WiFiAPMessageTypes.Ids.SetNetworkConfiguration:

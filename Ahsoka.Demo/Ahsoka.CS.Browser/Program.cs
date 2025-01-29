@@ -21,7 +21,7 @@ public class Program
         var builder = WebApplication.CreateSlimBuilder(args);
 
         // Add services to the container.
-        if (includeRazorPages) 
+        if (includeRazorPages)
             builder.Services.AddRazorPages();
 
         var app = builder.Build();
@@ -37,13 +37,13 @@ public class Program
 
         // Start Ahsoka Application Clients
         AppModel.StartModel(app);
-       
+
         // Start Our Application - Will Block until Ready
         app.Start();
 
         CancellationTokenSource tokenSource = new();
         var task = ApplicationContext.StartEmbeddedBrowser(startPage, tokenSource.Token);
-        
+
         // Wait for the WebApp to Shutdown.   
         // Note that this will 
         app.WaitForShutdown();

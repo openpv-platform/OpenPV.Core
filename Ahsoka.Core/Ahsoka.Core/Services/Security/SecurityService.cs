@@ -40,7 +40,7 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
         var deviceSecurityFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.ServiceSecurityFile);
         if (File.Exists(deviceSecurityFile))
         {
-            var data = AesEncryption.DecryptFile(deviceSecurityFile,SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+            var data = AesEncryption.DecryptFile(deviceSecurityFile, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
             configuration = JsonUtility.Deserialize<SecurityConfiguration>(Encoding.UTF8.GetString(data.ToArray()));
         }
 
@@ -87,9 +87,9 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
             {
                 return RSAEncryption.VerifyDataSignature(clientIdSigned, clientId, key);
             }
-            catch 
+            catch
             {
-               AhsokaLogging.LogMessage( AhsokaVerbosity.High, "Error Decoding Signature");
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Error Decoding Signature");
             }
         }
 
@@ -120,7 +120,7 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
         }
 
     }
-    
+
     private void HandleCompleteChallenge(AhsokaServiceRequest messageHeader, ChallengeCompleteInfo challengeCompleteInfo)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.High, "HandleCompleteChallenge");
@@ -132,7 +132,7 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
             if (result)
                 token = TokenSource.Default.EnableToken(challengeCompleteInfo.RequestId, challengeCompleteInfo.ClientCode);
             else
-                token = new Token() { RequestId=challengeCompleteInfo.RequestId, TokenIsValid = false };
+                token = new Token() { RequestId = challengeCompleteInfo.RequestId, TokenIsValid = false };
         }
 
         // Reply To Challenge Complete

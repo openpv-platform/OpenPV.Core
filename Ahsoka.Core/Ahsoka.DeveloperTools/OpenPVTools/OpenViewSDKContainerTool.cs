@@ -49,7 +49,7 @@ internal abstract class OpenViewSDKContainerTool : DockerBaseTool
     {
         if (OperatingSystem.IsWindows())
         {
-            if (!CheckDependencies(toolVM)) return;          
+            if (!CheckDependencies(toolVM)) return;
 
             var path = await toolVM.MainViewModel.FolderLocatorAsync("Please select your development folder");
             if (!Directory.Exists(path)) return;

@@ -36,7 +36,7 @@ public class NetworkServiceTest : LinearTestBase
         var adapterInfo = cellService.GetAdapters().Adapters.FirstOrDefault();
         if (adapterInfo != null)
         {
-            cellService.StartNetwork(new() { AdapterId = adapterInfo.AdapterId, Apn="Generic"});
+            cellService.StartNetwork(new() { AdapterId = adapterInfo.AdapterId, Apn = "Generic" });
 
             connectComplete.WaitOne(4000);
 
@@ -51,7 +51,7 @@ public class NetworkServiceTest : LinearTestBase
 
     private void CellService_NotificationReceived(object sender, AhsokaClientBase<CellularMessageTypes.Ids>.AhsokaNotificationArgs e)
     {
-        if(e.TransportId == CellularMessageTypes.Ids.NetworkStateChanged)
+        if (e.TransportId == CellularMessageTypes.Ids.NetworkStateChanged)
             connectComplete.Set();
     }
 
@@ -84,7 +84,7 @@ public class NetworkServiceTest : LinearTestBase
 
         Assert.AreEqual(config.AdapterId, updatedConfig.AdapterId);
         Assert.AreEqual(config.ClientConfiguration?.ConnectionType, updatedConfig.ClientConfiguration?.ConnectionType);
-    
+
 
         if (wifiAdapterId != null)
         {
@@ -165,7 +165,7 @@ public class NetworkServiceTest : LinearTestBase
         AutoResetEvent reset = new(false);
 
         // Start client for NetworkService
-        var deviceClient = new DeviceServiceClient(); 
+        var deviceClient = new DeviceServiceClient();
         var client = new WiFiClientServiceClient();
 
         // Find Adapter that Supports This Service
@@ -177,8 +177,8 @@ public class NetworkServiceTest : LinearTestBase
             var adapter = client.GetAdapters();
 
             WiFiNetworkManager manager = new();
-            manager.Start(deviceClient, client );
-           
+            manager.Start(deviceClient, client);
+
             manager.ConnectionStateChanged += (o, a) =>
             {
                 // Connection State will trigger 
@@ -190,7 +190,7 @@ public class NetworkServiceTest : LinearTestBase
             manager.AdapterEnabledChanged += (o, e) => { };
 
             deviceClient.EnableDeviceNotifications();
-          
+
             // Wait for Init to Complete
             reset.WaitOne(5000);
 

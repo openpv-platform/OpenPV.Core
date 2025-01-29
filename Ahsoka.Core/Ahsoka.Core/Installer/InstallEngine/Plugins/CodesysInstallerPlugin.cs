@@ -30,7 +30,7 @@ internal class CodesysInstallerPlugin : InstallerPlugin
             progress.Report(new PackageProgressInfo() { Message = "CODESYS PreReqs: Overriding Auto-Release to After App Start" });
             packageInformation.ServiceInfo.RuntimeConfiguration.ReleaseOption = System.StartOptions.AfterApplicationStart;
         }
-        if (!packageInformation.Licenses.Any(x => x.LicenseName == "CODESYS Runtime") 
+        if (!packageInformation.Licenses.Any(x => x.LicenseName == "CODESYS Runtime")
             && packageInformation.PlatformFamily.ToString().StartsWith("OpenView"))
         {
             string error = $"Invalid Project Licenses.  In order to generate this package, you must select a Project and 'Include a CODESYS Runtime.'";
@@ -38,8 +38,8 @@ internal class CodesysInstallerPlugin : InstallerPlugin
         }
     }
 
-    public override void PrepareApplicationArea(ref string buildLocation, 
-        PackageInformation info, 
+    public override void PrepareApplicationArea(ref string buildLocation,
+        PackageInformation info,
         IProgress<PackageProgressInfo> progress = null)
     {
         if (info.ApplicationType != ApplicationType.CODESYS)
@@ -63,15 +63,15 @@ internal class CodesysInstallerPlugin : InstallerPlugin
         string pathToPlcOutputs = Path.Combine(buildLocation, "PlcLogic");
         if (Path.Exists(pathToPlcOutputs))
             FileUtilities.CopyDirectory(pathToPlcOutputs, tempFolder, true, null);
-       
+
         // Modify the Build Folder to be our new Build Folder
         buildLocation = tempFolder;
     }
 
-    public override void AddAdditionalApplicationFiles(string buildLocation, 
-        Dictionary<string, string> attributes, 
-        Dictionary<string, byte[]> additionalFiles, 
-        PackageInformation info, 
+    public override void AddAdditionalApplicationFiles(string buildLocation,
+        Dictionary<string, string> attributes,
+        Dictionary<string, byte[]> additionalFiles,
+        PackageInformation info,
         IProgress<PackageProgressInfo> progress)
     {
         if (info.ApplicationType != ApplicationType.CODESYS)

@@ -2,9 +2,7 @@
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Ahsoka.Services.Video;
 
@@ -33,7 +31,7 @@ public class VideoService : AhsokaServiceBase<VideoMessageTypes.Ids>
             case PlatformFamily.Ubuntu64:
             case PlatformFamily.MacosArm64:
             default:
-                return new DesktopVideoServiceImplementation() 
+                return new DesktopVideoServiceImplementation()
                 {
                     PlayerID = id,
                     VideoStatusChanged = SendStatusNotification
@@ -46,7 +44,7 @@ public class VideoService : AhsokaServiceBase<VideoMessageTypes.Ids>
     public VideoService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
-        
+
     }
 
     public VideoService(ServiceConfiguration config) :
@@ -102,7 +100,7 @@ public class VideoService : AhsokaServiceBase<VideoMessageTypes.Ids>
     {
         VideoStatus status = new();
 
-        if (players.TryGetValue(videoPlayer.VideoPlayerID,out VideoPlayerImpl value))
+        if (players.TryGetValue(videoPlayer.VideoPlayerID, out VideoPlayerImpl value))
             status = value.GetStatus(status);
 
         SendResponse(message, status);
@@ -110,7 +108,7 @@ public class VideoService : AhsokaServiceBase<VideoMessageTypes.Ids>
 
     private void HandlePlayVideo(AhsokaServiceRequest message, VideoPlaybackRequest videoPlaybackRequest)
     {
-        VideoStatus status = new VideoStatus() { VideoState =  PlaybackState.Playing };
+        VideoStatus status = new VideoStatus() { VideoState = PlaybackState.Playing };
         if (players.TryGetValue(videoPlaybackRequest.VideoPlayerID, out VideoPlayerImpl value))
             status = value.PlayVideo(videoPlaybackRequest);
 

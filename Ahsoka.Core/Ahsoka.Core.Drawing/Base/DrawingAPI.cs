@@ -1,5 +1,4 @@
 ﻿using Ahsoka.Core.Drawing.Base;
-using SkiaSharp;
 
 namespace Ahsoka.Core.Drawing;
 
@@ -27,7 +26,7 @@ public abstract class DrawingApiBase<Context> : IDrawingApi where Context : clas
 
     public abstract void DrawCircle(float centerX, float centerY, float radius, DrawingPaint paint);
     public abstract void DrawCircle(float centerX, float centerY, float radius, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
-   
+
     public abstract void DrawRectangle(DrawingRect rectangle, DrawingPaint paint);
     public abstract void DrawRectangle(DrawingRect rectangle, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
 

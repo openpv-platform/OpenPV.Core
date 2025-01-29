@@ -8,7 +8,7 @@ internal class SampleInstallerPlugin : InstallerPlugin
 {
     public override void CheckPrerequisites(PackageInformation packageInformation, IProgress<PackageProgressInfo> progress, CancellationToken token)
     {
-       
+
     }
 
 }

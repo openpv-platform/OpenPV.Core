@@ -15,12 +15,12 @@ public interface IDrawingApi
     void DrawRectangle(DrawingRect rectangle, DrawingPaint paint);
     void DrawRectangle(DrawingRect rectangle, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
 
-    void DrawRoundRectangle(DrawingRect rectangle, float cornerRadius, DrawingPaint paint); 
+    void DrawRoundRectangle(DrawingRect rectangle, float cornerRadius, DrawingPaint paint);
     void DrawRoundRectangle(DrawingRect rectangle, float cornerRadius, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
 
     void DrawCircle(float centerX, float centerY, float radius, DrawingPaint paint);
     void DrawCircle(float centerX, float centerY, float radius, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth);
-    
+
     void DrawBitmap(DrawingImage image, DrawingRect rect);
     void DrawText(string text, float x, float y, DrawingTextInfo textInfo);
     float MeasureText(string text, DrawingTextInfo textInfo);

@@ -1,7 +1,6 @@
 using Ahsoka.Utility;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 namespace Ahsoka.System.Hardware;
 
 /// <summary>
@@ -12,7 +11,7 @@ internal partial class CANHardwareInfo : ICanDeserializeBase
     /// <summary>
     /// Collection of Module / Adapter Information Objects.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public List<CanPort> CANPorts { get; init; } = new List<CanPort>();
 }
 

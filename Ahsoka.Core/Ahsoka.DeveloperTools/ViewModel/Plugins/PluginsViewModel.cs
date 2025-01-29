@@ -49,17 +49,21 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
     internal ObservableCollection<ProfileDefinition> ProfileDefinitions { get => worflows; set => worflows = value; }
 
-    public bool  HideOpenViewPro
+    public bool HideOpenViewPro
     {
         get { return parentViewModel.Settings.HideOpenViewPro; }
-        set { parentViewModel.Settings.HideOpenViewPro = value; LoadProfileTools();
+        set
+        {
+            parentViewModel.Settings.HideOpenViewPro = value; LoadProfileTools();
         }
     }
 
     public bool HideOpenView
     {
         get { return parentViewModel.Settings.HideOpenView; }
-        set { parentViewModel.Settings.HideOpenView = value; LoadProfileTools();
+        set
+        {
+            parentViewModel.Settings.HideOpenView = value; LoadProfileTools();
         }
     }
 
@@ -93,8 +97,8 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
     }
 
     public bool ShowInfoVisible { get { return showInfoVisible; } set { showInfoVisible = value; OnPropertyChanged(); } }
-    
-    public string ShowInfoText { get { return SelectedTool?.GetInfo(this); } set {} }
+
+    public string ShowInfoText { get { return SelectedTool?.GetInfo(this); } set { } }
 
     internal ObservableCollection<OpenPVToolBase> SelectedDownloads { get => tools; set => tools = value; }
 
@@ -183,7 +187,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         this.parentViewModel = customerToolsViewModel;
 
         SupportInfo = (JsonUtility.Deserialize<PlatformSupportPackage>(Properties.Resources.OpenViewPlatformSupport));
-       
+
         ProfileDefinitions.Add(new ProfileDefinition()
         {
             ProfileName = "C# Developer Profile",
@@ -205,7 +209,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
                 ProfileDescription = "Develop using QT Creator or WSL C++ Tools. Includes Container Support (if Docker is installed) for QT Creator as well as OpenView Distribution, Target and Development Support Plugins for Ubuntu and Windows"
             });
 
-        if (OperatingSystem.IsWindows()) 
+        if (OperatingSystem.IsWindows())
             ProfileDefinitions.Add(new ProfileDefinition()
             {
                 ProfileName = "PowerVision Profile",
@@ -406,7 +410,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
                 selectedTool.LocalPath = Path.Combine(CustomerToolPaths.GetToolPath("DeveloperTools"), item.Name.Replace(" ", "_")); // Tool Download Path
                 selectedTool.Name = item.Name;
-                
+
                 if (string.IsNullOrEmpty(selectedTool.Description))
                     selectedTool.Description = item.Description;
                 if (string.IsNullOrEmpty(selectedTool.Version))
@@ -463,10 +467,10 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
                 if (!SelectedDownloads.Any(x => x.Name == selectedTool.Name))
                 {
                     // If Not Hidden
-                    if  (!(selectedTool.PlatformFamily == PlatformFamily.OpenViewLinux && HideOpenView)&&
+                    if (!(selectedTool.PlatformFamily == PlatformFamily.OpenViewLinux && HideOpenView) &&
                          !(selectedTool.PlatformFamily == PlatformFamily.OpenViewLinuxPro && HideOpenViewPro))
 
-                    SelectedDownloads.Add(selectedTool);
+                        SelectedDownloads.Add(selectedTool);
                 }
 
         if (platformSupport != null && !platformSupport.Downloads.Contains(SelectedTool))
@@ -549,7 +553,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
         SelectedDownloads.Clear();
         foreach (var item in SupportInfo.Downloads)
             AddTool(null, item);
-       
+
         SelectedProfile.CanLaunch = SelectedDownloads.Any(x => x.CanLaunch);
 
 

@@ -59,7 +59,7 @@ public class IotTests : LinearTestBase
     {
         // Start client for NetworkService
         var client = new IotServiceClient();
-        client.NotificationReceived += Client_NotificationReceived; 
+        client.NotificationReceived += Client_NotificationReceived;
         client.Start();
 
         var clientState = TestConnections(client);

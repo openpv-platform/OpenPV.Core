@@ -1,5 +1,4 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.System;
+﻿using Ahsoka.Services.System;
 using Ahsoka.System;
 
 namespace Ahsoka.CS.Browser;
@@ -17,7 +16,7 @@ internal class AppModel
         systemClient.ServiceConfig.Behaviors = EndPointBehaviors.AutoStart;
         systemClient.Start();
     }
-    
+
     internal static GetHardwareInformationReply GetHardwareInformation()
     {
         return systemClient.GetHardwareInformation();

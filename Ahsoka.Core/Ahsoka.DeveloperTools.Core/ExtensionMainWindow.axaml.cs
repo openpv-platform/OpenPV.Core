@@ -5,13 +5,11 @@ using Ahsoka.System.Hardware;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -58,7 +56,7 @@ public partial class ExtensionMainWindow : Window, ICustomerToolViewModel, INoti
     {
         InitializeComponent();
 
-        this.PopupUserControl = new Grid() ;
+        this.PopupUserControl = new Grid();
 
         this.extensionName = extensionName;
         this.viewModelType = viewModelType;
@@ -70,7 +68,7 @@ public partial class ExtensionMainWindow : Window, ICustomerToolViewModel, INoti
 
     public async void OpenConfiguration()
     {
-         await SelectPackage();
+        await SelectPackage();
     }
 
     public void SaveConfiguration()
@@ -114,10 +112,10 @@ public partial class ExtensionMainWindow : Window, ICustomerToolViewModel, INoti
                                             packageInformation.ServiceInfo.RuntimeConfiguration.ExtensionInfo.FirstOrDefault(x => x.ExtensionName == extensionName)?.ConfigurationFile);
 
                     this.UserControl = this.ViewModel.GetView();
-                    
+
                 }
                 catch (Exception)
-                {  }
+                { }
             }
     }
 
@@ -163,7 +161,7 @@ public partial class ExtensionMainWindow : Window, ICustomerToolViewModel, INoti
 
     internal DialogViewModel Dialog
     {
-        get; 
+        get;
         set;
     } = new();
 
@@ -218,7 +216,7 @@ public partial class ExtensionMainWindow : Window, ICustomerToolViewModel, INoti
 
     public Task<bool> ShowDialog(string dialogTitle, string dialogText, string dialogAcceptText, string dialogRejectText = "")
     {
-        return this.Dialog.ShowDialog(dialogTitle,dialogText, dialogAcceptText, dialogRejectText);
+        return this.Dialog.ShowDialog(dialogTitle, dialogText, dialogAcceptText, dialogRejectText);
     }
 
     public void StartProcess(bool clearConsole = true)

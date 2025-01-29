@@ -1,17 +1,12 @@
 ﻿using Ahsoka.Installer.InstallEngine;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Device.Handlers;
 using Ahsoka.Services.Install;
-using Ahsoka.Services.Network;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.CompilerServices;
 
 
 namespace Ahsoka.Installer.Components;
@@ -30,7 +25,7 @@ internal class DeviceFirmwareComponent : InstallEngineComponent
         List<InstallerPlugin> installedPlugins,
         IProgress<PackageProgressInfo> progress = null)
     {
-         Dictionary<DeviceTypes, byte[]> firmware = new();
+        Dictionary<DeviceTypes, byte[]> firmware = new();
 
         // Create Firmware Package
         foreach (var item in info.HardwareConfiguration.HardwareItems)

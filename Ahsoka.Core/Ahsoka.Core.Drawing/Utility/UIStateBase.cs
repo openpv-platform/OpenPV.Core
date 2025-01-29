@@ -1,9 +1,8 @@
 ﻿using Ahsoka.Core.Drawing.Base;
-using GLib;
 
 namespace Ahsoka.Core.Drawing.Utility;
 
-public abstract class UIStateBase<DrawingApiT> where DrawingApiT: class
+public abstract class UIStateBase<DrawingApiT> where DrawingApiT : class
 {
     #region Methods
 

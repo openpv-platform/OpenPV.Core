@@ -5,12 +5,9 @@ using Avalonia.Threading;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Security;
-using Microsoft.IdentityModel.Tokens;
-using NuGet.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -112,7 +109,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
     public string PasswordNew
     {
-        get { return newPassword != null ?  SecureLocalStrings.ToInsecureString(newPassword) : string.Empty; }
+        get { return newPassword != null ? SecureLocalStrings.ToInsecureString(newPassword) : string.Empty; }
         set { newPassword = SecureLocalStrings.ToSecureString(value); ; OnPropertyChanged(); }
     }
 
@@ -137,7 +134,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
         if (settings.RememberMe && !String.IsNullOrEmpty(settings.RefreshToken))
         {
-           
+
             RememberMe = true;
             LoginName = settings.LoginName;
 
@@ -159,7 +156,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
                     // Allow Login to Continue without Logging In.
                     parentViewModel.LogIn();
                     return;
-                }    
+                }
             };
 
             try

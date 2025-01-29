@@ -1,5 +1,4 @@
-﻿using Ahsoka.Utility;
-using Microsoft.Win32.SafeHandles;
+﻿using Microsoft.Win32.SafeHandles;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
@@ -64,7 +63,7 @@ internal class RS485ConfigUtility
 
     [DllImport("libc", EntryPoint = "write", SetLastError = true, CharSet = CharSet.Ansi)]
     internal static extern int Write(SafeFileHandle handle, string pathname, int flags);
-  
+
     [DllImport("libc", EntryPoint = "close", SetLastError = true, CharSet = CharSet.Ansi)]
     internal static extern int Close(SafeFileHandle handle);
 
@@ -78,7 +77,7 @@ internal class RS485ConfigUtility
     /// <returns></returns>
     [DllImport("libc", EntryPoint = "ioctl", SetLastError = true)]
     internal static extern int Ioctl(SafeFileHandle serialHandle, int request, ref SerialRS485 rs485_conf);
- 
+
     #endregion
 }
 

@@ -27,6 +27,6 @@ public class AhsokaServiceMessage
     /// <summary>
     /// Indicates if this is a Reply to Request
     /// </summary>
-    public bool IsNotification { get; set; }   
+    public bool IsNotification { get; set; }
 }
 

@@ -1,14 +1,10 @@
 ﻿using Ahsoka.Installer.Components;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
 
 namespace Ahsoka.Installer.InstallEngine;
 
@@ -26,7 +22,7 @@ public class ConfigurationPluginBase<T> : InstallerPlugin where T : class, new()
     /// </summary>
     /// <param name="extensionName"></param>
     /// <param name="configurationFileName"></param>
-    protected ConfigurationPluginBase(string extensionName, string configurationFileName )
+    protected ConfigurationPluginBase(string extensionName, string configurationFileName)
     {
         this.extensionName = extensionName;
         this.configurationFileName = configurationFileName;

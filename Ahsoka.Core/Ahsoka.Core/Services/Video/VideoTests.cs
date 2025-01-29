@@ -1,5 +1,4 @@
 ﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -33,9 +32,9 @@ internal class VideoTests
 
         client.Start();
         Console.WriteLine($"TEST: Service Started");
-    
+
         var count = client.GetVideoPlayers().Players.Count;
-        
+
         client.PlayVideo(new VideoPlaybackRequest()
         {
             PlayFullScreen = false,

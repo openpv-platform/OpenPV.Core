@@ -26,16 +26,16 @@ public class Extensions
     static AssemblyLoadContext currentLoadContext;
 
     private static List<WeakReference<Assembly>> ExtensionLibraries { get; set; } = new();
-   
+
     internal static List<ExtensionConfiguration> Configurations
     {
-        get; 
+        get;
         private set;
-    } = new ();
+    } = new();
 
     static Extensions()
     {
-       
+
     }
 
     /// <summary>
@@ -58,7 +58,7 @@ public class Extensions
 
         string pathToExtensionCache = Path.GetDirectoryName(config.FilePath);
 
-        foreach (var file in Directory.GetFiles(pathToExtensionCache,"*", SearchOption.AllDirectories)) 
+        foreach (var file in Directory.GetFiles(pathToExtensionCache, "*", SearchOption.AllDirectories))
         {
             if (!file.Contains("\\ux\\") && !file.Contains("\\demos"))
             {
@@ -88,7 +88,7 @@ public class Extensions
             return;
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Extension Path is " + extPath);
-       
+
         // Unload any Libraries in the Load Context.
         if (currentLoadContext != null)
         {
@@ -104,7 +104,7 @@ public class Extensions
         }
 
         currentLoadContext = new AssemblyLoadContext("ExtensionContext", true);
-           
+
         if (Directory.Exists(extPath))
         {
             foreach (var file in Directory.GetFiles(extPath, "*.extensioninfo.json", SearchOption.AllDirectories))
@@ -137,7 +137,7 @@ public class Extensions
         return assemblies;
     }
 
-    internal static List<T> GetExtensions<T>() where T:class
+    internal static List<T> GetExtensions<T>() where T : class
     {
         List<T> installers = new();
         var assemblies = GetExtensionLibraries();
@@ -154,7 +154,7 @@ public class Extensions
         return installers;
     }
 
-    private static List<string> GetExtensionFiles(string extension, bool includeUx )
+    private static List<string> GetExtensionFiles(string extension, bool includeUx)
     {
         List<string> strings = new List<string>();
         var configuration = Configurations.FirstOrDefault(x => x.ExtensionName == extension);
@@ -181,7 +181,7 @@ public class Extensions
 
     private static void LoadExtension(ExtensionConfiguration extensionConfiguration, bool includeUx)
     {
-        foreach (var item in GetExtensionFiles(extensionConfiguration.ExtensionName,includeUx).Where(x => x.EndsWith(".dll")))
+        foreach (var item in GetExtensionFiles(extensionConfiguration.ExtensionName, includeUx).Where(x => x.EndsWith(".dll")))
         {
             try
             {
@@ -212,7 +212,7 @@ public class Extensions
         }
     }
 
-    internal static Dictionary<string, GeneratorCommandType> GetCommands(PackageInformation packageInfo, string extensionName,CommandTypes commandTypes )
+    internal static Dictionary<string, GeneratorCommandType> GetCommands(PackageInformation packageInfo, string extensionName, CommandTypes commandTypes)
     {
         var commands = new Dictionary<string, GeneratorCommandType>();
 
@@ -236,7 +236,7 @@ public class Extensions
                                     IExtensionGenerator generator = ClassLoader.CreateType(defType, null) as IExtensionGenerator;
                                     generator.GetCommands(packageInfo, commands, commandTypes);
                                 }
-                                catch(Exception ex)
+                                catch (Exception ex)
                                 {
                                     AhsokaLogging.LogMessage(AhsokaVerbosity.High, ex.Message);
                                 }
@@ -287,7 +287,7 @@ public class Extensions
             package.Add(new XAttribute("Version", GitVersionInformation.FullSemVer));
             packageGroup.Add(package);
 
-            AssemblyLoadContext buildContext = new("BuildContext",true);
+            AssemblyLoadContext buildContext = new("BuildContext", true);
 
 
             foreach (var extension in extensionInfos)
@@ -299,13 +299,13 @@ public class Extensions
                 package.Add(new XAttribute("Version", info.InstalledVersion));
                 packageGroup.Add(package);
 
-         
-                foreach (var item in Extensions.GetExtensionFiles(info.ExtensionName,false))
+
+                foreach (var item in Extensions.GetExtensionFiles(info.ExtensionName, false))
                 {
-                    if(item.EndsWith(info.PackageName + ".dll"))
+                    if (item.EndsWith(info.PackageName + ".dll"))
                     {
                         var asm = buildContext.LoadFromAssemblyPath(item);
-                        var typeToAdd = asm.ExportedTypes.First(x=>!x.IsAbstract && !x.IsGenericType && x.IsPublic);
+                        var typeToAdd = asm.ExportedTypes.First(x => !x.IsAbstract && !x.IsGenericType && x.IsPublic);
                         string loaderLine = $"        Ahsoka.System.Extensions.AddPrivateExtension(typeof({typeToAdd.FullName}).Assembly);";
                         references.AppendLine(loaderLine);
                     }

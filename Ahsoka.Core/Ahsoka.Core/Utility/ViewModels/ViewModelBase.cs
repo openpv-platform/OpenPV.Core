@@ -32,7 +32,7 @@ public class ViewModelBase : INotifyPropertyChanged, IHasParent
     /// </summary>
     protected virtual void OnConstruct()
     {
-       
+
     }
 
     /// <summary>
@@ -81,7 +81,7 @@ public class ViewModelBase : INotifyPropertyChanged, IHasParent
     /// <param name="newValue"></param>
     /// <param name="propertyId">Unique Id for this Property if available</param>
     /// <param name="memberName"></param>
-    protected void RunSetBehaviors<T>(T baseValue, T newValue, uint propertyId, string memberName) 
+    protected void RunSetBehaviors<T>(T baseValue, T newValue, uint propertyId, string memberName)
     {
         foreach (var behavior in behaviors)
             behavior.OnSetValue(baseValue, newValue, propertyId, memberName);

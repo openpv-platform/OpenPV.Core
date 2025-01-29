@@ -4,7 +4,6 @@ using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Dispatch;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Ahsoka.CS.Devices;
 
@@ -74,7 +73,7 @@ internal class MainUI
                     foreach (var area in touchAreas)
                     {
                         if (area.Rect.Contains(eventItem.X, eventItem.Y) && area.IsTouched)
-                           area.Command.Invoke();
+                            area.Command.Invoke();
                         area.IsTouched = false;
                     }
                 }

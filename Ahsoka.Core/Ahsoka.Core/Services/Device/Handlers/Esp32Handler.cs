@@ -29,7 +29,7 @@ internal class Esp32Handler : DeviceHandlerBase
             ActivateESPModule();
             deviceInfo.State = GetDeviceState();
             sendNotification(DeviceMessageTypes.Ids.OnboardDeviceReady, deviceInfo, null);
-            if(deviceInfo.State == DeviceState.Enabled)
+            if (deviceInfo.State == DeviceState.Enabled)
                 sendNotification(DeviceMessageTypes.Ids.DeviceEnabled, deviceInfo, null);
 
         });
@@ -115,7 +115,7 @@ internal class Esp32Handler : DeviceHandlerBase
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Network error: {error}");
 
         Thread.Sleep(1000);
-       
+
         ProcessUtility.RunProcess("/bin/sh", "-c \"echo 1 > /sys/devices/platform/soc/48004000.mmc/manual_detect_card_change\"", null, out log, out error);
         if (log != "")
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Network log: {log}");

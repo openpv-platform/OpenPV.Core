@@ -187,5 +187,5 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
         SendMessageWithResponse<EmptyNotification>(SystemMessageTypes.Ids.SetBootLogo, bootLogoInfo);
     }
 
-   
+
 }

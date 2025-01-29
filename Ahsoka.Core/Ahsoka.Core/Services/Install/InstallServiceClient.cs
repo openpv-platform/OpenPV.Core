@@ -91,7 +91,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     RunServiceOutOfProcess(installerPath, installerArgs); // Blocks until finished
 
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Process Finished.");
-                   
+
                     // Remove Installer Folder
                     string path = Path.GetDirectoryName(installerPath);
                     while (Path.Exists(path))
@@ -220,7 +220,8 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
         installerUI?.Log(new InstallLogInfo()
         {
-            LogMessage = $"Extracting Installer to {tempInstallerPackageFile}", LogMessageType = LogMessageType.Information
+            LogMessage = $"Extracting Installer to {tempInstallerPackageFile}",
+            LogMessageType = LogMessageType.Information
         });
 
         try
@@ -261,7 +262,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
             return true;
         }
-        catch 
+        catch
         {
             installerArguements = pathToInstallerFile = string.Empty;
 

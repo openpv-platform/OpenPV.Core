@@ -1,8 +1,6 @@
 using Ahsoka.ServiceFramework;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 
 namespace Ahsoka.Utility;
@@ -36,8 +34,8 @@ public class AssemblyResolver
                 if (name.Name == requestedName)
                 {
                     bool returnValue = name.Version.Major == requestorName.Version.Major && name.Version.Minor == requestorName.Version.Minor;
-                    if (returnValue )
-                        AhsokaLogging.LogMessage( AhsokaVerbosity.Low, $"Resolved Assembly Lookup of {args.Name} with {name.FullName} ");
+                    if (returnValue)
+                        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Resolved Assembly Lookup of {args.Name} with {name.FullName} ");
                     else
                         AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Could not Resolve Lookup of {args.Name} with any loaded assembly ");
 

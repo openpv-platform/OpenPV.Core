@@ -1,7 +1,5 @@
 ﻿using Ahsoka.Utility;
-using EnovationCloud.Core.DataTransferObjects;
-using Newtonsoft.Json;
-using System;
+using System.Text.Json.Serialization;
 
 namespace Ahsoka.Services.Network;
 
@@ -11,16 +9,16 @@ namespace Ahsoka.Services.Network;
 public partial class AdapterInfo : ICanDeserializeBase
 {
     // These are left for Back Compatiblity
-    [JsonProperty]
+    [JsonInclude]
     internal string AdapterId { get; set; }
 
-    [JsonProperty]
+    [JsonInclude]
     internal string AdapterType { get; set; }
 
-    [JsonProperty]
+    [JsonInclude]
     internal string Module { get; set; }
 
-    [JsonProperty]
+    [JsonInclude]
     internal string Description { get; set; }
 
     /// <summary>

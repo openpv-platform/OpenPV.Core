@@ -26,7 +26,7 @@ internal class NetworkServiceHelper
     const string miscSection = "Misc";
     const string poolOffset = "PoolOffset";
     const string poolSize = "PoolSize";
-              
+
     const string dhcpServerSection = "DHCPServer";
     const string ssid = "SSID";
     const string channelNumber = "ChannelNumber";

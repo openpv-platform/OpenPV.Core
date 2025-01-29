@@ -13,7 +13,7 @@ internal sealed class LocalSocket : IAhsokaServiceSocket, IAhsokaClientSocket
     IAhsokaServiceEndPoint serviceEndPoint;
     IAhsokaClientEndPoint clientEndPoint;
     BlockingCollection<AhsokaClientMessage> notificationObjects = new();
-  
+
     public void Connect(IAhsokaServiceEndPoint endPoint)
     {
         serviceEndPoint = endPoint;

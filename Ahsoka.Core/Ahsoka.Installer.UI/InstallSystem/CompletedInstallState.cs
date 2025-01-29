@@ -32,7 +32,7 @@ internal class CompletedInstallState : InstallerUIStateBase
                 ApplicationContext.Exit();
                 Environment.Exit(0);
             }
-        
+
         });
     }
 

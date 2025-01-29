@@ -344,7 +344,7 @@ public partial class ExtensionInfo
     /// Specific Version
     /// </summary>
     public string SpecificVersion { get; set; }
-    
+
     /// <summary>
     /// Specific Version
     /// </summary>

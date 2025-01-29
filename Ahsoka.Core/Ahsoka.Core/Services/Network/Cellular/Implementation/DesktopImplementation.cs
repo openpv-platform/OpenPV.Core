@@ -24,7 +24,7 @@ internal class DesktopImplementation : ImplementationBase
         info.ConnectionState = CellularNetworkState.Connected;
         NetworkService.SendConnectionStateNotification(messageHeader, info);
 
-        return new CellularConnectionResult() { AdapterId = adapterId,  ConnectionStarted = true };
+        return new CellularConnectionResult() { AdapterId = adapterId, ConnectionStarted = true };
     }
 
     protected override void OnStopNetwork(AhsokaServiceBase<CellularMessageTypes.Ids>.AhsokaServiceRequest messageHeader, string adapterId)

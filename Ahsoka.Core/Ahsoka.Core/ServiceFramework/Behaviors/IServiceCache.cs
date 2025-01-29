@@ -17,13 +17,13 @@ public interface IServiceCache
         {
             if (defaultCache != null && value != null)
                 throw new InvalidOperationException("The Default Cache has been set and can not be re-assigned");
-                
+
             defaultCache = value;
         }
     }
 
     private static IServiceCache defaultCache;
-    
+
 
     /// <summary>
     /// Send a Key Value to the ServiceCache

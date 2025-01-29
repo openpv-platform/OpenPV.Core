@@ -1,5 +1,4 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Install;
+﻿using Ahsoka.Services.Install;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
@@ -60,7 +59,7 @@ internal class DeviceHandlerBase
 
     internal virtual void InstallLocal(string fwFile, LocalProgress<InstallLogInfo> log)
     {
-        
+
     }
 
     internal virtual DeviceState GetDeviceState()

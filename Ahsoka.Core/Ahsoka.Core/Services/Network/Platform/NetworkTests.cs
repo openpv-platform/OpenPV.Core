@@ -1,11 +1,9 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Device;
-using Ahsoka.System;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Network.Platform;
 
@@ -30,7 +28,7 @@ internal class NetworkTests
 
         Console.WriteLine($"Enabling Device");
         // See if we have a WiFiClient
-        var wiFiDevice = deviceClient.GetDevices(new DeviceInfoRequest() {  FeatureSearch =   SupportedFeatures.Wifi }).Devices.FirstOrDefault();
+        var wiFiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch = SupportedFeatures.Wifi }).Devices.FirstOrDefault();
         if (wiFiDevice == null)
         {
             Console.WriteLine($"Wifi Device Not Found");

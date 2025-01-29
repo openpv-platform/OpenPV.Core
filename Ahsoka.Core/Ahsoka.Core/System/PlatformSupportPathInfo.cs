@@ -35,7 +35,7 @@ public static class PlatformSupportPathInfo
             {
                 if (rootPath.EndsWith(folderName) || rootPath.EndsWith(alternate))
                     return rootPath; // Root is One Up from Platform Support Root.
-            
+
                 // Look to see if we are beside the folder
                 string siblingPath = Path.Combine(rootPath, folderName);
                 string siblingPath_alt = Path.Combine(rootPath, alternate);
@@ -45,7 +45,7 @@ public static class PlatformSupportPathInfo
                 else if (Directory.Exists(siblingPath_alt))
                     return siblingPath_alt;
             }
-            
+
             rootPath = new DirectoryInfo(rootPath).Parent?.FullName;
         }
 

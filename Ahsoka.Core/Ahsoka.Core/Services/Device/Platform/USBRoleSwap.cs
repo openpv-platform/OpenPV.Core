@@ -12,7 +12,7 @@ internal static class USBRoleSwap
     #endregion
 
     const int O_WRONLY = 1;
-    
+
     const int GPIO_INDEX = 5;
     const string GPIO_DEV = "/dev/gpiochip";
 

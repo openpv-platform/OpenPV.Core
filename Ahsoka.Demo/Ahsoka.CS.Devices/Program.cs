@@ -1,5 +1,4 @@
-﻿using Ahsoka.Core.Drawing.Utility;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.System;
@@ -17,14 +16,14 @@ public class Program
 
     static SystemServiceClient systemServiceClient = new();
     static DeviceServiceClient deviceServiceClient = new();
-       
+
     static UsbInfo currentUsbState = new UsbInfo();
     static string cellDeviceStatus = "Not Connected";
 
     public static void Main()
     {
         Console.WriteLine("Starting Ahsoka Devices Demo Application");
- 
+
         deviceServiceClient.NotificationReceived += DeviceServiceClient_NotificationReceived;
 
         // Start All Services
@@ -38,7 +37,7 @@ public class Program
         // Start our UI and Setup the Various Buttons and Text Areas
         var window = mainUi.StartUI("OpenPV Device Demo");
         mainUi.AddButton(RollSwap, "Swap USB Roll");
-     
+
         // These Events will listen for our Model Changes and Refresh Our UI.
         // we are also calling the RefreshUI once to start to init the status values
         RefreshUI(deviceServiceClient, new PropertyChangedEventArgs(""));
@@ -67,7 +66,7 @@ public class Program
     private static void RollSwap()
     {
         // Fitch Initial State of USB
-        deviceServiceClient.SetUsbInfo(new UsbInfo() {  Mode = currentUsbState.Mode == UsbMode.Device ? UsbMode.Host : UsbMode.Device, Port = UsbPort.Primary});
+        deviceServiceClient.SetUsbInfo(new UsbInfo() { Mode = currentUsbState.Mode == UsbMode.Device ? UsbMode.Host : UsbMode.Device, Port = UsbPort.Primary });
         currentUsbState = deviceServiceClient.GetUsbInfo();
 
         RefreshUI(deviceServiceClient, new PropertyChangedEventArgs(""));
@@ -117,13 +116,13 @@ public class Program
             // When not using Auto Enable, this is where you could enable the USB Device
             DeviceServiceClient deviceServiceClient = sender as DeviceServiceClient;
             UsbDeviceInfo info = e.NotificationObject as UsbDeviceInfo;
-            
+
             if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularNetwork)
             {
                 // Enable Cellular Modem
                 mainUi.UpdateStatusString($"NOT Enabling Cell Modem Device (Using auto Enable)");
                 Console.WriteLine($"NOT Enabling Cell Modem Device (Using auto Enable)");
-               // deviceServiceClient.EnableDevice(info.DeviceInfo); // Start client for NetworkService
+                // deviceServiceClient.EnableDevice(info.DeviceInfo); // Start client for NetworkService
             }
         }
         else if (e.TransportId == DeviceMessageTypes.Ids.UsbDeviceRemoved)
@@ -144,12 +143,12 @@ public class Program
             }
         }
 
-        RefreshUI(deviceServiceClient,new PropertyChangedEventArgs(""));
+        RefreshUI(deviceServiceClient, new PropertyChangedEventArgs(""));
     }
 
     public static void StartCellNetwork()
     {
-        mainUi.UpdateStatusString($"Starting Cell Service"); 
+        mainUi.UpdateStatusString($"Starting Cell Service");
         Console.WriteLine($"Starting Cell Service");
         cellService.NotificationReceived += CellService_NotificationReceived;
 

@@ -84,12 +84,12 @@ public partial class TargetPathInfo
 
             case InstallerPaths.ApplicationVersion:
                 return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppVersionFile);
-            
+
             case InstallerPaths.ServiceSecurityFile:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder , ApplicationOutputComponent.ServiceSecurityFile);
-            
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.ServiceSecurityFile);
+
             case InstallerPaths.ApplicationDescription:
-                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder , ApplicationOutputComponent.AppDescriptionFile);
+                return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppDescriptionFile);
 
             case InstallerPaths.ApplicationName:
                 return Path.Combine(GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppNameFile);
@@ -159,7 +159,7 @@ public partial class TargetPathInfo
             // Legacy XML Files
             FactoryPaths.HardwareDeviceSigningXmlKeyFile => $"{factoryHardwareRoot}/DeviceKey.cert",
             FactoryPaths.HardwareDeviceSigningXmlPublicKeyFile => $"{factoryHardwareRoot}/DevicePublicKey.cert",
-             _ => factoryRoot,
+            _ => factoryRoot,
         };
     }
 
@@ -273,7 +273,7 @@ public enum InstallerPaths
     /// Path to the Application Version File
     /// </summary>
     ApplicationVersion,
-   
+
     /// <summary>
     /// Path to the Application ID
     /// </summary>

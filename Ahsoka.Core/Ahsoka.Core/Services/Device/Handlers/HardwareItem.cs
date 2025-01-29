@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Ahsoka.Services.Device;
+﻿namespace Ahsoka.Services.Device;
 
 /// <summary>
 /// Device Info
 /// </summary>
 public partial class DeviceInfo
-{ 
-   
+{
+
     /// <summary>
     /// Get List of Services supporting this Type
     /// </summary>

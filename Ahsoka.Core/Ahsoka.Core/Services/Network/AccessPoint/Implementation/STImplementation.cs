@@ -2,11 +2,9 @@ using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Network.ESPWifi;
 using Ahsoka.Services.Network.Platform;
 using Ahsoka.Services.Network.Platform.ESPWifi;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Ahsoka.Services.Network.AP.Implementation;
 
@@ -14,7 +12,7 @@ namespace Ahsoka.Services.Network.AP.Implementation;
 internal partial class STImplementation : ImplementationBase
 {
     AccessPointServiceConfiguration currentConfiguration;
-  
+
     protected override void OnInit(out AccessPointServiceConfiguration defaultConfiguration, out AdapterRequest defaultRequest)
     {
         string adapterId = "ethap0";
@@ -37,7 +35,7 @@ internal partial class STImplementation : ImplementationBase
         // Configure and Write Configuratoin
         ConfigureAdapter(connection, currentConfiguration);
 
-        return new AdapterResult() { AdapterId = currentConfiguration.AdapterId, ConfigurationSuccessful = true};
+        return new AdapterResult() { AdapterId = currentConfiguration.AdapterId, ConfigurationSuccessful = true };
     }
 
 

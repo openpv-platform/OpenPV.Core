@@ -12,7 +12,7 @@ namespace Ahsoka.Core.Drawing.Base;
 public class DrawingWindow
 {
     #region Fields
-    bool firstFrame  = true;
+    bool firstFrame = true;
     int frameCount = 0;
     const int frameSeconds = 10;
     DateTime nextPrintTime = DateTime.Now.AddSeconds(frameSeconds);
@@ -69,7 +69,7 @@ public class DrawingWindow
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
         {
             nativeWindow = new Platform.TIWindow();
-            api = nativeWindow.CreateWindow(this,surfaceId, appId) as SkiaDrawingApi;
+            api = nativeWindow.CreateWindow(this, surfaceId, appId) as SkiaDrawingApi;
         }
 
         size = new(api.ScreenWidth, api.ScreenHeight);
@@ -175,7 +175,7 @@ public class DrawingWindow
         // Render First Frame Always
         if (firstFrame)
         {
-            frameArgs.ShouldClip = false; 
+            frameArgs.ShouldClip = false;
             frameArgs.ShouldRender = true;
             frameArgs.ClipRegions.Clear();
         }

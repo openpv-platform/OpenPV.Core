@@ -38,10 +38,10 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
             socketPoller.Add(socket);
             socketPoller.Add(sendQueue);
             isConnected = true;
-           
+
             socket.ReceiveReady += (o, e) =>
             {
-                if (socketThreadId == -1) 
+                if (socketThreadId == -1)
                     socketThreadId = Environment.CurrentManagedThreadId;
 
                 // Receive Message Data
@@ -49,7 +49,7 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 
                 // Decode Request Header
                 using MemoryStream headerData = new(header);
-                
+
                 var message = new AhsokaServiceMessage()
                 {
                     Header = ProtoBuf.Serializer.Deserialize<AhsokaMessageHeader>(headerData),
@@ -106,7 +106,7 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
         // Prepare Response Message 
         using MemoryStream headerStream = new();
         ProtoBuf.Serializer.Serialize(headerStream, socketMessage.Header);
-       
+
         NetMQMessage message = new();
         message.Append(socketMessage.ClientId);
         message.Append(headerStream.ToArray());
@@ -116,8 +116,8 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
         if (socketThreadId == Environment.CurrentManagedThreadId)
             socket.TrySendMultipartMessage(message);
         else if (socketMessage.IsNotification)
-            sendQueue.Enqueue(message); 
-        else 
+            sendQueue.Enqueue(message);
+        else
             throw new ApplicationException("Reply Messages must be sent from Receiving Thread"); // Reply on separate thread
 
 

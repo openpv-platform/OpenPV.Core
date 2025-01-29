@@ -57,7 +57,7 @@ public partial class AhsokaRuntime
     /// <returns></returns>
     public IAhsokaServiceEndPoint GetService(string serviceName, int dataChannel = 0)
     {
-        return ServiceEndPoints.Where(x=>x.ServiceConfig.ServiceName == serviceName && (dataChannel == 0 || dataChannel == x.ServiceConfig.DataChannel)).FirstOrDefault();
+        return ServiceEndPoints.Where(x => x.ServiceConfig.ServiceName == serviceName && (dataChannel == 0 || dataChannel == x.ServiceConfig.DataChannel)).FirstOrDefault();
     }
 
     internal IAhsokaServiceEndPoint GetServiceByEndPointId(uint endpointId)
@@ -243,7 +243,7 @@ public partial class AhsokaRuntime
     }
 
     #endregion
-    
+
     #region Internal Methods
 
     private static string CreateServiceConfiguration(IEnumerable<IAhsokaEndPoint> endpoints)

@@ -30,7 +30,7 @@ public class Program
         var request = securityClient.RequestToken(new TokenRequestInfo()
         {
             // Replace with your own key or import cert from project
-            ApiKey = "VC+rr/2YIuUAkUpR3aJiajPEpNt6FL14e8oodWSc/X1Jy3fU6M9m610p4gBM8t38CUkKYtVI7ZF4D9sJWyJrJw==", 
+            ApiKey = "VC+rr/2YIuUAkUpR3aJiajPEpNt6FL14e8oodWSc/X1Jy3fU6M9m610p4gBM8t38CUkKYtVI7ZF4D9sJWyJrJw==",
             ClientIds = { ((IAhsokaClientEndPoint)systemClient).GetClientId() },
             ClientDescription = "TestClient"
         });

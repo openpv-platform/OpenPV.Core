@@ -1,5 +1,4 @@
-﻿using Ahsoka.Spark;
-using Ahsoka.System;
+﻿using Ahsoka.System;
 using Ahsoka.Utility;
 using EnovationCloud.Core.Utilities;
 using System.Collections.Generic;
@@ -79,7 +78,7 @@ internal class OpenPVToolBase : ViewModelBase
     }
 
     public virtual string GetInfo(IToolViewModel vm) { return string.Empty; }
-    
+
     protected virtual bool GetIsDownloaded()
     {
         bool isDownloaded = Directory.Exists(LocalPath);

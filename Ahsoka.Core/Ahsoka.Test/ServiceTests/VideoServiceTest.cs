@@ -1,9 +1,7 @@
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Video;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
 using System.Threading;
-using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.Test;
 
@@ -16,7 +14,7 @@ public class VideoServiceTest : LinearTestBase
 
     [TestMethod]
     public void TestVideoService()
-    {  
+    {
         VideoServiceClient service = new VideoServiceClient();
         service.NotificationReceived += (o, e) =>
         {
@@ -30,17 +28,17 @@ public class VideoServiceTest : LinearTestBase
                         waitForPause.Set();
                 }
             }
-               
+
         };
 
         foreach (var item in service.GetVideoPlayers().Players)
         {
-            var status =  service.PlayVideo(new VideoPlaybackRequest() 
+            var status = service.PlayVideo(new VideoPlaybackRequest()
             {
-                VideoPlayerID = item.VideoPlayerID, 
-                StatusUpdateInMs = 250 
+                VideoPlayerID = item.VideoPlayerID,
+                StatusUpdateInMs = 250
             });
-            
+
             Assert.IsTrue(status.VideoState == PlaybackState.Playing);
             status = service.RequestVideoStatus(item);
             Assert.IsTrue(status.VideoState == PlaybackState.Playing);
@@ -58,7 +56,7 @@ public class VideoServiceTest : LinearTestBase
 
             service.StopVideo(item);
             status = service.RequestVideoStatus(item);
-            Assert.IsTrue(status.VideoState == PlaybackState.Stopped );
+            Assert.IsTrue(status.VideoState == PlaybackState.Stopped);
         }
 
 

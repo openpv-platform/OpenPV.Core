@@ -7,7 +7,7 @@ namespace Ahsoka.Services.Video;
 /// </summary>
 internal class DesktopVideoServiceImplementation : VideoPlayerImpl
 {
-    PlaybackState playbackState =  PlaybackState.Ready;
+    PlaybackState playbackState = PlaybackState.Ready;
     DateTime endTime;
     DateTime startTime;
     public DesktopVideoServiceImplementation()
@@ -19,7 +19,7 @@ internal class DesktopVideoServiceImplementation : VideoPlayerImpl
     {
         startTime = DateTime.Now;
         endTime = DateTime.Now.AddMinutes(1); // Simulated 1 Minute
-        playbackState =  PlaybackState.Playing;
+        playbackState = PlaybackState.Playing;
 
         return CreateStatus();
     }
@@ -53,7 +53,7 @@ internal class DesktopVideoServiceImplementation : VideoPlayerImpl
 
     protected override VideoStatus OnStopVideo()
     {
-        playbackState =   PlaybackState.Stopped;
+        playbackState = PlaybackState.Stopped;
         endTime = startTime = DateTime.MaxValue;
         return CreateStatus();
     }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Ahsoka.Core.Drawing;
+﻿using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Installer.UI.InstallSystem;
@@ -15,6 +11,10 @@ using Ahsoka.Services.System;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility.WiFi;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ahsoka.Installer.UI;
 
@@ -76,18 +76,18 @@ internal class InstallerDrawingManager : SkiaDrawingManager
 
                 var systemService = AhsokaRuntime.Default.GetService(systemClient.ServiceConfig.ServiceName) as SystemService;
                 systemService.AutoLoadReceived += SystemService_AutoLoadReceived;
-                
+
                 ((StartState)CurrentState).Init(true);
                 Invalidate();
 
                 // Release Startup and UX
                 ApplicationContext.ReleaseStartup();
-          
+
                 CheckForInternalAutoload();
             }
             catch (Exception ex)
             {
-                AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Startup Exception " + ex.Message +  ex.StackTrace);
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Startup Exception " + ex.Message + ex.StackTrace);
             }
 
         }).ContinueWith((result) =>
@@ -100,7 +100,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
             // Start Clients....These Use AutoStart
             wifiViewModel.Start(deviceClient);
 
-           // NOTE We start this after the wifi model so it recieves notifications
+            // NOTE We start this after the wifi model so it recieves notifications
             deviceClient.EnableDeviceNotifications();
         });
     }
@@ -110,12 +110,12 @@ internal class InstallerDrawingManager : SkiaDrawingManager
         if (HasCellModem)
             StopNetwork();
 
-        base.OnClose(result);   
+        base.OnClose(result);
     }
 
     private void CellClient_NotificationReceived(object sender, AhsokaClientBase<CellularMessageTypes.Ids>.AhsokaNotificationArgs e)
     {
-         if (e.TransportId == CellularMessageTypes.Ids.NetworkStateChanged)
+        if (e.TransportId == CellularMessageTypes.Ids.NetworkStateChanged)
         {
             CellularNetworkInformation info = e.NotificationObject as CellularNetworkInformation;
             Console.WriteLine($"Network Service Status: {info.ConnectionState}");
@@ -243,7 +243,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
     {
         int width = DrawingApi.ScreenWidth;
         int height = DrawingApi.ScreenHeight;
-       
+
         if (wifiViewModel.AdapterEnabled)
         {
             DrawingTextInfo textInfo = new() { Color = DrawingColors.Black, TextSize = 16, Alignment = DrawingTextAlignment.Left, Typeface = UITypeface };

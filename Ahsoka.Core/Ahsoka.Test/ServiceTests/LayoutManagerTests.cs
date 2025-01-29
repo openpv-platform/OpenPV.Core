@@ -30,25 +30,25 @@ public class LayoutManagerTests : LinearTestBase
         {
             SurfaceId = 1000,
             CommitChanges = true,
-            IsVisible = true, 
+            IsVisible = true,
             Opacity = .6f
-               
+
         });
 
         client.UpdateSurfaceZOrder(new SurfaceOrder()
         {
-            SurfaceIds = [121212,1000,12345],
+            SurfaceIds = [121212, 1000, 12345],
             CommitChanges = true,
         });
 
 
         client.UpdateSurfaceLocation(new SurfaceRectangle()
         {
-              SurfaceId = 121212,
-              Width = 500,
-              Height = 500,
-              X = 100,
-              Y = 100,
+            SurfaceId = 121212,
+            Width = 500,
+            Height = 500,
+            X = 100,
+            Y = 100,
         });
 
         Task.Delay(2000).Wait();
@@ -94,7 +94,7 @@ public class LayoutManagerTests : LinearTestBase
         using (MemoryStream ms = new MemoryStream())
         {
             LayerManagerConfiguration configuration = new LayerManagerConfiguration();
-            configuration.SurfaceSetups.Add( new SurfaceSetup()
+            configuration.SurfaceSetups.Add(new SurfaceSetup()
             {
                 SurfaceId = 121212,
                 LocationRectangle = new SurfaceRectangle

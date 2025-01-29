@@ -54,7 +54,7 @@ public class WiFiAPServiceClient : AhsokaClientBase<WiFiAPMessageTypes.Ids>
     /// <param name="timeoutInMs"></param>
     public void StartAccessPoint(AdapterRequest adapter, int timeoutInMs = int.MaxValue)
     {
-       SendMessageWithResponse(WiFiAPMessageTypes.Ids.StartAccessPoint, adapter, timeoutInMs);
+        SendMessageWithResponse(WiFiAPMessageTypes.Ids.StartAccessPoint, adapter, timeoutInMs);
     }
 
     /// <summary>

@@ -3,8 +3,6 @@ using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
 using System.Linq;
 
 namespace Ahsoka.DeveloperTools;
@@ -47,7 +45,7 @@ internal class StartupOptionsViewModel : ChildViewModelBase<PackageViewModel>
         }
     }
 
-    public StartOptions StartupOption 
+    public StartOptions StartupOption
     {
         get { return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.ServiceStartup; }
         set

@@ -204,7 +204,7 @@ internal class DotNetViewModel : ViewModelBase
             parentViewModel.Console.ClearConsole();
             parentViewModel.Console.AddConsoleLine($"Beginning SDK Install to Project Path {directoryForFramework}");
 
-            
+
             if (Directory.Exists(directoryForFramework))
                 Directory.Delete(directoryForFramework, true);
 

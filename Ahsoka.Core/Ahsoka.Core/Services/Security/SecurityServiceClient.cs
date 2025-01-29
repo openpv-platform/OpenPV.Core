@@ -3,11 +3,9 @@ using Ahsoka.Services.Iot;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
-using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 
@@ -63,10 +61,10 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
             var response = SendMessageWithResponse<TokenRequestResponse>(SecurityMessageTypes.Ids.RequestToken, tokenRequest);
             if (usingWaitMethod)
                 requests[response.RequestId.ToGuid()] = null;
-            
+
             return response;
         }
-        
+
     }
 
     /// <summary>
@@ -138,7 +136,7 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
 
                 return RSAEncryption.GetSignatureWithKey(((IAhsokaClientEndPoint)this).GetClientId(), key);
             }
-            catch {}
+            catch { }
         }
 
         return null;

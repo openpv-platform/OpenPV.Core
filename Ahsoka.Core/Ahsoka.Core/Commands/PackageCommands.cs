@@ -36,7 +36,7 @@ internal static class PackageCommands
         var client = new SystemServiceClient(config);
         AhsokaRuntime.Default.StartEndPoints(client);
 
-       Console.WriteLine($"Connecting to {config.DataURI}...");
+        Console.WriteLine($"Connecting to {config.DataURI}...");
 
         int exitCode = 0;
         if (!WaitForConnection(client))

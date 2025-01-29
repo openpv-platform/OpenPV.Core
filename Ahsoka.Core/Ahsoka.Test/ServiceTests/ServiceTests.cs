@@ -125,7 +125,7 @@ public class ServiceTests : LinearTestBase
 
             bootLogo.Rotation = BootLogoRotation.Rotate90;
             systemClient.SetBootLogo(bootLogo);
-            
+
             bootLogo.Rotation = BootLogoRotation.Rotate180;
             systemClient.SetBootLogo(bootLogo);
 
@@ -134,13 +134,13 @@ public class ServiceTests : LinearTestBase
         }
 
         systemClient.RequestServiceShutdown();
-       
+
 
         // Stop the Runtimes
         AhsokaRuntime.Default.StopAllEndPoints();
     }
 
-    
+
     [TestMethod]
     public void TestNotifications()
     {
@@ -150,10 +150,10 @@ public class ServiceTests : LinearTestBase
         // Create and Start Service
         SystemServiceClient systemClient = new();
         systemClient.Start();
-        
+
         Stopwatch watch = new();
         watch.Start();
-        
+
         // Start a Thread and Run Test
         var task1 = Task.Run(() =>
         {
@@ -190,7 +190,7 @@ public class ServiceTests : LinearTestBase
     private void RunTest(SystemServiceClient systemClient, out int receiveCount)
     {
         Semaphore messageReceived = new(0, 1);
-        
+
         int totalRuns;
 
         int receiveCountLocal = 0;
@@ -215,7 +215,7 @@ public class ServiceTests : LinearTestBase
         messageReceived.WaitOne(30000);
 
         Assert.AreEqual(totalRuns, receiveCountLocal);
-        
+
         receiveCount = receiveCountLocal;
 
     }
@@ -231,7 +231,7 @@ public class ServiceTests : LinearTestBase
         // Run Sample Test Code
         ServiceSelfTests.RunEchoPerfTest(100000, systemClient);
         ServiceSelfTests.PrintServerMetrics(systemClient);
-      
+
         var brightness = systemClient.GetBrightness();
         systemClient.SetBrightness(brightness);
 
@@ -254,7 +254,7 @@ public class ServiceTests : LinearTestBase
         var usbInfo = deviceClient.GetUsbInfo();
         deviceClient.SetUsbInfo(usbInfo);
 
-        var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch =  SupportedFeatures.Wifi }).Devices.FirstOrDefault();
+        var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch = SupportedFeatures.Wifi }).Devices.FirstOrDefault();
         if (wifiDevice != null)
         {
             deviceClient.EnableDeviceNotifications();

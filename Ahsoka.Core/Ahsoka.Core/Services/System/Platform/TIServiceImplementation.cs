@@ -1,7 +1,6 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using Microsoft.Win32.SafeHandles;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -35,7 +34,7 @@ internal class TIServiceImplementation : IServiceImplementation
 
     private void BuzzerInit()
     {
-       
+
     }
 
     void IServiceImplementation.SetBrightness(int percent)
@@ -68,7 +67,7 @@ internal class TIServiceImplementation : IServiceImplementation
 
     private static Dictionary<string, string> GetScreenInfo()
     {
-        Dictionary<string, string> results = new(); 
+        Dictionary<string, string> results = new();
 
         return results;
     }

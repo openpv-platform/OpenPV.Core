@@ -1,9 +1,6 @@
 ﻿using Ahsoka.Installer;
 using Ahsoka.System;
-using Ahsoka.Utility;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Ahsoka.Commands;
 

@@ -12,12 +12,12 @@ internal class CellularHandler : DeviceHandlerBase
     string device = "/dev/cdc-wdm0";
     string network = "wwan0";
 
-    internal override List<UsbDeviceId> Init(DeviceInfo deviceInfo,  Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
+    internal override List<UsbDeviceId> Init(DeviceInfo deviceInfo, Action<DeviceMessageTypes.Ids, object, byte[]> sendNotification)
     {
         base.Init(deviceInfo, sendNotification);
 
         // Add Valid VID/PID Items.
-       return new() { new UsbDeviceId() { VendorId = 0x1bc7, ProductId = 0x1031 } };
+        return new() { new UsbDeviceId() { VendorId = 0x1bc7, ProductId = 0x1031 } };
     }
 
     internal override DeviceState GetDeviceState()
@@ -45,13 +45,13 @@ internal class CellularHandler : DeviceHandlerBase
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, command);
 
         ProcessUtility.RunProcess("/bin/sh", $"-c \"{command}", null, out string log, out string error);
-       
-        if (!log.Contains ("Operating mode set successfully"))
+
+        if (!log.Contains("Operating mode set successfully"))
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"CellularHandler log: {log}");
         if (error != "")
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"CellularHandler error: {error}");
 
-        
+
         base.DisableDevice(deviceInfo, sendNotification);
     }
 
@@ -60,7 +60,7 @@ internal class CellularHandler : DeviceHandlerBase
         bool wwanReady = false;
         int i = 0;
 
-        while(!wwanReady && i < 5)
+        while (!wwanReady && i < 5)
         {
             string waitCommand = $"networkctl list {network}";
             ProcessUtility.RunProcess("/bin/sh", $"-c \"{waitCommand}", null, out string output, out string errorOutput);
@@ -74,7 +74,7 @@ internal class CellularHandler : DeviceHandlerBase
 
             i++;
         }
-      
+
         string command = $"qmicli -d {device} --dms-set-operating-mode='online'";
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, command);
 

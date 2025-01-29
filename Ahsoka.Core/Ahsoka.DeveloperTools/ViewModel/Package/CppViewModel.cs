@@ -18,7 +18,7 @@ internal class CppViewModel : ViewModelBase
 {
     private readonly MainViewModel parentViewModel;
     private readonly PackageInformation packageInfo;
- 
+
     public void UpdateSDK()
     {
         Task.Run(() => { InstallSDK(false).GetAwaiter().GetResult(); });
@@ -26,7 +26,7 @@ internal class CppViewModel : ViewModelBase
 
     public async Task NeedsUpdate(bool isGenerating = false)
     {
-        if (parentViewModel.SelectedPackage.IsOpenView && (packageInfo.ApplicationType is  ApplicationType.Cpp or ApplicationType.CODESYS) || SdkNeedsUpdate)
+        if (parentViewModel.SelectedPackage.IsOpenView && (packageInfo.ApplicationType is ApplicationType.Cpp or ApplicationType.CODESYS) || SdkNeedsUpdate)
         {
             UpdateSDKUpdateState(parentViewModel);
 

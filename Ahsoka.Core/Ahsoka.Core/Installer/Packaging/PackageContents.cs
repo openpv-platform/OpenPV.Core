@@ -1,9 +1,9 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.Utility;
-using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Ahsoka.Installer;
 
@@ -69,7 +69,7 @@ public class PackageContents : PackageHeader
             information.IsSignatureValid = information.HeaderCRC == Crc32.CalculateCrc32(headerData);
         }
         catch (Exception) { Console.WriteLine("Signature could not be validated"); }
-      
+
         return information;
     }
 

@@ -5,7 +5,6 @@ using Ahsoka.Services.Gateway;
 using Ahsoka.Services.System;
 using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading;
 
 namespace Ahsoka.Test;
 
@@ -18,7 +17,7 @@ public class GatewayTests : LinearTestBase
     [TestMethod]
     public void TestGatewayServices()
     {
-        
+
         // Create Client Runtime and Add Services
         SystemService systemService = new();
         DeviceService deviceService = new();

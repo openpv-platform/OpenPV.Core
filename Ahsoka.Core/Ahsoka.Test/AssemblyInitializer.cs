@@ -11,7 +11,7 @@ namespace Ahsoka.Test;
 [TestClass]
 public class TestInitializer : LinearTestBase
 {
-   [AssemblyInitialize]
+    [AssemblyInitialize]
     public static void AssemblyInit(TestContext context)
     {
         var extTests = new ExtensionTests();
@@ -21,10 +21,10 @@ public class TestInitializer : LinearTestBase
 
         // Remove Any Existing Ahsoka Folders
         string ahsokaFolder = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/Ahsoka";
-        if (Directory.Exists(ahsokaFolder)) 
+        if (Directory.Exists(ahsokaFolder))
             Directory.Delete(ahsokaFolder, true);
 
-        ProcessUtility.RunProcess("taskkill", "/im Ahsoka.CommandLine.exe /f",null, out string result, out string error);
+        ProcessUtility.RunProcess("taskkill", "/im Ahsoka.CommandLine.exe /f", null, out string result, out string error);
 
         Extensions.LoadExtensions();
 

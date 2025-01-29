@@ -2,7 +2,6 @@
 using Ahsoka.Installer;
 using Ahsoka.Utility;
 using Avalonia.Controls;
-using Gst.Sdp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +9,6 @@ using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -67,7 +65,7 @@ internal class NewPackageViewModel : ViewModelBase
         Demos = new();
         IsCreate = true;
 
-        List<CustomerDemoInfoViewModel> demos= new();
+        List<CustomerDemoInfoViewModel> demos = new();
 
         //load demos
         string demoFiles = GetTemplateFolder();
@@ -125,7 +123,7 @@ internal class NewPackageViewModel : ViewModelBase
             if (item.AllDemos.Count == 1)
                 item.PrimaryDemo.DisplayName = item.PrimaryDemo.ProjectName;
             else
-                item.PrimaryDemo.DisplayName = item.PrimaryDemo.ProjectName.Replace(".Select", "").Replace(".Pro","");
+                item.PrimaryDemo.DisplayName = item.PrimaryDemo.ProjectName.Replace(".Select", "").Replace(".Pro", "");
         }
 
 
@@ -207,7 +205,7 @@ internal class NewPackageViewModel : ViewModelBase
 
     private void ShowFinishedDialog(object sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == "ConsoleVisible" && !parentViewModel.Console.ConsoleVisible )
+        if (e.PropertyName == "ConsoleVisible" && !parentViewModel.Console.ConsoleVisible)
         {
             parentViewModel.Dialog.ShowDialog("Project Created", $"Your project is now ready for development at... \r\n\r\n{Path.GetDirectoryName(this.ProjectPath)}", "Ok");
             parentViewModel.Console.PropertyChanged -= ShowFinishedDialog;

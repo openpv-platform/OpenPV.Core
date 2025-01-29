@@ -121,8 +121,8 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 
     }
 
-    private void HandleUnsubscribeToAppChange(AhsokaServiceRequest messageHeader) 
-    { 
+    private void HandleUnsubscribeToAppChange(AhsokaServiceRequest messageHeader)
+    {
         SparkDisplayClient.SharedSparkClient.UnsubscribeToAppChanges();
 
         SendResponse(messageHeader);
@@ -167,7 +167,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
             string pathToFile = downloadRequest.PathToFile;
             if (urlToDownload == null) throw new ApplicationException("Package does not contain OpenPV install");
 
-         
+
             using var client = new DownloadUtility(urlToDownload, pathToFile);
             client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) =>
             {
@@ -216,12 +216,12 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
             SparkSubscriptionInfo info = GetSparkSubscription();
 
             // If no Provision INformation
-            if (String.IsNullOrEmpty(info.ChannelName)) 
+            if (String.IsNullOrEmpty(info.ChannelName))
             {
                 var subInfo = AutoProvisionDeviceDTO();
                 if (info == null)
                 {
-                    AhsokaLogging.LogMessage( AhsokaVerbosity.High, "Could not retrieve Auto-Provisioning Info.");
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Could not retrieve Auto-Provisioning Info.");
 
                     SendResponse(messageHeader, new SparkReleaseInfo()
                     {
@@ -307,7 +307,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         // Fetch Hardware ID
         var coreInterop = SystemService.GetInterop();
         var hardwareID = coreInterop.GetHardwareSerialNumber();
-        
+
         try
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Attemping to Auto Provision at address {autoProvisionAddress}");
@@ -343,7 +343,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
             }
 
             return null;
-        } 
+        }
         catch (Exception ex)
         {
             if (ex.InnerException is SparkException sparkEx)
@@ -351,9 +351,9 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
             else
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, ex.Message);
 
-            return null; 
+            return null;
         }
-                    
+
     }
 
     private static SparkSubscriptionInfo GetSparkSubscription()
@@ -395,9 +395,9 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         string deviceKey = deviceSigningKey;
 
         //  Since the Display uses PEM Keys, we must convert to XML
-        if (deviceKey != null  && deviceKey.Contains("BEGIN RSA PUBLIC KEY"))
+        if (deviceKey != null && deviceKey.Contains("BEGIN RSA PUBLIC KEY"))
             deviceKey = RSAEncryption.ConvertPEMToPublicXML(deviceKey);
-       
+
         return deviceKey;
     }
 

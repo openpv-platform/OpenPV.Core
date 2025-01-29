@@ -355,7 +355,7 @@ internal class MainViewModel : ViewModelBase
 
         // Run Machine / Tools Downloads
         string pathToKits = CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName);
-        
+
         // Run Local Command Line for Tests
         if (Debugger.IsAttached && Directory.Exists(PlatformSupportPathInfo.PlatformSupportRootFolder))
             pathToKits = PlatformSupportPathInfo.PlatformSupportRootFolder;
@@ -474,7 +474,7 @@ internal class MainViewModel : ViewModelBase
             InitUI();
     }
 
-    
+
     private bool IsSparkAvailable()
     {
         try
@@ -486,7 +486,7 @@ internal class MainViewModel : ViewModelBase
                 return true;
         }
         catch { }
-        
+
         return false;
     }
 
@@ -502,8 +502,8 @@ internal class MainViewModel : ViewModelBase
                 if (!result)
                     Environment.Exit(0);
                 else
-                   await Dialog.ShowDialog("Offline Mode Enabled", "You can open and build Packages but can not acess Projects, Plugins or Account Information.  Please restart the Developer Toolkit to re-enable these features.", "OK");
-            
+                    await Dialog.ShowDialog("Offline Mode Enabled", "You can open and build Packages but can not acess Projects, Plugins or Account Information.  Please restart the Developer Toolkit to re-enable these features.", "OK");
+
             }
             else if (showNewVersionHelp)
                 Plugins.OpenPopup(showNewVersionHelp);
@@ -817,7 +817,7 @@ internal class MainViewModel : ViewModelBase
         {
             account = SparkAccountClient.SharedSparkClient.GetAccount();
         }
-        catch {}
+        catch { }
 
         var error = new ErrorReportDTO()
         {
@@ -925,7 +925,7 @@ public class RecentItem
 #region OfflineData
 public class OffLineData
 {
-    public TeamDTO Team { get;set ; }
+    public TeamDTO Team { get; set; }
     public List<OfflineModule> Modules { get; set; } = new();
 }
 

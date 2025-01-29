@@ -29,7 +29,7 @@ public class SystemParameterData : List<ParameterData>
             if (parameter.SystemUniqueID == 0)
             {
                 // Generate Key (32bit Hash
-                var value  = ParameterData.GenerateUniqueID(SystemName, parameter.ObjectName, parameter.Name);
+                var value = ParameterData.GenerateUniqueID(SystemName, parameter.ObjectName, parameter.Name);
                 while (this.Any(x => x.SystemUniqueID == value))
                     value++;
 
@@ -53,7 +53,7 @@ public class ParameterData
     /// Name of the Object (Optional)
     /// </summary>
     public string ObjectName { get; set; }
-    
+
     /// <summary>
     /// Name of the Parameter
     /// </summary>
@@ -128,30 +128,30 @@ public enum ParameterValueTypes
     /// <summary>
     /// String Values
     /// </summary>
-     String,
+    String,
 
-     /// <summary>
-     /// Unsigned Integer
-     /// </summary>
-     UnsignedInteger,
+    /// <summary>
+    /// Unsigned Integer
+    /// </summary>
+    UnsignedInteger,
 
-     /// <summary>
-     /// Signed Integer
-     /// </summary>
-     SignedInteger,
+    /// <summary>
+    /// Signed Integer
+    /// </summary>
+    SignedInteger,
 
-     /// <summary>
-     /// Bool Value
-     /// </summary>
-     Boolean,
+    /// <summary>
+    /// Bool Value
+    /// </summary>
+    Boolean,
 
-     /// <summary>
-     /// Single Precision Float
-     /// </summary>
-     Float,
+    /// <summary>
+    /// Single Precision Float
+    /// </summary>
+    Float,
 
-     /// <summary>
-     /// Double Precision Float
-     /// </summary>
-     Double,
+    /// <summary>
+    /// Double Precision Float
+    /// </summary>
+    Double,
 }

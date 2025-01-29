@@ -29,7 +29,7 @@ public interface IRemoteTargetTool
     /// <param name="info"></param>
     /// <returns></returns>
     string ClearJournal(IConnectionInfo info);
-  
+
     /// <summary>
     ///  Get the Journal / Log for any Customer Application
     /// </summary>
@@ -78,7 +78,7 @@ public interface IRemoteTargetTool
     /// <param name="progressString"></param>
     /// <returns></returns>
     GetHardwareInformationReply ReturnToInstaller(TargetConnectionInfo connectionInfo, SystemServiceClient client, CancellationTokenSource source, IProgress<string> progressString);
-   
+
     /// <summary>
     /// Send a Stop Command for the connected Target.
     /// </summary>
@@ -96,7 +96,7 @@ public interface IRemoteTargetTool
     /// <param name="progressString"></param>
     /// <returns></returns>
     bool EnableRDP(HardwareInfo hardwareInfo, IConnectionInfo info, int rdpPort, IProgress<string> progressString);
-    
+
     /// <summary>
     /// Disable Remote Desktop Services on this target.
     /// </summary>

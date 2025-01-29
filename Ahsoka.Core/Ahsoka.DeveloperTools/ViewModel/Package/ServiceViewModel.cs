@@ -96,7 +96,7 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
             OnPropertyChanged(nameof(ApiKey));
         }
     }
-    
+
     public TransportSocketTypes[] SocketTypes { get; init; } = Enum.GetValues<TransportSocketTypes>();
 
     public ObservableCollection<ServiceConfigurationViewModel> Services
@@ -173,11 +173,11 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
 internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewModel>
 {
     ExtensionViewModel extension;
-    readonly  ServiceConfiguration defaultValues;
+    readonly ServiceConfiguration defaultValues;
     string extentionName;
-   
+
     public bool IsExtension { get; set; }
-  
+
     public string ServiceName { get; private set; }
 
     public string ServiceNameFull { get; }
@@ -241,7 +241,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
             }
 
             OnPropertyChanged();
-            OnPropertyChanged(nameof(ServicePort)); 
+            OnPropertyChanged(nameof(ServicePort));
         }
     }
 
@@ -357,5 +357,5 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     }
 
 
- 
+
 }

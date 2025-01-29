@@ -19,7 +19,7 @@ public class GatewayServiceClient : AhsokaClientBase<GatewayMessageTypes.Ids>
     public GatewayServiceClient(string impersonateServiceName) :
         this(impersonateServiceName, ConfigurationLoader.GetServiceConfig(GatewayService.Name))
     {
-        
+
     }
 
     /// <summary>
@@ -88,6 +88,6 @@ public class GatewayServiceClient : AhsokaClientBase<GatewayMessageTypes.Ids>
     /// <exception cref="SecurityException"></exception>
     public T SendMessageWithResponse<T>(int transportId, object requestObject = null, int timeoutInMs = int.MaxValue) where T : class
     {
-       return SendMessageWithResponse<T>((GatewayMessageTypes.Ids)transportId, requestObject, timeoutInMs);
+        return SendMessageWithResponse<T>((GatewayMessageTypes.Ids)transportId, requestObject, timeoutInMs);
     }
 }

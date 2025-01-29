@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
-using Ahsoka.Installer.Components;
+﻿using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Device.Handlers;
 using Ahsoka.System;
 using Ahsoka.Utility;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Device;
 
@@ -56,7 +56,7 @@ internal abstract class DeviceServiceImplementation
                 AutoEnable = item.AutoEnable,
             };
 
-            deviceList.Devices.Add(newDevice); 
+            deviceList.Devices.Add(newDevice);
 
             var handler = GetDeviceHandler(newDevice);
             var usbDeviceList = handler.Init(newDevice, sendNotification);
@@ -107,10 +107,10 @@ internal abstract class DeviceServiceImplementation
 
     internal abstract void SetUsbRoleMode(UsbPort port, UsbMode mode);
 
-    internal abstract  void SetUsbInfo(UsbInfo usbInfo);
+    internal abstract void SetUsbInfo(UsbInfo usbInfo);
 
     internal abstract void SetRS485Config(RS485ConfigNotification serial_rs485_config);
 
     internal abstract TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen);
-    
+
 }

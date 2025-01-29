@@ -6,7 +6,6 @@ using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using Avalonia.Media;
-using Renci.SshNet;
 using System;
 using System.Diagnostics;
 using System.IO;

@@ -50,8 +50,8 @@ public abstract partial class GatewayServiceBase<TTransportIds> : AhsokaServiceB
     /// </summary>
     /// <param name="registeredSocket"></param>
     /// <param name="message"></param>
-    protected virtual void OnHandleGatewayMessage(IAhsokaServiceSocket registeredSocket, AhsokaServiceMessage message) 
-    { 
+    protected virtual void OnHandleGatewayMessage(IAhsokaServiceSocket registeredSocket, AhsokaServiceMessage message)
+    {
         registeredSocket.SendMessage(message);
     }
 }

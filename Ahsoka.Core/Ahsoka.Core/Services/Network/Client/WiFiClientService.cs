@@ -23,7 +23,7 @@ public class WiFiClientService : AhsokaServiceBase<WiFiClientMessageTypes.Ids>
         {
             PlatformFamily.Windows64 => new WindowsImplementation(),
             PlatformFamily.OpenViewLinux => new STImplementation(),
-            PlatformFamily.OpenViewLinuxPro => new DesktopImplementation(), 
+            PlatformFamily.OpenViewLinuxPro => new DesktopImplementation(),
             PlatformFamily.Ubuntu64 => new DesktopImplementation(),
             PlatformFamily.MacosArm64 => new DesktopImplementation(),
             _ => throw new NotImplementedException(),
@@ -59,7 +59,7 @@ public class WiFiClientService : AhsokaServiceBase<WiFiClientMessageTypes.Ids>
                 break;
 
             case WiFiClientMessageTypes.Ids.GetNetworkConfiguration:
-                GetNetworkConfiguration(request,request.Message as AdapterRequest); 
+                GetNetworkConfiguration(request, request.Message as AdapterRequest);
                 break;
 
             case WiFiClientMessageTypes.Ids.SetNetworkConfiguration:

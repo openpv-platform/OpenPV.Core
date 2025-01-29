@@ -1,6 +1,4 @@
-﻿using SkiaSharp;
-
-namespace Ahsoka.Core.Drawing.Base;
+﻿namespace Ahsoka.Core.Drawing.Base;
 
 public class DrawingPaint
 {

@@ -55,7 +55,7 @@ public class LicenseTests : LinearTestBase
 
         SystemInfo.HardwareInfo.FactoryInfo.DeviceId = oldLicenseID;
     }
-   
+
     /// <summary>
     /// Test code for when need to add factory data for a unit already in the field
     /// Requires admin or DeviceProvisioning
@@ -78,7 +78,7 @@ public class LicenseTests : LinearTestBase
             SerialNumber = "45000544424",
             PlatformFamily = PlatformFamily.OpenViewLinux.ToString(),
             PlatformQualifier = "S70",
-            FactoryInfo = JsonUtility.Serialize(HardwareInfo.GetHardwareInfo(PlatformFamily.OpenViewLinux,"S70")),
+            FactoryInfo = JsonUtility.Serialize(HardwareInfo.GetHardwareInfo(PlatformFamily.OpenViewLinux, "S70")),
             DevicePublicKey = string.Empty,
         };
 

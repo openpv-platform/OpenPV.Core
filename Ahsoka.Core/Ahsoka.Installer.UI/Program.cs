@@ -1,5 +1,4 @@
-﻿using Ahsoka.Core.Drawing;
-using Ahsoka.Core.Drawing.Utility;
+﻿using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.ServiceFramework;
 using Ahsoka.System;
 using Ahsoka.Utility;

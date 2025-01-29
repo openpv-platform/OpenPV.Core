@@ -21,7 +21,7 @@ namespace Ahsoka.DeveloperTools;
 
 internal class PlatformExtensionsTool : SparkToolBase
 {
-    public const string Folder =  "ExtensionInfo";
+    public const string Folder = "ExtensionInfo";
     readonly ReleaseDTO viewModel;
     readonly static List<string> frameworks = ["net8.0", "net6.0", "net5.0", "NETStandard2.1", "NETStandard2.0"];
 
@@ -29,7 +29,7 @@ internal class PlatformExtensionsTool : SparkToolBase
     {
         return CustomerToolPaths.GetToolPath(Folder);
     }
-    
+
     public PlatformExtensionsTool(ReleaseDTO viewModel) :
         base(viewModel, false)
     {
@@ -39,7 +39,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         this.Description = viewModel.ChannelName.TrimEnd('s') + " Info";
         this.Name = viewModel.ChannelName.TrimEnd('s') + " Info";
         this.Version = viewModel.ContainerVersion;
-       
+
         this.IncludedProfiles = PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
         this.LocalPath = GetExtensionsPath();
     }
@@ -52,7 +52,7 @@ internal class PlatformExtensionsTool : SparkToolBase
             Directory.Delete(this.LocalPath, true);
 
         toolVM.MainViewModel.AvailableExtensions.Clear();
-        
+
         var download = viewModel.Contents.First();
         string downloadFile = Path.Combine(LocalPath, download.Path);
         toolVM.PercentStatus = $"Downloading {download.Path.Replace(".zip", "")}...";
@@ -85,7 +85,7 @@ internal class PlatformExtensionsTool : SparkToolBase
 
     private async Task DownloadDemos(IToolViewModel toolVM, ExtensionConfiguration config, CancellationTokenSource cancellationToken)
     {
-        string demoPath = Path.Combine(LocalPath, config.ExtensionName,"demos");
+        string demoPath = Path.Combine(LocalPath, config.ExtensionName, "demos");
 
         if (Directory.Exists(demoPath))
             Directory.CreateDirectory(demoPath);
@@ -100,7 +100,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         }
         catch { Console.WriteLine($"Unable to Download Packages for {config.PackageName}"); }
     }
- 
+
     protected override string GetVersionFilePath()
     {
         return Path.Combine(LocalPath, "Extensions.customertools.version");
@@ -163,11 +163,11 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         var minVersion = new NuGetVersion(configuration.MinVersion);
         var maxVersion = new NuGetVersion(configuration.MaxVersion);
-        var availableList = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(behavior, minVersion, "")); 
-       
+        var availableList = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(behavior, minVersion, ""));
+
         thisVersion = availableList.FindBestMatch(results)?.ToFullString();
 
-        var listOfResults = results.OrderDescending().Where(x => availableList.Satisfies(x) && (x.IsPrerelease != true || x.IsPrerelease == pullPreRelease)).Select(x=>x.ToString()).ToList();
+        var listOfResults = results.OrderDescending().Where(x => availableList.Satisfies(x) && (x.IsPrerelease != true || x.IsPrerelease == pullPreRelease)).Select(x => x.ToString()).ToList();
         return listOfResults;
     }
 
@@ -208,7 +208,7 @@ internal class PlatformExtensionsTool : SparkToolBase
             // ExtractLibrary
             var libEntries = archive.Entries.Where(x => x.Name.ToLower().EndsWith(libraryFile.ToLower())).ToList();
             ZipArchiveEntry libEntry = null;
-            
+
             foreach (var framework in frameworks)
             {
                 libEntry = libEntries.FirstOrDefault(x => x.FullName.Contains(framework, StringComparison.CurrentCultureIgnoreCase));

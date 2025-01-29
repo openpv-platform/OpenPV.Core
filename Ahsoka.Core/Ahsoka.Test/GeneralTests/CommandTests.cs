@@ -9,7 +9,7 @@ namespace Ahsoka.Test;
 [TestClass]
 public class CommandTests : LinearTestBase
 {
-   
+
     public TestContext TestContext { get; set; }
 
     [TestMethod]

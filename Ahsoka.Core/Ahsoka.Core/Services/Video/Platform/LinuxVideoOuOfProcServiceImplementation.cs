@@ -56,7 +56,7 @@ internal class LinuxVideoOuOfProcServiceImplementation : VideoPlayerImpl
     }
 
     private void StartPlaybackProcess(VideoPlaybackRequest videoPlaybackRequest)
-    { 
+    {
         string args = string.Empty;
         if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
         {
@@ -85,9 +85,9 @@ internal class LinuxVideoOuOfProcServiceImplementation : VideoPlayerImpl
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, e.Data);
         });
-               
+
         videoProcess.BeginOutputReadLine();
-        videoProcess.BeginErrorReadLine();        
+        videoProcess.BeginErrorReadLine();
 
         var task = Task.Run(() =>
         {
@@ -107,7 +107,7 @@ internal class LinuxVideoOuOfProcServiceImplementation : VideoPlayerImpl
             string timeString = data.Substring(data.IndexOf(":") + 2);
             var duration = TimeOnly.Parse(timeString);
             totalMs = (ulong)(duration - new TimeOnly()).TotalMilliseconds;
-        
+
             // Send Notification on Each Duration Message (Comes After Position)
             var currentVideoStatus = OnGetVideoStatus();
             VideoStatusChanged?.Invoke(currentVideoStatus);
@@ -198,4 +198,3 @@ internal class LinuxVideoOuOfProcServiceImplementation : VideoPlayerImpl
     }
 }
 
-  

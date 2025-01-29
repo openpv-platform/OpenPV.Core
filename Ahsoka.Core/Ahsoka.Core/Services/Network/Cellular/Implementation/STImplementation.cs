@@ -3,7 +3,6 @@ using Ahsoka.Utility;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,7 +16,7 @@ internal class STImplementation : ImplementationBase
     static string adapterId = "/dev/cdc-wdm0";
 
     CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-    CellularServiceConfiguration currentConfig = new () { AdapterId = adapterId};
+    CellularServiceConfiguration currentConfig = new() { AdapterId = adapterId };
     CellularNetworkInformation info = new CellularNetworkInformation() { AdapterId = adapterId, ConnectionState = CellularNetworkState.NotConnected, NetworkOperatorName = "Unknown", ServiceName = "Unknown" };
     Task connectionTask = null;
 
@@ -48,13 +47,13 @@ internal class STImplementation : ImplementationBase
                 currentConfig = connectionRequest;
 
                 bool connectResult = false;
-                info = new CellularNetworkInformation() {AdapterId = adapterId,ConnectionState = CellularNetworkState.ConnectionInProgress, IpInfo = new()};
+                info = new CellularNetworkInformation() { AdapterId = adapterId, ConnectionState = CellularNetworkState.ConnectionInProgress, IpInfo = new() };
 
-                NetworkService.SendConnectionStateNotification(messageHeader,info);
+                NetworkService.SendConnectionStateNotification(messageHeader, info);
 
                 // Write Connection Configuration to /etc/
                 string config = $"APN={connectionRequest.Apn}\nAPN_USER={connectionRequest.ApnUser}\nAPN_PASS={connectionRequest.ApnPassword}\nPROXY=no\n";
-                File.WriteAllText("/etc/qmi-network.conf",config);
+                File.WriteAllText("/etc/qmi-network.conf", config);
 
                 string command = $"ip link set {adapterName} down;echo 'Y' | tee /sys/class/net/{adapterName}/qmi/raw_ip;ip link set {adapterName} up";
                 ProcessUtility.RunProcess("/bin/sh", $"-c \"{command}", null, out string log, out string error);
@@ -113,20 +112,20 @@ internal class STImplementation : ImplementationBase
 
                         bool changed = ProcessStatus(log);
                         if (changed)
-                             NetworkService.SendConnectionStateNotification(messageHeader, info);
+                            NetworkService.SendConnectionStateNotification(messageHeader, info);
                     }
                 }
                 catch (OperationCanceledException) { }
 
             });
 
-        return new () {  AdapterId = adapterId, ConnectionStarted = adapterReadyResult, Description = "Connection Started Async - Check Network State Notifications for More Information" };
+        return new() { AdapterId = adapterId, ConnectionStarted = adapterReadyResult, Description = "Connection Started Async - Check Network State Notifications for More Information" };
     }
 
     private bool ProcessStatus(string log)
     {
-        bool result = false;    
-        foreach(var item in log.Split("\n"))
+        bool result = false;
+        foreach (var item in log.Split("\n"))
         {
             string name = TryParseValue(item, "Short Name");
             if (name != null && name != info.NetworkOperatorName)
@@ -223,7 +222,7 @@ internal class STImplementation : ImplementationBase
             if (line.Trim().StartsWith(tag))
                 return line.Substring(line.IndexOf(":")).Trim().Replace("'", "");
         }
-        catch { } 
+        catch { }
 
         return null;
     }
@@ -246,12 +245,12 @@ internal class STImplementation : ImplementationBase
         bool connectResult = (log.Contains("Network stopped successfully") && error == "") || error.Contains("error: cannot re-start network");
         if (!connectResult)
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"CellularHandler Network Stop: {log} {error}");
-        
+
         File.Delete("/etc/qmi-network.conf");
 
         command = $"ip link set {adapterName} down";
         ProcessUtility.RunProcess("/bin/sh", $"-c \"{command}", null, out log, out error);
 
-        NetworkService.SendConnectionStateNotification(messageHeader, new CellularNetworkInformation() {  IpInfo = new(), AdapterId = adapterId, ConnectionState = CellularNetworkState.NotConnected, NetworkOperatorName = "Unknown", ServiceName = "Unknown" });
+        NetworkService.SendConnectionStateNotification(messageHeader, new CellularNetworkInformation() { IpInfo = new(), AdapterId = adapterId, ConnectionState = CellularNetworkState.NotConnected, NetworkOperatorName = "Unknown", ServiceName = "Unknown" });
     }
 }

@@ -42,7 +42,7 @@ public class HardwareInfoTests : LinearTestBase
             TcpConnectionAddress = "127.0.0.1",
             ServiceName = "FakeConfig",
             SocketType = TransportSocketTypes.SerialSocket,
-            Behaviors =  EndPointBehaviors.AutoStart
+            Behaviors = EndPointBehaviors.AutoStart
         });
 
         string result = JsonUtility.Serialize(runtimeconfig);

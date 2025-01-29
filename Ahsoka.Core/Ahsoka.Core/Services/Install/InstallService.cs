@@ -57,7 +57,7 @@ public class InstallService : AhsokaServiceBase<InstallMessageTypes.Ids>
         {
             // Load InstallComponents
             InstallEngineBase createPackageEngine = InstallEngineBase.GetInstallEngine(stream);
-            
+
             // Package the file.
             result = createPackageEngine.RunInstall(this, installInfo.InstallPassKey);
         }
@@ -95,7 +95,7 @@ public class InstallService : AhsokaServiceBase<InstallMessageTypes.Ids>
 
         // After Complete We Shut Down Runtime
         // Shutting Down From the Work Thread may Block
-        Task.Run(() => 
+        Task.Run(() =>
         {
             AhsokaRuntime.Default.StopAllEndPoints();
         });

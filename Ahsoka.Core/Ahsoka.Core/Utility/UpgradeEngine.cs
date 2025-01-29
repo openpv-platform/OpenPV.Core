@@ -41,7 +41,7 @@ internal static class UpgradeEngine
         if (methods.Count > 0)
         {
 
-            JsonNode document = JsonNode.Parse(contents);
+            JsonNode document = JsonNode.Parse(contents, new JsonNodeOptions() { PropertyNameCaseInsensitive = true });
             var version = "0.0.0";
             if (document["version"] != null)
                 version = document["version"].GetValue<string>();

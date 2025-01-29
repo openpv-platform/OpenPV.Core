@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Net;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -36,7 +35,7 @@ public class GatewaySocket : IAhsokaServiceSocket
                 socketInfo = endpoints[message.Header.EndpointId] = new(endPoint, originSocket);
             }
         }
-         
+
         if (socketInfo.Key == null)
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Gateway Service Received a messsage for EndPoint {message.Header.EndpointId} but no IGatewayEndPoint was found to Service this Message.");
         else
@@ -58,7 +57,7 @@ public class GatewaySocket : IAhsokaServiceSocket
     void IAhsokaServiceSocket.SendMessage(AhsokaServiceMessage message)
     {
         if (endpoints.TryGetValue(message.Header.EndpointId, out var socketInfo))
-             gatewayOrigin.HandleGatewayMessage(socketInfo.Value, message);
+            gatewayOrigin.HandleGatewayMessage(socketInfo.Value, message);
         else
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Gateway Service Received a messsage from EndPoint {message.Header.EndpointId} but no IGatewayEndPoint was found to Service this Message.");
     }

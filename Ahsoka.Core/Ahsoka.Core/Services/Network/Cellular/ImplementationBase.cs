@@ -1,5 +1,4 @@
 ﻿using Ahsoka.ServiceFramework;
-using System;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 
@@ -37,10 +36,10 @@ internal abstract class ImplementationBase
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Starting Cellular Networking...");
             OnInitNetwork(out networkConfiguration, out networkAdapter);
         }
-     
+
         return new AdapterRequestList()
-        { 
-            Adapters = { new AdapterRequest() { AdapterId = networkAdapter?.AdapterId} }
+        {
+            Adapters = { new AdapterRequest() { AdapterId = networkAdapter?.AdapterId } }
         };
     }
 
@@ -87,17 +86,17 @@ internal abstract class ImplementationBase
 
         return ipInfo;
     }
-   
+
     #endregion
 
     #region Abstract Calls
-    protected abstract void OnInitNetwork(out CellularServiceConfiguration defaultConfiguration, out AdapterRequest defaultRequest );
+    protected abstract void OnInitNetwork(out CellularServiceConfiguration defaultConfiguration, out AdapterRequest defaultRequest);
 
     protected abstract CellularConnectionResult OnStartNetwork(CellularService.AhsokaServiceRequest messageHeader, CellularServiceConfiguration connectionRequest);
 
     protected abstract void OnStopNetwork(CellularService.AhsokaServiceRequest messageHeader, string adapterId);
 
     internal abstract CellularNetworkInformation GetNetworkInfo(AdapterRequest cellularAdapterInfo);
-   
+
     #endregion
 }

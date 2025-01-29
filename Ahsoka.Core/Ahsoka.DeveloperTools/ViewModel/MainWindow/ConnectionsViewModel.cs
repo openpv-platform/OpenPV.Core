@@ -1,14 +1,11 @@
 ﻿using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
-using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Spark;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
-using NuGet.Configuration;
-using Renci.SshNet;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,7 +13,6 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -297,7 +293,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             ParentViewModel.Console.AddConsoleLine(info);
         });
 
-      
+
         var prepItem = RemoteTargetToolFactory.GetToolsForPlatform(this.EditConfigurationInfo.PlatformFamily);
 
         ParentViewModel.StartProcess();
@@ -348,12 +344,12 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             // Add Key To Display
             if (File.Exists(editInfo.PrivateAppKeyFile))
             {
-                var hardwareID = Guid.Parse( ParentViewModel.ActiveConnection.ConnectedHardwareInfo.DeviceId);
+                var hardwareID = Guid.Parse(ParentViewModel.ActiveConnection.ConnectedHardwareInfo.DeviceId);
 
                 var info = HardwareInfo.GetHardwareInfo(editInfo.PlatformFamily, editInfo.PlatformQualifier);
                 var targetSigningKey = info.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
 
-                result += SshUtility.AddApplicationKey(this.EditConfigurationInfo, this.editInfo.PrivateAppKeyFile, targetSigningKey , hardwareID);
+                result += SshUtility.AddApplicationKey(this.EditConfigurationInfo, this.editInfo.PrivateAppKeyFile, targetSigningKey, hardwareID);
             }
 
 
@@ -816,7 +812,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
         });
     }
 
-  
+
 
     internal async void DisableRDP()
     {
@@ -924,7 +920,7 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
         get
         {
             string path = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Test", KeyTypes.PackageSigningKey));
-            List<string> returnList = new List<string>(){ "(None)" };
+            List<string> returnList = new List<string>() { "(None)" };
 
             if (Path.Exists(path))
                 returnList.AddRange(Directory.GetFiles(path, "*.appcert").Select(Path.GetFileNameWithoutExtension));
@@ -1015,7 +1011,7 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
 
     public string PrivateKeyFile
     {
-        get 
+        get
         {
             string pathToKeys = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
             string pathToKey = Path.Combine(pathToKeys, PrivateKey);
@@ -1027,8 +1023,9 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
                 if (File.Exists(pathToKey))
                     return pathToKey;
             }
-            return string.Empty; }
-       
+            return string.Empty;
+        }
+
     }
 
     public string PrivateKey
@@ -1038,7 +1035,8 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
             if (SshKeys.Contains(privateKey))
                 return privateKey;
             else
-                return "(None)"; ; }
+                return "(None)"; ;
+        }
         set
         {
             privateKey = value;
@@ -1053,7 +1051,7 @@ internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITarge
             string path = PackageInformation.GetPackageCertPath(PrivateAppKey, KeyTypes.PackageSigningKey);
             if (File.Exists(path))
                 return path;
-            
+
             return string.Empty;
         }
 

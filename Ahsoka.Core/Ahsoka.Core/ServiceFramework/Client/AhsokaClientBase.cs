@@ -21,7 +21,7 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     List<IClientEndPointBehavior<TTransportIds>> behaviors = new();
     int messageId = 0;
     bool isConnected = false;
-    
+
     // Unique ID's for Clients
     byte[] clientId = Guid.NewGuid().ToByteArray();
     byte[] notificationClientId = Guid.NewGuid().ToByteArray();
@@ -109,7 +109,7 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     public void Start(IAhsokaClientSocket clientSocket)
     {
         if (!IsStarted)
-        {    
+        {
             // Before Connecting
             OnEndPointStarting();
 
@@ -373,9 +373,9 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
     /// <param name="transportId"></param>
     /// <param name="requestObject"></param>
     /// <returns></returns>
-    protected virtual  AhsokaClientMessage CreateSocketMessage(TTransportIds transportId, object requestObject)
+    protected virtual AhsokaClientMessage CreateSocketMessage(TTransportIds transportId, object requestObject)
     {
-        if (requestObject == null) 
+        if (requestObject == null)
             requestObject = new EmptyNotification();
 
         using MemoryStream requestData = new();

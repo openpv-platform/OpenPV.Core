@@ -61,7 +61,7 @@ public abstract class DrawingManager<DrawingAPI> where DrawingAPI : class, IDraw
     }
 
     public void Invalidate()
-    {   
+    {
         HandleAction(InvalidateAction, out bool _);
         invalidateFrame++;
     }

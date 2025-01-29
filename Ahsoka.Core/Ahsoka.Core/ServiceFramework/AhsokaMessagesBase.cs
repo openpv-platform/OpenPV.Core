@@ -2,8 +2,6 @@
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.AccessControl;
 
 namespace Ahsoka.ServiceFramework;
 
@@ -19,7 +17,7 @@ public interface IHasEvents
     SystemEventData GetEvents(PackageInformation info);
 }
 
-public abstract class AhsokaMessagesBase: IHasParameters, IHasEvents
+public abstract class AhsokaMessagesBase : IHasParameters, IHasEvents
 {
     #region Fields
     private readonly Dictionary<Int32, ServiceMessageInfo> info = new();
@@ -30,7 +28,7 @@ public abstract class AhsokaMessagesBase: IHasParameters, IHasEvents
     public AhsokaMessagesBase()
     {
         // Add Invalid Types to All Services
-        Info.Add(CoreTransportIds.InvalidToken.EnumToInt(), new ServiceMessageInfo() {TransportId = CoreTransportIds.InvalidToken, RequestType = typeof(EmptyNotification), ReplyType = typeof (EmptyNotification), IsNotification = true, HideInGeneratedClients = true });
+        Info.Add(CoreTransportIds.InvalidToken.EnumToInt(), new ServiceMessageInfo() { TransportId = CoreTransportIds.InvalidToken, RequestType = typeof(EmptyNotification), ReplyType = typeof(EmptyNotification), IsNotification = true, HideInGeneratedClients = true });
         Info.Add(CoreTransportIds.RegisterClient.EnumToInt(), new ServiceMessageInfo() { TransportId = CoreTransportIds.RegisterClient, RequestType = typeof(ClientRegistration), ReplyType = typeof(ClientRegistration), IsNotification = true, HideInGeneratedClients = true });
         Info.Add(CoreTransportIds.DeregisterClient.EnumToInt(), new ServiceMessageInfo() { TransportId = CoreTransportIds.DeregisterClient, RequestType = typeof(ClientRegistration), ReplyType = typeof(ClientRegistration), IsNotification = true, HideInGeneratedClients = true });
 
@@ -65,7 +63,7 @@ public abstract class AhsokaMessagesBase: IHasParameters, IHasEvents
 
     public string GetInteropIncludes(string name, ApplicationType type)
     {
-        return OnGetInteropIncludes(name, type);    
+        return OnGetInteropIncludes(name, type);
     }
 
     protected virtual Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
@@ -114,13 +112,13 @@ public abstract class AhsokaMessagesBase: IHasParameters, IHasEvents
         var values = new SystemParameterData();
 
         OnGetParameters(out string service, values, info);
-        if(service != string.Empty)
+        if (service != string.Empty)
             values.AssignKeys(service);
 
         return values;
     }
 
-   
+
 
     /// <summary>
     /// Pupulate the Parameters Availabe in the System

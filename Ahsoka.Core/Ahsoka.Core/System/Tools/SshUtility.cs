@@ -247,7 +247,7 @@ internal class SshUtility
 
         string signingFilePath = Path.GetDirectoryName(targetPath);
 
-        var sshResult = sshClient.RunCommand($"mkdir -p {signingFilePath.Replace("\\","/")}");
+        var sshResult = sshClient.RunCommand($"mkdir -p {signingFilePath.Replace("\\", "/")}");
         if (sshResult.Error != string.Empty)
             throw new Exception(sshResult.Result);
 

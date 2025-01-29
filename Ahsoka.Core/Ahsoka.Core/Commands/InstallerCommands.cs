@@ -30,7 +30,7 @@ internal static class InstallerCommands
         AhsokaRuntime.Default.StartEndPoints(installService);
 
         // Blocks Until Done
-        installService.WaitForStop(); 
+        installService.WaitForStop();
 
         Console.WriteLine("Service Shutdown Completed");
     }

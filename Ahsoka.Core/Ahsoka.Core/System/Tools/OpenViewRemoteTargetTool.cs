@@ -29,6 +29,6 @@ internal class OpenViewRemoteTargetTool : LinuxRemoteTargetTool
     protected override void InstallNetwork(HardwareInfo info, SshClient sshClient, ScpClient scpClient)
     {
         if (!tokenSource.IsCancellationRequested)
-           new Esp32Handler()?.InstallRemote(info, sshClient, scpClient, progress);
+            new Esp32Handler()?.InstallRemote(info, sshClient, scpClient, progress);
     }
 }

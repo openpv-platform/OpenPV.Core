@@ -239,8 +239,8 @@ internal class SparkProjectEditorViewModel : ChildViewModelBase<MainViewModel>
                 SetResultText("Project Renamed.", false);
                 LoadTeams().Wait();
             }
-                
-            IsWorking = false;           
+
+            IsWorking = false;
         });
     }
 
@@ -380,8 +380,8 @@ internal class SparkProjectEditorViewModel : ChildViewModelBase<MainViewModel>
 
     internal void SaveOfflineTeams()
     {
-         List<OffLineData> data = new();
-        foreach(var item in Teams)
+        List<OffLineData> data = new();
+        foreach (var item in Teams)
         {
             OffLineData dataItem = new();
             List<OfflineModule> collection = new();
@@ -401,16 +401,16 @@ internal class SparkProjectEditorViewModel : ChildViewModelBase<MainViewModel>
     {
         Teams.Clear();
 
-        foreach(var item in ParentViewModel.Settings.OfflineData)
+        foreach (var item in ParentViewModel.Settings.OfflineData)
         {
             var teamVM = new SparkProjectViewModel(this, item.Team);
-            foreach(var module in item.Modules)
+            foreach (var module in item.Modules)
             {
                 var moduleVM = new SparkProjectModulesViewModel(teamVM);
                 teamVM.Modules.ModuleList.Add(new LicensedModuleViewModel(moduleVM) { ModuleID = module.ModuleId, ModuleName = module.ModuleName });
             }
             Teams.Add(teamVM);
-          
+
         }
     }
 

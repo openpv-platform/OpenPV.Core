@@ -79,7 +79,7 @@ internal class UsbHostState : InstallerUIStateBase
             Typeface = InstallerDrawingManager.Default.UITypeface
         };
 
-       
+
         drawingApi.DrawText($"Waiting for USB Files", width / 2, height * .333f, textPaint);
 
         var cancel = drawingApi.CreateImage("Assets/ArrowLeft.png");
@@ -140,7 +140,7 @@ internal class UsbHostState : InstallerUIStateBase
         {
             if (InstallerDrawingManager.Default.HasEthernet)
                 return new SparkConnectionState() { RestoreState = this };
-            else if(InstallerDrawingManager.Default.HasCellModem)
+            else if (InstallerDrawingManager.Default.HasCellModem)
                 return new SparkConnectionState() { RestoreState = this };
         }
         else if (action == "Up")

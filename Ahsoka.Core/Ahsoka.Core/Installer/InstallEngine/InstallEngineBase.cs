@@ -2,7 +2,6 @@
 using Ahsoka.Installer.Components;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
-using Ahsoka.Services.System;
 using Ahsoka.System;
 using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
@@ -15,8 +14,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using static Ahsoka.Utility.AesEncryption;
-using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.Installer.InstallEngine;
 
@@ -45,7 +42,7 @@ public class InstallEngineBase
     public static InstallEngineBase GetPackagingEngine(PackageInformation packageInfo)
     {
         var type = SelectInstallEngine(packageInfo.PlatformFamily, packageInfo.PlatformQualifier);
-        return  Activator.CreateInstance(type, packageInfo) as InstallEngineBase;
+        return Activator.CreateInstance(type, packageInfo) as InstallEngineBase;
     }
 
     public static InstallEngineBase GetInstallEngine(Stream fileStream, string privateKey = null)
@@ -73,7 +70,7 @@ public class InstallEngineBase
             var type = SelectInstallEngine(packageContents.PlatformFamily, packageContents.PlatformQualifier);
             return Activator.CreateInstance(type, packageContents) as InstallEngineBase;
         }
-        catch(Exception ex) { Console.WriteLine(ex.Message); return null; }
+        catch (Exception ex) { Console.WriteLine(ex.Message); return null; }
     }
     #endregion
 
@@ -233,7 +230,7 @@ public class InstallEngineBase
         catch (Exception ex)
         {
             progress?.Report(new PackageProgressInfo() { Message = $"Package Error\r\n{ex.Message}\r\n{ex.StackTrace}" });
-            throw; 
+            throw;
         }
         finally
         {
@@ -276,13 +273,13 @@ public class InstallEngineBase
                     progress.Report(new PackageProgressInfo() { Message = $"Executing Shell Command from..." });
                     progress.Report(new PackageProgressInfo() { Message = $"   {pathToCommand}" });
                     progress.Report(new PackageProgressInfo() { Message = $" " });
-                    progress.Report(new PackageProgressInfo() { Message = $"With Arguments..."});
+                    progress.Report(new PackageProgressInfo() { Message = $"With Arguments..." });
                     progress.Report(new PackageProgressInfo() { Message = $"   {processArgs}" });
                     progress.Report(new PackageProgressInfo() { Message = $" " });
 
                     IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
                     {
-                        progress.Report(new PackageProgressInfo() { Message = info.Data});
+                        progress.Report(new PackageProgressInfo() { Message = info.Data });
                     });
 
                     if (OperatingSystem.IsLinux())
@@ -485,7 +482,7 @@ public class InstallEngineBase
 
         // Add any Extensions
         var results = InstallEngineComponent.GetExtensionPlugins(packedComponentData.PlatformFamily);
-        foreach(var item in results)
+        foreach (var item in results)
         {
             components.Add(item);
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Loading {item.ComponentName} Installer Extension");
@@ -675,7 +672,7 @@ public class InstallEngineBase
 
         if (Directory.Exists(path))
         {
-            var list = new DirectoryInfo(path).GetDirectories().OrderBy(x=>x.CreationTime);
+            var list = new DirectoryInfo(path).GetDirectories().OrderBy(x => x.CreationTime);
             foreach (var dir in list)
                 if (dir == list.Last())
                 {

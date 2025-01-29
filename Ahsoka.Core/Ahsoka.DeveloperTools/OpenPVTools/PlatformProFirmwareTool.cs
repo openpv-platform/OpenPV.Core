@@ -4,7 +4,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -76,7 +75,7 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
 
                 string result = "";
                 if (family == PlatformFamily.OpenViewLinuxPro)
-                    result = ExecuteDFUInstall(firmwareFolder , toolModel, pathToCli);
+                    result = ExecuteDFUInstall(firmwareFolder, toolModel, pathToCli);
 
                 Directory.Delete(firmwareFolder, true);
                 if (result == "")
@@ -103,7 +102,7 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
 
     private string ExecuteDFUInstall(string firmwareDir, IToolViewModel toolModel, string dfuName)
     {
-       
+
         toolModel.MainViewModel.Console.AddConsoleLine($"Beginning Firmware Load");
         toolModel.MainViewModel.Console.AddConsoleLine($" ");
         toolModel.MainViewModel.Console.AddConsoleLine($"Loading initial tiboot3.bin to R5 core RAM.");
@@ -239,7 +238,7 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
         }
 
         return "";
-    
+
 
     }
 

@@ -1,7 +1,6 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.Installer;
 using Ahsoka.Installer.InstallEngine;
-using Ahsoka.Services.Network.ESPWifi;
 using Ahsoka.Services.Spark;
 using Ahsoka.Services.System;
 using Ahsoka.Spark;
@@ -16,7 +15,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -56,15 +54,15 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
 
         try
         {
-           return OnPrepTarget(hardwareInfo, connectionInfo,sparkInfo,progress,manufacturingInfo);
+            return OnPrepTarget(hardwareInfo, connectionInfo, sparkInfo, progress, manufacturingInfo);
         }
         catch { }
-      
+
         return false;
     }
 
-    protected virtual bool OnPrepTarget(HardwareInfo hardwareInfo, 
-        ITargetConnectionInfo connectionInfo, 
+    protected virtual bool OnPrepTarget(HardwareInfo hardwareInfo,
+        ITargetConnectionInfo connectionInfo,
         SparkConnectionInfo sparkInfo,
         IProgress<string> progress,
         ManufacturingInfo manufacturingInfo = null)
@@ -212,7 +210,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         SshClient sshClient,
         ScpClient scpClient,
         SparkConnectionInfo sparkInfo,
-        ManufacturingInfo manufacturingInfo = null )
+        ManufacturingInfo manufacturingInfo = null)
     {
         bool factoryDataIsValid = false;
 
@@ -329,14 +327,14 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         // Add Factory Info to Upload List
         filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareInformationFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(factoryFileData)));
 
-       
+
         // BACK COMPATIBILITY Add Keys to List - NOTE THIS IS TO SUPPORT PRE 2.0 Hardware Prep
         filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(privateKey)));
         filesToLoad.Add(info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlPublicKeyFile), new MemoryStream(UTF8Encoding.UTF8.GetBytes(publicKey)));
 
         // Create 
         var aesKey = AesEncryption.KeyFromDeviceId(info.FactoryInfo.DeviceId);
-        var privateKeyData = AesEncryption.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(RSAEncryption.ConvertXMLToPrivatePEM(privateKey))),aesKey.Key, aesKey.IV);
+        var privateKeyData = AesEncryption.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(RSAEncryption.ConvertXMLToPrivatePEM(privateKey))), aesKey.Key, aesKey.IV);
         var publicKeyData = AesEncryption.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(RSAEncryption.ConvertXMLToPublicPEM(publicKey))), aesKey.Key, aesKey.IV);
 
         // Add Keys to List - SUPPORTS 2.0+
@@ -693,7 +691,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
     }
 
     public bool EnableRDP(HardwareInfo hardwareInfo, IConnectionInfo info, int rdpPort, IProgress<string> progressString)
-    {    
+    {
         var sshClient = SshUtility.CreateSshClient(info);
         var scpClient = SshUtility.CreateScpClient(info);
 
@@ -720,7 +718,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         commandResult = sshClient.RunCommand($"winpr-makecert -path /etc/freerdp/keys");
         if (!commandResult.Result.Contains("Certificate:"))
             throw new Exception(commandResult.Result);
-        
+
         progressString.Report(commandResult.Result);
 
         progressString.Report("Modifying Display Configuration");
@@ -776,13 +774,13 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
             }
 
             // Remove Orphaned spaces
-            foreach (var lineToDelete in linesToDelete.ToArray().Reverse()) 
+            foreach (var lineToDelete in linesToDelete.ToArray().Reverse())
                 lines.RemoveAt(lineToDelete);
 
             if (!screenFound)
                 lines.Add("[screen-share]\n" + command);
 
-            westonText = string.Join('\n' ,lines);
+            westonText = string.Join('\n', lines);
 
             using (var uploadStream = new MemoryStream(Encoding.UTF8.GetBytes(westonText)))
                 scpClient.Upload(uploadStream, iniFilePath);
@@ -825,7 +823,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         // Temp Logic...Will Install known cert in the future.
         progressString.Report($"Removing Device Certificate");
         var commandResult = sshClient.RunCommand($"rmdir -r /etc/freerdp");
-        
+
         progressString.Report("Modifying Display Configuration");
 
         string iniFilePath = $"/etc/xdg/weston/weston.ini";
@@ -837,7 +835,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
             var lines = westonText.Split(new char[] { '\n' }).ToList();
             string currentSection = string.Empty;
 
-           
+
             List<int> linesToDelete = new List<int>();
             for (int i = 0; i < lines.Count; i++)
             {
@@ -871,7 +869,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         progressString.Report("Rebooting Display");
         commandResult = sshClient.RunCommand("(sleep 5;/sbin/reboot)&");
         Thread.Sleep(2000);
-         
+
         return true;
     }
 
@@ -1004,5 +1002,5 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         return hw;
     }
 
-   
+
 }

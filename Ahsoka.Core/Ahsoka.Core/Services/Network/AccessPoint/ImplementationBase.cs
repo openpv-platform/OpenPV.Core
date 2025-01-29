@@ -1,6 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,7 +63,7 @@ internal abstract class ImplementationBase
 
     internal AdapterResult StartAccessPoint(AdapterRequest adapterRequest)
     {
-        var result =  OnStartAccessPoint(adapterRequest);
+        var result = OnStartAccessPoint(adapterRequest);
 
         notificationTask = Task.Run(() =>
         {
@@ -77,7 +76,7 @@ internal abstract class ImplementationBase
                     {
                         var newList = GetClientList(adapterRequest);
                         foreach (var item in newList.Clients)
-                            if (!connectedList.Clients.Any(x=>x.MacAddress == item.MacAddress))
+                            if (!connectedList.Clients.Any(x => x.MacAddress == item.MacAddress))
                                 NetworkService.SendNotification(WiFiAPMessageTypes.Ids.ClientAdded, item);
 
                         foreach (var item in connectedList.Clients.ToArray())
@@ -127,7 +126,7 @@ internal abstract class ImplementationBase
     #endregion
 
     #region Abstract Calls
-    protected abstract void OnInit(out AccessPointServiceConfiguration defaultConfiguration, out AdapterRequest defaultRequest );
+    protected abstract void OnInit(out AccessPointServiceConfiguration defaultConfiguration, out AdapterRequest defaultRequest);
 
     protected abstract void OnUpdateConfiguration(AccessPointServiceConfiguration adapterConfiguration);
 

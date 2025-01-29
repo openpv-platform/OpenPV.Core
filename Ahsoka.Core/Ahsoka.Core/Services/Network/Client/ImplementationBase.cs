@@ -1,5 +1,4 @@
 ﻿using Ahsoka.ServiceFramework;
-using Azure;
 using System;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -42,10 +41,10 @@ internal abstract class ImplementationBase
             // TODO: Find Network Adapter for Service
             OnStartNetwork(out networkConfiguration, out networkAdapter);
         }
-     
+
         return new AdapterRequestList()
-        { 
-            Adapters = { new AdapterRequest() { AdapterId = networkAdapter?.AdapterId} }
+        {
+            Adapters = { new AdapterRequest() { AdapterId = networkAdapter?.AdapterId } }
         };
     }
 
@@ -126,7 +125,7 @@ internal abstract class ImplementationBase
 
         }
 
-       
+
         return ipInfo;
     }
 
@@ -144,11 +143,11 @@ internal abstract class ImplementationBase
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Waiting for IPAddress - {timeout} Remaining");
                 var info = GetIPInfo(new AdapterRequest() { AdapterId = connectionRequest.AdapterId });
-                
+
                 ipAddressFound = !String.IsNullOrEmpty(info.IPAddress);
 
                 if (ipAddressFound)    // Update IPAddress 
-                    this.NetworkService.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, info.IPAddress); 
+                    this.NetworkService.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, info.IPAddress);
 
                 if (!ipAddressFound)
                     Thread.Sleep(1000);
@@ -159,7 +158,7 @@ internal abstract class ImplementationBase
             }
 
 
-        
+
 
         }
 
@@ -218,7 +217,7 @@ internal abstract class ImplementationBase
     #region Abstract Calls
     protected abstract bool WaitForTimeSync(WiFiClientService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest);
 
-    protected abstract void OnStartNetwork(out AdapterConfiguration defaultConfiguration, out AdapterRequest defaultRequest );
+    protected abstract void OnStartNetwork(out AdapterConfiguration defaultConfiguration, out AdapterRequest defaultRequest);
 
     protected abstract WirelessNetworkInfoList OnGetDiscoveredNetworks(string adapterId);
 

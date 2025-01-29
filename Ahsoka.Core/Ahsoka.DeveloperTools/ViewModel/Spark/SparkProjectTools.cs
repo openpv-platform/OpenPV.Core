@@ -1,5 +1,4 @@
 ﻿#pragma warning disable CS1591
-using Ahsoka.DeveloperTools.Spark;
 using Ahsoka.Installer;
 using Ahsoka.System;
 using Ahsoka.Utility;
@@ -9,7 +8,6 @@ using EnovationCloud.Core.Security;
 using System;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -60,7 +58,7 @@ public static class SparkProjectTools
 
     public static ContainerSearchResultsDTO GetTeamContainers(Guid teamID, ClientContainerSearchDTO searchInfo)
     {
-        return SparkAccountClient.SharedSparkClient.GetTeamContainers(teamID.ToString(),searchInfo);
+        return SparkAccountClient.SharedSparkClient.GetTeamContainers(teamID.ToString(), searchInfo);
     }
 
     public static TeamDTO AddTeamMember(Guid teamID, string emailAddress)
@@ -174,13 +172,13 @@ public static class SparkProjectTools
         string artifactName;
 
         artifactName = GetArtifactName(keyName, artifactType);
-       
+
         // Generate Artifact Request (Upload or Download
         ArtifactDTOCollection artifactRequest = new()
         {
             new ArtifactDTO() { ArtifactGroup = "SecurityData", TeamID = team.TeamID, ArtifactName = artifactName, ArtifactCreator = team.MemberEmailAddress }
         };
-       
+
         var keyFile = GetTeamDevelopmentKeys(team);
 
         if (!keyFile.Any(x => x.ArtifactName == artifactName))

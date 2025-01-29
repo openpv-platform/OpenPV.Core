@@ -185,12 +185,12 @@ internal class LinuxWindow : IDrawingWindow
         while (!cancelTokenSource.IsCancellationRequested)
         {
             while (eventQueue.Count > 0)
-                eventQueue.Take().Invoke(this,EventArgs.Empty);
-           
+                eventQueue.Take().Invoke(this, EventArgs.Empty);
+
             // Reset Context
             if (drawingWindow.HandleFrame())
                 context.Flush(true, false);
-            
+
             impl.SwapBuffers();
         }
 
@@ -216,7 +216,7 @@ public abstract class LinuxDrawingImplementation
     internal abstract void GetWindowSize(ref int w, ref int h);
 
     internal abstract void GetSurfaceInformation(ref int sampleCount, ref int stencilBits, ref uint gl_format);
-    
+
     internal abstract nint GetFunctionAddress(string name);
 
     internal abstract void SetSwapInterval(int interval);

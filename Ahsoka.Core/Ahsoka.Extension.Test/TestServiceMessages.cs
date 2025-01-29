@@ -8,7 +8,7 @@ internal class TestServiceMessages : AhsokaMessagesBase
 {
     public TestServiceMessages()
     {
-      
+
     }
 
     protected override void OnGetEvents(out string service, List<EventData> values, PackageInformation packageInfo)

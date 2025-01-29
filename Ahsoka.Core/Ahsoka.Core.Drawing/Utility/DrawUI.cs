@@ -1,7 +1,5 @@
-﻿using Ahsoka.Core.Drawing;
-using Ahsoka.Core.Drawing.Base;
+﻿using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Dispatch;
-using System;
 
 namespace Ahsoka.Core.Drawing.Utility;
 
@@ -141,9 +139,9 @@ public class DrawUI
 
             // Translate to our Star
             api.PushMatrix(api.CreateTranslateMatrix(60, 60));
-            api.DrawPath(path,circlePaint);
+            api.DrawPath(path, circlePaint);
             api.DrawText(title, 45, titleTextInfo.TextSize - 12, titleTextInfo);
-          
+
             api.PopMatrix();
 
             // Translate to our Circle Position

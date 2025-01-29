@@ -1,9 +1,8 @@
 ﻿using Ahsoka.Utility;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Ahsoka.System.Hardware;
 
@@ -16,21 +15,21 @@ public partial class HardwareInfo : ICanDeserializeBase
     /// The Family the platform belongs to.  Typically cooresponds to the OS it runs
     /// Matches FactoryInfo
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public PlatformFamily PlatformFamily { get { return FactoryInfo.PlatformFamily; } }
 
     /// <summary>
     /// The Qualifier for the platform.   Typically refers to a high level variant such as S50 (5") or S70 (7")
     /// Matches FactoryInfo
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public string PlatformQualifier { get { return FactoryInfo.PlatformQualifier; } }
 
     /// <summary>
     /// Combination of the Family and Qualifier
     /// Matches FactoryInfo
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public string PlatformDescription { get { return FactoryInfo.PlatformDescription; } }
 
     /// <summary>
@@ -41,7 +40,7 @@ public partial class HardwareInfo : ICanDeserializeBase
     /// <summary>
     /// Information about the supported Bluetooth Modules on the system.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     internal BluetoothHardwareInfo BluetoothInfo { get; set; }
 
     /// <summary>
@@ -52,13 +51,13 @@ public partial class HardwareInfo : ICanDeserializeBase
     /// <summary>
     /// Information about the support Raw IO for the system.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     internal IOHardwareInfo IOInfo { get; set; }
 
     /// <summary>
     /// Information about the support Raw IO for the system.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     internal CANHardwareInfo CANInfo { get; set; }
 
     /// <summary>
@@ -69,7 +68,7 @@ public partial class HardwareInfo : ICanDeserializeBase
     /// <summary>
     /// Information about the location of various Paths on the system.
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public TargetPathInfo TargetPathInfo
     {
         get; init;
@@ -117,7 +116,7 @@ public partial class HardwareInfo : ICanDeserializeBase
     private void UpgradeKeys(string privatePEMPathEnc, string publicPEMPathEnc)
     {
         // Convert Public Keys to PEM if Not Available
-        string publicPEMPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile).Replace(".enc",""); // Old PEM Name
+        string publicPEMPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningPublicKeyPEMFile).Replace(".enc", ""); // Old PEM Name
         string publicXMLPath = TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareDeviceSigningXmlPublicKeyFile);
         if (!File.Exists(publicPEMPath) && File.Exists(publicXMLPath))
         {

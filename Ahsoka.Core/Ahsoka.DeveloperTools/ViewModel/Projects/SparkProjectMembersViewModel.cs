@@ -224,7 +224,7 @@ internal partial class SparkProjectMembersViewModel : ChildViewModelBase<SparkPr
 
             // Forcing a new object for now until web is connected
             member = JsonUtility.Deserialize<TeamDTO>(JsonUtility.Serialize(member));
-            SparkAccountClient.SharedSparkClient.ChangeMemberRole(member.TeamID, member.MemberEmailAddress, member.MemberRole); 
+            SparkAccountClient.SharedSparkClient.ChangeMemberRole(member.TeamID, member.MemberEmailAddress, member.MemberRole);
 
         }).ContinueWith(result =>
         {

@@ -1,10 +1,7 @@
 ﻿using Ahsoka.Dispatch;
-using Ahsoka.Installer.InstallEngine;
 using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
-using Gst.Base;
-using Mono.Unix.Native;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -324,7 +321,7 @@ public sealed class WiFiNetworkManager
                 WirelessNetworkInfo netInfo = e.NotificationObject as WirelessNetworkInfo;
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Signal: {netInfo.SignalLevel} Network: {netInfo.Ssid}");
             }
-          
+
         }
     }
 
@@ -357,7 +354,7 @@ public sealed class WiFiNetworkManager
                 if (!AdapterEnabled && !info.AutoEnable)
                 {
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"OnboardDeviceReady Ready Receieved, Enabling Adapter if Needed {info.State}");
-              
+
                     if (info.State != DeviceState.Enabled)
                         deviceClient.EnableDevice(info);
                     else if (info.State == DeviceState.Enabled)

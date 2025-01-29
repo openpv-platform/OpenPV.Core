@@ -1,5 +1,4 @@
-﻿using Ahsoka.Utility;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +13,7 @@ public interface ICustomerToolViewModel
 
     void StartProcess(bool clearConsole = true);
     void FinishProcess(string result, bool closeConsole);
-    
+
     void AddConsoleLine(string consoleLine);
     void AddConsoleText(string consoleLine);
 

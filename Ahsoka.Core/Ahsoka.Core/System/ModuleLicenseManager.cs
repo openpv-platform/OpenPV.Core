@@ -1,6 +1,6 @@
-﻿using EnovationCloud.Core.DataTransferObjects;
-using Ahsoka.System.Hardware;
+﻿using Ahsoka.System.Hardware;
 using Ahsoka.Utility;
+using EnovationCloud.Core.DataTransferObjects;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,7 +38,7 @@ public static class ModuleLicenseManager
     {
         // Init Locally if Not Previously Initialized
         if (validLicenses == null)
-            InitWithPublicKey(Properties.Resources.ModuleLicensePublicKeyPEM); 
+            InitWithPublicKey(Properties.Resources.ModuleLicensePublicKeyPEM);
 
         return validLicenses.Licenses.FirstOrDefault(x => x.LicenseName == licenseName)?.LicenseId;
     }

@@ -1,9 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.System;
-using Ahsoka.Utility;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Video;
 
@@ -39,7 +35,7 @@ public class VideoServiceClient : AhsokaClientBase<VideoMessageTypes.Ids>
     {
 
     }
-    
+
     /// <summary>
     /// Gets a list of Available Video Players
     /// </summary>

@@ -1,9 +1,7 @@
 ﻿#pragma warning disable CS1591
 using Ahsoka.Installer;
-using Ahsoka.Spark;
 using Ahsoka.Utility;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -31,7 +29,7 @@ public class ClientCodeGenerator
                 string name = item.Name.Replace("Messages", "");
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Found Client / Messages to Generate Named {name}");
                 GenerateClientsForCPP(name, ProcessNameSpace(name), pathToOutputFolder, item);
-            }    
+            }
         }
 
         File.WriteAllText(Path.Combine(pathToOutputFolder, "inc", "services", "AhsokaServices.h"), includes + usings);
@@ -44,14 +42,14 @@ public class ClientCodeGenerator
         GenerateClientHeaders(name, nameSpace, pathToOutput, messageType);
         GenerateClientImplementations(name, nameSpace, pathToOutput, messageType);
 
-        GenerateAdditionalResources(name,  pathToOutput, nameSpace, messageType);
+        GenerateAdditionalResources(name, pathToOutput, nameSpace, messageType);
     }
 
     private static void GenerateAdditionalResources(string name, string pathToOutput, string nameSpace, Type messageType)
     {
         var messages = ClassLoader.CreateType(messageType) as AhsokaMessagesBase;
 
-        foreach (var file in messages.GetAdditionalClientResources(ApplicationType.Cpp)) 
+        foreach (var file in messages.GetAdditionalClientResources(ApplicationType.Cpp))
         {
             string path = Path.Combine(pathToOutput, file.Key);
             string directory = Path.GetDirectoryName(path);
@@ -209,8 +207,8 @@ public class ClientCodeGenerator
 
         string pathToFile = Path.Combine(pathToOutput, "inc", "services");
         if (!Directory.Exists(pathToFile))
-           Directory.CreateDirectory(pathToFile);
-        
+            Directory.CreateDirectory(pathToFile);
+
         pathToFile = Path.Combine(pathToFile, $"{name}Messages.hpp");
         File.WriteAllText(pathToFile, fileToWrite.ReplaceLineEndings("\n"));
     }

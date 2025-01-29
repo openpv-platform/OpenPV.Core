@@ -13,7 +13,7 @@ internal class TIServiceImplementation : DeviceServiceImplementation
 
     private const string firmwareModelNumberPath = "/sys/firmware/devicetree/base/model";
     private const string firmwareSerialNumberPath = "/sys/block/mmcblk0/device/cid";
-   
+
     private const string SerialPortName = "/dev/ttySTM1\0";
     #endregion
 
@@ -25,10 +25,10 @@ internal class TIServiceImplementation : DeviceServiceImplementation
 
     internal override void SetUsbRoleMode(UsbPort port, UsbMode mode)
     {
-        
+
     }
 
-    internal override  UsbInfo GetUsbInfo()
+    internal override UsbInfo GetUsbInfo()
     {
         UsbInfo usbInfo = new()
         {
@@ -42,17 +42,17 @@ internal class TIServiceImplementation : DeviceServiceImplementation
     {
         if (usbInfo.Mode == UsbMode.Host)
         {
-           
+
         }
         else if (usbInfo.Mode == UsbMode.Device)
         {
-           
+
         }
     }
 
     internal override void SetRS485Config(RS485ConfigNotification serial_rs485_config)
     {
-        
+
     }
 
     internal override TouchTuneInfoReply UpdateTouchTune(TouchTuneInfo updateTouchscreen)
@@ -62,7 +62,7 @@ internal class TIServiceImplementation : DeviceServiceImplementation
             ReplyStatus = MessageReplyStatus.Undetermined,
             ReplyReason = "Not Implemented"
         };
-      
+
         return response;
     }
 

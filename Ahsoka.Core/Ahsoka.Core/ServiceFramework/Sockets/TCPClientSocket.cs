@@ -74,7 +74,7 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
             notificationSocket.Options.Linger = TimeSpan.FromSeconds(1);
             notificationSocket.Connect(this.endPoint.ServiceConfig.DataURI);
             notificationPoller.Add(notificationSocket);
-            
+
             // Listen to Notifications
             notificationSocket.ReceiveReady += (o, e) =>
             {
@@ -108,7 +108,7 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
                 socketPoller.StopAsync();
                 socketPoller.RemoveAndDispose(sendQueue);
                 socketPoller.RemoveAndDispose(socket);
-              
+
                 notificationSocket.Disconnect(endPoint.ServiceConfig.DataURI);
                 notificationPoller.StopAsync();
                 notificationPoller.RemoveAndDispose(notificationSocket);
@@ -136,7 +136,7 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
             {
                 // Decode Request Header
                 using MemoryStream headerData = new(message.Pop().Buffer);
-                returnMessage = new ()
+                returnMessage = new()
                 {
                     Header = ProtoBuf.Serializer.Deserialize<AhsokaMessageHeader>(headerData),
                     MessageData = message.Pop().Buffer

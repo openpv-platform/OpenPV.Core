@@ -5,7 +5,6 @@ using Ahsoka.Services.Install;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NetMQ.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -50,7 +49,7 @@ public class PackagingTests : LinearTestBase
     [TestMethod]
     public void TestCodesysPackage()
     {
-        PackageInformation package = PackagingTests.CreatePackage(out string fileName, asCodesys:true);
+        PackageInformation package = PackagingTests.CreatePackage(out string fileName, asCodesys: true);
         File.Delete(fileName);
     }
 
@@ -154,7 +153,7 @@ public class PackagingTests : LinearTestBase
 
         Environment.CurrentDirectory = appOutputs;
 
-        string packagefile = Path.Combine(appOutputs,"Platform_OpenView", "OpenView.PackageInfo.json");
+        string packagefile = Path.Combine(appOutputs, "Platform_OpenView", "OpenView.PackageInfo.json");
         PackageInformation package = JsonUtility.Deserialize<PackageInformation>(File.ReadAllText(packagefile));
         package.OptimizedServiceManager = optimized;
 
@@ -222,7 +221,7 @@ public class PackagingTests : LinearTestBase
         {
             Console.WriteLine(info.Message);
         }), customPackageInfo);
-        
+
         return package;
     }
 

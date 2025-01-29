@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Threading.Tasks;
-using Ahsoka.DeveloperTools.Views;
+﻿using Ahsoka.DeveloperTools.Views;
 using Ahsoka.Spark;
 using Ahsoka.System;
 using Ahsoka.Utility;
@@ -11,6 +6,11 @@ using Avalonia.Controls;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -19,7 +19,7 @@ namespace Ahsoka.DeveloperTools;
 /// </summary>
 internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkProjectViewModel>
 {
-    ApplicationViewModel noSubscribeVM =  new ApplicationViewModel(new ContainerDTO() { ContainerName = "Don't Subcribe to OTA" }, "00000000");
+    ApplicationViewModel noSubscribeVM = new ApplicationViewModel(new ContainerDTO() { ContainerName = "Don't Subcribe to OTA" }, "00000000");
 
     string provisionDeviceFile, provisionSerialNumber, provisionPartNumber, provisionDeviceId = string.Empty;
     System.PlatformFamily provisionDeviceFamily = System.PlatformFamily.OpenViewLinux;
@@ -95,7 +95,7 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
         get
         {
             var list = ParentViewModel.Applications.Applications.DistinctBy(a => a.DTO.ContainerName).ToList();
-            list.Add(noSubscribeVM);          
+            list.Add(noSubscribeVM);
             return list;
         }
     }
@@ -195,7 +195,7 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
             vm.Console.ClearConsole();
 
             List<ProvisionItem> deviceList = null;
-            if (IsSingleDevice)         
+            if (IsSingleDevice)
                 deviceList = new List<ProvisionItem>() { new ProvisionItem(ProvisionPlatformFamily, ProvisionPartNumber, ProvisionSerialNumber, ProvisionDeviceId) };
 
             var sparkInfo = new SparkConnectionInfo()

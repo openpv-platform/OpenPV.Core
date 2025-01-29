@@ -23,7 +23,7 @@ public class CellularService : AhsokaServiceBase<CellularMessageTypes.Ids>
         {
             PlatformFamily.Windows64 => new DesktopImplementation(),
             PlatformFamily.OpenViewLinux => new STImplementation(),
-            PlatformFamily.OpenViewLinuxPro => new DesktopImplementation(), 
+            PlatformFamily.OpenViewLinuxPro => new DesktopImplementation(),
             PlatformFamily.Ubuntu64 => new DesktopImplementation(),
             PlatformFamily.MacosArm64 => new DesktopImplementation(),
             _ => throw new NotImplementedException(),
@@ -58,7 +58,7 @@ public class CellularService : AhsokaServiceBase<CellularMessageTypes.Ids>
                 break;
 
             case CellularMessageTypes.Ids.GetNetworkInformation:
-                GetNetworkInformation(request,request.Message as AdapterRequest); 
+                GetNetworkInformation(request, request.Message as AdapterRequest);
                 break;
 
             case CellularMessageTypes.Ids.StartNetwork:
@@ -81,7 +81,7 @@ public class CellularService : AhsokaServiceBase<CellularMessageTypes.Ids>
 
     private void GetNetworkInformation(AhsokaServiceRequest request, AdapterRequest cellularAdapterInfo)
     {
-        CellularNetworkInformation info =  networkInterface.GetNetworkInfo(cellularAdapterInfo);
+        CellularNetworkInformation info = networkInterface.GetNetworkInfo(cellularAdapterInfo);
         SendResponse(request, info);
     }
 

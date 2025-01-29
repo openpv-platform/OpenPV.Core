@@ -1,11 +1,7 @@
-﻿
-using Ahsoka.ServiceFramework;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
-using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using JsonText = System.Text.Json;
 
 namespace Ahsoka.Utility;
 
@@ -16,19 +12,29 @@ public static class JsonUtility
 {
     internal static bool IsTesting { get; set; }
 
+    internal static JsonSerializerOptions Options { get => options; set => options = value; }
+
+    static JsonSerializerOptions options;
+
     /// <summary>
     /// Intialize All JsonConvert callse to resolve CamelCase for compatibility with 
     /// Javascript / Proto naming.
     /// </summary>
     static JsonUtility()
     {
-        JsonConvert.DefaultSettings = () => new JsonSerializerSettings
+        Options = new JsonSerializerOptions()
         {
-            Formatting = Formatting.Indented,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Converters = { new StringEnumConverter() },
-            NullValueHandling = NullValueHandling.Ignore
+            WriteIndented = true,
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+            PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate
         };
+
+        Options.Converters.Add(new JsonStringEnumConverter(JsonText.JsonNamingPolicy.CamelCase, true));
+        Options.Converters.Add(new BooleanConverter());
+
     }
 
     /// <summary>
@@ -39,7 +45,7 @@ public static class JsonUtility
     /// <returns></returns>
     public static T Deserialize<T>(string json) where T : class, new()
     {
-        if (OperatingSystem.IsLinux() || IsTesting)
+        /*if (OperatingSystem.IsLinux() || IsTesting)
         {
             if (typeof(ICanDeserializeBase).IsAssignableFrom(typeof(T)))
             {
@@ -47,9 +53,9 @@ public static class JsonUtility
                 DeserializeWithReader<T>(json, value);
                 return value;
             }
-        }
+        }*/
 
-        return JsonConvert.DeserializeObject<T>(json);
+        return JsonText.JsonSerializer.Deserialize<T>(json, Options);
     }
 
     /// <summary>
@@ -59,10 +65,10 @@ public static class JsonUtility
     /// <returns></returns>
     public static string Serialize(object value)
     {
-        return JsonConvert.SerializeObject(value);
+        return JsonText.JsonSerializer.Serialize(value, Options);
     }
 
-    private static void DeserializeWithReader<T>(string jsonText, T rootObj)
+    /*private static void DeserializeWithReader<T>(string jsonText, T rootObj)
     {
         ICanDeserializeBase currentObject = rootObj as ICanDeserializeBase;
 
@@ -121,7 +127,7 @@ public static class JsonUtility
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Developer, $"{new string(' ', depth)}Property: {propertyName}, Value: {reader.TokenType}:{reader.Value}");
             }
         }
-    }
+    }*/
 }
 
 /// <summary>
@@ -142,5 +148,33 @@ public class ICanDeserializeBase
     internal virtual void SetProperty(string propertyName, string value)
     {
 
+    }
+}
+
+internal class BooleanConverter : JsonConverter<bool>
+{
+    public override bool Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.True:
+                return true;
+            case JsonTokenType.False:
+                return false;
+            case JsonTokenType.String:
+                return reader.GetString() switch
+                {
+                    "true" => true,
+                    "false" => false,
+                    _ => throw new JsonException()
+                };
+            default:
+                throw new JsonException();
+        }
+    }
+
+    public override void Write(Utf8JsonWriter writer, bool value, JsonSerializerOptions options)
+    {
+        writer.WriteBooleanValue(value);
     }
 }

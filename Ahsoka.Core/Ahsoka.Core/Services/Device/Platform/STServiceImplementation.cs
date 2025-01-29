@@ -47,7 +47,7 @@ internal class STServiceImplementation : DeviceServiceImplementation
             });
         }
 
-        if (!config.HardwareItems.Any(x=>x.DeviceType == DeviceTypes.UsbEthernet))
+        if (!config.HardwareItems.Any(x => x.DeviceType == DeviceTypes.UsbEthernet))
             config.HardwareItems.Add(new()
             {
                 Name = "USB Ethernet",
@@ -56,7 +56,7 @@ internal class STServiceImplementation : DeviceServiceImplementation
             });
     }
 
-  
+
     internal override UsbInfo GetUsbInfo()
     {
         UsbInfo usbInfo = new()
@@ -84,7 +84,7 @@ internal class STServiceImplementation : DeviceServiceImplementation
             tokenSource = new CancellationTokenSource();
             task = Task.Run(() =>
             {
-               
+
                 while (!tokenSource.IsCancellationRequested)
                 {
                     CheckForMountPoint(usbInfo);
@@ -128,13 +128,13 @@ internal class STServiceImplementation : DeviceServiceImplementation
         if (hasEth != hasUsbEth)
         {
             var info = GetDevices().Devices.FirstOrDefault(x => x.DeviceType == DeviceTypes.UsbEthernet);
-          
+
             hasUsbEth = hasEth;
             if (hasEth)
-                GetDeviceHandler(info).EnableDevice(info,sendNotificationHandler);
+                GetDeviceHandler(info).EnableDevice(info, sendNotificationHandler);
             else
                 GetDeviceHandler(info).DisableDevice(info, sendNotificationHandler);
-            
+
             Console.WriteLine($"USB Ethernet State Changed {hasUsbEth}");
         }
     }

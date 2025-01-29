@@ -1,10 +1,8 @@
 ﻿using Ahsoka.Installer.Components;
-using Ahsoka.Services.Device;
 using Ahsoka.Services.Install;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -18,8 +16,8 @@ internal class DeviceManagerPlugin : InstallerPlugin
         PackageInformation info,
         IProgress<PackageProgressInfo> progress)
     {
-       
-       
+
+
         var configJsonContents = JsonUtility.Serialize(info.HardwareConfiguration);
         var protobufferStream = new MemoryStream();
         ProtoBuf.Serializer.Serialize(protobufferStream, info.HardwareConfiguration);

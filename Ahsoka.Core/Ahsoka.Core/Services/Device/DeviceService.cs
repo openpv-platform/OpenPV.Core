@@ -1,13 +1,10 @@
 using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Device.Handlers;
 using Ahsoka.System;
 using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Usb.Events;
-using static NetMQ.NetMQSelector;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using Globalization = System.Globalization.NumberStyles;
 
 namespace Ahsoka.Services.Device;
@@ -22,9 +19,9 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     IUsbEventWatcher usbEventWatcher;
     internal const string Name = "DeviceService";
     readonly DeviceServiceImplementation coreInterop;
-    Dictionary<uint,DeviceState> devices = new();
+    Dictionary<uint, DeviceState> devices = new();
     bool notificationsEnabled = false;
-    Dictionary<string,UsbDeviceId> activeDevices = new ();
+    Dictionary<string, UsbDeviceId> activeDevices = new();
     #endregion
 
     #region Methods
@@ -47,7 +44,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     public DeviceService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
-   
+
     }
 
 
@@ -173,7 +170,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     private void HandleDeviceEnabled(AhsokaServiceRequest request)
     {
         var deviceInfo = request.Message as DeviceInfo;
-        var handler =  coreInterop.GetDeviceHandler(deviceInfo);
+        var handler = coreInterop.GetDeviceHandler(deviceInfo);
         handler.EnableDevice(deviceInfo, this.SendNotificationIfEnabled);
         devices[deviceInfo.Id] = DeviceState.Enabled;
         SendResponse(request);
@@ -205,7 +202,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
         coreInterop.SetRS485Config(message.Message as RS485ConfigNotification);
         SendResponse(message);
     }
-    
+
     private void HandleUpdateTouchscreen(AhsokaServiceRequest message)
     {
         var response = coreInterop.UpdateTouchTune(message.Message as TouchTuneInfo);
@@ -216,7 +213,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
     {
         ushort.TryParse(device.ProductID, Globalization.HexNumber, null, out ushort pid);
         ushort.TryParse(device.VendorID, Globalization.HexNumber, null, out ushort vid);
-       
+
         var usbDevice = new UsbDeviceId() { ProductId = pid, VendorId = vid };
         var deviceInfo = coreInterop.GetUsbDevice(usbDevice);
         if (deviceInfo != null)
@@ -232,7 +229,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
 
                 var handler = coreInterop.GetDeviceHandler(deviceInfo);
                 handler.EnableDevice(deviceInfo, this.SendNotificationIfEnabled);
-                lock(devices)
+                lock (devices)
                     devices[deviceInfo.Id] = DeviceState.Enabled;
             }
 

@@ -2,16 +2,12 @@
 using Ahsoka.Installer;
 using Ahsoka.Spark;
 using Ahsoka.Utility;
-using Avalonia.Animation;
 using Avalonia.Controls;
-using Avalonia.Controls.Documents;
 using Avalonia.Threading;
-using Microsoft.IdentityModel.Tokens;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using static Ahsoka.Spark.SparkProjectTools;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -213,9 +209,9 @@ internal partial class SparkProjectArtifactsViewModel : ChildViewModelBase<Spark
 
         if (isAppCert)
         {
-            type = Path.GetExtension(certFilePath).ToLower() == ".appcert" ?  KeyTypes.PackageSigningKey : KeyTypes.ServiceKey;
+            type = Path.GetExtension(certFilePath).ToLower() == ".appcert" ? KeyTypes.PackageSigningKey : KeyTypes.ServiceKey;
             bool isAppCertLocal = Path.GetDirectoryName(fileInfo) == certFilePath;
-           
+
             if (!isAppCertLocal)
                 File.Copy(fileInfo, Path.Combine(certFilePath, keyName), true);
         }

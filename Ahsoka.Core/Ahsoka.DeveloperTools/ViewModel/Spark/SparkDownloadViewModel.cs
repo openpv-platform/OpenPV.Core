@@ -294,7 +294,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
                             ParentViewModel.Dialog.ShowDialog("Error Occurred During Install", ex.Message, "Ok").GetAwaiter().GetResult();
                             return;
                         }
-                        
+
                         if (OperatingSystem.IsWindows())
                             Environment.Exit(0);
                         else
@@ -303,7 +303,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
                                 if (App.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
                                 {
                                     lifetime.MainWindow.Close();
-                                     
+
                                 }
                             });
                     }
@@ -317,7 +317,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
 
     private string CreateExeFolderPath()
     {
-        var exeFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "EnovationControls", SelectedRelease.ReleaseName.Replace(" ","_") + "_" + SelectedRelease.ContainerVersion.Replace(".","_"));
+        var exeFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "EnovationControls", SelectedRelease.ReleaseName.Replace(" ", "_") + "_" + SelectedRelease.ContainerVersion.Replace(".", "_"));
 
         // This should be the path to where the Binaries folder will go
         return exeFolder;

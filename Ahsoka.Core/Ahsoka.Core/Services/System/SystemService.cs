@@ -62,7 +62,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
     public SystemService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
-  
+
     }
 
     /// <summary>
@@ -125,7 +125,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             platformVersions[SystemServiceMessages.InstallerVersionFactory] = File.ReadAllText(installerPathFactory);
 
         // Add Keys to Data Service
-        foreach(var item in platformVersions)
+        foreach (var item in platformVersions)
             UpdateCacheValue(item.Key, item.Value);
     }
 
@@ -192,7 +192,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
     private void HandleShutdown(AhsokaServiceRequest message)
     {
         ShutdownInformation shutdownInfo = message.Message as ShutdownInformation;
-        SendResponse(message,shutdownInfo);
+        SendResponse(message, shutdownInfo);
 
         if (shutdownInfo.ShutdownType == ShutdownTypes.ShutdownServices)
         {
@@ -308,9 +308,9 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
     private void HandleEchoValue(AhsokaServiceRequest message)
     {
-        object returnObject = new EchoValue() 
-        { 
-            DataValue = (message.Message as EchoValue).DataValue + " From Server" 
+        object returnObject = new EchoValue()
+        {
+            DataValue = (message.Message as EchoValue).DataValue + " From Server"
         };
 
         SendResponse(message, returnObject);
@@ -413,7 +413,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         string file = Path.Combine(path, "settings.json");
         return file;
     }
-  
+
     private void HandleSetBootLogo(AhsokaServiceRequest message)
     {
         var bootLogoInfo = message.Message as BootLogoInfo;
@@ -422,10 +422,10 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         {
             if (File.Exists(bootLogoInfo.Path))
             {
-               using var ms = new MemoryStream(File.ReadAllBytes(bootLogoInfo.Path));
-               var data = ImageUtility.RotateImage((LayerManager.Orientation)(int)bootLogoInfo.Rotation, ms);
-               File.WriteAllBytes(tempFile, data.ToArray());
-               bootLogoInfo.Path = tempFile;
+                using var ms = new MemoryStream(File.ReadAllBytes(bootLogoInfo.Path));
+                var data = ImageUtility.RotateImage((LayerManager.Orientation)(int)bootLogoInfo.Rotation, ms);
+                File.WriteAllBytes(tempFile, data.ToArray());
+                bootLogoInfo.Path = tempFile;
             }
         }
 

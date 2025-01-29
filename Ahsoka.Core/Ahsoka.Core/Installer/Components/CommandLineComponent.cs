@@ -24,7 +24,7 @@ internal class CommandLineComponent : PackageComponentBase
 
     protected override string GetPackagingPath(string buildLocation, PackageInformation info)
     {
-        if (overridePath != null) 
+        if (overridePath != null)
             return overridePath;
 
         return base.GetPackagingPath(buildLocation, info);
@@ -47,7 +47,7 @@ internal class CommandLineComponent : PackageComponentBase
             // Path to Output
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             overridePath = Path.Combine(path, "publish");
-           
+
             IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
             {
                 string result = info.Data?.TrimStart();

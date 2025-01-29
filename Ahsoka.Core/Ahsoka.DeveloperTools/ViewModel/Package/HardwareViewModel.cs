@@ -140,7 +140,7 @@ internal class HardwareInfoViewModel : ChildViewModelBase<HardwareViewModel>
         set
         {
             HardwareModel.DeviceType = value;
-            supportedServices = String.Join(',',DeviceInfo.GetSupportedServices(this.DeviceType));
+            supportedServices = String.Join(',', DeviceInfo.GetSupportedServices(this.DeviceType));
             OnPropertyChanged();
         }
     }

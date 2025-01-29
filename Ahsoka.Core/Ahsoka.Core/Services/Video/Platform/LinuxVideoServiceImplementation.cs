@@ -11,7 +11,7 @@ internal class LinuxVideoServiceImplementation : VideoPlayerImpl
     static object syncRoot = new object();
     Gst.Element videoElement;
 
-    PlaybackState playbackState =  PlaybackState.Ready;
+    PlaybackState playbackState = PlaybackState.Ready;
     ulong totalMs = 0;
     ulong positionMs = 0;
 
@@ -54,9 +54,9 @@ internal class LinuxVideoServiceImplementation : VideoPlayerImpl
 
             playCount++;
         }
-        
+
         return CreateStatus();
-        
+
     }
 
     protected override VideoStatus OnPauseVideo()
@@ -103,7 +103,7 @@ internal class LinuxVideoServiceImplementation : VideoPlayerImpl
     protected override VideoStatus OnStopVideo()
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Stopping Playback");
-        playbackState =  PlaybackState.Playing;
+        playbackState = PlaybackState.Playing;
 
         // Last Stopped Video Shuts down Loop
         lock (syncRoot)
@@ -194,16 +194,16 @@ internal class LinuxVideoServiceImplementation : VideoPlayerImpl
                 string debug;
                 args.Message.ParseError(out gerror, out debug);
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, "[Error] " + gerror.Message + " debug information " + debug + ". Exiting! ");
-               
+
                 videoElement.SetState(Gst.State.Null);
                 videoElement = null;
 
-                playbackState =  PlaybackState.Stopped;
+                playbackState = PlaybackState.Stopped;
                 break;
             case Gst.MessageType.Eos:
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, "[Eos] Playback has ended. Exiting!");
                 playbackState = PlaybackState.Stopped;
-                
+
                 videoElement.SetState(Gst.State.Null);
                 videoElement = null;
 

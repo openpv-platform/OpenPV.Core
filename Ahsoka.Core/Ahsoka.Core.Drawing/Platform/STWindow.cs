@@ -1,13 +1,11 @@
 ﻿using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Core.Drawing.Platform;
-using Ahsoka.ServiceFramework;
 using System.Runtime.InteropServices;
 
 namespace Ahsoka.Core.Drawing.Platform;
 
 internal class STWindow : LinuxWindow
 {
-    public STWindow(): base(new STDrawingImplementation())
+    public STWindow() : base(new STDrawingImplementation())
     {
 
     }

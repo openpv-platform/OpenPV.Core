@@ -5,9 +5,6 @@ using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 using Silk.NET.Windowing;
 using SkiaSharp;
-using System.Diagnostics;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Ahsoka.Core.Drawing.Platform;
 
@@ -51,7 +48,7 @@ internal class DesktopWindow : IDrawingWindow
         options.Title = appid;
         options.IsContextControlDisabled = true;
 
-        drawingSize = new (options.Size.X, options.Size.Y);
+        drawingSize = new(options.Size.X, options.Size.Y);
 
         return CreateWindow(apiWindow, options);
     }
@@ -128,7 +125,7 @@ internal class DesktopWindow : IDrawingWindow
 
         InitWindow();
 
-        return new SkiaDrawingApi(new DrawingSize( drawingSize.Width,drawingSize.Height), surface);
+        return new SkiaDrawingApi(new DrawingSize(drawingSize.Width, drawingSize.Height), surface);
     }
 
     private void InitWindow()
@@ -141,7 +138,7 @@ internal class DesktopWindow : IDrawingWindow
                 return 0;
         });
 
-        context = GRContext.CreateGl(grGlInterface,new GRContextOptions() { });
+        context = GRContext.CreateGl(grGlInterface, new GRContextOptions() { });
         var renderTarget = new GRBackendRenderTarget(window.Size.X, window.Size.Y, 0, 8, new GRGlFramebufferInfo(0, (uint)SizedInternalFormat.Rgba8));
         surface = SKSurface.Create(context, renderTarget, GRSurfaceOrigin.BottomLeft, SKColorType.Rgba8888);
     }
@@ -200,7 +197,7 @@ internal class DesktopWindow : IDrawingWindow
     DrawingRect IDrawingWindow.GetSurfaceLocation(int surfaceId)
     {
         Console.WriteLine("Opacity Access Only supported on Embedded Targets");
-        return new DrawingRect(0,0,this.drawingSize.Width, this.drawingSize.Height);
+        return new DrawingRect(0, 0, this.drawingSize.Width, this.drawingSize.Height);
     }
 }
 

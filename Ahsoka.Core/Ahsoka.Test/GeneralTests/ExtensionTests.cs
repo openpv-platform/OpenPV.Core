@@ -1,7 +1,6 @@
 using Ahsoka.Extension.Test;
 using Ahsoka.Installer;
 using Ahsoka.ServiceFramework;
-using Ahsoka.Services.System;
 using Ahsoka.System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
@@ -13,7 +12,7 @@ namespace Ahsoka.Test;
 [TestClass]
 public class ExtensionTests : LinearTestBase
 {
-   
+
     public TestContext TestContext { get; set; }
 
 
@@ -41,7 +40,7 @@ public class ExtensionTests : LinearTestBase
     [TestMethod]
     public void TestSystemEventData()
     {
-       var events = AhsokaMessagesBase.GetAllServiceEvents();
+        var events = AhsokaMessagesBase.GetAllServiceEvents();
     }
 
     internal static string LoadExtensions()

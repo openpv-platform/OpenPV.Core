@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Ahsoka.Services.Network.Platform;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
-using Ahsoka.Services.Network.Platform;
 
 namespace Ahsoka.Services.Network.Client.Implementation;
 

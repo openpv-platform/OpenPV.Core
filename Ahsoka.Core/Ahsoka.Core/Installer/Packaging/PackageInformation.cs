@@ -1,7 +1,8 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.Services.Device;
+using Ahsoka.Services.LayerManager;
 using Ahsoka.System;
 using Ahsoka.Utility;
-using Ahsoka.Services.LayerManager;
 using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text;
-using Ahsoka.Services.Device;
 
 namespace Ahsoka.Installer;
 
@@ -20,7 +20,7 @@ public class PackageInformation : PackageHeader
     // Package Type
     public string Version { get; set; }
     public ApplicationType ApplicationType { get; set; } = ApplicationType.Dotnet;
- 
+
     public string ExecCommand { get; set; }
     public string PackageName { get; set; }
     public string PackageDescription { get; set; }
@@ -54,12 +54,12 @@ public class PackageInformation : PackageHeader
             using ZipArchive archive = new ZipArchive(zipFile);
             var entry = archive.Entries.FirstOrDefault(x => x.Name.ToLower().EndsWith("packageinfo.json"));
             string filePath = Path.GetTempFileName();
-            entry.ExtractToFile(filePath,true);
+            entry.ExtractToFile(filePath, true);
             package = ConfigurationFileLoader.LoadFile<PackageInformation>(filePath);
             File.Delete(filePath);
         }
         else
-             package = ConfigurationFileLoader.LoadFile<PackageInformation>(path);
+            package = ConfigurationFileLoader.LoadFile<PackageInformation>(path);
 
         package.Version = VersionUtility.GetAppVersionString();
         package.originalFilePath = path;
@@ -81,7 +81,7 @@ public class PackageInformation : PackageHeader
 
         string path = Path.Combine(Path.GetDirectoryName(originalFilePath), PackageOutputDirectory);
         if (isCustomPackage)
-            return Path.Combine(path, PackageName + ".custom" +PackageType.GetFileExtension());
+            return Path.Combine(path, PackageName + ".custom" + PackageType.GetFileExtension());
         else
             return Path.Combine(path, PackageName + PackageType.GetFileExtension());
     }
@@ -112,7 +112,7 @@ public class PackageInformation : PackageHeader
     {
         return originalFilePath;
     }
-    
+
     public string GetPackageCertPath()
     {
         return GetPackageCertPath(this.PackageSigningCertFile, KeyTypes.PackageSigningKey);
@@ -120,9 +120,9 @@ public class PackageInformation : PackageHeader
 
     public static string GetPackageCertPath(string keyName, KeyTypes type)
     {
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "AhsokaData",
-            "AhsokaCerts", 
+            "AhsokaCerts",
             (type == KeyTypes.PackageSigningKey ? keyName + ".appcert" : keyName + ".servicecert"));
     }
 
@@ -130,7 +130,7 @@ public class PackageInformation : PackageHeader
     {
         if (ApplicationType == Installer.ApplicationType.Dotnet)
         {
-            string projectFolder = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()),DotNetInfo.ProjectPath));
+            string projectFolder = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), DotNetInfo.ProjectPath));
             return Path.Combine(projectFolder, "obj", Extensions.ExtensionsFolder);
         }
         else
@@ -142,7 +142,7 @@ public class PackageInformation : PackageHeader
     {
         if (!OperatingSystem.IsWindows())
             return false;
-            
+
         ProcessUtility.RunProcess("dotnet", "--list-sdks", null, out string result, out string error);
         return result.Contains("8.0.") && OptimizedServiceManager && (PlatformFamily is PlatformFamily.Windows64 or PlatformFamily.OpenViewLinux or PlatformFamily.OpenViewLinuxPro);
     }

@@ -1,11 +1,9 @@
-﻿using EnovationCloud.Core.DataTransferObjects;
+﻿using Ahsoka.Installer;
 using Ahsoka.System;
 using Ahsoka.Utility;
+using EnovationCloud.Core.DataTransferObjects;
 using System.IO;
 using static Ahsoka.Spark.SparkProjectTools;
-using Ahsoka.Spark;
-using Ahsoka.Installer;
-using System.Linq;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -32,7 +30,7 @@ internal class KeyArtifactViewModel : ChildViewModelBase<SparkProjectViewModel>
 
     public string DeviceKeyName
     {
-        get { return ArtifactName.Replace(deviceKey, "").Replace(appCert, "").Replace(serviceKey,""); }
+        get { return ArtifactName.Replace(deviceKey, "").Replace(appCert, "").Replace(serviceKey, ""); }
     }
 
     public string ArtifactCreator
@@ -44,7 +42,7 @@ internal class KeyArtifactViewModel : ChildViewModelBase<SparkProjectViewModel>
     {
         get
         {
-            if (ArtifactType ==  KeyTypes.DeviceKey)
+            if (ArtifactType == KeyTypes.DeviceKey)
             {
                 var path = SshUtility.GetKeyFileNames(DeviceKeyName);
                 return File.Exists(path.PrivateKeyPath) && File.Exists(path.PublicKeyPath);

@@ -14,7 +14,7 @@ internal class Program
     [STAThread]
     public static int Main(string[] args)
     {
-        if (args.Length > 0) 
+        if (args.Length > 0)
             MainViewModel.StartupArg = args[args.Length - 1];
 
         // Initialing Assembly Resolver

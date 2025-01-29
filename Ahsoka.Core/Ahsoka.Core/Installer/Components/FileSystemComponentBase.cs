@@ -5,8 +5,6 @@ using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using System.Xml.Linq;
 
 namespace Ahsoka.Installer.Components;
 
@@ -34,12 +32,12 @@ internal abstract class FileSystemComponentBase : InstallEngineComponent
         return OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
     }
 
-    protected virtual PackageComponent OnCreateFilePackageStream(string buildLocation, 
-        PackageInformation info, 
-        Dictionary<string, byte[]> additionalFiles, 
-        List<InstallerPlugin> installerPlugins, 
+    protected virtual PackageComponent OnCreateFilePackageStream(string buildLocation,
+        PackageInformation info,
+        Dictionary<string, byte[]> additionalFiles,
+        List<InstallerPlugin> installerPlugins,
         IProgress<PackageProgressInfo> progress)
-   {
+    {
         string pathToPackage = GetPackagingPath(buildLocation, info);
 
         if (Directory.Exists(pathToPackage))

@@ -1,7 +1,6 @@
 ﻿using Ahsoka.Utility;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Ahsoka.System.Hardware;
 
@@ -13,7 +12,7 @@ internal class BluetoothHardwareInfo : ICanDeserializeBase
     /// <summary>
     /// Collection of Module / Adapter Information Objects.
     /// </summary>
-    [JsonProperty]
+    [JsonInclude]
     public List<BluetoothHardwareAdapter> BluetoothAdapters { get; init; } = new List<BluetoothHardwareAdapter>();
 }
 

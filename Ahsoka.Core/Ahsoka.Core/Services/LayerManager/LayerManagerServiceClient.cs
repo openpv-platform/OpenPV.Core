@@ -1,6 +1,5 @@
 ﻿using Ahsoka.ServiceFramework;
 using Ahsoka.System;
-using System;
 
 namespace Ahsoka.Services.LayerManager;
 
@@ -54,7 +53,7 @@ public class LayerManagerServiceClient : AhsokaClientBase<LayerManagerMessageTyp
     /// <summary>
     /// Update All Surface Properties with Single Call
     /// </summary>
-    public void UpdateSurfaceSetup( SurfaceSetup setup)
+    public void UpdateSurfaceSetup(SurfaceSetup setup)
     {
         SendMessageWithResponse(LayerManagerMessageTypes.Ids.UpdateSurfaceSetup, setup);
     }

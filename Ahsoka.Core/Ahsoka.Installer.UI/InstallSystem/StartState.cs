@@ -173,10 +173,10 @@ internal class StartState : InstallerUIStateBase
             {
                 textPaint.Alignment = DrawingTextAlignment.Center;
 
-                drawingApi.DrawText($"Scan Here for Info", width / 2, height / 2 + imageSize/2 + 30, textPaint);
+                drawingApi.DrawText($"Scan Here for Info", width / 2, height / 2 + imageSize / 2 + 30, textPaint);
                 textPaint.TextSize = 15;
                 textPaint.TextWeight = DrawingTextWeight.Bold;
-                drawingApi.DrawText(url, width / 2, height / 2 + imageSize/2 + 50, textPaint);
+                drawingApi.DrawText(url, width / 2, height / 2 + imageSize / 2 + 50, textPaint);
             }
             else
             {

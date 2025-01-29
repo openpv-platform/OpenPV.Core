@@ -7,7 +7,6 @@ using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -20,7 +19,7 @@ internal class DisplayViewModel : ChildViewModelBase<PackageViewModel>
     float simWidth = 300;
     float simHeight = 200;
     HardwareInfo hardwareDef;
-        
+
     public ObservableCollection<SurfaceSetupViewModel> Surfaces
     {
         get;
@@ -47,15 +46,15 @@ internal class DisplayViewModel : ChildViewModelBase<PackageViewModel>
 
     public string ScreenDescription
     {
-        get 
+        get
         {
             if (hardwareDef != null)
                 return $"{hardwareDef.ScreenInfo.ScreenWidth}x{hardwareDef.ScreenInfo.ScreenHeight}";
             else
                 return "Un;nown";
         }
-        set 
-        {  }
+        set
+        { }
     }
 
 
@@ -83,10 +82,10 @@ internal class DisplayViewModel : ChildViewModelBase<PackageViewModel>
         private set { bitmap = value; OnPropertyChanged(); }
     }
 
- 
+
     public float SimWidth
     {
-        get { return simWidth;  }
+        get { return simWidth; }
         private set { simWidth = value; OnPropertyChanged(); }
     }
 
@@ -232,7 +231,7 @@ internal class SurfaceSetupViewModel : ChildViewModelBase<DisplayViewModel>
     SurfaceSetup setup;
     IImmutableBrush color;
     internal static IImmutableBrush SelectedBrush = new SolidColorBrush(Colors.SteelBlue, .8f).ToImmutable();
-    internal static IImmutableBrush DeselectedBrush = new SolidColorBrush(Colors.SteelBlue , .2f).ToImmutable();
+    internal static IImmutableBrush DeselectedBrush = new SolidColorBrush(Colors.SteelBlue, .2f).ToImmutable();
 
     public int SurfaceId
     {
@@ -331,7 +330,7 @@ internal class SurfaceSetupViewModel : ChildViewModelBase<DisplayViewModel>
         get { return setup.LocationRectangle.Height / ParentViewModel.GetYScale(); }
         set
         {
-            
+
             OnPropertyChanged();
         }
     }
@@ -346,9 +345,9 @@ internal class SurfaceSetupViewModel : ChildViewModelBase<DisplayViewModel>
         }
     }
 
-    public SurfaceSetup SurfaceSetup 
-    { 
-        get => setup;  
+    public SurfaceSetup SurfaceSetup
+    {
+        get => setup;
     }
 
     public SurfaceSetupViewModel(SurfaceSetup setup, DisplayViewModel parent)

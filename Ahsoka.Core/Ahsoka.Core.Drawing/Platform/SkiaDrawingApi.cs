@@ -59,7 +59,7 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
         CurrentContext.Canvas.ClipRegion(ConvertRectanglesToScreen(rects), SKClipOperation.Intersect);
     }
 
-    
+
     public override void PushClip(DrawingRect rects)
     {
         CurrentContext.Canvas.Save();
@@ -70,7 +70,7 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
     {
         if (ShowClipRectangles)
             CurrentContext.Canvas.DrawRegion(ConvertRectanglesToScreen(frameArgs.ClipRegions), clipRectanglePaint);
-      
+
         CurrentContext.Canvas.Restore();
     }
 
@@ -142,10 +142,10 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
 
     public override void DrawBitmap(DrawingImage image, DrawingRect rect)
     {
-        SKPaint paint = new SKPaint { IsStroke = false,  Color = new SKColor(255, 255, 255, 255), BlendMode= SKBlendMode.Multiply, IsAntialias = true };
+        SKPaint paint = new SKPaint { IsStroke = false, Color = new SKColor(255, 255, 255, 255), BlendMode = SKBlendMode.Multiply, IsAntialias = true };
         CurrentContext.Canvas.DrawBitmap(image.NativeObject as SKBitmap, rect.AsSKRect(), paint);
     }
-   
+
     public override void DrawRectangle(DrawingRect rectangle, DrawingPaint paint)
     {
         if (paint.IsFill)
@@ -154,7 +154,7 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
         if (paint.IsStroke)
             CurrentContext.Canvas.DrawRect(rectangle.AsSKRect(), paint.AsStrokePaint());
     }
-    
+
     public override void DrawRectangle(DrawingRect rectangle, DrawingColor strokeColor, DrawingColor fillColor, int strokeWidth = 1)
     {
         DrawRectangle(rectangle, new DrawingPaint(strokeColor, strokeWidth, fillColor));
@@ -202,7 +202,7 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
         var paint = new SKPaint
         {
             Color = textInfo.Color.AsSKColor(),
-           // BlendMode = SKBlendMode.Overlay,
+            // BlendMode = SKBlendMode.Overlay,
             IsAntialias = true,
         };
 
@@ -245,7 +245,7 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
     public override DrawingPath CreatePath(string svgPathData)
     {
         SKPath path = SKPath.ParseSvgPathData(svgPathData);
-        return new DrawingPath() { NativeObject = path};
+        return new DrawingPath() { NativeObject = path };
     }
 
     public override void DrawPath(DrawingPath path, DrawingPaint paint)
@@ -267,7 +267,7 @@ public class SkiaDrawingApi : DrawingApiBase<SKSurface>
         foreach (var item in matrices)
             newMatrix = SKMatrix.Concat(newMatrix, (SKMatrix)item.NativeObject);
 
-       CurrentContext.Canvas.SetMatrix(newMatrix);
+        CurrentContext.Canvas.SetMatrix(newMatrix);
     }
 
     public override void PopMatrix()
@@ -369,7 +369,7 @@ internal static class SkiaExtensions
     {
         if (paint.NativeStrokeObject == null)
             paint.NativeStrokeObject = new SKPaint { IsStroke = true, StrokeWidth = paint.StrokeWidth, Color = paint.StrokeColor.AsSKColor(), IsAntialias = true };
-    
+
         return paint.NativeStrokeObject as SKPaint;
     }
 
@@ -377,13 +377,13 @@ internal static class SkiaExtensions
     {
         if (paint.NativeFillObject == null)
         {
-            SKPaint nativePaint =  new SKPaint { IsStroke = false, StrokeWidth = paint.StrokeWidth, Color = paint.FillStartColor.AsSKColor(), IsAntialias = true };
+            SKPaint nativePaint = new SKPaint { IsStroke = false, StrokeWidth = paint.StrokeWidth, Color = paint.FillStartColor.AsSKColor(), IsAntialias = true };
 
             if (paint.PaintStyle != DrawingPaintStyles.Solid && paint.FillBounds != null)
             {
                 nativePaint.Shader = SKShader.CreateLinearGradient(new SKPoint(paint.FillBounds.X, paint.FillBounds.MidY),
                                    new SKPoint(paint.FillBounds.Width, paint.FillBounds.MidY),
-                                   new SKColor[] { paint.FillStartColor.AsSKColor(), paint.FillEndColor.AsSKColor()},
+                                   new SKColor[] { paint.FillStartColor.AsSKColor(), paint.FillEndColor.AsSKColor() },
                                    SKShaderTileMode.Clamp);
 
                 if (paint.GradientAngle != 0)

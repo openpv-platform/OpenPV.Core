@@ -2,6 +2,7 @@
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Ahsoka.System.Hardware;
 
@@ -61,7 +62,7 @@ public class FactoryInfo : ManufacturingInfo
     /// <summary>
     /// Combination of Family and Qualifier used for single view lists and selectinos.
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public string PlatformDescription { get { return $"{PlatformFamily} ({PlatformQualifier})"; } }
 
     /// <summary>

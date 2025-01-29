@@ -1,7 +1,7 @@
 ﻿#pragma warning disable CS1591
-using System.Threading.Tasks;
-using System.Threading;
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Video;
 
@@ -84,7 +84,7 @@ internal class VideoPlayerImpl
     }
 
     protected virtual VideoStatus OnStartVideo(VideoPlaybackRequest videoPlaybackRequest) { return new VideoStatus() { VideoState = PlaybackState.Playing }; }
-    protected virtual VideoStatus OnStopVideo() { return new VideoStatus() {  VideoState =  PlaybackState.Stopped }; }
+    protected virtual VideoStatus OnStopVideo() { return new VideoStatus() { VideoState = PlaybackState.Stopped }; }
     protected virtual VideoStatus OnGetVideoStatus() { return new VideoStatus() { VideoState = PlaybackState.Playing }; }
     protected virtual VideoStatus OnPauseVideo() { return new VideoStatus() { VideoState = PlaybackState.Paused }; }
     protected virtual VideoStatus OnResumeVideo() { return new VideoStatus() { VideoState = PlaybackState.Paused }; }

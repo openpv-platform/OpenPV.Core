@@ -4,6 +4,7 @@ using Ahsoka.Utility;
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 namespace Ahsoka.System;
 
@@ -41,7 +42,7 @@ public class ConfigurationLoader
 
         if (configuration == null || configuration.Services.Count == 0)
             configuration = CreateDefaultConfiguration();
-    } 
+    }
 
     /// <summary>
     /// Loads a custom runtime configuration as the Runtime Default Configuration.
@@ -189,7 +190,7 @@ public partial class ServiceConfiguration : ICanDeserializeBase
     /// Produces the TCP URI for the data communication channel that is typically used by sockets utilizing ZMQ as the
     /// backing transport.
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public string DataURI
     {
         get
@@ -202,7 +203,7 @@ public partial class ServiceConfiguration : ICanDeserializeBase
     /// Produces the TCP URI for the data listening channel that is typically used by sockets utilizing ZMQ as the
     /// backing transport.
     /// </summary>
-    [Newtonsoft.Json.JsonIgnore]
+    [JsonIgnore]
     public string DataListenURI
     {
         get

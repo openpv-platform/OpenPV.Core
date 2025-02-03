@@ -1,8 +1,7 @@
-﻿using Ahsoka.Installer.Components;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.Components;
 using Ahsoka.Services.Device.Handlers;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,7 +20,7 @@ internal abstract class DeviceServiceImplementation
 
         bool isInstaller = AppDomain.CurrentDomain.FriendlyName == "Ahsoka.Installer.UI";
 
-        string fileName = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(Ahsoka.System.Hardware.RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, "DeviceConfiguration.pbuff");
+        string fileName = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(Ahsoka.Core.Hardware.RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, "DeviceConfiguration.pbuff");
         if (File.Exists(fileName) && !isInstaller)
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Device Setup Path Found");

@@ -35,7 +35,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<AdditionalFiles Include="Proto\*.proto" />
+		<AdditionalFiles Include="Proto\*.proto" Exclude="Proto\Configuration.proto" />
 		<AdditionalFiles Include="..\..\Ahsoka.Shared\Services.proto" />
 	</ItemGroup>
 
@@ -47,6 +47,7 @@
 	  <None Remove="Proto\CellularService.proto" />
 	  <None Remove="Resources\CommandLine\Publish.xmlpub.template" />
 	</ItemGroup>
+	
 	<ItemGroup>
 		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
 		<None Include="README.md" Pack="true" PackagePath="\" />
@@ -58,11 +59,7 @@
 			<AutoGen>True</AutoGen>
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
-	</ItemGroup>
-
-
-
-	<ItemGroup>
+		
 		<EmbeddedResource Include="Properties\Resources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>

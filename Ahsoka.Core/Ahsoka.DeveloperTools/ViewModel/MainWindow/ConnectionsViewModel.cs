@@ -1,10 +1,10 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
-using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
 using System;
 using System.Collections.Generic;
@@ -426,12 +426,12 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             && ParentViewModel.ActiveConnection.IsConnected)
         {
             // Check for Match to save some Time...compare connected hardware info
-            bool isMatch = editInfo.PlatformFamily == ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformFamily &&
+            bool isMatch = editInfo.PlatformFamily == ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformFamilyEnum &&
                             editInfo.PlatformQualifier == ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformQualifier;
 
             if (!isMatch)
             {
-                await ParentViewModel.Dialog.ShowDialog("Prep Target", $"Please select the correct hardware for the connected display.  The currently connected display appears to be {ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformFamily} ({ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformQualifier})", "Cancel");
+                await ParentViewModel.Dialog.ShowDialog("Prep Target", $"Please select the correct hardware for the connected display.  The currently connected display appears to be {ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformFamilyEnum} ({ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformQualifier})", "Cancel");
                 return;
             }
 
@@ -630,7 +630,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             var hardwareInfo = ParentViewModel.ActiveConnection.GetHardwareInformation();
-            var connectedInfo = hardwareInfo.PlatformFamily;
+            var connectedInfo = hardwareInfo.PlatformFamilyEnum;
             var packageInfo = EditConfigurationInfo.PlatformFamily;
 
             if (connectedInfo != packageInfo)

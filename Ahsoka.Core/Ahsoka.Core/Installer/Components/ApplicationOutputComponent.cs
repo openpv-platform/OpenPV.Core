@@ -1,9 +1,9 @@
-﻿using Ahsoka.Installer.InstallEngine;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
 using Ahsoka.Services.Network;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using Mono.Unix;
 using System;
 using System.Collections.Generic;
@@ -78,7 +78,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             var fileData = File.ReadAllText(pathToCert);
             var keyData = JsonUtility.Deserialize<DeviceKeyInfo>(fileData);
 
-            var securityConfig = new ServiceFramework.SecurityConfiguration()
+            var securityConfig = new SecurityConfiguration()
             {
                 ApplicationId = info.ApplicationId.ToByteArray(),
                 RequireChallenge = info.ServiceInfo.RuntimeConfiguration.RequireChallenge,

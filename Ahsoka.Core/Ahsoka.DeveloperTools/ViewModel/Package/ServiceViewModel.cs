@@ -1,8 +1,7 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer;
 using Ahsoka.Services.Security;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -18,22 +17,6 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
     string apiKey = string.Empty;
 
     public ServiceEnableDisable[] ServiceEnableDisableItems { get; init; } = Enum.GetValues<ServiceEnableDisable>();
-
-    public ChallengeOptions[] RequireChallengeOptions { get; init; } = Enum.GetValues<ChallengeOptions>();
-
-    public ChallengeOptions RequireChallenge
-    {
-        get
-        {
-            return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge;
-        }
-        set
-        {
-            ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge = value;
-            OnPropertyChanged();
-        }
-
-    }
 
     public string ApiKey
     {
@@ -96,8 +79,6 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
             OnPropertyChanged(nameof(ApiKey));
         }
     }
-
-    public TransportSocketTypes[] SocketTypes { get; init; } = Enum.GetValues<TransportSocketTypes>();
 
     public ObservableCollection<ServiceConfigurationViewModel> Services
     {
@@ -230,7 +211,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                     DataChannel = defaultValues.DataChannel,
                     IsExtension = defaultValues.IsExtension,
                     Behaviors = defaultValues.Behaviors,
-                    SocketType = defaultValues.SocketType,
                 };
 
                 ParentViewModel.ParentViewModel.ServiceConfiguration.Services.Add(item);
@@ -281,22 +261,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
             else
                 CurrentServiceConfiguration.Behaviors &= ~EndPointBehaviors.AutoStart;
 
-            OnPropertyChanged();
-        }
-    }
-
-    public TransportSocketTypes SocketType
-    {
-        get
-        {
-            if (CurrentServiceConfiguration != null)
-                return CurrentServiceConfiguration.SocketType;
-            else
-                return TransportSocketTypes.TcpSocket;
-        }
-        set
-        {
-            CurrentServiceConfiguration.SocketType = value;
             OnPropertyChanged();
         }
     }

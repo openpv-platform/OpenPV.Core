@@ -1,5 +1,5 @@
-﻿using Ahsoka.System;
-using Ahsoka.System.Hardware;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
 using System;
 using System.Collections.Generic;
 using System.IO;

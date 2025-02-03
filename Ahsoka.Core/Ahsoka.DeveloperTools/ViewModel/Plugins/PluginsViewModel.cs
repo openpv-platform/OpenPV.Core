@@ -1,7 +1,7 @@
-﻿using Ahsoka.DeveloperTools.OpenPVTools;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.OpenPVTools;
 using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using Avalonia.Media;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
@@ -421,7 +421,7 @@ internal class PluginsViewModel : ViewModelBase, IToolViewModel
 
                 if (item.DevelopmentPlatform == PlatformFamily.Any)
                     AddTool(supportInfo, selectedTool);
-                else if (item.DevelopmentPlatform == PlatformFamily.MacosArm64 && OperatingSystem.IsMacOS())
+                else if (item.DevelopmentPlatform == PlatformFamily.MacOSArm64 && OperatingSystem.IsMacOS())
                     AddTool(supportInfo, selectedTool);
                 else if (item.DevelopmentPlatform == PlatformFamily.Ubuntu64 && OperatingSystem.IsLinux())
                     AddTool(supportInfo, selectedTool);

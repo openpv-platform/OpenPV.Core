@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 
 internal class AesEncryption

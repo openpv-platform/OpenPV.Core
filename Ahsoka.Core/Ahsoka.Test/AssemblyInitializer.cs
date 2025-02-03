@@ -1,7 +1,7 @@
 ﻿
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;

@@ -1,7 +1,7 @@
+using Ahsoka.Core.Hardware;
 using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
-using Ahsoka.System.Hardware;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;

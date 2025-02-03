@@ -1,13 +1,11 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Utility;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]

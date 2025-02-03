@@ -1,4 +1,4 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
 using Ahsoka.Services.Device;
 using System;
 using System.Diagnostics.CodeAnalysis;

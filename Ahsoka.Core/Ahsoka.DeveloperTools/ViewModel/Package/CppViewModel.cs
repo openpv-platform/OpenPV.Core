@@ -1,10 +1,9 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.Installer;
 using Ahsoka.Installer.Components;
 using Ahsoka.Installer.InstallEngine;
-using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -213,10 +212,10 @@ internal class CppViewModel : ViewModelBase
 
             await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
 
-            System.PlatformFamily[] platformsToSupport =
+            PlatformFamily[] platformsToSupport =
             {
                 packageInfo.PlatformFamily,
-                System.PlatformFamily.Ubuntu64,
+                PlatformFamily.Ubuntu64,
                 PlatformFamily.Windows64
             };
             parentViewModel.SelectedPackage.Deps.CheckDependencies(SystemInfo.CurrentPlatform, platformsToSupport);

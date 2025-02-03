@@ -1,5 +1,5 @@
 ﻿#pragma warning disable CS1591
-using Ahsoka.System;
+using Ahsoka.Core;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
@@ -136,7 +136,7 @@ public static class PlatformExtensions
         return family switch
         {
             PlatformFamily.Windows64 => "win",
-            PlatformFamily.MacosArm64 => "macOS",
+            PlatformFamily.MacOSArm64 => "macOS",
             PlatformFamily.OpenViewLinux => "linux",
             _ => "any",
         };

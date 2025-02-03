@@ -1,5 +1,5 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.ViewModel;
 using System;
 using System.IO;
 using System.IO.Compression;

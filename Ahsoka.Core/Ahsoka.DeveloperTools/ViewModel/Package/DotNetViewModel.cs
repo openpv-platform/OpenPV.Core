@@ -1,8 +1,8 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.Installer;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Extensions = Ahsoka.System.Extensions;
+using Extensions = Ahsoka.Core.Extensions;
 
 #pragma warning disable CS0436 // Type conflicts with imported type for GitVersionInformation
 
@@ -218,14 +218,14 @@ internal class DotNetViewModel : ViewModelBase
             await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
 
             //needs method for determining platforms to load
-            List<System.PlatformFamily> platformsToSupport = new() { packageInfo.PlatformFamily };
+            List<PlatformFamily> platformsToSupport = new() { packageInfo.PlatformFamily };
 
             if (OperatingSystem.IsWindows())
-                platformsToSupport.Add(System.PlatformFamily.Windows64);
+                platformsToSupport.Add(PlatformFamily.Windows64);
             if (OperatingSystem.IsLinux())
-                platformsToSupport.Add(System.PlatformFamily.Ubuntu64);
+                platformsToSupport.Add(PlatformFamily.Ubuntu64);
             if (OperatingSystem.IsMacOS())
-                platformsToSupport.Add(System.PlatformFamily.MacosArm64);
+                platformsToSupport.Add(PlatformFamily.MacOSArm64);
 
             foreach (var platform in platformsToSupport)
             {

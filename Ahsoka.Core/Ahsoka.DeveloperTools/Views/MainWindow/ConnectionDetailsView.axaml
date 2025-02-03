@@ -15,7 +15,7 @@
 					</StackPanel>
 					<StackPanel Margin="20,2" Orientation="Horizontal">
 						<TextBlock FontSize="16" Text="Platform Family:" Width="165"/>
-						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.PlatformFamily, FallbackValue=Not Connected}"/>
+						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.PlatformFamilyEnum, FallbackValue=Not Connected}"/>
 						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.PlatformQualifier, StringFormat=' ({0})'}"/>
 					</StackPanel>
 					<StackPanel Margin="20,2" Orientation="Horizontal">

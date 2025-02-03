@@ -1,9 +1,9 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility.WiFi;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.Network.Platform;
-using Ahsoka.System;
-using Ahsoka.Utility.WiFi;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
@@ -238,7 +238,7 @@ public class NetworkServiceTest : LinearTestBase
         NetworkServiceHelper.ReadClientConfiguration(clientConfig, true); // Read Default Again
         Assert.IsTrue(clientConfig.ClientConfiguration.ConnectionType == IPAddressConfiguration.Dhcp);
 
-        Directory.Delete(SystemInfo.HardwareInfo.TargetPathInfo.GetServiceDataPath(System.Hardware.ServiceDataPaths.NetworkProfileFolder), true);
+        Directory.Delete(SystemInfo.HardwareInfo.TargetPathInfo.GetServiceDataPath(ServiceDataPaths.NetworkProfileFolder), true);
     }
 
     [TestMethod]

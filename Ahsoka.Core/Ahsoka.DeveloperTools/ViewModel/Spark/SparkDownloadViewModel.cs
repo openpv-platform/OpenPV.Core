@@ -1,4 +1,4 @@
-﻿using Ahsoka.Utility;
+﻿using Ahsoka.Core.Utility;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Threading;

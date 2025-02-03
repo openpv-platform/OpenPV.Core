@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Utility;
+﻿namespace Ahsoka.Core.Utility;
 
 /// <summary>
 ///  Interface for traversing ViewModels

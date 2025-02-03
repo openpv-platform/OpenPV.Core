@@ -1,14 +1,14 @@
 {
-  "version": "4.0.1.10070",
+  "version": "4.0.1.10071",
   "applicationType": "dotnet",
   "execCommand": "Ahsoka.CS.Services",
   "packageName": "Ahsoka.CS.Services",
   "packageDescription": "Example of creating a Custom Ahsoka Service",
   "applicationVersion": "1.0",
   "packageApplicationFolder": "../Platform_OpenView/publish",
-  "packageOutputDirectory": "PackageOutput",
+  "packageOutputDirectory": "../../PackageOutput",
   "licenses": [],
-  "optimizedServiceManager": true,
+  "optimizedServiceManager": false,
   "customPackageInfo": {
     "includeApplication": false,
     "includeBootLogo": false,
@@ -25,10 +25,9 @@
       "releaseOption": "noAutoStart",
       "extensionInfo": [],
       "startupDelay": 3,
-      "requireChallenge": "notRequired",
+      "requireChallenge": false,
       "services": [
         {
-          "socketType": "tcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",

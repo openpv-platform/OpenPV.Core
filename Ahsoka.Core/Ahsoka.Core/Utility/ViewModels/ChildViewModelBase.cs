@@ -1,7 +1,7 @@
 ﻿
 using System.Text.Json.Serialization;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// Extension of ViewModelBase which adds support for passing a Parent Model

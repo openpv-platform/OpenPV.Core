@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Nodes;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 
 

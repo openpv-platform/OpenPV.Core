@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// Progress Object used when listening to progress from the same thread as the executer (mimics the Task Progress Interface using Invoke)

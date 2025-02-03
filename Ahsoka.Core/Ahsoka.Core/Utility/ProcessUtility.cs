@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// Utilties for executing Processes on the Current OS.

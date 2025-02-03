@@ -1,11 +1,11 @@
-﻿using Ahsoka.Installer.InstallEngine;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Extensions = Ahsoka.System.Extensions;
+using Extensions = Ahsoka.Core.Extensions;
 
 namespace Ahsoka.Installer.Components;
 

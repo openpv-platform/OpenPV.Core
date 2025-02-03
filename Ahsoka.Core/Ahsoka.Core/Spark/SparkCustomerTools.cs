@@ -1,9 +1,8 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Spark;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using System;
@@ -11,7 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Ahsoka.Spark;
+namespace Ahsoka.Core.Spark;
 
 public static class SparkCustomerTools
 {
@@ -262,7 +261,7 @@ public static class SparkCustomerTools
                     if (cols.Length < 4)
                         progress.Report($"Error Importing Line {lineNumber}");
 
-                    deviceList.Add(new ProvisionItem(Enum.Parse<System.PlatformFamily>(cols[0]), cols[1], cols[2], cols[3]));
+                    deviceList.Add(new ProvisionItem(Enum.Parse<PlatformFamily>(cols[0]), cols[1], cols[2], cols[3]));
 
                     progress.Report($"Found DeviceID: {cols[3]} to Provision");
                 }
@@ -280,7 +279,7 @@ public static class SparkCustomerTools
 
     static SparkServiceClient CreateClient(string hostName)
     {
-        var config = new System.ServiceConfiguration()
+        var config = new ServiceConfiguration()
         {
             ServiceName = "SparkService",
             TcpConnectionAddress = hostName,

@@ -1,4 +1,4 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
 using Ahsoka.Services.Demo.Service;
 
 namespace Ahsoka.Services.Demo;

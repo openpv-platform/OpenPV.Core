@@ -1,8 +1,7 @@
 ﻿#pragma warning disable CS1591
-using Ahsoka.ServiceFramework;
+using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Network.Cellular.Implementation;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
@@ -25,7 +24,7 @@ public class CellularService : AhsokaServiceBase<CellularMessageTypes.Ids>
             PlatformFamily.OpenViewLinux => new STImplementation(),
             PlatformFamily.OpenViewLinuxPro => new DesktopImplementation(),
             PlatformFamily.Ubuntu64 => new DesktopImplementation(),
-            PlatformFamily.MacosArm64 => new DesktopImplementation(),
+            PlatformFamily.MacOSArm64 => new DesktopImplementation(),
             _ => throw new NotImplementedException(),
         };
     }

@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "Configuration.proto";
-
 package AhsokaSpark;
 option csharp_namespace = "Ahsoka.Services.Spark";
 
@@ -46,9 +44,20 @@ message SparkSubscriptionInfo
 
 message SparkReleaseInfo
 {
-	AhsokaSystem.MessageReplyStatus result = 1;
+	MessageReplyStatus result = 1;
 	string result_text = 2;
 	repeated SparkRelease releases = 3;
+}
+
+
+enum MessageReplyStatus
+{
+    UNDETERMINED = 0;
+    ERROR = 1;
+    SUCCESS = 2;
+    TIMEOUT = 3;
+    CONTINUE = 4;
+    CANCELLED = 5;
 }
 
 message SparkRelease
@@ -72,14 +81,14 @@ message SparkReleaseDownloadNotification
 {
   string release_id = 1;
   int32 percent_completed = 2;
-  AhsokaSystem.MessageReplyStatus status = 3;
+  MessageReplyStatus status = 3;
 }
 
 message SparkReleaseDownloadCompleted
 {
   string release_id = 1;
   string result_text = 2;
-  AhsokaSystem.MessageReplyStatus status = 3;
+  MessageReplyStatus status = 3;
 }
 
 message AppChangeInfo

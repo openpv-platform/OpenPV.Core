@@ -1,6 +1,4 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using SkiaSharp;
+﻿using SkiaSharp;
 using DateTime = System.DateTime;
 using TouchEventArgs = Ahsoka.Core.Drawing.Utility.TouchEventArgs;
 
@@ -56,7 +54,7 @@ public class DrawingWindow
     #region Methods
     public DrawingWindow(int surfaceId = 2000, string appId = "DrawingWindow")
     {
-        if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacosArm64 or PlatformFamily.Ubuntu64)
+        if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacOSArm64 or PlatformFamily.Ubuntu64)
         {
             nativeWindow = new Platform.DesktopWindow();
             api = nativeWindow.CreateWindow(this, surfaceId, appId) as SkiaDrawingApi;
@@ -79,7 +77,7 @@ public class DrawingWindow
     {
         size = new(width, height);
 
-        if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacosArm64 or PlatformFamily.Ubuntu64)
+        if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacOSArm64 or PlatformFamily.Ubuntu64)
         {
             nativeWindow = new Platform.DesktopWindow();
             api = nativeWindow.CreateWindow(this, fullScreen, width, height, appId) as SkiaDrawingApi;

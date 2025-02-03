@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 internal static class Crc32
 {

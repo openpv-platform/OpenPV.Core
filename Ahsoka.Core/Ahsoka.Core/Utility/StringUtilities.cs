@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 internal static class StringUtilities
 {

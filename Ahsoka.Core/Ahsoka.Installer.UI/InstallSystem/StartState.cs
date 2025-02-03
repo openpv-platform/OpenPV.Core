@@ -1,7 +1,7 @@
-﻿using Ahsoka.Core.Drawing;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
 using QRCoder;
 using System.IO;
 using System.Threading;

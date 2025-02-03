@@ -1,4 +1,4 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
 using Microsoft.Win32.SafeHandles;
 using System;
 using System.Runtime.InteropServices;

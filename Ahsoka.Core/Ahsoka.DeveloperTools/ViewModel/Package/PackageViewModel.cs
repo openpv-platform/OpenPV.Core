@@ -1,10 +1,10 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
-using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using Avalonia.Media;
 using Avalonia.Threading;
 using EnovationCloud.Core.DataTransferObjects;
@@ -748,7 +748,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                 if (hardwareInfo == null)
                     return "Could not communicate with the target.";
 
-                string connectedInfo = hardwareInfo.PlatformFamily + "." + hardwareInfo.PlatformQualifier;
+                string connectedInfo = hardwareInfo.PlatformFamilyEnum + "." + hardwareInfo.PlatformQualifier;
                 string packageInfo = ParentViewModel.SelectedPackage.PackageInfo.PlatformFamily + "." + ParentViewModel.SelectedPackage.PackageInfo.PlatformQualifier;
 
                 if (connectedInfo != packageInfo)

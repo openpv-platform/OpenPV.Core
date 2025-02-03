@@ -1,5 +1,4 @@
-﻿using Ahsoka.Dispatch;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core.Dispatch;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
 using System;
@@ -8,7 +7,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Ahsoka.Utility.WiFi;
+namespace Ahsoka.Core.Utility.WiFi;
 
 /// <summary>
 /// WiFi Network Manager which will handle network management including 

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// Extension Methods for Enumerations

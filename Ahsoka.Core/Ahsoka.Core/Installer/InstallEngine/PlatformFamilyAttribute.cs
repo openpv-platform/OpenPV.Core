@@ -1,5 +1,5 @@
 ﻿#pragma warning disable CS1591
-using Ahsoka.System;
+using Ahsoka.Core;
 using System;
 
 namespace Ahsoka.Installer.InstallEngine;

@@ -1,6 +1,5 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -138,7 +137,7 @@ internal class STServiceImplementation : IServiceImplementation
     void IServiceImplementation.SetBootLogo(string logoPath)
     {
         if (!File.Exists(logoPath) || !logoFileTypes.Any(x => logoPath.EndsWith(x))) return;
-        string installPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.BootLogoFileName);
+        string installPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.Core.Hardware.InstallerPaths.BootLogoFileName);
         File.Copy(logoPath, installPath, true);
     }
     #endregion

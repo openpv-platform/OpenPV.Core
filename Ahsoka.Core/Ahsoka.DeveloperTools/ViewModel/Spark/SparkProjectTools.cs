@@ -1,7 +1,6 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.Core.Utility;
 using Ahsoka.Installer;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Security;
@@ -11,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Ahsoka.Spark;
+namespace Ahsoka.Core.Spark;
 
 public static class SparkProjectTools
 {

@@ -1,6 +1,6 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
+﻿using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
-using Ahsoka.Utility;
 using Avalonia.Controls;
 using System;
 using System.Collections.Generic;

@@ -541,7 +541,7 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to using Ahsoka.Utility;
+        ///   Looks up a localized string similar to using Ahsoka.Core.Utility;
         ///using System;
         ///
         ///namespace Ahsoka;

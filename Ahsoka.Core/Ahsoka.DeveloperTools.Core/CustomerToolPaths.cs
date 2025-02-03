@@ -1,4 +1,4 @@
-﻿using Ahsoka.System.Hardware;
+﻿using Ahsoka.Core.Hardware;
 using System.IO;
 
 namespace Ahsoka.DeveloperTools.ViewModel;

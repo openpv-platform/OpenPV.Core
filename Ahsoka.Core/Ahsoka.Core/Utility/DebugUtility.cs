@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 ///  Tool to assist in Debugging.

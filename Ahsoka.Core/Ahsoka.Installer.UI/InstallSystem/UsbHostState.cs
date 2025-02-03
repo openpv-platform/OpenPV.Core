@@ -1,7 +1,7 @@
-﻿using Ahsoka.Core.Drawing;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
+using Ahsoka.Core.Hardware;
 using System.IO;
 
 namespace Ahsoka.Installer.UI.InstallSystem;

@@ -3,13 +3,13 @@ syntax = "proto3";
 import "protobuf-net/protogen.proto";
 
 package AhsokaSystem;
-option csharp_namespace = "Ahsoka.System";
+option csharp_namespace = "Ahsoka.Core";
 
 enum PlatformFamily
 {
     ANY = 0;
     WINDOWS_64 = 2;
-    MACOS_ARM64 = 3;
+    MACOS_ARM64 = 3 [(.protobuf_net.enumvalopt).name = "MacOSArm64"];
     OPEN_VIEW_LINUX = 4;
     OPEN_VIEW_LINUX_PRO = 5;
     UBUNTU_64 = 8;
@@ -27,7 +27,6 @@ message RuntimeConfiguration
 
 message ServiceConfiguration
 {
-    TransportSocketTypes socket_type = 1;
     string service_name = 2;
     string tcp_listen_address = 3;
     string tcp_connection_address = 4;
@@ -36,41 +35,17 @@ message ServiceConfiguration
     EndPointBehaviors behaviors = 10; 
 }
 
-enum MessageReplyStatus
+message SecurityConfiguration
 {
-    UNDETERMINED = 0;
-    ERROR = 1;
-    SUCCESS = 2;
-    TIMEOUT = 3;
-    CONTINUE = 4;
-    CANCELLED = 5;
+	bool require_challenge = 1;
+	bytes application_id = 2;
+	string token_public_key = 3;
+	string token_private_key = 4;
 }
-
 
 enum EndPointBehaviors
 {
     NO_BEHAVIOR = 0;
     AUTO_START = 1;
     SECURITY_ENABLED = 2;
-}
-
-enum TransportSocketTypes
-{
-    TCP_SOCKET = 0;
-    SERIAL_SOCKET = 1;
-    CONTROL_SERVICE_SOCKET = 2;
-}
-
-
-enum StartOptions
-{
-    NoAutoStart = 0;
-    BeforeApplicationStart = 1;
-    AfterApplicationStart = 2;
-}
-
-enum ServiceEnableDisable
-{
-    Disabled = 0;
-    Enabled = 1;
 }

@@ -1,6 +1,6 @@
-﻿using Ahsoka.Services.Device;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Services.Device;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;

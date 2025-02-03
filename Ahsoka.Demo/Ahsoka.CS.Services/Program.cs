@@ -1,7 +1,7 @@
-﻿using Ahsoka.Dispatch;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Dispatch;
+using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Services.System;
-using Ahsoka.System;
 using System;
 
 namespace Ahsoka.Services.Demo;
@@ -39,14 +39,11 @@ public class Program
         },
         Dispatcher.Default.Stop); // Stop the Dispatcher when Work is Complete.
 
-        // Start the main Dispatcher and Block until it completes.
-        // This method blocks (executes our RunLoop) until the service shutdown is requested
-        // which currently happens in the WaitForKeyboardEntry() method.
-        Dispatcher.Default.StartAndRun();
-
         // Once the Dispatcher is shutdown in the Dispatcher.Default.Stop() method,
         // we ask Linux / Windows to exit our process.
-        ApplicationContext.Exit();
+        DrawUI ui = new DrawUI();
+        ui.StartAndRun(Dispatcher.Default, "OpenPV Device Demo");
+
     }
 
     /// <summary>

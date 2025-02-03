@@ -1,11 +1,11 @@
 ﻿using Ahsoka.Installer;
 using Ahsoka.Services.System;
-using Ahsoka.System;
 using System;
 using System.IO;
 using System.Threading;
+using MessageReplyStatus = Ahsoka.Services.System.MessageReplyStatus;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 // Handles the Client side of a File Transfer
 internal class FileTransferClientHelper

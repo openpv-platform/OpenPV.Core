@@ -1,5 +1,5 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.System;
+﻿using Ahsoka.Core;
+using Ahsoka.DeveloperTools.ViewModel;
 using System;
 using System.Diagnostics;
 using System.IO;

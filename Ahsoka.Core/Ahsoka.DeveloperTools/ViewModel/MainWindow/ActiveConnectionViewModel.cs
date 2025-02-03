@@ -1,10 +1,9 @@
-﻿using Ahsoka.DeveloperTools.Views;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Views;
 using Ahsoka.Services.Security;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using Avalonia.Media;
 using System;
 using System.Diagnostics;

@@ -1,6 +1,6 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Iot;
-using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading;

@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Utility;
+﻿namespace Ahsoka.Core.Utility;
 
 internal class HashCode32
 {

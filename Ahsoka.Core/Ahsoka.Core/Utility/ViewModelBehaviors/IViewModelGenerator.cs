@@ -1,12 +1,9 @@
-﻿
-
-using Ahsoka.Installer;
-using Ahsoka.System;
+﻿using Ahsoka.Installer;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// Base Interface for adding Behaviors to Ahsoka Endpoint Clients

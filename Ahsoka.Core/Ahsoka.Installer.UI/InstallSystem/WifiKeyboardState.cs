@@ -1,6 +1,6 @@
 ﻿using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Utility;
+using Ahsoka.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;

@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "Configuration.proto";
-
 package AhsokaSystem;
 option csharp_namespace = "Ahsoka.Services.System";
 
@@ -31,6 +29,7 @@ message SystemMessageTypes
 	}
 }
 
+
 // Echo (Test Method)
 message EchoValue
 {
@@ -54,7 +53,7 @@ message ServiceStats
 
 message GetHardwareInformationReply
 {
-	 AhsokaSystem.PlatformFamily platform_family = 1;
+	 int32 platform_family = 1;
      string platform_qualifier = 2;
 	 string part_number = 3;	
 	 string serial_number = 4;
@@ -80,7 +79,7 @@ message LoadApplicationReply
 	int32 upload_id = 1;
 	string file_name = 2;
 	int32 max_bytes_per_message = 3;
-	AhsokaSystem.MessageReplyStatus reply_status = 5;
+	MessageReplyStatus reply_status = 5;
 	string reply_reason = 6;
 }
 
@@ -94,7 +93,7 @@ message LoadApplicationData
 message LoadApplicationDataReply
 {
 	int32 upload_id = 1;
-	AhsokaSystem.MessageReplyStatus reply_status = 4;
+	MessageReplyStatus reply_status = 4;
 	string reply_reason = 5;
 }
 
@@ -116,6 +115,15 @@ message BrightnessInfo
 	optional bool persist = 2;
 }
 
+enum MessageReplyStatus
+{
+    UNDETERMINED = 0;
+    ERROR = 0;
+    SUCCESS = 2;
+    TIMEOUT = 3;
+    CONTINUE = 4;
+    CANCELLED = 5;
+}
 
 // Echo (Test Method)
 message ShutdownInformation

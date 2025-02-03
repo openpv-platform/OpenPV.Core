@@ -1,8 +1,8 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;

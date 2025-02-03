@@ -1,9 +1,9 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer;
 using EnovationCloud.Core.DataTransferObjects;
 using System.IO;
-using static Ahsoka.Spark.SparkProjectTools;
+using static Ahsoka.Core.Spark.SparkProjectTools;
 
 namespace Ahsoka.DeveloperTools;
 

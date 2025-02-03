@@ -1,10 +1,8 @@
-﻿
-using Ahsoka.ServiceFramework;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// Creates a Stopwatch and Context for Tracing Time in an Ahsoka Process

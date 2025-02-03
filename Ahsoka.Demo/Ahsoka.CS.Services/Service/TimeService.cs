@@ -1,7 +1,6 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
 using Ahsoka.Services.Demo.Service;
 using Ahsoka.Services.Demo.Service.Platform;
-using Ahsoka.System;
 using System;
 using System.Threading.Tasks;
 
@@ -33,7 +32,7 @@ public class TimeService : AhsokaServiceBase<TimeServiceMessageTypes.Ids>
         {
             PlatformFamily.Windows64 => new WindowsTimeServiceImplementation(),
             PlatformFamily.OpenViewLinux => new LinuxTimeServiceImplementation(),
-            PlatformFamily.MacosArm64 => new MacOSTimeServiceImplementation(),
+            PlatformFamily.MacOSArm64 => new MacOSTimeServiceImplementation(),
             _ => throw new PlatformNotSupportedException(),
         };
     }

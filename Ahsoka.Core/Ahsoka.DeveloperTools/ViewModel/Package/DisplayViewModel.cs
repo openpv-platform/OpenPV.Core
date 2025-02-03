@@ -1,6 +1,6 @@
-﻿using Ahsoka.Services.LayerManager;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Services.LayerManager;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using System;

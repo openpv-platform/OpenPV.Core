@@ -1,9 +1,8 @@
-using Ahsoka.ServiceFramework;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// Allows Assemblys with Matching Major / Minor to load with the current running runtime system.

@@ -1,6 +1,5 @@
-using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
+using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +31,7 @@ public class DeviceService : AhsokaServiceBase<DeviceMessageTypes.Ids>
             PlatformFamily.Windows64 => new DesktopServiceImplementation(),
             PlatformFamily.Ubuntu64 => new DesktopServiceImplementation(),
             PlatformFamily.OpenViewLinux => new STServiceImplementation(),
-            PlatformFamily.MacosArm64 => new DesktopServiceImplementation(),
+            PlatformFamily.MacOSArm64 => new DesktopServiceImplementation(),
             PlatformFamily.OpenViewLinuxPro => new TIServiceImplementation(),
             _ => throw new PlatformNotSupportedException(),
         };

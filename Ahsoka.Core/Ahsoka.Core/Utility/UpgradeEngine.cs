@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json.Nodes;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 internal static class UpgradeEngine
 {

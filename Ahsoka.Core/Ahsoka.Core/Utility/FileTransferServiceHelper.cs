@@ -1,10 +1,10 @@
-﻿using Ahsoka.System;
-using Ahsoka.System.Hardware;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Services.System;
 using System.Collections.Generic;
 using System.IO;
 using System.Timers;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 // Handles a Service Side of a File Transfer 
 internal class FileTransferServiceHelper

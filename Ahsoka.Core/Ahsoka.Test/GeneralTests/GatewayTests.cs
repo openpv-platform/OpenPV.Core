@@ -1,9 +1,9 @@
 ﻿
-using Ahsoka.ServiceFramework;
+using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Gateway;
 using Ahsoka.Services.System;
-using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Ahsoka.Test;

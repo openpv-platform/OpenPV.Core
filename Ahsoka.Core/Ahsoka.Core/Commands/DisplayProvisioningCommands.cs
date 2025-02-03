@@ -1,12 +1,11 @@
-﻿using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]

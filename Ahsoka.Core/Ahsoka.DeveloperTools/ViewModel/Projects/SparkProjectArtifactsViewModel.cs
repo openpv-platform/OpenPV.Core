@@ -1,7 +1,7 @@
-﻿using Ahsoka.DeveloperTools.Views;
+﻿using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Views;
 using Ahsoka.Installer;
-using Ahsoka.Spark;
-using Ahsoka.Utility;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using System.Collections.ObjectModel;

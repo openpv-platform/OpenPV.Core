@@ -1,10 +1,9 @@
-﻿using Ahsoka.ServiceFramework;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// Base View Model used in Ahsoka Applications which adds basic INotifyPropertyChanged support.

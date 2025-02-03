@@ -1,4 +1,4 @@
-﻿using Ahsoka.Utility;
+﻿using Ahsoka.Core.Utility;
 
 namespace Ahsoka.Core.Drawing.Utility;
 

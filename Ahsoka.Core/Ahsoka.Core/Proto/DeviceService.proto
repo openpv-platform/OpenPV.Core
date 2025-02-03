@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "Configuration.proto";
-
 package AhsokaDevice;
 option csharp_namespace = "Ahsoka.Services.Device";
 
@@ -128,9 +126,19 @@ message TouchTuneInfo
 
 message TouchTuneInfoReply
 {
-	AhsokaSystem.MessageReplyStatus reply_status = 1;
+	MessageReplyStatus reply_status = 1;
 	string reply_reason = 2;
 	map<string, string> version_info = 100;
+}
+
+enum MessageReplyStatus
+{
+    UNDETERMINED = 0;
+    ERROR = 1;
+    SUCCESS = 2;
+    TIMEOUT = 3;
+    CONTINUE = 4;
+    CANCELLED = 5;
 }
 
 

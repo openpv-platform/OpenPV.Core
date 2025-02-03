@@ -1,8 +1,7 @@
-using Ahsoka.ServiceFramework;
+using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Security;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,7 @@ public class SecurityServiceTests : LinearTestBase
         // Test Data
         var key = ECDsaEncryption.GenerateNewKeyPair();
         var appid = Guid.NewGuid().ToByteArray(); // Real app uses TeamID / APPID
-        var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.ServiceSecurityFile);
+        var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.Core.Hardware.InstallerPaths.ServiceSecurityFile);
 
         if (File.Exists(devicePublicKeyFile))
             File.Delete(devicePublicKeyFile);
@@ -98,7 +97,7 @@ public class SecurityServiceTests : LinearTestBase
     {
         var key = ECDsaEncryption.GenerateNewKeyPair();
         var appid = Guid.NewGuid().ToByteArray(); // Real app uses TeamID / APPID
-        var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.ServiceSecurityFile);
+        var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.Core.Hardware.InstallerPaths.ServiceSecurityFile);
 
         if (File.Exists(devicePublicKeyFile))
             File.Delete(devicePublicKeyFile);

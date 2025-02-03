@@ -1,4 +1,4 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
 using Ahsoka.Services.Network.Platform;
 using SimpleWifi.Win32;
 using SimpleWifi.Win32.Interop;

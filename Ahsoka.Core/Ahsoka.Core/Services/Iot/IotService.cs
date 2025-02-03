@@ -1,6 +1,5 @@
 ﻿#pragma warning disable CS0618 // Type or member is obsolete
-using Ahsoka.ServiceFramework;
-using Ahsoka.System;
+using Ahsoka.Core;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Protocol;

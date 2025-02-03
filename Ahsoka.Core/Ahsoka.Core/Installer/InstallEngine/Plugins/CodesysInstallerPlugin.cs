@@ -1,7 +1,7 @@
-﻿using Ahsoka.Installer.Components;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.Components;
 using Ahsoka.Services.Install;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,10 +25,10 @@ internal class CodesysInstallerPlugin : InstallerPlugin
             progress.Report(new PackageProgressInfo() { Message = "CODESYS PreReqs: Overriding Startup Delay to 3s" });
             packageInformation.ServiceInfo.RuntimeConfiguration.StartupDelay = 3;
         }
-        if (packageInformation.ServiceInfo.RuntimeConfiguration.ReleaseOption != System.StartOptions.AfterApplicationStart)
+        if (packageInformation.ServiceInfo.RuntimeConfiguration.ReleaseOption != StartOptions.AfterApplicationStart)
         {
             progress.Report(new PackageProgressInfo() { Message = "CODESYS PreReqs: Overriding Auto-Release to After App Start" });
-            packageInformation.ServiceInfo.RuntimeConfiguration.ReleaseOption = System.StartOptions.AfterApplicationStart;
+            packageInformation.ServiceInfo.RuntimeConfiguration.ReleaseOption = StartOptions.AfterApplicationStart;
         }
         if (!packageInformation.Licenses.Any(x => x.LicenseName == "CODESYS Runtime")
             && packageInformation.PlatformFamily.ToString().StartsWith("OpenView"))

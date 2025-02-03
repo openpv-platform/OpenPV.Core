@@ -1,12 +1,11 @@
-﻿using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
 using EnovationCloud.Core.Utilities;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]

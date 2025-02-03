@@ -1,6 +1,6 @@
-﻿using Ahsoka.Installer.InstallEngine;
+﻿using Ahsoka.Core.Utility;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;

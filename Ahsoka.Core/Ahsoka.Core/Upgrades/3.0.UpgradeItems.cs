@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.Json.Nodes;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 
 

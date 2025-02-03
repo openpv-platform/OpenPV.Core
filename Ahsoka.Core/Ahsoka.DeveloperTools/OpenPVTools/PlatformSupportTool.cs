@@ -1,6 +1,6 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.DeveloperTools.ViewModel;
 using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.IO;
@@ -53,7 +53,7 @@ internal class PlatformSupportTool : SparkToolBase
         {
             if (Name.StartsWith(PlatformFamily.OpenViewLinux.ToString()))
                 this.IncludedProfiles = PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
-            else if (Name.ToLower().StartsWith(PlatformFamily.MacosArm64.ToString().ToLower()))
+            else if (Name.ToLower().StartsWith(PlatformFamily.MacOSArm64.ToString().ToLower()))
                 this.IncludedProfiles = PluginsViewModel.profileCSharp;
             else if (Name.StartsWith(PlatformFamily.Ubuntu64.ToString()))
                 this.IncludedProfiles = PluginsViewModel.profileCPP;

@@ -4,7 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ahsoka.ServiceFramework;
+namespace Ahsoka.Core;
 
 /// <summary>
 /// Internal Logging Object for Ahsoka Systems which allows 

@@ -1,14 +1,13 @@
-﻿using Ahsoka.Services.System;
-using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.Services.System;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 #pragma warning disable IDE0051 // Remove unused private members
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]

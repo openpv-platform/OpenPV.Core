@@ -1,5 +1,5 @@
-﻿using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using Avalonia.Threading;
 using Renci.SshNet;
 using System.IO;

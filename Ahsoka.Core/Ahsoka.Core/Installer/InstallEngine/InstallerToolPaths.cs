@@ -1,7 +1,7 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
 using Ahsoka.Installer.Components;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
 using System.IO;
 
 namespace Ahsoka.Installer.InstallEngine;

@@ -1,9 +1,7 @@
 ﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
-using Ahsoka.System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]

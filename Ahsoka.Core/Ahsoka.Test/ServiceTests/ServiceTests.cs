@@ -1,11 +1,10 @@
-using Ahsoka.Dispatch;
-using Ahsoka.ServiceFramework;
+using Ahsoka.Core;
+using Ahsoka.Core.Dispatch;
+using Ahsoka.Core.Hardware;
 using Ahsoka.Services;
 using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;

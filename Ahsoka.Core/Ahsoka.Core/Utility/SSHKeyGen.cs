@@ -3,7 +3,7 @@ using global::System.Security.Cryptography;
 using System;
 using System.Text;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 internal class SshKeyGenerator : IDisposable
 {

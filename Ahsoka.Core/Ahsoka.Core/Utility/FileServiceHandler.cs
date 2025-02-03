@@ -1,6 +1,6 @@
-﻿using Ahsoka.System;
+﻿using MessageReplyStatus = Ahsoka.Services.System.MessageReplyStatus;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 internal interface IFileTransmit
 {

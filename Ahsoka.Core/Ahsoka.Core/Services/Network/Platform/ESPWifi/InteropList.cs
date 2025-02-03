@@ -1,4 +1,4 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
 using Ahsoka.Services.Network.ESPWifi;
 using System;
 using System.Collections.Generic;

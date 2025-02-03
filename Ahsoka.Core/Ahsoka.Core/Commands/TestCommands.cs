@@ -2,11 +2,10 @@
 using Ahsoka.Services.Network.Platform;
 using Ahsoka.Services.System.Platform;
 using Ahsoka.Services.Video;
-using Ahsoka.System;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]

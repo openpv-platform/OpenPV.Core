@@ -1,8 +1,7 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Iot;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;

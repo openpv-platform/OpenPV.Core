@@ -1,16 +1,14 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Install;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 #pragma warning disable IDE0051 // Remove unused private members
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]
@@ -42,7 +40,7 @@ internal static class InstallerCommands
         var connectionInfo = JsonUtility.Deserialize<TargetConnectionInfo>(File.ReadAllText(connectionInfoFile));
 
         IProgress<string> progress = new Progress<string>(Console.WriteLine);
-        var config = new System.ServiceConfiguration()
+        var config = new ServiceConfiguration()
         {
             ServiceName = "SystemService",
             TcpConnectionAddress = connectionInfo.HostName,

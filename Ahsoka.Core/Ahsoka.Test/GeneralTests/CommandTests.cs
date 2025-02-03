@@ -1,5 +1,5 @@
+using Ahsoka.Core;
 using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;

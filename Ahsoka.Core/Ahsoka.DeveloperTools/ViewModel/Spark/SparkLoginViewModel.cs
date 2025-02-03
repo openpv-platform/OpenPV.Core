@@ -1,6 +1,6 @@
-﻿using Ahsoka.DeveloperTools.Spark;
+﻿using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Spark;
 using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.Utility;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;

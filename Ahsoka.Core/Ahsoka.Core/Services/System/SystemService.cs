@@ -1,9 +1,8 @@
+using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Ahsoka.Installer.Components;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System.Platform;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -50,7 +49,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             PlatformFamily.Windows64 => new DesktopServiceImplementation(),
             PlatformFamily.Ubuntu64 => new DesktopServiceImplementation(),
             PlatformFamily.OpenViewLinux => new STServiceImplementation(),
-            PlatformFamily.MacosArm64 => new DesktopServiceImplementation(),
+            PlatformFamily.MacOSArm64 => new DesktopServiceImplementation(),
             PlatformFamily.OpenViewLinuxPro => new TIServiceImplementation(),
             _ => throw new PlatformNotSupportedException(),
         };
@@ -283,7 +282,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             SerialNumber = SystemInfo.HardwareInfo.FactoryInfo.SerialNumber,
             PartNumber = SystemInfo.HardwareInfo.FactoryInfo.PartNumber,
             DeviceId = SystemInfo.HardwareInfo.FactoryInfo.DeviceId.ToString(),
-            PlatformFamily = SystemInfo.HardwareInfo.FactoryInfo.PlatformFamily,
+            PlatformFamilyEnum = SystemInfo.HardwareInfo.FactoryInfo.PlatformFamily,
             PlatformQualifier = SystemInfo.HardwareInfo.FactoryInfo.PlatformQualifier,
             ApplicationName = applicationName,
             DeviceKey = deviceSigningKey,

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// The view model property attribute that should be inherited from byt child classes based on the ViewModelBase

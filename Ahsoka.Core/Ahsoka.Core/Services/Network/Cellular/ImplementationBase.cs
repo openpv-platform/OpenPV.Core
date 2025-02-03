@@ -1,4 +1,4 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 

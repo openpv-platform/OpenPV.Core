@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 /// <summary>
 /// Gets version for the Running Application

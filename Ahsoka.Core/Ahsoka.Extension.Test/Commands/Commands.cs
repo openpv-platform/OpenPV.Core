@@ -1,8 +1,7 @@
 ﻿using Ahsoka.Installer;
-using Ahsoka.System;
 using System.Collections.Generic;
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
 [CommandLinePlugin]
 internal static class TestCommands

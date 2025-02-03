@@ -1,7 +1,6 @@
 #pragma warning disable CS1591
-using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
+using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using System.Collections.Generic;
 
 namespace Ahsoka.Services.Video;
@@ -29,7 +28,7 @@ public class VideoService : AhsokaServiceBase<VideoMessageTypes.Ids>
 
             case PlatformFamily.Windows64:
             case PlatformFamily.Ubuntu64:
-            case PlatformFamily.MacosArm64:
+            case PlatformFamily.MacOSArm64:
             default:
                 return new DesktopVideoServiceImplementation()
                 {

@@ -1,6 +1,7 @@
-﻿using Ahsoka.Installer.Components;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.Components;
 using Ahsoka.Services.Install;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +19,7 @@ internal class LayerManagerPlugin : InstallerPlugin
         IProgress<PackageProgressInfo> progress)
     {
 
-        if (info.PlatformFamily == System.PlatformFamily.OpenViewLinuxPro)
+        if (info.PlatformFamily == PlatformFamily.OpenViewLinuxPro)
         {
             var configJsonContents = JsonUtility.Serialize(info.ScreenConfiguration);
             var protobufferStream = new MemoryStream();

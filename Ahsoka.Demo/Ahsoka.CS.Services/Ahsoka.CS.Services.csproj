@@ -6,6 +6,9 @@
 		<Platforms>AnyCPU;x64</Platforms>
 		<TargetFramework>net8.0</TargetFramework>
 		<RootNamespace>Ahsoka.Services.Demo</RootNamespace>
+		<!--<PublishTrimmed>true</PublishTrimmed>
+		<TrimMode>full</TrimMode>-->
+
 	</PropertyGroup>
 
 	<Import Label="Ahsoka Local Build Properties" Condition="Exists('../Demo.Build.props')" Project="../Demo.Build.props" />
@@ -26,6 +29,11 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="Cloud.png">
+	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 	
 </Project>

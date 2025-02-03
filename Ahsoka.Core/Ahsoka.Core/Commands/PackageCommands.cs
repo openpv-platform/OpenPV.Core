@@ -1,18 +1,16 @@
-﻿using Ahsoka.Installer;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer;
 using Ahsoka.Installer.InstallEngine;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading.Tasks;
 #pragma warning disable IDE0051 // Remove unused private members
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]
@@ -26,7 +24,7 @@ internal static class PackageCommands
     {
         var connectionInfo = JsonUtility.Deserialize<TargetConnectionInfo>(File.ReadAllText(connectionInfoFile));
 
-        var config = new System.ServiceConfiguration()
+        var config = new ServiceConfiguration()
         {
             ServiceName = SystemService.Name,
             TcpConnectionAddress = $"{connectionInfo.HostName ?? "192.168.7.1"}",

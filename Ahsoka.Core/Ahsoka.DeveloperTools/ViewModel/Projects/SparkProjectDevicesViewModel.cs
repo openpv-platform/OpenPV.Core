@@ -1,7 +1,7 @@
-﻿using Ahsoka.DeveloperTools.Views;
-using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Views;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
@@ -22,7 +22,7 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
     ApplicationViewModel noSubscribeVM = new ApplicationViewModel(new ContainerDTO() { ContainerName = "Don't Subcribe to OTA" }, "00000000");
 
     string provisionDeviceFile, provisionSerialNumber, provisionPartNumber, provisionDeviceId = string.Empty;
-    System.PlatformFamily provisionDeviceFamily = System.PlatformFamily.OpenViewLinux;
+    PlatformFamily provisionDeviceFamily = PlatformFamily.OpenViewLinux;
 
     NewItemView addItemView;
     UserControl selectView;
@@ -31,7 +31,7 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
 
     public List<SparkTrackType> TrackList { get; set; } = new List<SparkTrackType>() { SparkTrackType.Development, SparkTrackType.Canary, SparkTrackType.Beta, SparkTrackType.Release };
 
-    public List<System.PlatformFamily> ProvisionPlatformFamilies { get; set; } = Enum.GetValues<System.PlatformFamily>().ToList();
+    public List<PlatformFamily> ProvisionPlatformFamilies { get; set; } = Enum.GetValues<PlatformFamily>().ToList();
 
     #region PreProvision
     public string ProvisionDeviceFile
@@ -52,7 +52,7 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
         set { provisionPartNumber = value; OnPropertyChanged(); }
     }
 
-    public System.PlatformFamily ProvisionPlatformFamily
+    public PlatformFamily ProvisionPlatformFamily
     {
         get { return provisionDeviceFamily; }
         set { provisionDeviceFamily = value; OnPropertyChanged(); }
@@ -421,7 +421,7 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
             ProvisionPartNumber = info.PartNumber;
             ProvisionSerialNumber = info.SerialNumber;
             ProvisionDeviceId = info.DeviceId.Substring(0, 8);
-            ProvisionPlatformFamily = info.PlatformFamily;
+            ProvisionPlatformFamily = info.PlatformFamilyEnum;
         }
     }
 

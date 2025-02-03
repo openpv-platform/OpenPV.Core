@@ -1,4 +1,4 @@
-﻿using Ahsoka.System;
+﻿using Ahsoka.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -79,7 +79,7 @@ internal class DesktopServiceImplementation : IServiceImplementation
         if (!File.Exists(logoPath))
             throw new FileNotFoundException("Logo Path does not Exist");
 
-        string installPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.BootLogoFileName);
+        string installPath = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.Core.Hardware.InstallerPaths.BootLogoFileName);
         if (!Directory.Exists(Path.GetDirectoryName(installPath)))
             Directory.CreateDirectory(Path.GetDirectoryName(installPath));
 

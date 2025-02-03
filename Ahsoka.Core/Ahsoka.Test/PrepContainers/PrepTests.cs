@@ -1,7 +1,7 @@
-using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.Security;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

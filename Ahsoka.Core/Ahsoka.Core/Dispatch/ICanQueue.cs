@@ -1,4 +1,4 @@
-﻿namespace Ahsoka.Dispatch;
+﻿namespace Ahsoka.Core.Dispatch;
 
 /// <summary>
 /// Accepts AutoStart / AutoStop

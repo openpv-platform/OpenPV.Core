@@ -1,6 +1,5 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using System.IO;
 using System.Text;
 
@@ -37,7 +36,7 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
     public SecurityService(ServiceConfiguration config) :
         base(config, new SecurityServiceMessages())
     {
-        var deviceSecurityFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.ServiceSecurityFile);
+        var deviceSecurityFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.Core.Hardware.InstallerPaths.ServiceSecurityFile);
         if (File.Exists(deviceSecurityFile))
         {
             var data = AesEncryption.DecryptFile(deviceSecurityFile, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);

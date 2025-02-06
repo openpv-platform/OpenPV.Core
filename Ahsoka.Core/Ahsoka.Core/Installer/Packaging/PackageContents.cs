@@ -1,4 +1,5 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.Core;
 using Ahsoka.Core.Utility;
 using System;
 using System.IO;
@@ -35,7 +36,7 @@ public class PackageContents : PackageHeader
 
         // Decode Header and Translate into Contents Object.
         PackageHeader header = ProtoBuf.Serializer.Deserialize<PackageHeader>(headerData);
-        PackageContents information = JsonUtility.Deserialize<PackageContents>(JsonUtility.Serialize(header));
+        PackageContents information = JsonUtility.DeserializeWithTypeInfo(JsonUtility.Serialize(header), CoreJsonSerializerContext.Default.PackageContents);
 
         information.PrivateKey = privateKey;
 

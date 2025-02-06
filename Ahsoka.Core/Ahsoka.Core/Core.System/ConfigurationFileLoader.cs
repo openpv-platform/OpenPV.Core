@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Core.Utility;
+using System.Text.Json.Serialization.Metadata;
 
 namespace Ahsoka.Core;
 
@@ -17,10 +18,15 @@ public class ConfigurationFileLoader
     /// Loads a Configuration File executing any Upgrades needed.
     /// </summary>
     /// <param name="path"></param>
+    /// <param name="typeInfo"></param>
     /// <returns></returns>
-    public static T LoadFile<T>(string path) where T : class, new()
+    public static T LoadFile<T>(string path, JsonTypeInfo<T> typeInfo = null) where T : class, new()
     {
         string data = UpgradeEngine.ExecuteUpgrade(path);
+
+        if (typeInfo != null)
+            return JsonUtility.DeserializeWithTypeInfo(data, typeInfo);
+
         return JsonUtility.Deserialize<T>(data);
     }
 

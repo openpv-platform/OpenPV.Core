@@ -5,9 +5,9 @@
 #include <cstring>
 #include "TargetPathInfo.h"
 
-using namespace AhsokaSystem;
+using namespace AhsokaCore;
 
-namespace AhsokaSystem
+namespace AhsokaCore
 {
     const string AppInfoFolder = "/.appinfo";
     const string CoProcessorFolder = ".coprocessor/";

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -7,6 +8,11 @@ namespace Ahsoka.Core.Utility;
 
 internal static class StringUtilities
 {
+    public static string ToSnakeCase(this string str)
+    {
+        return string.Concat(str.Select((x, i) => i > 0 && char.IsUpper(x) ? "_" + x.ToString() : x.ToString())).ToLower();
+    }
+
     public static string GetByteFormattedSize(long len)
     {
         string[] sizes = { "b", "kb", "mb", "gb", "tb" };

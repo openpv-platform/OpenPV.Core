@@ -5,19 +5,6 @@ using System.Text.Json.Serialization;
 
 namespace Ahsoka.Core;
 
-[JsonSourceGenerationOptions(GenerationMode = JsonSourceGenerationMode.Default,
-    PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
-    IncludeFields = true,
-    PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
-    PropertyNameCaseInsensitive = true,
-    NumberHandling = JsonNumberHandling.AllowReadingFromString,
-    UseStringEnumConverter = true)]
-[JsonSerializable(typeof(RuntimeConfiguration))]
-internal partial class RuntimeConfigurationJsonContext : JsonSerializerContext
-{
-
-}
-
 /// <summary>
 /// High Level Support Category
 /// </summary>

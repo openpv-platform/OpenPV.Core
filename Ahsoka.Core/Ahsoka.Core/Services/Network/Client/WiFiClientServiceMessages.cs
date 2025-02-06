@@ -33,7 +33,7 @@ public class WiFiClientServiceMessages : AhsokaMessagesBase
 
 
     /// <InheritDoc/>
-    public WiFiClientServiceMessages()
+    public WiFiClientServiceMessages() : base(WiFiClientService.Name)
     {
         this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.GetAdapters, typeof(EmptyNotification), typeof(AdapterRequestList));
         this.RegisterServiceRequest(WiFiClientMessageTypes.Ids.GetNetworkConfiguration, typeof(AdapterRequest), typeof(AdapterConfiguration));
@@ -51,11 +51,9 @@ public class WiFiClientServiceMessages : AhsokaMessagesBase
     }
 
     /// <InheritDoc/>
-    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    public override byte[] GetProtoMessageFile()
     {
-        var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\WiFiClientService.proto", Properties.Resources.WiFiClientService);
-        return result;
+        return this.GenerateProtoFile("AhsokaWiFiClient", typeof(WiFiClientMessageTypes.Ids));
     }
 
     /// <InheritDoc/>
@@ -70,39 +68,4 @@ public class WiFiClientServiceMessages : AhsokaMessagesBase
     }
 }
 
-/// <summary>
-/// Request Object for Requesting a WiFi Connection be Started.
-/// Adds Default Timeout Values for Connection, IP Address and Time Sync.
-/// </summary>
-public partial class WirelessConnectionRequest
-{
-    /// <summary>
-    /// Default Constructor
-    /// </summary>
-    public WirelessConnectionRequest()
-    {
-        this.WaitForConnectionSeconds = 60;
-        this.WaitForIPAddressSeconds = 30;
-        this.WaitForTimeSyncSeconds = 30;
-    }
-}
-
-
-
-/// <summary>
-/// Request Object for Requesting a WiFi Connection be Started.
-/// Adds Default Timeout Values for Connection, IP Address and Time Sync.
-/// </summary>
-public partial class AutoConnectRequest
-{
-    /// <summary>
-    /// Default Constructor
-    /// </summary>
-    public AutoConnectRequest()
-    {
-        this.WaitForConnectionSeconds = 60;
-        this.WaitForIPAddressSeconds = 30;
-        this.WaitForTimeSyncSeconds = 30;
-    }
-}
 

@@ -71,12 +71,13 @@ public partial class HardwareInfo
     [JsonIgnore]
     public TargetPathInfo TargetPathInfo
     {
-        get; init;
+        get; set;
     }
 
     /// <summary>
     /// Default Constructor
     /// </summary>
+    [JsonConstructor]
     public HardwareInfo()
     {
         TargetPathInfo = new(this);

@@ -1,22 +1,19 @@
 ﻿using Ahsoka.Core;
-using Ahsoka.Installer;
-using System.Collections.Generic;
 
 namespace Ahsoka.Services.Gateway;
 
 internal class GatewayServiceMessages : AhsokaMessagesBase
 {
-    public GatewayServiceMessages()
+    public GatewayServiceMessages() : base(GatewayService.Name)
     {
         //this.RegisterServiceRequest(SparkMessageTypes.Ids.SetSparkSubscription, typeof(SparkSubscription), typeof(EmptyNotification));
         //this.RegisterServiceNotification(SparkMessageTypes.Ids.AppChangeNotification, typeof(AppChangeInfo));
     }
 
-    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    /// <InheritDoc/>
+    public override byte[] GetProtoMessageFile()
     {
-        var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\GatewayService.proto", Properties.Resources.SparkService);
-        return result;
+        return this.GenerateProtoFile("AhsokaGateway", typeof(GatewayMessageTypes.Ids));
     }
 }
 

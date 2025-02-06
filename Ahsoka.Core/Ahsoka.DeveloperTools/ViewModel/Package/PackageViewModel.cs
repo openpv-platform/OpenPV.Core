@@ -748,7 +748,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                 if (hardwareInfo == null)
                     return "Could not communicate with the target.";
 
-                string connectedInfo = hardwareInfo.PlatformFamilyEnum + "." + hardwareInfo.PlatformQualifier;
+                string connectedInfo = hardwareInfo.PlatformFamily + "." + hardwareInfo.PlatformQualifier;
                 string packageInfo = ParentViewModel.SelectedPackage.PackageInfo.PlatformFamily + "." + ParentViewModel.SelectedPackage.PackageInfo.PlatformQualifier;
 
                 if (connectedInfo != packageInfo)

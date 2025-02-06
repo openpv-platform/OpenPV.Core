@@ -15,7 +15,7 @@ namespace AhsokaServiceFramework
 
             virtual ~IAhsokaEndPoint() {}
 
-            virtual AhsokaSystem::ServiceConfiguration& GetRuntimeConfiguration() = 0;
+            virtual AhsokaCore::ServiceConfiguration& GetRuntimeConfiguration() = 0;
 
             virtual void SetRuntime(AhsokaRuntime*) = 0;
            

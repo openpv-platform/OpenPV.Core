@@ -6,7 +6,7 @@ namespace Ahsoka.Services.Diagnostic;
 
 internal class TestServiceMessages : AhsokaMessagesBase
 {
-    public TestServiceMessages()
+    public TestServiceMessages() : base("TestService")
     {
 
     }

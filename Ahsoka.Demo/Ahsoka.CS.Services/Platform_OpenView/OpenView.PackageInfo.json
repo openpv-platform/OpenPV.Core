@@ -1,12 +1,12 @@
 {
-  "version": "4.0.1.10071",
-  "applicationType": "dotnet",
+  "version": "4.0.1.10085",
+  "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Services",
   "packageName": "Ahsoka.CS.Services",
   "packageDescription": "Example of creating a Custom Ahsoka Service",
-  "applicationVersion": "1.0",
+  "applicationVersion": "3.0",
   "packageApplicationFolder": "../Platform_OpenView/publish",
-  "packageOutputDirectory": "../../PackageOutput",
+  "packageOutputDirectory": "PackageOutput",
   "licenses": [],
   "optimizedServiceManager": false,
   "customPackageInfo": {
@@ -21,11 +21,11 @@
   },
   "serviceInfo": {
     "runtimeConfiguration": {
-      "serviceStartup": "noAutoStart",
-      "releaseOption": "noAutoStart",
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
       "extensionInfo": [],
-      "startupDelay": 3,
-      "requireChallenge": false,
+      "startupDelay": 0,
+      "requireChallenge": "NotRequired",
       "services": [
         {
           "serviceName": "SystemService",
@@ -33,7 +33,7 @@
           "tcpConnectionAddress": "localhost",
           "dataChannel": 5001,
           "isExtension": false,
-          "behaviors": "autoStart"
+          "behaviors": "AutoStart"
         }
       ]
     },
@@ -42,18 +42,18 @@
   "screenConfiguration": {
     "showUnknownSurfaces": false,
     "bootLogoPath": "",
-    "orientation": "defaultOrientation",
-    "surfaceSetups": []
+    "orientation": 0,
+    "surfaceSetup": []
   },
   "hardwareConfiguration": {
     "hardwareItems": [],
-    "usbStartStatePrimary": "default",
-    "usbStartStateSecondary": "default"
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
-  "platformFamily": "openViewLinux",
+  "platformFamily": "OpenViewLinux",
   "platformQualifier": "S70",
-  "securityMode": "none",
+  "securityMode": "None",
   "components": []
 }

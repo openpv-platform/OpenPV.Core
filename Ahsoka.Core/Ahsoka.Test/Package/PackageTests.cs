@@ -127,7 +127,7 @@ public class PackagingTests : LinearTestBase
         }
     }
 
-    static Ahsoka.Services.LayerManager.Orientation nextOrientation = Ahsoka.Services.LayerManager.Orientation.DefaultOrientation;
+    static int nextOrientation = 0;
     public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo", bool asCodesys = false, bool optimized = false)
     {
         string key = family.ToString() + qualifier + packageToTest;
@@ -153,7 +153,7 @@ public class PackagingTests : LinearTestBase
         Environment.CurrentDirectory = appOutputs;
 
         string packagefile = Path.Combine(appOutputs, "Platform_OpenView", "OpenView.PackageInfo.json");
-        PackageInformation package = JsonUtility.Deserialize<PackageInformation>(File.ReadAllText(packagefile));
+        PackageInformation package = PackageInformation.LoadPackageInformation(packagefile);
         package.OptimizedServiceManager = optimized;
 
         if (asCodesys)
@@ -168,9 +168,9 @@ public class PackagingTests : LinearTestBase
 
         package.ScreenConfiguration.Orientation = nextOrientation;
 
-        nextOrientation = nextOrientation + 1;
-        if (nextOrientation > Ahsoka.Services.LayerManager.Orientation.Rotate270)
-            nextOrientation = Ahsoka.Services.LayerManager.Orientation.DefaultOrientation;
+        nextOrientation = nextOrientation + 90;
+        if (nextOrientation > 270)
+            nextOrientation = 0;
 
         package.SecurityMode = SecurityModes.None;
         package.SecurityModelNumber = "MyModelNumber";

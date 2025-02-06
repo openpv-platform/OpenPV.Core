@@ -22,11 +22,15 @@ public abstract class AhsokaMessagesBase : IHasParameters, IHasEvents
     #region Fields
     private readonly Dictionary<Int32, ServiceMessageInfo> info = new();
     internal Dictionary<Int32, ServiceMessageInfo> Info => info;
+
+    public string ServiceName { get; }
     #endregion
 
     #region Constructor
-    public AhsokaMessagesBase()
+    public AhsokaMessagesBase(string serviceName)
     {
+        this.ServiceName = serviceName;
+
         // Add Invalid Types to All Services
         Info.Add(CoreTransportIds.InvalidToken.EnumToInt(), new ServiceMessageInfo() { TransportId = CoreTransportIds.InvalidToken, RequestType = typeof(EmptyNotification), ReplyType = typeof(EmptyNotification), IsNotification = true, HideInGeneratedClients = true });
         Info.Add(CoreTransportIds.RegisterClient.EnumToInt(), new ServiceMessageInfo() { TransportId = CoreTransportIds.RegisterClient, RequestType = typeof(ClientRegistration), ReplyType = typeof(ClientRegistration), IsNotification = true, HideInGeneratedClients = true });
@@ -58,7 +62,11 @@ public abstract class AhsokaMessagesBase : IHasParameters, IHasEvents
     #region Client Generation Support
     public virtual Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
     {
-        return OnGetAdditionalClientResources(type, includeImplementation);
+        var result = OnGetAdditionalClientResources(type, includeImplementation);
+        string protoFileName = $"Ahsoka.Proto\\{ServiceName}.proto";
+        if (!result.TryGetValue(protoFileName, out _))
+            result[protoFileName] = GetProtoMessageFile();
+        return result;
     }
 
     public string GetInteropIncludes(string name, ApplicationType type)
@@ -66,11 +74,15 @@ public abstract class AhsokaMessagesBase : IHasParameters, IHasEvents
         return OnGetInteropIncludes(name, type);
     }
 
+    public virtual byte[] GetProtoMessageFile()
+    {
+        return null;
+    }
+
     protected virtual Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
     {
         Dictionary<string, byte[]> newList = new()
         {
-            { "Ahsoka.Proto\\Configuration.proto", Properties.Resources.Configuration },
             { "Ahsoka.Proto\\Functions.cmake", Properties.Resources.Functions },
             { "Ahsoka.Proto\\CMakeLists.txt", Properties.Resources.CMakeLists }
         };
@@ -173,7 +185,6 @@ public abstract class AhsokaMessagesBase : IHasParameters, IHasEvents
     }
     #endregion
 }
-
 
 #region ServiceRequestInfo
 public class ServiceMessageInfo

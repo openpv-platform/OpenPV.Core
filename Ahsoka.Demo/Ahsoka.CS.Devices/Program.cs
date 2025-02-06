@@ -102,7 +102,7 @@ public class Program
                 mainUi.InitStateChanged(true, "WiFi Ready - Waiting for Devices");
             }
 
-            if (info.DeviceType == DeviceTypes.UsbCellularNetwork)
+            if (info.DeviceType == DeviceTypes.UsbCellularModule)
             {
                 // Enable Cellular Modem
                 mainUi.UpdateStatusString("Starting Cell Network");
@@ -116,7 +116,7 @@ public class Program
             DeviceServiceClient deviceServiceClient = sender as DeviceServiceClient;
             UsbDeviceInfo info = e.NotificationObject as UsbDeviceInfo;
 
-            if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularNetwork)
+            if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularModule)
             {
                 // Enable Cellular Modem
                 mainUi.UpdateStatusString($"NOT Enabling Cell Modem Device (Using auto Enable)");
@@ -129,7 +129,7 @@ public class Program
             DeviceServiceClient deviceServiceClient = sender as DeviceServiceClient;
             UsbDeviceInfo info = e.NotificationObject as UsbDeviceInfo;
 
-            if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularNetwork)
+            if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularModule)
             {
                 // Enable Cellular Modem
                 mainUi.UpdateStatusString($"Modem Removed");
@@ -164,12 +164,12 @@ public class Program
         {
             CellularNetworkInformation info = e.NotificationObject as CellularNetworkInformation;
             Console.WriteLine($"Network Service Status: {info.ConnectionState}");
-            Console.WriteLine($"    IPAddress: {info.IpInfo?.IPAddress}");
+            Console.WriteLine($"    IPAddress: {info.IpInfo?.IpPAddress}");
             Console.WriteLine($"    Service: {info.ServiceName}");
             Console.WriteLine($"    Network: {info.NetworkOperatorName}");
             Console.WriteLine($"    RSSI: {info.Rssi} SNR: {info.Snr}");
 
-            cellDeviceStatus = $"{info.ConnectionState} @ {info.IpInfo?.IPAddress}";
+            cellDeviceStatus = $"{info.ConnectionState} @ {info.IpInfo?.IpPAddress}";
 
             RefreshUI(deviceServiceClient, new PropertyChangedEventArgs(""));
         }

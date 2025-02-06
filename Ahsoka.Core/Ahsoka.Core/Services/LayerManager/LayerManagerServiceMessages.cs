@@ -1,12 +1,10 @@
 ﻿using Ahsoka.Core;
-using Ahsoka.Installer;
-using System.Collections.Generic;
 
 namespace Ahsoka.Services.LayerManager;
 
 internal class LayoutManagerMessages : AhsokaMessagesBase
 {
-    public LayoutManagerMessages()
+    public LayoutManagerMessages() : base(LayerManagerServiceClient.Name)
     {
         this.RegisterServiceRequest(LayerManagerMessageTypes.Ids.StopLogo, typeof(EmptyNotification), typeof(EmptyNotification));
         this.RegisterServiceRequest(LayerManagerMessageTypes.Ids.UpdateSurfaceSetup, typeof(SurfaceSetup), typeof(EmptyNotification));
@@ -17,11 +15,10 @@ internal class LayoutManagerMessages : AhsokaMessagesBase
         this.RegisterServiceRequest(LayerManagerMessageTypes.Ids.UpdateSurfaceZOrder, typeof(SurfaceOrder), typeof(EmptyNotification));
     }
 
-    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    /// <InheritDoc/>
+    public override byte[] GetProtoMessageFile()
     {
-        var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\LayoutManagerService.proto", Properties.Resources.IotService);
-        return result;
+        return this.GenerateProtoFile("AhsokaLayerManager", typeof(LayerManagerMessageTypes.Ids), typeof(LayerManagerConfiguration));
     }
 }
 

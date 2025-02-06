@@ -40,7 +40,7 @@ namespace AhsokaServiceFramework
 				socket->Disconnect();
 			}
 
-		    AhsokaSystem::ServiceConfiguration& GetRuntimeConfiguration() 
+		    AhsokaCore::ServiceConfiguration& GetRuntimeConfiguration() 
 			{
 				return serviceConfig;
 			}
@@ -74,11 +74,11 @@ namespace AhsokaServiceFramework
 			AhsokaMessagesBase messageFactory;
 			bool isServiceEndPoint;
 
-			virtual IAhsokaSocket* CreateSocket(AhsokaSystem::ServiceConfiguration& config) = 0;
+			virtual IAhsokaSocket* CreateSocket(AhsokaCore::ServiceConfiguration& config) = 0;
 
 			void SetRuntime(AhsokaRuntime* runtime) {currentRuntime = runtime;}
 
-			AhsokaBaseEndPoint(AhsokaSystem::ServiceConfiguration& config, AhsokaMessagesBase& messages)
+			AhsokaBaseEndPoint(AhsokaCore::ServiceConfiguration& config, AhsokaMessagesBase& messages)
 				:serviceConfig(config),
 				 messageFactory(messages)
 			{
@@ -132,7 +132,7 @@ namespace AhsokaServiceFramework
 
 			virtual void OnEndPointDisconnected() {}
 
-			void UpdateConfiguration(AhsokaSystem::ServiceConfiguration config) {serviceConfig = config;}
+			void UpdateConfiguration(AhsokaCore::ServiceConfiguration config) {serviceConfig = config;}
 
 	private:
 			
@@ -140,7 +140,7 @@ namespace AhsokaServiceFramework
 			int messageReceivedCount = 0;
 			
 			AhsokaRuntime* currentRuntime;
-			AhsokaSystem::ServiceConfiguration serviceConfig;
+			AhsokaCore::ServiceConfiguration serviceConfig;
 			
 	};
 }

@@ -5,7 +5,7 @@
 
 using json = nlohmann::json;
 
-namespace AhsokaSystem
+namespace AhsokaCore
 {
     std::string HardwareInfo::GetRootPath()
     {
@@ -22,7 +22,7 @@ namespace AhsokaSystem
         return qualifier;
     }
 
-    AhsokaSystem::TargetPathInfo& HardwareInfo::GetTargetPathInfo()
+    AhsokaCore::TargetPathInfo& HardwareInfo::GetTargetPathInfo()
     {
         return *info;
     };
@@ -38,7 +38,7 @@ namespace AhsokaSystem
         family = factoryInfo["platformFamily"];
         qualifier = factoryInfo["platformQualifier"];
 
-        info = new AhsokaSystem::TargetPathInfo(rootPath);
+        info = new AhsokaCore::TargetPathInfo(rootPath);
     };
 
 

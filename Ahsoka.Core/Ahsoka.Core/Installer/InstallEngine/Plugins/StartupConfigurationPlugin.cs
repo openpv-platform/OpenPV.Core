@@ -3,7 +3,6 @@ using Ahsoka.Core.Hardware;
 using Ahsoka.Core.Utility;
 using Ahsoka.Installer.Components;
 using Ahsoka.Services.Install;
-using Ahsoka.Services.LayerManager;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -127,13 +126,7 @@ internal class StartupInstallerPlugin : InstallerPlugin
     {
         if (info.ScreenConfiguration != null)
         {        // App Orientation to App Keys
-            string orientation = "0";
-            if (info.ScreenConfiguration.Orientation == Orientation.Rotate90)
-                orientation = "90";
-            if (info.ScreenConfiguration.Orientation == Orientation.Rotate180)
-                orientation = "180";
-            if (info.ScreenConfiguration.Orientation == Orientation.Rotate270)
-                orientation = "270";
+            string orientation = info.ScreenConfiguration.Orientation.ToString();
 
             builder.Append($"export {OrientationKeyAttribute.ToUpperInvariant()}={orientation}\n");
         }

@@ -10,6 +10,8 @@ public interface IAhsokaEndPoint
 {
     ServiceConfiguration ServiceConfig { get; }
 
+    AhsokaMessagesBase ServiceMessageInfo { get; }
+
     AhsokaRuntime CurrentRuntime { get; set; }
 
     bool IsStarted { get; }

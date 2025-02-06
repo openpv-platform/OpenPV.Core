@@ -43,15 +43,22 @@ public static class JsonUtility
     /// </summary>
     /// <typeparam name="T">Type of Object to Deserialize</typeparam>
     /// <param name="json">Json Text</param>
+    /// <returns></returns>
+    public static T Deserialize<T>(string json) where T : class, new()
+    {
+        return JsonText.JsonSerializer.Deserialize<T>(json, Options);
+    }
+
+    /// <summary>
+    /// Deserialize to Object with Source Generated TypeInfo
+    /// </summary>
+    /// <typeparam name="T">Type of Object to Deserialize</typeparam>
+    /// <param name="json">Json Text</param>
     /// <param name="typeInfo">Type Info for Deserialization</param>
     /// <returns></returns>
-    public static T Deserialize<T>(string json, JsonTypeInfo<T> typeInfo = null) where T : class, new()
+    public static T DeserializeWithTypeInfo<T>(string json, JsonTypeInfo<T> typeInfo) where T : class, new()
     {
-        if (typeInfo == null)
-            return JsonText.JsonSerializer.Deserialize<T>(json, Options);
-        else
-            return JsonText.JsonSerializer.Deserialize<T>(json, typeInfo);
-
+        return JsonText.JsonSerializer.Deserialize<T>(json, typeInfo);
     }
 
     /// <summary>

@@ -37,7 +37,7 @@ public class LayoutManagerTests : LinearTestBase
 
         client.UpdateSurfaceZOrder(new SurfaceOrder()
         {
-            SurfaceIds = [121212, 1000, 12345],
+            SurfaceId = [121212, 1000, 12345],
             CommitChanges = true,
         });
 
@@ -94,7 +94,7 @@ public class LayoutManagerTests : LinearTestBase
         using (MemoryStream ms = new MemoryStream())
         {
             LayerManagerConfiguration configuration = new LayerManagerConfiguration();
-            configuration.SurfaceSetups.Add(new SurfaceSetup()
+            configuration.SurfaceSetup.Add(new SurfaceSetup()
             {
                 SurfaceId = 121212,
                 LocationRectangle = new SurfaceRectangle

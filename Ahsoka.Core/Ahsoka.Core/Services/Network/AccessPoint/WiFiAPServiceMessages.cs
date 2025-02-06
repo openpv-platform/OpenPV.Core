@@ -16,7 +16,7 @@ public class WiFiAPServiceMessages : AhsokaMessagesBase
     public const string Available = "Available";
 
     /// <InheritDoc/>
-    public WiFiAPServiceMessages()
+    public WiFiAPServiceMessages() : base(WiFiAPService.Name)
     {
         this.RegisterServiceRequest(WiFiAPMessageTypes.Ids.GetAdapters, typeof(EmptyNotification), typeof(AdapterRequestList));
         this.RegisterServiceRequest(WiFiAPMessageTypes.Ids.StartAccessPoint, typeof(AdapterRequest), typeof(AdapterResult));
@@ -32,11 +32,9 @@ public class WiFiAPServiceMessages : AhsokaMessagesBase
     }
 
     /// <InheritDoc/>
-    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    public override byte[] GetProtoMessageFile()
     {
-        var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\WiFiAPService.proto", Properties.Resources.WiFiAPService);
-        return result;
+        return this.GenerateProtoFile("AhsokaAPService", typeof(WiFiAPMessageTypes.Ids));
     }
 
     /// <InheritDoc/>

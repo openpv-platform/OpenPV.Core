@@ -216,10 +216,10 @@ internal class ActiveConnectionViewModel : ViewModelBase
         // Clear any Line Endings
         if (ConnectedHardwareInfo != null)
         {
-            var items = ConnectedHardwareInfo.VersionInfoes.ToArray();
-            ConnectedHardwareInfo.VersionInfoes.Clear();
+            var items = ConnectedHardwareInfo.VersionInfo.ToArray();
+            ConnectedHardwareInfo.VersionInfo.Clear();
             foreach (var item in items)
-                ConnectedHardwareInfo.VersionInfoes[item.Key] = item.Value.ReplaceLineEndings("");
+                ConnectedHardwareInfo.VersionInfo[item.Key] = item.Value.ReplaceLineEndings("");
         }
 
         IsConnected = hardwareInfo != null;

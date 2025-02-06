@@ -329,7 +329,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                     ReleaseName = results.SubscriptionInfo.ApplicationName,
                     DeviceId = results.DeviceInfo.DeviceID.ToString(),
                     SubscriptionUrl = autoProvisionAddress,
-                    IsFactorySubscrption = false,
+                    IsFactorySubscription = false,
                 };
 
                 // Write License Info
@@ -364,7 +364,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         if (File.Exists(sub))
         {
             string subFile = File.ReadAllText(sub);
-            var subscription = JsonUtility.Deserialize<SparkSubscription>(subFile);
+            var subscription = JsonUtility.DeserializeWithTypeInfo(subFile, CoreJsonSerializerContext.Default.SparkSubscription);
 
             return new SparkSubscriptionInfo()
             {
@@ -404,7 +404,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
     {
         string path = SystemInfo.HardwareInfo.TargetPathInfo.GetCloudPath(CloudPaths.SparkSubscriptionFile);
 
-        if (sparkSubscription.IsFactorySubscrption)
+        if (sparkSubscription.IsFactorySubscription)
             path = SystemInfo.HardwareInfo.TargetPathInfo.GetCloudPath(CloudPaths.FactorySubscriptionFile);
 
         string directory = Path.GetDirectoryName(path);

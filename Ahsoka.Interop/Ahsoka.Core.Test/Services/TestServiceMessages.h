@@ -4,7 +4,7 @@
 #include <functional>
 #include "AhsokaConfiguration.h"
 
-namespace AhsokaSystem
+namespace AhsokaCore
 {
     enum TestMessageTypes : int
     {
@@ -21,7 +21,7 @@ namespace AhsokaSystem
 
             TestServiceMessages()
             {
-                RegisterServiceRequest(EchoTest, CreateCTOR<AhsokaSystem::ServiceConfiguration>(), CreateCTOR<AhsokaSystem::ServiceConfiguration>());
+                RegisterServiceRequest(EchoTest, CreateCTOR<AhsokaCore::ServiceConfiguration>(), CreateCTOR<AhsokaCore::ServiceConfiguration>());
 		        RegisterServiceNotification(EchoTestNotification, CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
 			}
     };

@@ -9,10 +9,10 @@
 #include "TestServiceMessages.h"
 
 using namespace std;
-using namespace AhsokaSystem;
+using namespace AhsokaCore;
 using namespace AhsokaServiceFramework;
 
-namespace AhsokaSystem
+namespace AhsokaCore
 {
 	class TestServiceClient : public AhsokaServiceFramework::AhsokaClientEndPoint<TestMessageTypes>
 	{
@@ -21,9 +21,9 @@ namespace AhsokaSystem
 			TestServiceClient(ServiceConfiguration config):
 				AhsokaServiceFramework::AhsokaClientEndPoint<TestMessageTypes>(config, TestServiceMessages()) {}
 
-			unique_ptr<AhsokaSystem::ServiceConfiguration> EchoConfig(AhsokaSystem::ServiceConfiguration& configValue, int timeoutInMs)
+			unique_ptr<AhsokaCore::ServiceConfiguration> EchoConfig(AhsokaCore::ServiceConfiguration& configValue, int timeoutInMs)
 			{
-				return SendMessageWithResponse<AhsokaSystem::ServiceConfiguration>(EchoTest, &configValue, timeoutInMs);
+				return SendMessageWithResponse<AhsokaCore::ServiceConfiguration>(EchoTest, &configValue, timeoutInMs);
 			}
 			
 	};

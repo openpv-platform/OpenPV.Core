@@ -25,7 +25,7 @@ namespace AhsokaServiceFramework
 	{
 		public:
 
-			AhsokaServiceEndPoint(AhsokaSystem::ServiceConfiguration config, AhsokaMessagesBase messages)
+			AhsokaServiceEndPoint(AhsokaCore::ServiceConfiguration config, AhsokaMessagesBase messages)
 				:AhsokaBaseEndPoint<TTransportID>(config, messages)
 			{
 				// Validate that we are using an Enumeration TYPE at compile time
@@ -37,7 +37,7 @@ namespace AhsokaServiceFramework
 
 		protected:
 
-		    IAhsokaSocket* CreateSocket(AhsokaSystem::ServiceConfiguration& config)
+		    IAhsokaSocket* CreateSocket(AhsokaCore::ServiceConfiguration& config)
 			{
 				AhsokaServiceSocket * retVal = new AhsokaServiceSocket();
 				retVal->SetEndPoint(this);
@@ -54,11 +54,11 @@ namespace AhsokaServiceFramework
 				if (this->ReceiveMessage(info.header, info.message, isNotification, 1000))
 				{
 					// Handle Global Notification Registration
-					if (info.header->transport_id() == CoreTransportIds::RegisterClient)
+					if (info.header->transport_id() == CoreTransportIds::REGISTER_CLIENT)
 					{
 						((AhsokaServiceSocket*)AhsokaBaseEndPoint<TTransportID>::socket)->RegisterClient((ClientRegistration*)info.message);
 					}
-					else if (info.header->transport_id() == CoreTransportIds::DeregisterClient)
+					else if (info.header->transport_id() == CoreTransportIds::DEREGISTER_CLIENT)
 					{
 						((AhsokaServiceSocket*)AhsokaBaseEndPoint<TTransportID>::socket)->DeregisterClient((ClientRegistration*)info.message);
 					}

@@ -119,7 +119,7 @@ internal abstract class ImplementationBase
                 foreach (IPAddressInformation ipAddress in properties.UnicastAddresses)
                 {
                     if (ipAddress.Address.AddressFamily == AddressFamily.InterNetwork)
-                        ipInfo.IPAddress = ipAddress.Address.ToString();
+                        ipInfo.IpPAddress = ipAddress.Address.ToString();
                 }
             }
 
@@ -131,23 +131,23 @@ internal abstract class ImplementationBase
 
     protected bool WaitForIPAddress(WiFiClientService.AhsokaServiceRequest messageHeader, WirelessConnectionRequest connectionRequest)
     {
-        AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Waiting for IPAddress for {connectionRequest.WaitForIPAddressSeconds}");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Waiting for IPAddress for {connectionRequest.WaitForIpAddressSeconds}");
 
-        bool ipAddressFound = connectionRequest.WaitForIPAddressSeconds == 0;
+        bool ipAddressFound = connectionRequest.WaitForIpAddressSeconds == 0;
         if (!ipAddressFound)
         {
             NetworkService.SendConnectionStateNotification(messageHeader, WirelessConnectionState.ClientWaitingForIp, connectionRequest.AdapterId, connectionRequest.Ssid);
 
-            int timeout = connectionRequest.WaitForIPAddressSeconds; // Wait X Seconds before Freaking Out
+            int timeout = connectionRequest.WaitForIpAddressSeconds; // Wait X Seconds before Freaking Out
             while (timeout > 0 && !ipAddressFound)
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Waiting for IPAddress - {timeout} Remaining");
                 var info = GetIPInfo(new AdapterRequest() { AdapterId = connectionRequest.AdapterId });
 
-                ipAddressFound = !String.IsNullOrEmpty(info.IPAddress);
+                ipAddressFound = !String.IsNullOrEmpty(info.IpPAddress);
 
                 if (ipAddressFound)    // Update IPAddress 
-                    this.NetworkService.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, info.IPAddress);
+                    this.NetworkService.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, info.IpPAddress);
 
                 if (!ipAddressFound)
                     Thread.Sleep(1000);
@@ -174,7 +174,7 @@ internal abstract class ImplementationBase
 
         if (networkAdapter != null)
         {
-            var profileList = GetProfiles(new ProfileRequest() { AdapterId = adapterRequest.AdapterId, UseOSProfiles = OperatingSystem.IsWindows() });
+            var profileList = GetProfiles(new ProfileRequest() { AdapterId = adapterRequest.AdapterId, UseOsProfiles = OperatingSystem.IsWindows() });
             if (profileList.NetworkProfiles.Count == 0)
                 return;
 
@@ -189,7 +189,7 @@ internal abstract class ImplementationBase
                     {
                         profile.WaitForConnectionSeconds = adapterRequest.WaitForConnectionSeconds;
                         profile.WaitForTimeSyncSeconds = adapterRequest.WaitForTimeSyncSeconds;
-                        profile.WaitForIPAddressSeconds = adapterRequest.WaitForIPAddressSeconds;
+                        profile.WaitForIpAddressSeconds = adapterRequest.WaitForIpAddressSeconds;
 
                         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Attempting to Auto Connect - {profile.Ssid}");
 

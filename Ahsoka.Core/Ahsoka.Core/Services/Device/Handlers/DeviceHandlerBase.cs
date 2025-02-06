@@ -41,7 +41,7 @@ internal class DeviceHandlerBase
                 return new BTModuleHandler();
             case DeviceTypes.OnboardEthernet:
                 return new EthernetHandler();
-            case DeviceTypes.UsbCellularNetwork:
+            case DeviceTypes.UsbCellularModule:
                 return new CellularHandler();
             case DeviceTypes.UsbEthernet:
                 return new UsbEthernetHandler();

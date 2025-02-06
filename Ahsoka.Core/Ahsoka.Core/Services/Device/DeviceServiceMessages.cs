@@ -10,7 +10,7 @@ namespace Ahsoka.Services.Device;
 public class DeviceServiceMessages : AhsokaMessagesBase
 {
     /// <InheritDoc/>
-    public DeviceServiceMessages()
+    public DeviceServiceMessages() : base(DeviceService.Name)
     {
         this.RegisterServiceRequest(DeviceMessageTypes.Ids.GetUsbInfo, typeof(EmptyNotification), typeof(UsbInfo));
         this.RegisterServiceRequest(DeviceMessageTypes.Ids.SetUsbInfo, typeof(UsbInfo), typeof(EmptyNotification));
@@ -39,16 +39,13 @@ public class DeviceServiceMessages : AhsokaMessagesBase
     protected override void OnGetParameters(out string group, List<ParameterData> values, PackageInformation info)
     {
         group = DeviceService.Name;
-
     }
 
     /// <InheritDoc/>
-    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    public override byte[] GetProtoMessageFile()
     {
-        var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\DeviceService.proto", Properties.Resources.SystemService);
-
-        return result;
+        return this.GenerateProtoFile("AhsokaDevice", typeof(DeviceMessageTypes.Ids));
     }
+
 
 }

@@ -1,5 +1,4 @@
 ﻿using Ahsoka.Core;
-using System.Text;
 
 namespace Ahsoka.Services.Iot;
 
@@ -85,18 +84,3 @@ public class IotServiceClient : AhsokaClientBase<IotMessageTypes.Ids>
     }
 }
 
-
-/// <summary>
-/// Topic Message for Sending and Receiving MQTT Messages
-/// </summary>
-public partial class TopicMessage
-{
-    /// <summary>
-    /// Payload as a String
-    /// </summary>
-    public string PayloadString
-    {
-        get { return UTF8Encoding.UTF8.GetString(Payload); }
-        set { Payload = UTF32Encoding.UTF8.GetBytes(value); }
-    }
-}

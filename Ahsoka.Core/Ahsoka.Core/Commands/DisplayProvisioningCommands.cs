@@ -1,5 +1,4 @@
-﻿using Ahsoka.Core.Hardware;
-using Ahsoka.Core.Spark;
+﻿using Ahsoka.Core.Spark;
 using Ahsoka.Core.Utility;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -24,9 +23,9 @@ internal static class DisplayProvisioningCommands
             Console.WriteLine(info);
         });
 
-        var connectionInfo = JsonUtility.Deserialize<TargetConnectionInfo>(File.ReadAllText(targetConnectionInfoFile));
-        var sparkInfo = JsonUtility.Deserialize<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
-        var provisionInfo = JsonUtility.Deserialize<ProvisionDisplayRequest>(File.ReadAllText(provisioningFile));
+        var connectionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(targetConnectionInfoFile), CoreJsonSerializerContext.Default.TargetConnectionInfo);
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(sparkConnectionInfoFile), CoreJsonSerializerContext.Default.SparkConnectionInfo);
+        var provisionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(provisioningFile), CoreJsonSerializerContext.Default.ProvisionDisplayRequest);
 
         if (!SparkCustomerTools.ProvisionDisplayInSpark(connectionInfo, sparkInfo, provisionInfo, progress))
         {
@@ -43,13 +42,10 @@ internal static class DisplayProvisioningCommands
             string sparkConnectionInfoFile,
             string provisioningFile)
     {
-        IProgress<string> progress = new Progress<string>(info =>
-        {
-            Console.WriteLine(info);
-        });
+        IProgress<string> progress = new Progress<string>(Console.WriteLine);
 
-        var sparkInfo = JsonUtility.Deserialize<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
-        var provisionInfo = JsonUtility.Deserialize<ProvisionDisplayRequest>(File.ReadAllText(provisioningFile));
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(sparkConnectionInfoFile), CoreJsonSerializerContext.Default.SparkConnectionInfo);
+        var provisionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(provisioningFile), CoreJsonSerializerContext.Default.ProvisionDisplayRequest);
 
         if (!SparkCustomerTools.PreProvisionDevices(deviceInfoFile, sparkInfo, provisionInfo, progress))
         {

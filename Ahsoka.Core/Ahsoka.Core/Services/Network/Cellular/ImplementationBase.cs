@@ -75,14 +75,14 @@ internal abstract class ImplementationBase
                 foreach (IPAddressInformation ipAddress in properties.UnicastAddresses)
                 {
                     if (ipAddress.Address.AddressFamily == AddressFamily.InterNetwork)
-                        ipInfo.IPAddress = ipAddress.Address.ToString();
+                        ipInfo.IpPAddress = ipAddress.Address.ToString();
                 }
             }
 
         }
 
         // Update IPAddress 
-        this.NetworkService.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, ipInfo.IPAddress);
+        this.NetworkService.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, ipInfo.IpPAddress);
 
         return ipInfo;
     }

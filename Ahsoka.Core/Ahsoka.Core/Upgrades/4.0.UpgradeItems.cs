@@ -27,6 +27,17 @@ internal class UpgradeItemsPackage_4_0 : UpgradeMethod
             displayConfig["orientation"] = orientation;
         }
 
+
+        var screenConfig = document["screenConfiguration"];
+        {
+            var displayConfig = screenConfig["orientation"];
+            if (displayConfig.AsValue().ToString() == "DefaultOrientation")
+                screenConfig["orientation"] = "0";
+            else
+                screenConfig["orientation"] = displayConfig.AsValue().ToString().Replace("rotate", "");
+
+        }
+
     }
 }
 

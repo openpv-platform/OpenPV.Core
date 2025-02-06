@@ -1,7 +1,7 @@
 ﻿using Ahsoka.Core;
 using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Services.LayerManager;
+using Ahsoka.Core.Hardware;
 using SkiaSharp;
 
 public class SkiaDrawingApi : DrawingApiBase<SKSurface>

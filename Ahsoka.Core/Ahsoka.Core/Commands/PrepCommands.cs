@@ -1,6 +1,4 @@
-﻿using Ahsoka.Core.Hardware;
-using Ahsoka.Core.Spark;
-using Ahsoka.Core.Utility;
+﻿using Ahsoka.Core.Utility;
 using Ahsoka.Services.System;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -21,9 +19,9 @@ internal static class PrepCommands
     {
         IProgress<string> progress = new Progress<string>(Console.WriteLine);
 
-        var connectionInfo = JsonUtility.Deserialize<TargetConnectionInfo>(File.ReadAllText(connectionInfoFile));
-        var sparkInfo = JsonUtility.Deserialize<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
-        var manufacturingInfo = JsonUtility.Deserialize<ManufacturingInfo>(File.ReadAllText(manufacturingInfoFile));
+        var connectionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(connectionInfoFile), CoreJsonSerializerContext.Default.TargetConnectionInfo);
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(sparkConnectionInfoFile), CoreJsonSerializerContext.Default.SparkConnectionInfo);
+        var manufacturingInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(manufacturingInfoFile), CoreJsonSerializerContext.Default.ManufacturingInfo);
 
         var prep = RemoteTargetToolFactory.GetToolsForPlatform(connectionInfo.PlatformFamily);
         if (!prep.Prep(connectionInfo, sparkInfo, progress, manufacturingInfo))
@@ -40,8 +38,8 @@ internal static class PrepCommands
     {
         IProgress<string> progress = new Progress<string>(Console.WriteLine);
 
-        var connectionInfo = JsonUtility.Deserialize<TargetConnectionInfo>(File.ReadAllText(connectionInfoFile));
-        var sparkInfo = JsonUtility.Deserialize<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
+        var connectionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(connectionInfoFile), CoreJsonSerializerContext.Default.TargetConnectionInfo);
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(sparkConnectionInfoFile), CoreJsonSerializerContext.Default.SparkConnectionInfo);
 
         var prep = RemoteTargetToolFactory.GetToolsForPlatform(connectionInfo.PlatformFamily);
         if (!prep.Prep(connectionInfo, sparkInfo, progress))

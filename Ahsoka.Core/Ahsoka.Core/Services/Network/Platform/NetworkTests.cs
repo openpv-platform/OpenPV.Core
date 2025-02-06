@@ -85,7 +85,7 @@ internal class NetworkTests
                     PassKey = password,
                     Remember = true,
                     Encrypted = false,
-                    WaitForIPAddressSeconds = 30 // Don't wait for IP Address
+                    WaitForIpAddressSeconds = 30 // Don't wait for IP Address
                 };
 
 
@@ -94,7 +94,7 @@ internal class NetworkTests
 
                 // Wait for IP Address
                 IPInfo info = client.GetIPInfo(adapter);
-                Console.WriteLine($"  Address is {info.IPAddress}");
+                Console.WriteLine($"  Address is {info.IpPAddress}");
 
                 Console.WriteLine();
                 Console.WriteLine("You should now be able to access the Internet from another shell.");

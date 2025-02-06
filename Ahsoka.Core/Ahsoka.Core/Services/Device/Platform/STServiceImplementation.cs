@@ -41,7 +41,7 @@ internal class STServiceImplementation : DeviceServiceImplementation
             config.HardwareItems.Add(new()
             {
                 Name = "USB Cell Modem Module",
-                DeviceType = DeviceTypes.UsbCellularNetwork,
+                DeviceType = DeviceTypes.UsbCellularModule,
                 AutoEnable = false,
             });
         }
@@ -182,7 +182,7 @@ internal class STServiceImplementation : DeviceServiceImplementation
         };
 
         foreach (KeyValuePair<string, string> pair in System.Platform.STServiceImplementation.GetScreenInfo())
-            response.VersionInfoes.Add(pair.Key, pair.Value);
+            response.VersionInfo.Add(pair.Key, pair.Value);
 
         string configurationPath = "/lib/firmware/maxtouch.cfg";
         string firmwarePath = "/lib/firmware/maxtouch.fw";

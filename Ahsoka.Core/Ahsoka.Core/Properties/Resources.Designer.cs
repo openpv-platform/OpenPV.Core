@@ -236,16 +236,6 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] CellularService {
-            get {
-                object obj = ResourceManager.GetObject("CellularService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] CMakeLists {
             get {
                 object obj = ResourceManager.GetObject("CMakeLists", resourceCulture);
@@ -260,16 +250,6 @@ namespace Ahsoka.Properties {
         internal static string CODESYS_PreStart {
             get {
                 return ResourceManager.GetString("CODESYS_PreStart", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Configuration {
-            get {
-                object obj = ResourceManager.GetObject("Configuration", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         
@@ -439,39 +419,9 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] InstallService {
-            get {
-                object obj = ResourceManager.GetObject("InstallService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] IotService {
-            get {
-                object obj = ResourceManager.GetObject("IotService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] JournalOverride {
             get {
                 object obj = ResourceManager.GetObject("JournalOverride", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] LayerManagerService {
-            get {
-                object obj = ResourceManager.GetObject("LayerManagerService", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -517,7 +467,7 @@ namespace Ahsoka.Properties {
         ///    {
         ///      &quot;socketType&quot;: &quot;TcpSocket&quot;,
         ///      &quot;serviceName&quot;: &quot;InstallService&quot;,
-        ///      &quot;tcpListenAddress&quot;: &quot;*&quot;,
+        ///      &quot;tcpListenAddress&quot;: &quot;localhost&quot;,
         ///      &quot;tcpConnectionAddress&quot;: &quot;localhost&quot;,
         ///      &quot;dataChannel&quot;: 5000,
         ///      &quot;behaviors&quot;: &quot;AutoStart&quot;
@@ -531,8 +481,7 @@ namespace Ahsoka.Properties {
         ///      &quot;behaviors&quot;: &quot;AutoStart&quot;
         ///    },
         ///    {
-        ///      &quot;socketType&quot;: &quot;TcpSocket&quot;,
-        ///   [rest of string was truncated]&quot;;.
+        ///      &quot;socketType&quot;: &quot;TcpSock [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OPVServicesConfiguration {
             get {
@@ -566,6 +515,17 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to syntax = &quot;proto3&quot;;
+        ///
+        ///package %PACKAGE_NAME%;.
+        /// </summary>
+        internal static string ProtoTemplate {
+            get {
+                return ResourceManager.GetString("ProtoTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
         ///&lt;!--
         ///https://go.microsoft.com/fwlink/?LinkID=208121.
@@ -591,29 +551,9 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] SecurityService {
-            get {
-                object obj = ResourceManager.GetObject("SecurityService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Services {
             get {
                 object obj = ResourceManager.GetObject("Services", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] SparkService {
-            get {
-                object obj = ResourceManager.GetObject("SparkService", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -651,16 +591,6 @@ namespace Ahsoka.Properties {
         internal static string StaticLicenses {
             get {
                 return ResourceManager.GetString("StaticLicenses", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] SystemService {
-            get {
-                object obj = ResourceManager.GetObject("SystemService", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         
@@ -730,16 +660,6 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] VideoService {
-            get {
-                object obj = ResourceManager.GetObject("VideoService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to [core]
         ///shell=ivi-shell.so
         ///modules=ivi-controller.so
@@ -754,26 +674,6 @@ namespace Ahsoka.Properties {
         internal static string weston_ini {
             get {
                 return ResourceManager.GetString("weston_ini", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] WiFiAPService {
-            get {
-                object obj = ResourceManager.GetObject("WiFiAPService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] WiFiClientService {
-            get {
-                object obj = ResourceManager.GetObject("WiFiClientService", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         

@@ -4,7 +4,7 @@
 #include <string>
 #include <unistd.h>
 
-namespace AhsokaSystem
+namespace AhsokaCore
 {
     
     enum ServiceDataPaths

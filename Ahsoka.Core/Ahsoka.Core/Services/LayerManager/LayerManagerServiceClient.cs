@@ -5,12 +5,13 @@ namespace Ahsoka.Services.LayerManager;
 /// <summary>
 /// LayoutManager Client Working with Layout Service
 /// </summary>
+[AhsokaService(Name)]
 public class LayerManagerServiceClient : AhsokaClientBase<LayerManagerMessageTypes.Ids>
 {
     /// <summary>
     /// Name for Service
     /// </summary>
-    public static readonly string Name = "LayoutManagerService";
+    public const string Name = "LayerManagerService";
 
     /// <summary>
     /// Default Constructor that uses the System Default Configuration

@@ -101,17 +101,3 @@ public class SparkServiceClient : AhsokaClientBase<SparkMessageTypes.Ids>
     }
 }
 
-/// <summary>
-/// Details for a request to download a Spark Release
-/// </summary>
-public partial class SparkReleaseDownloadRequest
-{
-    /// <summary>
-    /// Sets the default timeout for the download to 15 seconds
-    /// </summary>
-    public SparkReleaseDownloadRequest()
-    {
-        TimeoutInSeconds = 15;
-    }
-}
-

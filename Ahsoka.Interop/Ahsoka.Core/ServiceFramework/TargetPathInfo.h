@@ -7,9 +7,9 @@
 #include "TargetPathEnums.h"
 
 using namespace std;
-using namespace AhsokaSystem;
+using namespace AhsokaCore;
 
-namespace AhsokaSystem
+namespace AhsokaCore
 {
     class TargetPathInfo
     {

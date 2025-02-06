@@ -3,7 +3,7 @@
 #include "Configuration.pb.h"
 
 using namespace std;
-using namespace AhsokaSystem;
+using namespace AhsokaCore;
     
 namespace AhsokaServiceFramework
 {

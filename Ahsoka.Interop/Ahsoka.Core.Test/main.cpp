@@ -26,7 +26,7 @@ void NotificationRecieved(TestMessageTypes transportId, AhsokaServiceFramework::
 
 int main()
 {
-    AhsokaSystem::ServiceConfiguration localConfig; 
+    AhsokaCore::ServiceConfiguration localConfig; 
     localConfig.set_service_name(TestServiceName);
     localConfig.set_tcp_listen_address("*");
     localConfig.set_tcp_connection_address("localhost");

@@ -282,7 +282,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             SerialNumber = SystemInfo.HardwareInfo.FactoryInfo.SerialNumber,
             PartNumber = SystemInfo.HardwareInfo.FactoryInfo.PartNumber,
             DeviceId = SystemInfo.HardwareInfo.FactoryInfo.DeviceId.ToString(),
-            PlatformFamilyEnum = SystemInfo.HardwareInfo.FactoryInfo.PlatformFamily,
+            PlatformFamily = SystemInfo.HardwareInfo.FactoryInfo.PlatformFamily,
             PlatformQualifier = SystemInfo.HardwareInfo.FactoryInfo.PlatformQualifier,
             ApplicationName = applicationName,
             DeviceKey = deviceSigningKey,
@@ -291,7 +291,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         };
 
         foreach (var item in platformVersions)
-            response.VersionInfoes[item.Key] = item.Value;
+            response.VersionInfo[item.Key] = item.Value;
 
         SendResponse(message, response);
     }
@@ -355,7 +355,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         string file = GetSettingsPath();
         if (File.Exists(file))
         {
-            SystemSettings systemSettings = JsonUtility.Deserialize<SystemSettings>(File.ReadAllText(file));
+            SystemSettings systemSettings = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(file), CoreJsonSerializerContext.Default.SystemSettings);
             if (systemSettings == null)
             {
                 Console.WriteLine($"LoadSystemSettings: systemSettings is null...");
@@ -422,7 +422,8 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             if (File.Exists(bootLogoInfo.Path))
             {
                 using var ms = new MemoryStream(File.ReadAllBytes(bootLogoInfo.Path));
-                var data = ImageUtility.RotateImage((LayerManager.Orientation)(int)bootLogoInfo.Rotation, ms);
+
+                var data = ImageUtility.RotateImage((int)bootLogoInfo.Rotation, ms);
                 File.WriteAllBytes(tempFile, data.ToArray());
                 bootLogoInfo.Path = tempFile;
             }
@@ -443,16 +444,3 @@ internal class SystemSettings
     public BrightnessInfo BrightnessInfo { get; set; }
 }
 
-/// <summary>
-/// Brightness Info
-/// </summary>
-public partial class BrightnessInfo
-{
-    /// <summary>
-    /// Default CTOR
-    /// </summary>
-    public BrightnessInfo()
-    {
-        this.Persist = true;
-    }
-}

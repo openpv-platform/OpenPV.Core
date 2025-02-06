@@ -29,14 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\..\Ahsoka.Shared\Functions.cmake" Link="Proto\Functions.cmake" />
-		<None Include="..\..\Ahsoka.Shared\CMakeLists.txt" Link="Proto\CMakeLists.txt" />
-		<None Include="..\..\Ahsoka.Shared\Services.proto" Link="Proto\Services.proto" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<AdditionalFiles Include="Proto\*.proto" Exclude="Proto\Configuration.proto" />
-		<AdditionalFiles Include="..\..\Ahsoka.Shared\Services.proto" />
+		<None Include="..\..\Ahsoka.Shared\CMakeLists.txt" Link="Resources\CMakeLists.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -44,13 +37,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <None Remove="Proto\CellularService.proto" />
 	  <None Remove="Resources\CommandLine\Publish.xmlpub.template" />
 	</ItemGroup>
 	
 	<ItemGroup>
 		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
 		<None Include="README.md" Pack="true" PackagePath="\" />
+		<None Include="Services\Device\DeviceService+Proto.cs" />
+		<None Include="Services\Gateway\Gateway+Proto.cs" />
+		<None Include="Services\Install\InstallService+Proto.cs" />
+		<None Include="Services\Iot\IotService+Proto.cs" />
+		<None Include="Services\Security\SecurityService+Proto.cs" />
+		<None Include="Services\Video\VideoService+Proto.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

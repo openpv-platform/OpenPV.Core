@@ -90,8 +90,8 @@ namespace AhsokaServiceFramework
          
             AhsokaMessagesBase()
             {
-                RegisterServiceNotification(CoreTransportIds::RegisterClient, CreateCTOR<AhsokaServiceFramework::ClientRegistration>());
-		        RegisterServiceNotification(CoreTransportIds::DeregisterClient, CreateCTOR<AhsokaServiceFramework::ClientRegistration>());
+                RegisterServiceNotification(CoreTransportIds::REGISTER_CLIENT, CreateCTOR<AhsokaServiceFramework::ClientRegistration>());
+		        RegisterServiceNotification(CoreTransportIds::DEREGISTER_CLIENT, CreateCTOR<AhsokaServiceFramework::ClientRegistration>());
             }
 
 

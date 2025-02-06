@@ -31,7 +31,7 @@ internal class StartLogoComponent : InstallEngineComponent
             return null;
 
         var data = new MemoryStream(File.ReadAllBytes(logoPath));
-        if (info.ScreenConfiguration != null && info.ScreenConfiguration.Orientation != Services.LayerManager.Orientation.DefaultOrientation)
+        if (info.ScreenConfiguration != null && info.ScreenConfiguration.Orientation != 0)
             data = ImageUtility.RotateImage(info.ScreenConfiguration.Orientation, data);
 
         var component = new PackageComponent()

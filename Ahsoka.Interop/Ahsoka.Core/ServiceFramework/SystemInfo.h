@@ -6,9 +6,9 @@
 #include <fstream>
 #include "TargetPathInfo.h"
 
-using namespace AhsokaSystem;
+using namespace AhsokaCore;
 
-namespace AhsokaSystem
+namespace AhsokaCore
 {
     class HardwareInfo
     {
@@ -17,7 +17,7 @@ namespace AhsokaSystem
             std::string GetRootPath();
             std::string GetPlatformFamily();
             std::string GetPlatformQualifier();
-            AhsokaSystem::TargetPathInfo& GetTargetPathInfo();
+            AhsokaCore::TargetPathInfo& GetTargetPathInfo();
 
             HardwareInfo();
 
@@ -26,7 +26,7 @@ namespace AhsokaSystem
             std::string rootPath;
             std::string family;
             std::string qualifier;
-            AhsokaSystem::TargetPathInfo *info;
+            AhsokaCore::TargetPathInfo *info;
     };
    
     class SystemInfo
@@ -35,7 +35,7 @@ namespace AhsokaSystem
         
             static HardwareInfo GetHardwareInfo()
             {
-                static AhsokaSystem::HardwareInfo info;
+                static AhsokaCore::HardwareInfo info;
                 return info;
             };
             

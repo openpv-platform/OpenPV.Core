@@ -22,7 +22,15 @@
 
 	<Import Project="../Ahsoka.DownloadBSP/BSP.Targets" />
 
-	<Target Name="BuildInteropLibs" AfterTargets="PostBuildEvent" Condition="!Exists('$(InteropSource_Root)\BuildOutputs\Ahsoka.Services\Ahsoka.Services.OpenViewLinux.so')">
+	<Target Name="BuildInteropLibs" AfterTargets="PostBuildEvent" 
+		 Condition="$(IGNORE_PREREQS) !='YES' and !Exists('$(InteropSource_Root)\BuildOutputs\Ahsoka.Services\Ahsoka.Services.OpenViewLinux.so')">
+
+		<Message Text="Generate Proto Files" Importance="high" />
+		<MakeDir Directories="$(InteropSource_Root)\BuildOutputs\TempProto" />
+		<Exec ContinueOnError="false" WorkingDirectory="$(InteropSource_Root)" Command="dotnet build -p:IGNORE_PREREQS=YES  $(InteropSource_Root)Ahsoka.Core\Ahsoka.CommandLine\Ahsoka.CommandLine.csproj " />
+		<Exec ContinueOnError="true" WorkingDirectory="$(InteropSource_Root)" Command="dotnet run --no-build --project $(InteropSource_Root)Ahsoka.Core\Ahsoka.CommandLine\Ahsoka.CommandLine.csproj --GenerateProto LayerManagerService $(InteropSource_Root)\Ahsoka.Interop\Ahsoka.Proto\LayerManagerService.proto" />
+		<Exec ContinueOnError="true" WorkingDirectory="$(InteropSource_Root)" Command="dotnet run --no-build --project $(InteropSource_Root)Ahsoka.Core\Ahsoka.CommandLine\Ahsoka.CommandLine.csproj --GenerateProto Configuration $(InteropSource_Root)\Ahsoka.Interop\Ahsoka.Proto\Configuration.proto" />
+		<Exec ContinueOnError="true" WorkingDirectory="$(InteropSource_Root)" Command="dotnet run --no-build --project $(InteropSource_Root)Ahsoka.Core\Ahsoka.CommandLine\Ahsoka.CommandLine.csproj --GenerateProto Services $(InteropSource_Root)\Ahsoka.Interop\Ahsoka.Proto\Services.proto" />
 
 		<Message Text="Stopping Containers" Importance="high" />
 		<Exec ContinueOnError="true" IgnoreExitCode="true" WorkingDirectory="$(InteropSource_Root)" Command="docker kill Ahsoka.CoreBuilder" />
@@ -32,8 +40,8 @@
 		<Exec Condition="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openview_sdk_4_0:$(OpenViewBSP)" />
 		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(InteropSource_Root)/Ahsoka.Interop/build_setup.sh" />
 		<Exec Timeout="300000" WorkingDirectory="$(InteropSource_Root)" Command="docker run -e OPENPV_VERSION=$(GitVersion_FullSemVer) -v $(InteropSource_Root):/source --rm --entrypoint &quot;/source/Ahsoka.Interop/build_setup.sh&quot; --name Ahsoka.CoreBuilder openpv/openview_sdk_4_0:$(OpenViewBSP)" />
-		
-		
+
+
 		<Message Text="Building OpenViewPro Interop Libraries at $(InteropSource_Root)" Importance="high" />
 		<Exec Condition="true" WorkingDirectory="$(InteropSource_Root)" Command="docker pull openpv/openviewpro_sdk_4_0:$(OpenViewProBSP)" />
 		<Exec Condition="'$(OS)' == 'Unix'" WorkingDirectory="$(InteropSource_Root)" Command="chmod +x $(InteropSource_Root)/Ahsoka.Interop/build_setup_pro.sh" />

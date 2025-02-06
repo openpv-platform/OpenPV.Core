@@ -7,7 +7,7 @@
 #include "AhsokaRuntimeBuilder.h"
 #include "AhsokaZMQContext.h"
 
-using namespace AhsokaSystem;
+using namespace AhsokaCore;
 using namespace std;
 
 namespace AhsokaServiceFramework

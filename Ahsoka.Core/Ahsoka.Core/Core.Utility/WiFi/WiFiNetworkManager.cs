@@ -207,7 +207,7 @@ public sealed class WiFiNetworkManager
                 Remember = true,
                 Ssid = SelectedNetwork.Ssid,
                 WaitForConnectionSeconds = waitTime,
-                WaitForIPAddressSeconds = ipWaitTime,
+                WaitForIpAddressSeconds = ipWaitTime,
                 WaitForTimeSyncSeconds = timeSyncWaitTime
             };
 
@@ -393,14 +393,14 @@ public sealed class WiFiNetworkManager
 
             // Configure for DHCP
             var config = wifiClient.GetNetworkConfiguration(defaultAdapterRequest);
-            if (config.ClientConfiguration.ConnectionType == IPAddressConfiguration.StaticIP)
+            if (config.ClientConfiguration.ConnectionType == IPAddressConfiguration.StaticIp)
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Reconfiguring Network Setup TO DHCP.");
                 config.ClientConfiguration = new IPConfiguration() { ConnectionType = IPAddressConfiguration.Dhcp };
                 wifiClient.SetNetworkConfiguration(config);
             }
 
-            var list = wifiClient.GetNetworkProfiles(new ProfileRequest() { AdapterId = defaultAdapterRequest.AdapterId, UseOSProfiles = OperatingSystem.IsWindows() });
+            var list = wifiClient.GetNetworkProfiles(new ProfileRequest() { AdapterId = defaultAdapterRequest.AdapterId, UseOsProfiles = OperatingSystem.IsWindows() });
             foreach (var item in list.NetworkProfiles)
                 networkProfilesList.Add(item);
 
@@ -422,6 +422,6 @@ public sealed class WiFiNetworkManager
     {
         // If So Connect
         lock (wifiClient)
-            wifiClient.AttemptAutoConnect(new AutoConnectRequest() { AdapterId = defaultAdapterRequest.AdapterId, WaitForConnectionSeconds = waitTime, WaitForIPAddressSeconds = ipWaitTime, WaitForTimeSyncSeconds = timeSyncWaitTime });
+            wifiClient.AttemptAutoConnect(new AutoConnectRequest() { AdapterId = defaultAdapterRequest.AdapterId, WaitForConnectionSeconds = waitTime, WaitForIpAddressSeconds = ipWaitTime, WaitForTimeSyncSeconds = timeSyncWaitTime });
     }
 }

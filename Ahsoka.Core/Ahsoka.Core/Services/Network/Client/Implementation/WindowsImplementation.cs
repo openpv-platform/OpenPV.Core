@@ -86,7 +86,7 @@ internal class WindowsImplementation : ImplementationBase
     {
         NetworkProfilesList networkList = new() { AdapterId = profileRequest.AdapterId };
 
-        if (!profileRequest.UseOSProfiles)
+        if (!profileRequest.UseOsProfiles)
             return NetworkProfileHelper.GetNetworkProfiles(profileRequest.AdapterId);
 
         // Windows Profiles..if needed.

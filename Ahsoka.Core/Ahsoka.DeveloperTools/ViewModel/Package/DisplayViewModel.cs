@@ -40,8 +40,8 @@ internal class DisplayViewModel : ChildViewModelBase<PackageViewModel>
 
     public Orientation SystemOrientation
     {
-        get { return configuration.Orientation; }
-        set { configuration.Orientation = value; OnPropertyChanged(); }
+        get { return configuration.Orientation.IntToEnum<Orientation>(); }
+        set { configuration.Orientation = value.EnumToInt(); OnPropertyChanged(); }
     }
 
     public string ScreenDescription
@@ -191,7 +191,7 @@ internal class DisplayViewModel : ChildViewModelBase<PackageViewModel>
 
         };
 
-        configuration.SurfaceSetups.Add(surface);
+        configuration.SurfaceSetup.Add(surface);
         Surfaces.Add(new SurfaceSetupViewModel(surface, this));
         SelectedSurface = Surfaces.Last();
     }
@@ -200,7 +200,7 @@ internal class DisplayViewModel : ChildViewModelBase<PackageViewModel>
     {
         if (selectedSurfaceSetup != null)
         {
-            configuration.SurfaceSetups.Remove(selectedSurfaceSetup.SurfaceSetup);
+            configuration.SurfaceSetup.Remove(selectedSurfaceSetup.SurfaceSetup);
             Surfaces.Remove(selectedSurfaceSetup);
             SelectedSurface = Surfaces.FirstOrDefault();
         }
@@ -209,7 +209,7 @@ internal class DisplayViewModel : ChildViewModelBase<PackageViewModel>
 
     private void LoadInfo()
     {
-        foreach (var setup in configuration.SurfaceSetups)
+        foreach (var setup in configuration.SurfaceSetup)
             Surfaces.Add(new SurfaceSetupViewModel(setup, this));
 
         SelectedSurface = Surfaces.FirstOrDefault();

@@ -21,7 +21,7 @@ public class ConfigurationLoader
     public static RuntimeConfiguration CreateDefaultConfiguration(bool includeExtensions = true)
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Reading Default TCP Configuration");
-        var config = JsonUtility.Deserialize<RuntimeConfiguration>(Properties.Resources.OPVServicesConfiguration, RuntimeConfigurationJsonContext.Default.RuntimeConfiguration);
+        var config = JsonUtility.DeserializeWithTypeInfo(Properties.Resources.OPVServicesConfiguration, CoreJsonSerializerContext.Default.RuntimeConfiguration);
         if (includeExtensions)
         {
             Extensions.LoadExtensions();

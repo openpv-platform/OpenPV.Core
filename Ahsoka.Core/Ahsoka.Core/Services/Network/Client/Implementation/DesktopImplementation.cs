@@ -35,7 +35,7 @@ internal class DesktopImplementation : ImplementationBase
 
     protected override NetworkProfilesList OnGetProfiles(ProfileRequest profileRequest)
     {
-        if (profileRequest.UseOSProfiles == true)
+        if (profileRequest.UseOsProfiles == true)
             throw new NotImplementedException();
 
         return NetworkProfileHelper.GetNetworkProfiles(profileRequest.AdapterId);

@@ -53,7 +53,7 @@ public partial class HardwareInfo
                     try
                     {
                         string fileText = File.ReadAllText(hardwareDef);
-                        var hd = JsonUtility.Deserialize<HardwareInfo>(fileText);
+                        var hd = JsonUtility.DeserializeWithTypeInfo(fileText, CoreJsonSerializerContext.Default.HardwareInfo);
                         AddHardwareInfo(hd);
                     }
                     catch { Console.WriteLine($"Failed to load HardwareConfiguration at {hardwareDef}"); }

@@ -118,7 +118,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
         {
             CellularNetworkInformation info = e.NotificationObject as CellularNetworkInformation;
             Console.WriteLine($"Network Service Status: {info.ConnectionState}");
-            Console.WriteLine($"    IPAddress: {info.IpInfo?.IPAddress}");
+            Console.WriteLine($"    IPAddress: {info.IpInfo?.IpPAddress}");
             Console.WriteLine($"    Service: {info.ServiceName}");
             Console.WriteLine($"    Network: {info.NetworkOperatorName}");
             Console.WriteLine($"    RSSI: {info.Rssi} SNR: {info.Snr}");
@@ -139,7 +139,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
                 HasEthernet = true;
                 this.Invalidate();
             }
-            else if (info.DeviceType == DeviceTypes.UsbCellularNetwork)
+            else if (info.DeviceType == DeviceTypes.UsbCellularModule)
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Cellular Adapter Enabled - Starting Cellular Setup");
 
@@ -167,7 +167,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
         else if (e.TransportId == DeviceMessageTypes.Ids.UsbDeviceAdded)
         {
             UsbDeviceInfo info = e.NotificationObject as UsbDeviceInfo;
-            if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularNetwork)
+            if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularModule)
             {
                 var deviceList = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch = SupportedFeatures.Cellular });
                 if (deviceList.Devices.Count > 0)
@@ -181,7 +181,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
         else if (e.TransportId == DeviceMessageTypes.Ids.UsbDeviceRemoved)
         {
             UsbDeviceInfo info = e.NotificationObject as UsbDeviceInfo;
-            if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularNetwork)
+            if (info.DeviceInfo.DeviceType == DeviceTypes.UsbCellularModule)
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Cellular Device Removed - Disabling");
 
@@ -252,7 +252,7 @@ internal class InstallerDrawingManager : SkiaDrawingManager
             if (wifiViewModel.ConnectionState == WirelessConnectionState.ClientConnected)
             {
                 var info = wifiViewModel.GetIPInfo();
-                DrawingApi.DrawText($"WiFi: {wifiViewModel.SelectedNetwork?.Ssid} @ {info.IPAddress}", width - 10, height - 8, textInfo);
+                DrawingApi.DrawText($"WiFi: {wifiViewModel.SelectedNetwork?.Ssid} @ {info.IpPAddress}", width - 10, height - 8, textInfo);
             }
             else if (wifiViewModel.ConnectionState != WirelessConnectionState.ClientDisconnected)
                 DrawingApi.DrawText($"WiFi: {wifiViewModel.SelectedNetwork?.Ssid}", width - 10, height - 8, textInfo);

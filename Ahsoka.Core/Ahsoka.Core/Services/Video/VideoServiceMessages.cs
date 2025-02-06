@@ -1,6 +1,4 @@
 ﻿using Ahsoka.Core;
-using Ahsoka.Installer;
-using System.Collections.Generic;
 
 namespace Ahsoka.Services.Video;
 
@@ -10,7 +8,7 @@ namespace Ahsoka.Services.Video;
 public class VideoServiceMessages : AhsokaMessagesBase
 {
     /// <InheritDoc/>
-    public VideoServiceMessages()
+    public VideoServiceMessages() : base(VideoService.Name)
     {
         this.RegisterServiceRequest(VideoMessageTypes.Ids.GetVideoPlayers, typeof(EmptyNotification), typeof(VideoPlayerInfo));
         this.RegisterServiceRequest(VideoMessageTypes.Ids.PlayVideo, typeof(VideoPlaybackRequest), typeof(VideoStatus));
@@ -23,11 +21,8 @@ public class VideoServiceMessages : AhsokaMessagesBase
     }
 
     /// <InheritDoc/>
-    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    public override byte[] GetProtoMessageFile()
     {
-        var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\VideoService.proto", Properties.Resources.VideoService);
-
-        return result;
+        return this.GenerateProtoFile("AhsokaVideo", typeof(VideoMessageTypes.Ids));
     }
 }

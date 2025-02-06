@@ -27,7 +27,7 @@ public class CellularServiceMessages : AhsokaMessagesBase
 
 
     /// <InheritDoc/>
-    public CellularServiceMessages()
+    public CellularServiceMessages() : base(CellularService.Name)
     {
         this.RegisterServiceRequest(CellularMessageTypes.Ids.GetAdapters, typeof(EmptyNotification), typeof(AdapterRequestList));
         this.RegisterServiceRequest(CellularMessageTypes.Ids.GetNetworkInformation, typeof(AdapterRequest), typeof(AdapterConfiguration));
@@ -38,11 +38,9 @@ public class CellularServiceMessages : AhsokaMessagesBase
     }
 
     /// <InheritDoc/>
-    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    public override byte[] GetProtoMessageFile()
     {
-        var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\CellularService.proto", Properties.Resources.CellularService);
-        return result;
+        return this.GenerateProtoFile("AhsokaCellularService", typeof(CellularMessageTypes.Ids));
     }
 
     /// <InheritDoc/>

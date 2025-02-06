@@ -1,4 +1,5 @@
-﻿using Ahsoka.Core.Drawing;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
 using Ahsoka.Core.Utility;
 using System;
@@ -118,11 +119,11 @@ internal class WiFiKeyboardState : InstallerUIStateBase
         KeyBoard keys = new();
 
         if (keyboardState == KeyboardAction.Caps)
-            keys = JsonUtility.Deserialize<KeyBoard>(File.ReadAllText("Assets/CapsKeyboard.json"));
+            keys = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText("Assets/CapsKeyboard.json"), InstallerJsonSerializerContext.Default.KeyBoard);
         if (keyboardState == KeyboardAction.Lower)
-            keys = JsonUtility.Deserialize<KeyBoard>(File.ReadAllText("Assets/LowerKeyboard.json"));
+            keys = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText("Assets/LowerKeyboard.json"), InstallerJsonSerializerContext.Default.KeyBoard);
         if (keyboardState == KeyboardAction.SymbolsAndNumbers)
-            keys = JsonUtility.Deserialize<KeyBoard>(File.ReadAllText("Assets/SymbolKeyboard.json"));
+            keys = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText("Assets/SymbolKeyboard.json"), InstallerJsonSerializerContext.Default.KeyBoard);
 
         return keys;
     }

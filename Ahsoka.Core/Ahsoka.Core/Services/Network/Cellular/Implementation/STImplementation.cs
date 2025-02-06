@@ -92,7 +92,7 @@ internal class STImplementation : ImplementationBase
 
                 // Determine IP Address - if Not set, error out.
                 info.IpInfo = Client.Implementation.ImplementationBase.GetIPInfo(new AdapterRequest() { AdapterId = adapterName });
-                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"CellularHandler DHCP Address: {info.IpInfo.IPAddress}");
+                AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"CellularHandler DHCP Address: {info.IpInfo.IpPAddress}");
 
                 // Execute Time Sync
                 bool resultTime = LinuxNetworkUtilities.WaitForTimeSync(connectionRequest.WaitForTimeSyncSeconds > 0 ? connectionRequest.WaitForTimeSyncSeconds : 10);

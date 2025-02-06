@@ -26,7 +26,7 @@ internal static class ServiceCommands
         else
         {
             string config = File.ReadAllText(configurationFile);
-            configuration = JsonUtility.Deserialize<RuntimeConfiguration>(config);
+            configuration = JsonUtility.DeserializeWithTypeInfo(config, CoreJsonSerializerContext.Default.RuntimeConfiguration);
         }
 
         // Run and Block Executable Until Shutdown

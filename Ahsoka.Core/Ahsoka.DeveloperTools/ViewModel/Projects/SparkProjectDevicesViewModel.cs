@@ -421,7 +421,7 @@ internal partial class SparkProjectDevicesViewModel : ChildViewModelBase<SparkPr
             ProvisionPartNumber = info.PartNumber;
             ProvisionSerialNumber = info.SerialNumber;
             ProvisionDeviceId = info.DeviceId.Substring(0, 8);
-            ProvisionPlatformFamily = info.PlatformFamilyEnum;
+            ProvisionPlatformFamily = info.PlatformFamily;
         }
     }
 

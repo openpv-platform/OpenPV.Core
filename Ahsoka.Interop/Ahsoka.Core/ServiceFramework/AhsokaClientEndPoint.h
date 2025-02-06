@@ -52,7 +52,7 @@ namespace AhsokaServiceFramework
 			}
         
 			
-			AhsokaClientEndPoint(AhsokaSystem::ServiceConfiguration config, AhsokaMessagesBase messages)
+			AhsokaClientEndPoint(AhsokaCore::ServiceConfiguration config, AhsokaMessagesBase messages)
 				:AhsokaBaseEndPoint<TTransportID>(config, messages)
 			{
 				// Validate that we are using an Enumeration TYPE at compile time
@@ -63,7 +63,7 @@ namespace AhsokaServiceFramework
 
 		protected:
 
-		    IAhsokaSocket* CreateSocket(AhsokaSystem::ServiceConfiguration& config)
+		    IAhsokaSocket* CreateSocket(AhsokaCore::ServiceConfiguration& config)
 			{
 				AhsokaClientSocket * retVal = new AhsokaClientSocket();
 				retVal->SetEndPoint(this);
@@ -101,12 +101,12 @@ namespace AhsokaServiceFramework
 
 			void OnEndPointConnected()
 			{
-				UpdateClientRegistration(RegisterClient);
+				UpdateClientRegistration(REGISTER_CLIENT);
 			}
 
 			void OnEndPointDisconnected()
 			{
-				UpdateClientRegistration(DeregisterClient);
+				UpdateClientRegistration(DEREGISTER_CLIENT);
 			}
 
 		private:
@@ -146,13 +146,13 @@ namespace AhsokaServiceFramework
 						}
 						else 
 						{
-							if (responseTransportId == InvalidToken)
+							if (responseTransportId == INVALID_TOKEN)
 							{
 								delete(pair.header);
 								delete(pair.message);
 								throw "The Service returned an InvalidToken Message. This usually indicates that this security enabled endpoint was not unlocked with a valid token";
 							}
-							if (responseTransportId == ServiceErrorThrown)
+							if (responseTransportId == SERVICE_ERROR_THROWN)
 							{
 								ServiceErrorThrownResponse* error = (ServiceErrorThrownResponse*)pair.message;
 								std::string errorText =  "The Service " + error->service_name() + " returned an error. " + error->error_information();

@@ -113,7 +113,7 @@ public class WiFiClientService : AhsokaServiceBase<WiFiClientMessageTypes.Ids>
         var response = ImplementationBase.GetIPInfo(adapterRequest);
 
         // Update IPAddress 
-        this.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, response.IPAddress);
+        this.UpdateCacheValue(WiFiClientServiceMessages.IPAddress, response.IpPAddress);
 
         SendResponse(messageHeader, response);
     }

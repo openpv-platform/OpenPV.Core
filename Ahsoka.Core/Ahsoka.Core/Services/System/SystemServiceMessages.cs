@@ -75,7 +75,7 @@ public class SystemServiceMessages : AhsokaMessagesBase
     public const string InstallerVersionFactory = "InstallerVersionFactory";
 
     /// <InheritDoc/>
-    public SystemServiceMessages()
+    public SystemServiceMessages() : base(SystemService.Name)
     {
         this.RegisterServiceRequest(SystemMessageTypes.Ids.Echo, typeof(EchoValue), typeof(EchoValue));
         this.RegisterServiceRequest(SystemMessageTypes.Ids.GetServiceInfo, typeof(EmptyNotification), typeof(ServiceInfo));
@@ -121,12 +121,18 @@ public class SystemServiceMessages : AhsokaMessagesBase
         var result = base.OnGetAdditionalClientResources(type);
         result.Add("inc\\services\\SystemServiceClientExtensions.h", Properties.Resources.SystemServiceClientExtensionsH);
 
-        result.Add("Ahsoka.Proto\\SystemService.proto", Properties.Resources.SystemService);
+        result.Add("Ahsoka.Proto\\SystemService.proto", GetProtoMessageFile());
 
         if (includeImplementation)
             result.Add("inc\\services\\SystemServiceClientExtensions.cxx", Properties.Resources.SystemServiceClientExtensionsCXX);
 
         return result;
+    }
+
+    /// <InheritDoc/>
+    public override byte[] GetProtoMessageFile()
+    {
+        return this.GenerateProtoFile("AhsokaSystem", typeof(SystemMessageTypes.Ids));
     }
 
 }

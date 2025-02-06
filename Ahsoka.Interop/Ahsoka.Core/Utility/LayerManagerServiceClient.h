@@ -83,7 +83,7 @@ namespace AhsokaLayerManager
 				}
 			}
 
-			static AhsokaSystem::ServiceConfiguration GetServiceConfiguration()
+			static AhsokaCore::ServiceConfiguration GetServiceConfiguration()
 			{
 				auto config = AhsokaConfiguration::GetServiceConfiguration(LayerManagerServiceName, false);
 				if (config.data_channel() > 0)

@@ -16,7 +16,7 @@
 #include <ilm/ivi-application-client-protocol.h>
 
 using namespace std;
-using namespace AhsokaSystem;
+using namespace AhsokaCore;
 using namespace AhsokaServiceFramework;
 
 namespace AhsokaLayerManager

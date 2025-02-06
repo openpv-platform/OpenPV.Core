@@ -76,7 +76,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         if (File.Exists(pathToCert))
         {
             var fileData = File.ReadAllText(pathToCert);
-            var keyData = JsonUtility.Deserialize<DeviceKeyInfo>(fileData);
+            var keyData = JsonUtility.DeserializeWithTypeInfo(fileData, CoreJsonSerializerContext.Default.DeviceKeyInfo);
 
             var securityConfig = new SecurityConfiguration()
             {

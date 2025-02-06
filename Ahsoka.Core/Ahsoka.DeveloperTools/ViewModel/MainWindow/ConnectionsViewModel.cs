@@ -426,12 +426,12 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             && ParentViewModel.ActiveConnection.IsConnected)
         {
             // Check for Match to save some Time...compare connected hardware info
-            bool isMatch = editInfo.PlatformFamily == ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformFamilyEnum &&
+            bool isMatch = editInfo.PlatformFamily == ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformFamily &&
                             editInfo.PlatformQualifier == ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformQualifier;
 
             if (!isMatch)
             {
-                await ParentViewModel.Dialog.ShowDialog("Prep Target", $"Please select the correct hardware for the connected display.  The currently connected display appears to be {ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformFamilyEnum} ({ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformQualifier})", "Cancel");
+                await ParentViewModel.Dialog.ShowDialog("Prep Target", $"Please select the correct hardware for the connected display.  The currently connected display appears to be {ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformFamily} ({ParentViewModel.ActiveConnection.ConnectedHardwareInfo.PlatformQualifier})", "Cancel");
                 return;
             }
 
@@ -630,7 +630,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             Stopwatch stopwatch = Stopwatch.StartNew();
 
             var hardwareInfo = ParentViewModel.ActiveConnection.GetHardwareInformation();
-            var connectedInfo = hardwareInfo.PlatformFamilyEnum;
+            var connectedInfo = hardwareInfo.PlatformFamily;
             var packageInfo = EditConfigurationInfo.PlatformFamily;
 
             if (connectedInfo != packageInfo)

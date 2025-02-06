@@ -8,10 +8,10 @@
 #include "TestServiceMessages.h"
 
 using namespace std;
-using namespace AhsokaSystem;
+using namespace AhsokaCore;
 using namespace AhsokaServiceFramework;
 
-namespace AhsokaSystem
+namespace AhsokaCore
 {
 	class TestService : public AhsokaServiceFramework::AhsokaServiceEndPoint<TestMessageTypes>
 	{

@@ -56,14 +56,14 @@ internal class NetworkServiceHelper
         }
 
         string fileContents;
-        if (updateConfiguration.ClientConfiguration.ConnectionType == IPAddressConfiguration.StaticIP)
+        if (updateConfiguration.ClientConfiguration.ConnectionType == IPAddressConfiguration.StaticIp)
         {
             fileContents = Properties.Resources.WirelessClientStatic;
             fileContents = fileContents.Replace("<ADAPTERID>", updateConfiguration.AdapterId);
             fileContents = fileContents.Replace("<MAC>", updateConfiguration.OverrideMacAddress);
-            fileContents = fileContents.Replace("<ADDRESS>", updateConfiguration.ClientConfiguration.IPAddress);
+            fileContents = fileContents.Replace("<ADDRESS>", updateConfiguration.ClientConfiguration.IpAddress);
             fileContents = fileContents.Replace("<DNS>", updateConfiguration.ClientConfiguration.Dns);
-            fileContents = fileContents.Replace("<GATEWAY>", updateConfiguration.ClientConfiguration.GatewayIP);
+            fileContents = fileContents.Replace("<GATEWAY>", updateConfiguration.ClientConfiguration.GatewayIp);
         }
         else
         {
@@ -98,9 +98,9 @@ internal class NetworkServiceHelper
 
         updateConfiguration.ClientConfiguration = new IPConfiguration()
         {
-            ConnectionType = (networkUnitData[networkSection][dhcpEnabledName] == "NO") ? IPAddressConfiguration.StaticIP : IPAddressConfiguration.Dhcp,
-            IPAddress = networkUnitData[networkSection][ipAddressName],
-            GatewayIP = networkUnitData[networkSection][gatewayName],
+            ConnectionType = (networkUnitData[networkSection][dhcpEnabledName] == "NO") ? IPAddressConfiguration.StaticIp : IPAddressConfiguration.Dhcp,
+            IpAddress = networkUnitData[networkSection][ipAddressName],
+            GatewayIp = networkUnitData[networkSection][gatewayName],
             Dns = networkUnitData[networkSection][dnsName],
         };
     }

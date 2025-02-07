@@ -44,7 +44,7 @@ public class PackageInformation : PackageHeader
 
     public HardwareConfiguration HardwareConfiguration { get; set; } = new();
 
-    public static PackageInformation LoadPackageInformation(string path)
+    public static PackageInformation LoadPackageInformation(string path, bool isPath = true)
     {
         PackageInformation package;
         if (path.ToLower().EndsWith("opvpackage"))
@@ -59,7 +59,10 @@ public class PackageInformation : PackageHeader
             File.Delete(filePath);
         }
         else
-            package = ConfigurationFileLoader.LoadFile(path, CoreJsonSerializerContext.Default.PackageInformation);
+            if (isPath)
+                package = ConfigurationFileLoader.LoadFile(path, CoreJsonSerializerContext.Default.PackageInformation);
+            else
+                package = ConfigurationFileLoader.LoadFileContents(UpgradeMethod.packageUpgradeExtension, path, CoreJsonSerializerContext.Default.PackageInformation);
 
         package.Version = VersionUtility.GetAppVersionString();
         package.originalFilePath = path;

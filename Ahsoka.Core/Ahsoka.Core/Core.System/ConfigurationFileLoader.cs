@@ -34,11 +34,15 @@ public class ConfigurationFileLoader
     /// Open a File from raw string data with the known file type...aka file extension
     /// </summary>
     /// <param name="fileType">File Extension or File Name</param>
+    /// <param name="typeInfo"></param>
     /// <param name="data">data</param>
     /// <returns></returns>
-    public static T LoadFileContents<T>(string fileType, string data) where T : class, new()
+    public static T LoadFileContents<T>(string fileType, string data, JsonTypeInfo<T> typeInfo = null) where T : class, new()
     {
         string contents = UpgradeEngine.ExecuteUpgrade(fileType, data);
+        if (typeInfo != null)
+            return JsonUtility.DeserializeWithTypeInfo(contents, typeInfo);
+
         return JsonUtility.Deserialize<T>(contents);
     }
 }

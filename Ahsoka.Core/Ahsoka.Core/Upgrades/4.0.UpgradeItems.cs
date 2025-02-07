@@ -32,9 +32,9 @@ internal class UpgradeItemsPackage_4_0 : UpgradeMethod
         {
             var displayConfig = screenConfig["orientation"];
             if (displayConfig.AsValue().ToString() == "DefaultOrientation")
-                screenConfig["orientation"] = "0";
+                screenConfig["orientation"] = int.Parse("0");
             else
-                screenConfig["orientation"] = displayConfig.AsValue().ToString().Replace("rotate", "");
+                screenConfig["orientation"] = int.Parse(displayConfig.AsValue().ToString().Replace("rotate", ""));
 
         }
 

@@ -67,8 +67,8 @@ internal static class UpgradeEngine
 
 internal abstract class UpgradeMethod
 {
-    protected const string packageUpgradeExtension = "packageinfo.json";
-    protected const string canUpgradeExtension = "cancalibration.json";
+    internal const string packageUpgradeExtension = "packageinfo.json";
+    internal const string canUpgradeExtension = "cancalibration.json";
 
     /// <summary>
     /// Gets or sets the path.

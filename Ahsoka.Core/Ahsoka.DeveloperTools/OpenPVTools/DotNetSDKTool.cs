@@ -21,7 +21,7 @@ internal class DotNetSDKTool : OpenPVToolBase
         this.PackageType = "Software Install";
         this.CanInstall = true;
         this.InstallText = "This process will install the DotNet SDK Needed for Optimized Service Managers.";
-        this.IncludedProfiles = PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
+        this.IncludedProfiles = "None";
         this.Description = "Service Manager Compile Tools (DotNet SDK)";
         this.Resources = new();
         if (OperatingSystem.IsWindows())

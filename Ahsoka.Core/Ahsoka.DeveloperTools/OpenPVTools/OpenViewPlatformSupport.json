@@ -48,7 +48,7 @@
     },
     {
       "Name": "OpenViewPro SDK Container",
-      "Version": "4.2024-11-05T221051.openviewpro.kirkstone.2f7eff7",
+      "Version": "4.2025-02-06T172221.openviewpro.kirkstone.1407f89",
       "Description": "OpenViewPro SDK Container",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewProSDKContainerTool",
       "CanLaunch": true,
@@ -56,7 +56,7 @@
     },
     {
       "Name": "OpenViewPro QT5 Container",
-      "Version": "4.2024-11-05T221051.openviewpro.kirkstone.2f7eff7",
+      "Version": "4.2025-02-06T172221.openviewpro.kirkstone.1407f89",
       "Description": "OpenViewPro QT5 Container",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewProQT5ContainerTool",
       "CanLaunch": true,

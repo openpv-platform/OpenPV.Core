@@ -9,8 +9,19 @@ using System.Text;
 
 namespace Ahsoka.Core;
 
-internal static class ProtoGenerator
+/// <summary>
+/// Proto Generator for Creating Open .proto files from Local Classes
+/// </summary>
+public static class ProtoGenerator
 {
+    /// <summary>
+    /// Generates a file from a service with optional support for "other" classes.
+    /// </summary>
+    /// <param name="messages"></param>
+    /// <param name="packageName"></param>
+    /// <param name="messageIds"></param>
+    /// <param name="otherTypes"></param>
+    /// <returns></returns>
     public static byte[] GenerateProtoFile(this AhsokaMessagesBase messages, string packageName, Type messageIds, params Type[] otherTypes)
     {
         StringBuilder sb = new StringBuilder();
@@ -159,7 +170,6 @@ internal static class ProtoGenerator
         GenerateProtoEnumItems(sb, $"{prefix}    ", enumType);
         sb.AppendLine("    }\r\n}\r\n");
     }
-
 
     private static void CreateProtoEnum(StringBuilder sb, Type enumType)
     {

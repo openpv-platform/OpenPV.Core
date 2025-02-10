@@ -1,0 +1,22 @@
+﻿{
+  "extensionName": "Video Player Extension",
+  "packageName": "Ahsoka.Extensions.VideoPlayer",
+  "uxpackageName": "",
+  "uxViewModelName": "",
+  "serviceConfigurations": [
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "DataService",
+      "tcpListenAddress": "localhost",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 6202,
+      "behaviors": "AutoStart"
+    }
+  ],
+  "hasCommands": "false",
+  "hasUx": "false",
+  "hasSdkGenerator": "false",
+  "minVersion": "4.0.0",
+  "maxVersion": "5.0.0",
+  "requireExactVersion": "false"
+}

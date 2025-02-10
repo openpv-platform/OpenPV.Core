@@ -29,27 +29,6 @@
 				<Visible>true</Visible>
 			</Content>
 		</ItemGroup>
-
-		<ItemGroup Label="VideoPlayers Libraries For Core"  Condition="$(IGNORE_PREREQS) != 'YES' and '$(OS)' != 'Unix'" >
-			<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.VideoPlayer.OpenViewLinux">
-				<Link>AhsokaLib\Ahsoka.VideoPlayer.OpenViewLinux</Link>
-				<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.VideoPlayer.OpenViewLinux</PackagePath>
-				<PackageCopyToOutput>true</PackageCopyToOutput>
-				<IncludeInPackage>true</IncludeInPackage>
-				<Pack>true</Pack>
-				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-				<Visible>true</Visible>
-			</Content>
-
-			<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.VideoPlayer.OpenViewLinuxPro">
-				<Link>AhsokaLib\Ahsoka.VideoPlayer.OpenViewLinuxPro</Link>
-				<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.VideoPlayer.OpenViewLinuxPro</PackagePath>
-				<PackageCopyToOutput>true</PackageCopyToOutput>
-				<IncludeInPackage>true</IncludeInPackage>
-				<Pack>true</Pack>
-				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-				<Visible>true</Visible>
-			</Content>
-		</ItemGroup>
+		
 	</Target>
 </Project>

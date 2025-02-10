@@ -1,7 +1,6 @@
 ﻿using Ahsoka.Services.Network.ESPWifi;
 using Ahsoka.Services.Network.Platform;
 using Ahsoka.Services.System.Platform;
-using Ahsoka.Services.Video;
 using System;
 using System.Diagnostics.CodeAnalysis;
 
@@ -32,8 +31,6 @@ internal static class TestCommands
                 SystemTests.TestSystemService();
             else if (args[0] == "DeviceService")
                 SystemTests.TestSystemService();
-            else if (args[0] == "VideoTest")
-                VideoTests.TestVideo(args[1]);
             else
                 Console.WriteLine($"Unrecognized test: {args[0]}");
     }

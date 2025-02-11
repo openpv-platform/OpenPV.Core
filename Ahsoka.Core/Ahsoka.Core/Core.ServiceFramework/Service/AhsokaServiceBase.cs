@@ -203,6 +203,7 @@ public abstract partial class AhsokaServiceBase<TTransportIds> : AhsokaEndPoint<
         if (specificClient != null)
         {
             var notifId = clientIdToNotificationIds[new Guid(specificClient)];
+            messageToSend.ClientId = notifId.ToByteArray();
             validNotificationIds[notifId]?.SendMessage(messageToSend);
         }
         else

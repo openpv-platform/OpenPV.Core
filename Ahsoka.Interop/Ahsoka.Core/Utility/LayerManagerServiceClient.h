@@ -75,6 +75,7 @@ namespace AhsokaLayerManager
 				if (filesystem::exists(file))
 				{
 					std::ifstream ifs(file, std::ifstream::in);
+					config.set_show_unknown_surfaces(true); // Temp Until we get closer to production
 					config.ParseFromIstream(&ifs);	}
 				else
 				{

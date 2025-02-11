@@ -50,14 +50,6 @@
     },
     {
       "socketType": "TcpSocket",
-      "serviceName": "VideoService",
-      "tcpListenAddress": "localhost",
-      "tcpConnectionAddress": "localhost",
-      "dataChannel": 5008,
-      "behaviors": "AutoStart"
-    },
-    {
-      "socketType": "TcpSocket",
       "serviceName": "DeviceService",
       "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",

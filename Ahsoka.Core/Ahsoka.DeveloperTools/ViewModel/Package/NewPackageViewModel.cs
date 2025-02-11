@@ -103,7 +103,8 @@ internal class NewPackageViewModel : ViewModelBase
                             if (entry.Name.ToLower().EndsWith(PackageViewModel.packageInfoExtension.ToLower()))
                             {
                                 var data = new StreamReader(entry.Open());
-                                var demoProject = JsonUtility.Deserialize<PackageInformation>(data.ReadToEnd());
+                                string json = data.ReadToEnd();
+                                var demoProject = PackageInformation.LoadPackageInformation(json, false);
                                 demos.Add(new CustomerDemoInfoViewModel(demoProject) { FileName = file });
                             }
                     }

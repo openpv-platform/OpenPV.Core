@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10065",
+  "version": "4.0.1.10078",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Blank.Advanced",
   "packageName": "Ahsoka.CS.Blank.Advanced",
@@ -9,7 +9,7 @@
   "packageOutputDirectory": "PackageOutput",
   "packageSigningCertFile": "No Value",
   "licenses": [],
-  "optimizedServiceManager": true,
+  "optimizedServiceManager": false,
   "customPackageInfo": {
     "includeApplication": false,
     "includeBootLogo": false,
@@ -30,7 +30,6 @@
       "requireChallenge": "NotRequired",
       "services": [
         {
-          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -39,7 +38,6 @@
           "behaviors": 3
         },
         {
-          "socketType": "TcpSocket",
           "serviceName": "SecurityService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -54,8 +52,8 @@
   "screenConfiguration": {
     "showUnknownSurfaces": false,
     "bootLogoPath": "",
-    "orientation": "DefaultOrientation",
-    "surfaceSetups": []
+    "orientation": 0,
+    "surfaceSetup": []
   },
   "hardwareConfiguration": {
     "hardwareItems": [],

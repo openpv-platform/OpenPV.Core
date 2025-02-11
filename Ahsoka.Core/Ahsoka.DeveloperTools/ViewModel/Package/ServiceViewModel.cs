@@ -34,6 +34,23 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
 
     }
 
+
+    public ChallengeOptions[] RequireChallengeOptions { get; init; } = Enum.GetValues<ChallengeOptions>();
+
+    public ChallengeOptions RequireChallenge
+    {
+        get
+        {
+            return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge;
+        }
+        set
+        {
+            ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge = value;
+            OnPropertyChanged();
+        }
+
+    }
+
     public List<string> ServiceKeys
     {
         get

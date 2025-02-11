@@ -47,7 +47,6 @@ public class PackageHeader
     public string SecuritySerialNumber { get; set; }
 
     [ProtoMember(9, IsRequired = true)]
-    [JsonIgnore]
     public Guid ApplicationId { get; set; } = Guid.Empty;
 
     [ProtoMember(100, IsRequired = true)]

@@ -58,7 +58,8 @@ public static class JsonUtility
     /// <returns></returns>
     public static T DeserializeWithTypeInfo<T>(string json, JsonTypeInfo<T> typeInfo) where T : class, new()
     {
-        return JsonText.JsonSerializer.Deserialize<T>(json, typeInfo);
+        return Deserialize<T>(json);
+        //return JsonText.JsonSerializer.Deserialize<T>(json, options);
     }
 
     /// <summary>

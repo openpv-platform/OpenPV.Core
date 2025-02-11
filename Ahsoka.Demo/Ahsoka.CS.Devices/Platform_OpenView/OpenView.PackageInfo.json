@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10068",
+  "version": "4.0.1.20079",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Devices",
   "packageName": "Ahsoka.CS.Devices",
@@ -28,7 +28,6 @@
       "requireChallenge": "NotRequired",
       "services": [
         {
-          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -43,8 +42,8 @@
   "screenConfiguration": {
     "showUnknownSurfaces": false,
     "bootLogoPath": "",
-    "orientation": "DefaultOrientation",
-    "surfaceSetups": []
+    "orientation": 0,
+    "surfaceSetup": []
   },
   "hardwareConfiguration": {
     "hardwareItems": [
@@ -57,7 +56,7 @@
       },
       {
         "name": "Cellular Modem",
-        "deviceType": "UsbCellularNetwork",
+        "deviceType": "UsbCellularModule",
         "defaultState": "NoState",
         "customStartup": "",
         "autoEnable": true

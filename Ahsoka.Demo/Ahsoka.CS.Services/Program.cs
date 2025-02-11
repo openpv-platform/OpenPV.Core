@@ -42,7 +42,7 @@ public class Program
         // Once the Dispatcher is shutdown in the Dispatcher.Default.Stop() method,
         // we ask Linux / Windows to exit our process.
         DrawUI ui = new DrawUI();
-        ui.StartAndRun(Dispatcher.Default, "OpenPV Device Demo");
+        ui.StartAndRun(Dispatcher.Default, "OpenPV Services Demo");
 
     }
 

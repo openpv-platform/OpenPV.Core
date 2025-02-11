@@ -60,7 +60,7 @@ public abstract class AhsokaMessagesBase : IHasParameters, IHasEvents
     #endregion
 
     #region Client Generation Support
-    public virtual Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
+    public Dictionary<string, byte[]> GetAdditionalClientResources(ApplicationType type, bool includeImplementation = true)
     {
         var result = OnGetAdditionalClientResources(type, includeImplementation);
         string protoFileName = $"Ahsoka.Proto\\{ServiceName}.proto";

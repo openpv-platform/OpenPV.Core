@@ -31,16 +31,16 @@ public class AccessPointServiceConfiguration
     [ProtoMember(2)]
     public string Description { get; set; }
 
-    [ProtoMember(3)]
+    [ProtoMember(5)]
     public AccessPointConfiguration AccessPointConfiguration { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(6)]
     public DHCPServerConfiguration DhcpServerConfiguration { get; set; }
 
-    [ProtoMember(5)]
+    [ProtoMember(7)]
     public string OverrideMacAddress { get; set; }
 
-    [ProtoMember(6)]
+    [ProtoMember(99)]
     public bool SaveAsDefault { get; set; }
 }
 
@@ -53,16 +53,16 @@ public class AccessPointConfiguration
     [ProtoMember(2)]
     public SecurityType SecurityType { get; set; }
 
-    [ProtoMember(3)]
+    [ProtoMember(5)]
     public string EncryptionPassKey { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(6)]
     public bool BroadcastSsid { get; set; }
 
-    [ProtoMember(5)]
+    [ProtoMember(7)]
     public int ChannelNumber { get; set; }
 
-    [ProtoMember(6)]
+    [ProtoMember(10)]
     public DHCPServerConfiguration DHCPServerConfiguration { get; set; }
 }
 
@@ -78,7 +78,7 @@ public class DHCPServerConfiguration
     [ProtoMember(3)]
     public int DhcpBasePoolSize { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(6)]
     public string Dns { get; set; }
 }
 

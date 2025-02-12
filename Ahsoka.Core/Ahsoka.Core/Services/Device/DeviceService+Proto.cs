@@ -87,16 +87,16 @@ public class DeviceInfo
     [ProtoMember(2)]
     public string Name { get; set; }
 
-    [ProtoMember(3)]
+    [ProtoMember(4)]
     public DeviceState State { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(5)]
     public DeviceTypes DeviceType { get; set; }
 
-    [ProtoMember(5)]
+    [ProtoMember(6)]
     public string CustomStartup { get; set; }
 
-    [ProtoMember(6)]
+    [ProtoMember(7)]
     public bool AutoEnable { get; set; }
 
 
@@ -245,13 +245,13 @@ public class HardwareItem
     [ProtoMember(2)]
     public DeviceTypes DeviceType { get; set; }
 
-    [ProtoMember(3)]
+    [ProtoMember(4)]
     public DeviceState DefaultState { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(6)]
     public string CustomStartup { get; set; }
 
-    [ProtoMember(5)]
+    [ProtoMember(7)]
     public bool AutoEnable { get; set; }
 
 }

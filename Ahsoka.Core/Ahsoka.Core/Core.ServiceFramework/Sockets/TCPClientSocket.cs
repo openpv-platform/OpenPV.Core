@@ -5,8 +5,10 @@ using System.IO;
 using System.Net.Sockets;
 
 namespace Ahsoka.Core;
-
-internal sealed class TCPClientSocket : IAhsokaClientSocket
+/// <summary>
+/// Client Socket Handling TCP Connections
+/// </summary>
+public sealed class TCPClientSocket : IAhsokaClientSocket
 {
     IAhsokaClientEndPoint endPoint;
     bool isConnected = false;
@@ -20,6 +22,9 @@ internal sealed class TCPClientSocket : IAhsokaClientSocket
     NetMQPoller notificationPoller = new();
     DealerSocket notificationSocket;
 
+    /// <summary>
+    /// TCPClientSocket
+    /// </summary>
     public TCPClientSocket() { }
 
     void IAhsokaClientSocket.Connect(IAhsokaClientEndPoint endPoint)

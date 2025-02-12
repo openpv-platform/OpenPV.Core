@@ -126,7 +126,7 @@ public class TopicMessage
     [ProtoMember(2)]
     public string TopicName { get; set; }
 
-    [ProtoMember(3)]
+    [ProtoMember(4)]
     public byte[] Payload { get; set; }
 
     /// <summary>

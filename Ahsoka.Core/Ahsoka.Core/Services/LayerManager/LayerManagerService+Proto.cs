@@ -45,16 +45,16 @@ public class SurfaceSetup
     [ProtoMember(1)]
     public int SurfaceId { get; set; }
 
-    [ProtoMember(2)]
+    [ProtoMember(3)]
     public SurfaceRectangle LocationRectangle { get; set; }
 
-    [ProtoMember(3)]
+    [ProtoMember(4)]
     public SurfaceRectangle SourceRectangle { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(5)]
     public SurfaceVisibility Visibility { get; set; }
 
-    [ProtoMember(5)]
+    [ProtoMember(6)]
     public string SurfaceAppName { get; set; }
 }
 
@@ -102,7 +102,7 @@ public class SurfaceOrder
     [ProtoMember(1)]
     public List<int> SurfaceId { get; set; }
 
-    [ProtoMember(2)]
+    [ProtoMember(4)]
     public bool CommitChanges { get; set; }
 }
 

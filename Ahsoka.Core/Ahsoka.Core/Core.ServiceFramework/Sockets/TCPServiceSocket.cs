@@ -5,7 +5,10 @@ using System.IO;
 
 namespace Ahsoka.Core;
 
-internal sealed class TCPServiceSocket : IAhsokaServiceSocket
+/// <summary>
+/// Service Socket Handling TCP Connections
+/// </summary>
+public sealed class TCPServiceSocket : IAhsokaServiceSocket
 {
     // While clients use two dealer sockets, we use a single
     // router socket that can reply / send to either one.
@@ -22,6 +25,9 @@ internal sealed class TCPServiceSocket : IAhsokaServiceSocket
 
     bool isConnected = false;
 
+    /// <summary>
+    /// TCPServiceSocket
+    /// </summary>
     public TCPServiceSocket() { }
 
     void IAhsokaServiceSocket.Connect(IAhsokaServiceEndPoint endPoint)

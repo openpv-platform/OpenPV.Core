@@ -35,10 +35,10 @@ public class CellularServiceConfiguration
     [ProtoMember(4)]
     public string ApnUser { get; set; }
 
-    [ProtoMember(5)]
+    [ProtoMember(6)]
     public string ApnPassword { get; set; }
 
-    [ProtoMember(6)]
+    [ProtoMember(7)]
     public int WaitForTimeSyncSeconds { get; set; }
 }
 

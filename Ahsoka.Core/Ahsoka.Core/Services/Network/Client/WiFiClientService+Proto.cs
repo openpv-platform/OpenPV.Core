@@ -149,16 +149,16 @@ public class WirelessNetworkInfoList
 [ProtoContract]
 public class WirelessNetworkInfo
 {
-    [ProtoMember(1)]
+    [ProtoMember(2)]
     public SecurityType SecurityType { get; set; }
 
-    [ProtoMember(2)]
+    [ProtoMember(4)]
     public WirelessConnectionState State { get; set; }
 
-    [ProtoMember(3)]
+    [ProtoMember(5)]
     public string Ssid { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(6)]
     public int SignalLevel { get; set; }
 }
 
@@ -180,25 +180,25 @@ public class WirelessConnectionRequest
     [ProtoMember(1)]
     public string AdapterId { get; set; }
 
-    [ProtoMember(2)]
+    [ProtoMember(4)]
     public string Ssid { get; set; }
 
-    [ProtoMember(3)]
+    [ProtoMember(5)]
     public string PassKey { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(6)]
     public bool Remember { get; set; }
 
-    [ProtoMember(5)]
+    [ProtoMember(7)]
     public bool Encrypted { get; set; }
 
-    [ProtoMember(6)]
+    [ProtoMember(8)]
     public int WaitForConnectionSeconds { get; set; }
 
-    [ProtoMember(7)]
+    [ProtoMember(9)]
     public int WaitForIpAddressSeconds { get; set; }
 
-    [ProtoMember(8)]
+    [ProtoMember(10)]
     public int WaitForTimeSyncSeconds { get; set; }
 
     /// <summary>

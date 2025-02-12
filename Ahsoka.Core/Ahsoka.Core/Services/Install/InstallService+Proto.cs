@@ -29,14 +29,14 @@ public class InstallPackageRequest
 [ProtoContract]
 public class PackageProgressInfo
 {
-    [ProtoMember(1)]
+    [ProtoMember(2)]
     public string Message { get; set; }
 }
 
 [ProtoContract]
 public class PackageCompleteInfo
 {
-    [ProtoMember(1)]
+    [ProtoMember(2)]
     public string Message { get; set; }
 }
 

@@ -4,7 +4,7 @@
   "userInterfaceType": "None",
   "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Blank.Basic",
-  "packageName": "Ahsoka.CS.Blank.Basic",
+  "packageName": "Ahsoka.CS.Blank.Basic.Select",
   "packageDescription": "Basic Ahsoka Starter Project",
   "applicationVersion": "3.0",
   "packageApplicationFolder": "../Platform_OpenView/publish",

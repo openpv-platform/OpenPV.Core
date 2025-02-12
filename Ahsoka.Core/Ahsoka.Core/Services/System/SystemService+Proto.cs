@@ -132,10 +132,10 @@ public class LoadApplicationReply : IFileTransmitReply
     [ProtoMember(3)]
     public int MaxBytesPerMessage { get; set; }
 
-    [ProtoMember(4)]
+    [ProtoMember(5)]
     public MessageReplyStatus ReplyStatus { get; set; }
 
-    [ProtoMember(5)]
+    [ProtoMember(6)]
     public string ReplyReason { get; set; }
 }
 
@@ -148,7 +148,7 @@ public class LoadApplicationData : IFileTransmitData
     [ProtoMember(2)]
     public Byte[] MessageData { get; set; }
 
-    [ProtoMember(3)]
+    [ProtoMember(4)]
     public int Crc32 { get; set; }
 }
 

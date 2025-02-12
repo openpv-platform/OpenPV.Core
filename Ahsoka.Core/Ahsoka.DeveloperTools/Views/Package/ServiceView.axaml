@@ -6,21 +6,12 @@
          	 xmlns:material="using:Material.Icons.Avalonia"
              x:Class="Ahsoka.DeveloperTools.Views.ServiceView"  d:DesignWidth="740">
 
-	<Grid Margin="0,-4,0,0" Height="60" RowDefinitions="*,5,*" ColumnDefinitions="30,*,auto,auto,auto,auto,20"
+	<Grid Margin="0,-3,0,0" Height="30" RowDefinitions="*" ColumnDefinitions="30,*,auto,20"
 						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
 
-		<TextBlock IsVisible="{Binding IsIncluded}" Text="Local Only:"
-				   Margin="0,3,20,0"  HorizontalAlignment="Stretch"
-				   FontSize="14" Grid.Column="2" Grid.Row="2" TextWrapping="1" />
-		<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding LocalOnly}"
-				 Margin="-20,-1,10,-4" Grid.Row="2" HorizontalAlignment="Left" ToolTip.Tip="This Service is available only from the current device (localhost)."
-				 Grid.Column="3" VerticalAlignment="Center">
-			<CheckBox.RenderTransform>
-				<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
-			</CheckBox.RenderTransform>
-		</CheckBox>
+	
 
-		<Button IsVisible="{Binding !IsExtension}" Margin="0,3,0,0"
+		<Button IsVisible="{Binding !IsExtension}" Margin="0,2,0,0"
 				HorizontalAlignment="Left"
 				 BorderThickness="0"
 				 Width="24" Grid.RowSpan="3"
@@ -44,46 +35,11 @@
 				   Margin="0,3,0,0"  HorizontalAlignment="Stretch"
 				   FontSize="14" Grid.Column="1" TextWrapping="NoWrap" />
 
-		<TextBlock IsVisible="{Binding IsIncluded}" Text="Auto Start Service:"
-				   Margin="0,3,20,0"  HorizontalAlignment="Stretch"
-				   FontSize="14" Grid.Column="2" TextWrapping="1" />
-		<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding ServiceAutoStart}"
-				 Margin="-20,-1,10,-4"  HorizontalAlignment="Left" ToolTip.Tip="Auto Start a Service Instance on First Access.  Note that Dispatcher will always start your client runtime regardless of this setting."
-				 Grid.Column="3" VerticalAlignment="Center">
-			<CheckBox.RenderTransform>
-				<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
-			</CheckBox.RenderTransform>
-		</CheckBox>
-
-		<TextBlock IsVisible="{Binding IsIncluded}" Text="Secure Service:" Grid.Row="3"
-				   Margin="0,3,0,0"  HorizontalAlignment="Stretch"
-				   FontSize="14" Grid.Column="4" TextWrapping="1" />
-		<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding UseSecurity}"
-				 Margin="0,-1,10,-4"  HorizontalAlignment="Left" Grid.Row="3"
-				 Grid.Column="5" VerticalAlignment="Center">
-			<CheckBox.RenderTransform>
-				<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
-			</CheckBox.RenderTransform>
-		</CheckBox>
+		<Button IsVisible="{Binding IsIncluded}" VerticalAlignment="Center" FontSize="12"  Grid.Row="1" MinHeight="25" Grid.Column="2" Content="Show Options..." 
+				 Command="{Binding ShowEditor}"/>
 
 
-
-
-		<TextBlock IsVisible="{Binding IsIncluded}" Text="TCP Listen Port:" Margin="0,3,5,0"
-				   HorizontalAlignment="Stretch" FontSize="14" Grid.Column="4"
-				   TextWrapping="1" />
-		<TextBox IsVisible="{Binding IsIncluded}" Text="{Binding ServicePort}"
-				 Margin="0,4,0,0"  HorizontalAlignment="Left"
-				 TextAlignment="Center" FontSize="12" Grid.Column="5"
-				 MaxHeight="24" Height="24" MinHeight="24" Padding="3"
-				 TextWrapping="1" />
-
-		<TextBlock IsVisible="false" Text="UUID:" Margin="15,3,0,0"  HorizontalAlignment="Stretch"
-				   FontSize="14" Grid.Column="6" TextWrapping="1" />
-		<TextBox IsVisible="false" Text="{Binding ServiceUUID}"
-				 MaxHeight="24" Height="24" MinHeight="24" Padding="3"
-				 Width="300" Margin="0,3,0,0"  HorizontalAlignment="Left"
-				 TextAlignment="Center" FontSize="12" Grid.Column="6" TextWrapping="1" />
+		
 	</Grid>
 
 </UserControl>

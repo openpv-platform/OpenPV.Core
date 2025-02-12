@@ -15,6 +15,20 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
     ServiceConfigurationViewModel selectedService;
     bool securityShown = false;
     string apiKey = string.Empty;
+    bool editorShowing = false;
+
+    public bool EditorShown
+    {
+        get
+        {
+            return editorShowing;
+        }
+        set
+        {
+            editorShowing = value;
+            OnPropertyChanged();
+        }
+    }
 
     public ServiceEnableDisable[] ServiceEnableDisableItems { get; init; } = Enum.GetValues<ServiceEnableDisable>();
 
@@ -33,7 +47,6 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
         }
 
     }
-
 
     public ChallengeOptions[] RequireChallengeOptions { get; init; } = Enum.GetValues<ChallengeOptions>();
 
@@ -165,7 +178,16 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
     {
         SecurityShown = !SecurityShown;
     }
+    
+    public void ShowEditor()
+    {
+        EditorShown = true; ;
+    }
 
+    public void HideEditor()
+    {
+        EditorShown = false;
+    }
 }
 
 internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewModel>
@@ -173,6 +195,13 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     ExtensionViewModel extension;
     readonly ServiceConfiguration defaultValues;
     string extentionName;
+    bool isSelected = false;
+
+    public void ShowEditor()
+    {
+        ParentViewModel.SelectedService = this;
+        ParentViewModel.ShowEditor(); 
+    }
 
     public bool IsExtension { get; set; }
 

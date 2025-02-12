@@ -2,7 +2,7 @@
   "version": "4.0.1.20079",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Devices",
-  "packageName": "Ahsoka.CS.Devices",
+  "packageName": "Ahsoka.CS.Devices.Select",
   "packageDescription": "Example of Manages Devices (Such as USB Cell Modems)",
   "applicationVersion": "1.0",
   "packageApplicationFolder": "../Platform_OpenView/publish",

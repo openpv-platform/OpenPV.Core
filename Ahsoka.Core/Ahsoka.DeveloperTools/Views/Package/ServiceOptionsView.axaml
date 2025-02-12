@@ -62,7 +62,8 @@
 								Text="Configured Services" VerticalAlignment="Top"/>
 					<Border VerticalAlignment="Stretch" Grid.Row="1" Grid.ColumnSpan="3"
 							Margin="20,5,20,20" BorderBrush="Gainsboro" BorderThickness="1">
-						<ListBox ItemsSource="{Binding Services}" SelectedItem="{Binding SelectedService}" Background="Transparent" >
+						<ListBox ItemsSource="{Binding Services}" SelectedItem="{Binding SelectedService}"
+								 Background="Transparent" >
 							<ListBox.ItemTemplate>
 								<DataTemplate>
 									<CustomerTools:ServiceView/>
@@ -74,6 +75,81 @@
 				</Grid>
 			</Border>
 		</Grid>
+		<Border Grid.ColumnSpan="2" IsVisible="{Binding EditorShown, FallbackValue=true}"
+				 BorderBrush="DarkGray" Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+			<Border VerticalAlignment="Center" Background="Transparent">
+				<Grid VerticalAlignment="Top" HorizontalAlignment="Center" MaxHeight="500" Margin="30">
+					<Border BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White" Padding="25">
+						<Grid RowDefinitions="auto,auto, auto" Margin="13,-10" ColumnDefinitions="Auto,Auto">
+							<Button Grid.Column="2" Margin="-30,-8" Grid.Row="0" Width="24" Height="24"
+									HorizontalAlignment="Right"
+									VerticalAlignment="Top"
+									Command="{Binding HideEditor}"
+									Background="Transparent">
+								<material:MaterialIcon Padding="5"  Background="Transparent"
+													   Foreground="SteelBlue" Kind="Close"/>
+							</Button>
+							<TextBlock Text="Service Setup" FontSize="25" Grid.ColumnSpan="2"
+															   VerticalAlignment="Top" Margin="0,0,8,0" />
+							<TextBlock HorizontalAlignment="Left" Grid.Row="1" Grid.ColumnSpan="2"
+								   MaxWidth="400" FontStyle="Italic" Foreground="SteelBlue"
+								   Text="Configure this service setup such as the Port, Auto Start, Local Only and Secure (API Key) Services Behaviors " FontSize="12"
+								   VerticalAlignment="Top" TextWrapping="Wrap" Margin="0,0,0,8" />
+
+							<Grid DataContext="{Binding SelectedService}" Grid.Row="2" Margin="20,0" ColumnDefinitions="auto,auto" RowDefinitions="34,34,34,34,14">
+							
+								<TextBlock IsVisible="{Binding IsIncluded}" Text="Auto Start Service on First Access:"
+										   Margin="0,3,20,0"  HorizontalAlignment="Stretch"
+										   FontSize="14" TextWrapping="1" />
+								
+								<CheckBox IsVisible="{Binding IsIncluded}" Grid.Column="1" IsChecked="{Binding ServiceAutoStart}"
+										   HorizontalAlignment="Left" 
+										 ToolTip.Tip="Auto Start a Service Instance on First Access.  Note that Dispatcher will always start your client runtime regardless of this setting."
+										  VerticalAlignment="Center">
+									<CheckBox.RenderTransform>
+										<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
+									</CheckBox.RenderTransform>
+								</CheckBox>
+
+								<TextBlock IsVisible="{Binding IsIncluded}" Text="Require API Key for Service:" 
+										   Margin="0,3,0,0"  HorizontalAlignment="Stretch"
+										   FontSize="14" Grid.Row="1" TextWrapping="1" />
+								<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding UseSecurity}"
+										 HorizontalAlignment="Left"
+										 Grid.Row="1"
+										 Grid.Column="1" VerticalAlignment="Center">
+									<CheckBox.RenderTransform>
+										<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
+									</CheckBox.RenderTransform>
+								</CheckBox>
+
+								<TextBlock IsVisible="{Binding IsIncluded}" Text="Allow Access from Local Apps Only:"
+											   Margin="0,3,20,0"  HorizontalAlignment="Stretch"
+											   FontSize="14"  Grid.Row="2" TextWrapping="1" />
+								
+								<CheckBox IsVisible="{Binding IsIncluded}" IsChecked="{Binding LocalOnly}"
+										 Grid.Row="2" HorizontalAlignment="Left" ToolTip.Tip="This Service is available only from the current device (localhost)."
+										 Grid.Column="1" VerticalAlignment="Center">
+									<CheckBox.RenderTransform>
+										<ScaleTransform ScaleX="0.85" ScaleY="0.85" />
+									</CheckBox.RenderTransform>
+								</CheckBox>
+
+								<TextBlock IsVisible="{Binding IsIncluded}" Text="TCP Listen Port:" Margin="0,3,5,0"
+										   HorizontalAlignment="Stretch" FontSize="14" Grid.Row="3"
+										   TextWrapping="1" />
+								<TextBox IsVisible="{Binding IsIncluded}" Text="{Binding ServicePort}"
+										  HorizontalAlignment="Left" Grid.Row="3"
+										 TextAlignment="Center" FontSize="12" Grid.Column="1"
+										 MaxHeight="24" Height="24" MinHeight="24" Padding="3"
+										 TextWrapping="1" />
+							</Grid>
+						</Grid>
+					</Border>
+				</Grid>
+			</Border>
+
+		</Border>
 		<Border Grid.ColumnSpan="2" IsVisible="{Binding SecurityShown, FallbackValue=false}"
 				 BorderBrush="DarkGray" Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
 			<Border VerticalAlignment="Center" Background="Transparent">

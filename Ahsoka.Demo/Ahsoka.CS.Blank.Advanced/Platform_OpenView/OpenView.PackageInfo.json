@@ -2,7 +2,7 @@
   "version": "4.0.1.10078",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Blank.Advanced",
-  "packageName": "Ahsoka.CS.Blank.Advanced",
+  "packageName": "Ahsoka.CS.Blank.Advanced.Select",
   "packageDescription": "Advanced Ahsoka Starter Project",
   "applicationVersion": "3.0",
   "packageApplicationFolder": "../Platform_OpenView/publish",

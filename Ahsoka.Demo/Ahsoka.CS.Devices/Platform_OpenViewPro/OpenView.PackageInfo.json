@@ -1,0 +1,75 @@
+{
+  "version": "4.0.1.20079",
+  "applicationType": "Dotnet",
+  "execCommand": "Ahsoka.CS.Devices",
+  "packageName": "Ahsoka.CS.Devices.Pro",
+  "packageDescription": "Example of Manages Devices (Such as USB Cell Modems)",
+  "applicationVersion": "1.0",
+  "packageApplicationFolder": "../Platform_OpenViewPro/publish",
+  "packageOutputDirectory": "../../PackageOutput",
+  "licenses": [],
+  "optimizedServiceManager": false,
+  "customPackageInfo": {
+    "includeApplication": false,
+    "includeBootLogo": false,
+    "includeInstallerUI": false,
+    "includeFirmwareUpdate": false
+  },
+  "dotNetInfo": {
+    "projectPath": "../Ahsoka.CS.Devices.csproj",
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfilePro.pubxml"
+  },
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensionInfo": [],
+      "startupDelay": 3,
+      "requireChallenge": "NotRequired",
+      "services": [
+        {
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": "AutoStart"
+        }
+      ]
+    },
+    "environmentValues": []
+  },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "",
+    "orientation": 0,
+    "surfaceSetup": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [
+      {
+        "name": "WiFi Combo Module",
+        "deviceType": "OnboardWirelessComboModule",
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": true
+      },
+      {
+        "name": "Cellular Modem",
+        "deviceType": "UsbCellularModule",
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": true
+      }
+    ],
+    "usbStartStatePrimary": "Host",
+    "usbStartStateSecondary": "Default"
+  },
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
+  "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "components": []
+}

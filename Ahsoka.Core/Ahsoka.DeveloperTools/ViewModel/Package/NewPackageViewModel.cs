@@ -2,6 +2,7 @@
 using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Avalonia.Controls;
+using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,11 +18,17 @@ internal class NewPackageViewModel : ViewModelBase
     #region Fields
     private readonly MainViewModel parentViewModel;
     private bool isCreate, matchNames = true;
-    private string projectName, projectPath, directoryName;
+    private string projectName, projectPath, directoryName, selectedProject;
 
     #endregion
 
     #region Properties
+
+    public ObservableCollection<String> SelectedProjectList
+    {
+        get; private set;
+    } = new();
+
     public ObservableCollection<CustomerDemoInfoViewModel> Demos
     {
         get; private set;
@@ -43,6 +50,8 @@ internal class NewPackageViewModel : ViewModelBase
     public string ProjectName { get { return projectName; } set { projectName = value; OnPropertyChanged(); OnPropertyChanged(nameof(DirectoryName)); } }
 
     public string ProjectPath { get { return projectPath; } set { projectPath = value; OnPropertyChanged(); } }
+
+    public string SelectedProject { get { return selectedProject; } set { selectedProject = value; OnPropertyChanged();  } }
 
     public string DirectoryName
     {
@@ -120,6 +129,8 @@ internal class NewPackageViewModel : ViewModelBase
         foreach (var item in results)
         {
             Demos.Add(item.PrimaryDemo);
+            item.PrimaryDemo.DemoList.AddRange(item.AllDemos.Select(x => x.ProjectName));
+
             item.PrimaryDemo.OriginalName = item.PrimaryDemo.ProjectName;
 
             if (item.AllDemos.Count == 1)
@@ -175,12 +186,12 @@ internal class NewPackageViewModel : ViewModelBase
             PackagingUtility.ExtractPackage(pathToLoad, projectFolder, progress, log);
             string launchFile = string.Empty;
 
-            foreach (var item in Directory.GetFiles(projectFolder, "*", SearchOption.AllDirectories))
+            var packageInfo = Directory.GetFiles(projectFolder, $"*.packageInfo.json", SearchOption.AllDirectories);
+            foreach (var item in packageInfo)
             {
-                if (item.Contains(".PackageInfo") || item.Contains("CMakeLists"))
-                {
-                    if (launchFile == String.Empty && item.Contains(".PackageInfo")) { launchFile = item; }
-                }
+                var demoProject = PackageInformation.LoadPackageInformation(item, true);
+                if (demoProject.PackageName == selectedProject)
+                    launchFile = item;
             }
 
             parentViewModel.Popup.DismissPopup();
@@ -220,6 +231,10 @@ internal class NewPackageViewModel : ViewModelBase
         {
             IsCreate = false;
             ProjectName = SelectedDemo.DisplayName;
+            SelectedProjectList.Clear();
+            SelectedProjectList.AddRange(SelectedDemo.DemoList);
+            SelectedProject = SelectedProjectList.First();
+            
         }
         else
             _ = parentViewModel.Dialog.ShowDialog("Missing Information", "Must select project to continue", "Ok");
@@ -244,6 +259,8 @@ internal class NewPackageViewModel : ViewModelBase
 
 public class CustomerDemoInfoViewModel : ViewModelBase
 {
+    public List<String> DemoList { get; set; } = new();
+
     public PackageInformation Model { get; init; }
 
     public string FileName { get; set; }

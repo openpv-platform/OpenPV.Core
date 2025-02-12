@@ -178,7 +178,7 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
     {
         SecurityShown = !SecurityShown;
     }
-    
+
     public void ShowEditor()
     {
         EditorShown = true; ;
@@ -195,12 +195,11 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     ExtensionViewModel extension;
     readonly ServiceConfiguration defaultValues;
     string extentionName;
-    bool isSelected = false;
 
     public void ShowEditor()
     {
         ParentViewModel.SelectedService = this;
-        ParentViewModel.ShowEditor(); 
+        ParentViewModel.ShowEditor();
     }
 
     public bool IsExtension { get; set; }

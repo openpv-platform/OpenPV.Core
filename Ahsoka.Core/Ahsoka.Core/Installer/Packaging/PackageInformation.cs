@@ -60,9 +60,9 @@ public class PackageInformation : PackageHeader
         }
         else
             if (isPath)
-                package = ConfigurationFileLoader.LoadFile(path, CoreJsonSerializerContext.Default.PackageInformation);
-            else
-                package = ConfigurationFileLoader.LoadFileContents(UpgradeMethod.packageUpgradeExtension, path, CoreJsonSerializerContext.Default.PackageInformation);
+            package = ConfigurationFileLoader.LoadFile(path, CoreJsonSerializerContext.Default.PackageInformation);
+        else
+            package = ConfigurationFileLoader.LoadFileContents(UpgradeMethod.packageUpgradeExtension, path, CoreJsonSerializerContext.Default.PackageInformation);
 
         package.Version = VersionUtility.GetAppVersionString();
         package.originalFilePath = path;

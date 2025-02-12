@@ -51,7 +51,7 @@ internal class NewPackageViewModel : ViewModelBase
 
     public string ProjectPath { get { return projectPath; } set { projectPath = value; OnPropertyChanged(); } }
 
-    public string SelectedProject { get { return selectedProject; } set { selectedProject = value; OnPropertyChanged();  } }
+    public string SelectedProject { get { return selectedProject; } set { selectedProject = value; OnPropertyChanged(); } }
 
     public string DirectoryName
     {
@@ -90,7 +90,7 @@ internal class NewPackageViewModel : ViewModelBase
                         {
                             var data = new StreamReader(entry.Open());
                             string json = data.ReadToEnd();
-                            var demoProject =  PackageInformation.LoadPackageInformation(json, false);
+                            var demoProject = PackageInformation.LoadPackageInformation(json, false);
                             demos.Add(new CustomerDemoInfoViewModel(demoProject) { FileName = file });
                         }
                 }
@@ -234,7 +234,7 @@ internal class NewPackageViewModel : ViewModelBase
             SelectedProjectList.Clear();
             SelectedProjectList.AddRange(SelectedDemo.DemoList);
             SelectedProject = SelectedProjectList.First();
-            
+
         }
         else
             _ = parentViewModel.Dialog.ShowDialog("Missing Information", "Must select project to continue", "Ok");

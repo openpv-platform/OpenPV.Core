@@ -642,7 +642,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     internal bool Validate()
     {
         var filled = true;
-    
+
         if (SparkViewModel.SelectedTeam != null)
             foreach (var item in Licenses.ToArray())
                 if (!SparkViewModel.SelectedTeam.Modules.ModuleList.Any(x => x.ModuleID == item.LicenseId))

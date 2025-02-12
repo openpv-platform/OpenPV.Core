@@ -2,10 +2,10 @@
   "version": "4.0.1.10085",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Services",
-  "packageName": "Ahsoka.CS.Services",
+  "packageName": "Ahsoka.CS.Services.Pro",
   "packageDescription": "Example of creating a Custom Ahsoka Service",
   "applicationVersion": "3.0",
-  "packageApplicationFolder": "../Platform_OpenView/publish",
+  "packageApplicationFolder": "../Platform_OpenViewPro/publish",
   "packageOutputDirectory": "PackageOutput",
   "licenses": [],
   "optimizedServiceManager": false,
@@ -17,7 +17,7 @@
   },
   "dotNetInfo": {
     "projectPath": "../Ahsoka.CS.Services.csproj",
-    "publishProfile": "../Properties/PublishProfiles/LinuxProfile.pubxml"
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfilePro.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {

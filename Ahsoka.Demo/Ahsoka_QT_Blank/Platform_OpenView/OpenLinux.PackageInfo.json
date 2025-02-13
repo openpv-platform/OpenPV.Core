@@ -1,23 +1,23 @@
 {
-  "version": "4.0.1.20079",
-  "applicationType": "Dotnet",
-  "execCommand": "Ahsoka.CS.Devices",
-  "packageName": "Ahsoka.CS.Devices.Pro",
-  "packageDescription": "Example of Manages Devices (Such as USB Cell Modems)",
+  "version": "4.0.1.10085",
+  "applicationType": "Cpp",
+  "execCommand": "Ahsoka.QT.Blank",
+  "packageName": "Ahsoka.QT.Blank.Select",
+  "packageDescription": "Blank Starter project for using QT with OpenPV",
   "applicationVersion": "1.0",
-  "packageApplicationFolder": "../Platform_OpenViewPro/publish",
+  "packageApplicationFolder": "../Outputs",
   "packageOutputDirectory": "../../PackageOutput",
   "licenses": [],
-  "optimizedServiceManager": false,
+  "optimizedServiceManager": true,
   "customPackageInfo": {
     "includeApplication": false,
     "includeBootLogo": false,
     "includeInstallerUI": false,
     "includeFirmwareUpdate": false
   },
-  "dotNetInfo": {
-    "projectPath": "../Ahsoka.CS.Devices.csproj",
-    "publishProfile": "../Properties/PublishProfiles/LinuxProfilePro.pubxml"
+  "cppInfo": {
+    "projectPath": "..",
+    "projectType": "QT"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
@@ -46,23 +46,8 @@
     "surfaceSetup": []
   },
   "hardwareConfiguration": {
-    "hardwareItems": [
-      {
-        "name": "WiFi Combo Module",
-        "deviceType": "OnboardWirelessComboModule",
-        "defaultState": "NoState",
-        "customStartup": "",
-        "autoEnable": true
-      },
-      {
-        "name": "Cellular Modem",
-        "deviceType": "UsbCellularModule",
-        "defaultState": "NoState",
-        "customStartup": "",
-        "autoEnable": true
-      }
-    ],
-    "usbStartStatePrimary": "Host",
+    "hardwareItems": [],
+    "usbStartStatePrimary": "Default",
     "usbStartStateSecondary": "Default"
   },
   "packageType": "opvEncrypted",
@@ -70,6 +55,6 @@
   "platformFamily": "OpenViewLinux",
   "platformQualifier": "S70",
   "securityMode": "None",
-  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "applicationId": "3f0b605c-f79e-4242-924e-4319d7ee670c",
   "components": []
 }

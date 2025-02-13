@@ -50,7 +50,7 @@
     "environmentValues": []
   },
   "screenConfiguration": {
-    "showUnknownSurfaces": false,
+    "showUnknownSurfaces": true,
     "bootLogoPath": "",
     "orientation": 0,
     "surfaceSetup": []
@@ -62,8 +62,8 @@
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
-  "platformFamily": "OpenViewLinux",
-  "platformQualifier": "S70",
+  "platformFamily": "OpenViewLinuxPro",
+  "platformQualifier": "GenericArm64",
   "securityMode": "None",
   "applicationId": "6e05ae42-c6be-40df-ae8f-d138273ba3f7",
   "components": []

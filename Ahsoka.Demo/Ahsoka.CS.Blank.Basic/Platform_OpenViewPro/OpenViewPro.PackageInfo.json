@@ -1,46 +1,59 @@
 {
-  "version": "3.0.1.10015",
+  "version": "4.0.1.10085",
   "applicationType": "Dotnet",
-  "userInterfaceType": "None",
-  "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CS.Blank.Basic",
   "packageName": "Ahsoka.CS.Blank.Basic.Pro",
   "packageDescription": "Basic Ahsoka Starter Project",
   "applicationVersion": "3.0",
   "packageApplicationFolder": "../Platform_OpenViewPro/publish",
   "packageOutputDirectory": "PackageOutput",
-  "includeInstallerUI": false,
   "licenses": [],
+  "optimizedServiceManager": true,
+  "customPackageInfo": {
+    "includeApplication": false,
+    "includeBootLogo": false,
+    "includeInstallerUI": false,
+    "includeFirmwareUpdate": false
+  },
   "dotNetInfo": {
     "projectPath": "../Ahsoka.CS.Blank.Basic.csproj",
     "publishProfile": "../Properties/PublishProfiles/LinuxProfilePro.pubxml"
   },
   "serviceInfo": {
     "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensionInfo": [],
+      "startupDelay": 3,
+      "requireChallenge": "NotRequired",
       "services": [
         {
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "isExtension": false,
-          "dataKeyValues": [],
-          "configurationFile": ""
+          "behaviors": "AutoStart"
         }
-      ],
-      "customServiceEnabled": "Enabled",
-      "serviceStartup": "NoAutoStart",
-      "releaseOption": "NoAutoStart",
-      "extensions": [],
-      "startupDelay": 3
+      ]
     },
     "environmentValues": []
   },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "",
+    "orientation": 0,
+    "surfaceSetup": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
+  },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
-  "platformFamily": "OpenViewLinux",
-  "platformQualifier": "S70",
+  "platformFamily": "OpenViewLinuxPro",
+  "platformQualifier": "GenericArm64",
   "securityMode": "None",
   "applicationId": "00000000-0000-0000-0000-000000000000",
   "components": []

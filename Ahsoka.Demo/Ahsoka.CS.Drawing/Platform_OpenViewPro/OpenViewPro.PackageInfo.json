@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10065",
+  "version": "4.0.1.10085",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Drawing",
   "packageName": "Ahsoka.CS.Drawing.Pro",
@@ -28,7 +28,6 @@
       "requireChallenge": "NotRequired",
       "services": [
         {
-          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -43,35 +42,8 @@
   "screenConfiguration": {
     "showUnknownSurfaces": true,
     "bootLogoPath": "EnovLogo.png",
-    "orientation": "DefaultOrientation",
-    "surfaceSetups": [
-      {
-        "surfaceId": 121212,
-        "locationRectangle": {
-          "surfaceId": 12121212,
-          "x": 24,
-          "y": 24,
-          "width": 980,
-          "height": 550,
-          "commitChanges": false
-        },
-        "sourceRectangle": {
-          "surfaceId": 12121212,
-          "x": 0,
-          "y": 0,
-          "width": 980,
-          "height": 550,
-          "commitChanges": false
-        },
-        "visibility": {
-          "surfaceId": 0,
-          "isVisible": true,
-          "opacity": 1.0,
-          "commitChanges": false
-        },
-        "surfaceAppName": "DemoApp"
-      }
-    ]
+    "orientation": 0,
+    "surfaceSetup": []
   },
   "hardwareConfiguration": {
     "hardwareItems": [

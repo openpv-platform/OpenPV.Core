@@ -1,12 +1,12 @@
 {
   "version": "4.0.1.10085",
   "applicationType": "Dotnet",
-  "execCommand": "Ahsoka.CS.Services",
-  "packageName": "Ahsoka.CS.Services.Pro",
-  "packageDescription": "Example of creating a Custom Ahsoka Service",
-  "applicationVersion": "3.0",
+  "execCommand": "Ahsoka.CS.Devices",
+  "packageName": "Ahsoka.CS.Devices.Pro",
+  "packageDescription": "Example of Manages Devices (Such as USB Cell Modems)",
+  "applicationVersion": "1.0",
   "packageApplicationFolder": "../Platform_OpenViewPro/publish",
-  "packageOutputDirectory": "PackageOutput",
+  "packageOutputDirectory": "../../PackageOutput",
   "licenses": [],
   "optimizedServiceManager": false,
   "customPackageInfo": {
@@ -16,7 +16,7 @@
     "includeFirmwareUpdate": false
   },
   "dotNetInfo": {
-    "projectPath": "../Ahsoka.CS.Services.csproj",
+    "projectPath": "../Ahsoka.CS.Devices.csproj",
     "publishProfile": "../Properties/PublishProfiles/LinuxProfilePro.pubxml"
   },
   "serviceInfo": {
@@ -24,7 +24,7 @@
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
       "extensionInfo": [],
-      "startupDelay": 0,
+      "startupDelay": 3,
       "requireChallenge": "NotRequired",
       "services": [
         {
@@ -40,20 +40,46 @@
     "environmentValues": []
   },
   "screenConfiguration": {
-    "showUnknownSurfaces": false,
+    "showUnknownSurfaces": true,
     "bootLogoPath": "",
     "orientation": 0,
     "surfaceSetup": []
   },
   "hardwareConfiguration": {
-    "hardwareItems": [],
-    "usbStartStatePrimary": "Default",
+    "hardwareItems": [
+      {
+        "name": "IO Control Module",
+        "deviceType": "IoControlModule",
+        "defaultState": "NoState",
+        "autoEnable": false
+      },
+      {
+        "name": "WiFi Module",
+        "deviceType": "OnboardWifiModule",
+        "defaultState": "NoState",
+        "autoEnable": false
+      },
+      {
+        "name": "Bluetooth Module",
+        "deviceType": "OnboardBtModule",
+        "defaultState": "NoState",
+        "autoEnable": false
+      },
+      {
+        "name": "Ethernet",
+        "deviceType": "OnboardEthernet",
+        "defaultState": "NoState",
+        "autoEnable": false
+      }
+    ],
+    "usbStartStatePrimary": "Host",
     "usbStartStateSecondary": "Default"
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,
-  "platformFamily": "OpenViewLinux",
-  "platformQualifier": "S70",
+  "platformFamily": "OpenViewLinuxPro",
+  "platformQualifier": "GenericArm64",
   "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
   "components": []
 }

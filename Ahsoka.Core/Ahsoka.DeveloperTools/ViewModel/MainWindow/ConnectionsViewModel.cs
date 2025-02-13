@@ -507,6 +507,8 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             var connection = SshUtility.CreateSshClient(editInfo);
             var result = connection.RunCommand("cat /sys/firmware/devicetree/base/serial-number"); // This Needs to change but don't want to be reliant on the command being on the unit.
             var hardwareID = result.Result.Replace("\0", "");
+            if (String.IsNullOrEmpty(hardwareID))
+                hardwareID = "0";
 
             return SparkAccountClient.SharedSparkClient.GetFactoryInfo(hardwareInfo.PlatformFamily.ToString(), hardwareID);
 
@@ -514,12 +516,15 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
         {
             try
             {
-                FactoryInfo = new ManufacturingInfo()
-                {
-                    MacAddress = result.Result.MacAddress,
-                    PartNumber = result.Result.PartNumber,
-                    SerialNumber = result.Result.SerialNumber,
-                };
+                if (result.Result == null)
+                    FactoryInfo = new ManufacturingInfo();
+                else
+                    FactoryInfo = new ManufacturingInfo()
+                    {
+                        MacAddress = result.Result.MacAddress,
+                        PartNumber = result.Result.PartNumber,
+                        SerialNumber = result.Result.SerialNumber,
+                    };
 
                 FactoryPrepConnectionInfo = new SparkConnectionInfo()
                 {

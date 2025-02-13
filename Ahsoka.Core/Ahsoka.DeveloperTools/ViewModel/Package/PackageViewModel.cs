@@ -816,7 +816,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             string projectFile = Path.Combine(projectFolder, DotNetViewModel.ProjectPath);
             if (Path.Exists(projectFile))
             {
-                ProcessUtility.RunProcess("cmd", $"/c {projectFile}", projectFolder, out string result, out string error);
+                ProcessUtility.CreateProcess("cmd", $"/c {projectFile}",projectFolder).Start();
                 return;
             }
             else
@@ -1098,7 +1098,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         }
         else
         {
-            pathToKits = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), PackageInfo.CppInfo.ProjectPath));
+            pathToKits = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), PackageInfo.CppInfo.ProjectPath);
         }
 
 

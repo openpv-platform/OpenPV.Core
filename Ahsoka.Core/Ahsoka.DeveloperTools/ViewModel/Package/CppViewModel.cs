@@ -131,7 +131,9 @@ internal class CppViewModel : ViewModelBase
 
     private string GetFrameworkInfoPath()
     {
-        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ".platform_support//AhsokaFrameworkInfo.json");
+        string projectPath = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ProjectPath);
+        projectPath = Path.GetFullPath(projectPath);
+        return Path.Combine(projectPath, ".platform_support//AhsokaFrameworkInfo.json");
     }
 
     public CppViewModel(MainViewModel parentViewModel, PackageInformation packageInfo)
@@ -185,9 +187,8 @@ internal class CppViewModel : ViewModelBase
         bool finishedInstall = false;
         try
         {
-
-            string projectPath = Path.GetDirectoryName(packageInfo.GetPackageInfoPath());
-            if (!Directory.Exists(Path.Combine(projectPath, ProjectPath)))
+            string projectPath = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()),ProjectPath);
+            if (!Directory.Exists(projectPath))
             {
                 parentViewModel.Console.AddConsoleLine("Please Select a Project Path.");
                 return;

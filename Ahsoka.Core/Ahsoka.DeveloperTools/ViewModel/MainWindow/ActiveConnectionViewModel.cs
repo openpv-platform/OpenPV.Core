@@ -139,6 +139,9 @@ internal class ActiveConnectionViewModel : ViewModelBase
                 UpdateConnectedDescription();
                 AhsokaRuntime.Default.StopEndPoints(client);
 
+                if (securityClient.IsStarted)
+                    AhsokaRuntime.Default.StopEndPoints(securityClient);
+
                 client = new(config);
                 securityClient = new(securityConfig);
 

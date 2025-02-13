@@ -71,7 +71,11 @@ public sealed class TCPServiceSocket : IAhsokaServiceSocket
             sendQueue.ReceiveReady += (o, e) =>
             {
                 while (sendQueue.Count > 0)
-                    socket.TrySendMultipartMessage(sendQueue.Dequeue());
+                    try
+                    {
+                        socket.TrySendMultipartMessage(sendQueue.Dequeue());
+                    }
+                    catch { }
             };
 
             socketPoller.RunAsync($"{endPoint.ServiceConfig.ServiceName}_Handler");
@@ -101,6 +105,9 @@ public sealed class TCPServiceSocket : IAhsokaServiceSocket
         if (!sendQueue.IsDisposed)
             socketPoller.RemoveAndDispose(sendQueue);
 
+        socketPoller.Dispose();
+        socketPoller = null;
+
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
 
     }
@@ -120,7 +127,7 @@ public sealed class TCPServiceSocket : IAhsokaServiceSocket
 
         // If Service Thread, send now, otherwise enqueue for send.
         if (socketThreadId == Environment.CurrentManagedThreadId)
-            socket.TrySendMultipartMessage(message);
+            try { socket.TrySendMultipartMessage(message); } catch { }
         else if (socketMessage.IsNotification)
             sendQueue.Enqueue(message);
         else

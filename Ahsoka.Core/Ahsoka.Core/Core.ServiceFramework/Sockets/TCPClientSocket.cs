@@ -1,4 +1,5 @@
-﻿using NetMQ;
+﻿using Ahsoka.Services.System;
+using NetMQ;
 using NetMQ.Sockets;
 using System;
 using System.IO;
@@ -42,7 +43,7 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
             socket.Connect(this.endPoint.ServiceConfig.DataURI);
             socketPoller.Add(socket);
             socketPoller.Add(sendQueue);
-
+         
             socket.ReceiveReady += (o, e) =>
             {
                 AhsokaClientMessage response = RecieveMessage(socket);
@@ -66,7 +67,13 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
                         message.Append(headerStream.ToArray());
                         message.Append(request.MessageData);
 
-                        var result = socket?.TrySendMultipartMessage(message);
+                        bool result = false;
+                        try
+                        {
+                            if (socket != null)
+                                result = socket.TrySendMultipartMessage(message);
+                        }
+                        catch (Exception) { }
 
                         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client Message Completed from {endPoint.ServiceConfig.ServiceName} ");
                     }
@@ -113,10 +120,14 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
                 socketPoller.StopAsync();
                 socketPoller.RemoveAndDispose(sendQueue);
                 socketPoller.RemoveAndDispose(socket);
+                socketPoller.Dispose();
+                socketPoller = null;
 
                 notificationSocket.Disconnect(endPoint.ServiceConfig.DataURI);
                 notificationPoller.StopAsync();
                 notificationPoller.RemoveAndDispose(notificationSocket);
+                notificationPoller.Dispose();
+                notificationPoller = null;
 
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
             }
@@ -149,7 +160,6 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
             }
         }
         catch (SocketException) { } // Catching Errors During Shutdown / Disconnect
-
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Received Client Message on {endPoint.ServiceConfig.ServiceName} ");
 

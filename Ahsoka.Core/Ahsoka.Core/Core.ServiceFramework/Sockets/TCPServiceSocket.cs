@@ -98,7 +98,7 @@ public sealed class TCPServiceSocket : IAhsokaServiceSocket
         isConnected = false;
 
         if (socketPoller.IsRunning)
-            socketPoller.StopAsync();
+            socketPoller.Stop();
 
         if (!socket.IsDisposed)
             socketPoller.RemoveAndDispose(socket);

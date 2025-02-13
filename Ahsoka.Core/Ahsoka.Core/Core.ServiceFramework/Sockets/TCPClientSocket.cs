@@ -117,14 +117,14 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Disconnecting {endPoint.ServiceConfig.ServiceName}");
 
                 socket.Disconnect(endPoint.ServiceConfig.DataURI);
-                socketPoller.StopAsync();
+                socketPoller.Stop();
                 socketPoller.RemoveAndDispose(sendQueue);
                 socketPoller.RemoveAndDispose(socket);
                 socketPoller.Dispose();
                 socketPoller = null;
 
                 notificationSocket.Disconnect(endPoint.ServiceConfig.DataURI);
-                notificationPoller.StopAsync();
+                notificationPoller.Stop();
                 notificationPoller.RemoveAndDispose(notificationSocket);
                 notificationPoller.Dispose();
                 notificationPoller = null;

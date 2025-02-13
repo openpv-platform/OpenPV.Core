@@ -45,13 +45,6 @@ public class PackagingTests : LinearTestBase
         RunPackageTest(false, "AhsokaCairo", "S70", PlatformFamily.OpenViewLinux);
     }
 
-    [TestMethod]
-    public void TestCodesysPackage()
-    {
-        PackageInformation package = PackagingTests.CreatePackage(out string fileName, asCodesys: true);
-        File.Delete(fileName);
-    }
-
     //[TestMethod]
     public void TestPackagesOptimized()
     {
@@ -61,8 +54,8 @@ public class PackagingTests : LinearTestBase
     private static void RunPackageTest(bool optimize, string packageToTest = "", string qualifier = "Desktop", PlatformFamily family = PlatformFamily.Windows64)
     {
         PackageInformation package = packageToTest == "" ?
-                    CreatePackage(out string tempFilePath, PlatformFamily.Windows64, "Desktop", "AhsokaCairo", false, optimize) :
-                    CreatePackage(out tempFilePath, family, qualifier, packageToTest, false, optimize);
+                    CreatePackage(out string tempFilePath, PlatformFamily.Windows64, "Desktop", "AhsokaCairo", optimize) :
+                    CreatePackage(out tempFilePath, family, qualifier, packageToTest, optimize);
 
         package.OptimizedServiceManager = optimize;
 
@@ -128,11 +121,11 @@ public class PackagingTests : LinearTestBase
     }
 
     static int nextOrientation = 0;
-    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo", bool asCodesys = false, bool optimized = false)
+    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo", bool optimized = false)
     {
         string key = family.ToString() + qualifier + packageToTest;
 
-        if (!asCodesys && !optimized)
+        if (!optimized)
             if (packageInfo.TryGetValue(key, out PackageInformation info))
             {
                 path = info.GetOutputFullPath();
@@ -155,16 +148,6 @@ public class PackagingTests : LinearTestBase
         string packagefile = Path.Combine(appOutputs, "Platform_OpenView", "OpenView.PackageInfo.json");
         PackageInformation package = PackageInformation.LoadPackageInformation(packagefile);
         package.OptimizedServiceManager = optimized;
-
-        if (asCodesys)
-        {
-            package.ApplicationType = ApplicationType.CODESYS;
-            Directory.CreateDirectory(appOutputs + "\\Platform_OpenView\\publish");
-            string appname = Path.Combine(appOutputs, "Platform_OpenView\\publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".app");
-            string crc = Path.Combine(appOutputs, "Platform_OpenView\\publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".crc");
-            File.WriteAllText(appname, string.Empty);
-            File.WriteAllText(crc, string.Empty);
-        }
 
         package.ScreenConfiguration.Orientation = nextOrientation;
 
@@ -195,7 +178,7 @@ public class PackagingTests : LinearTestBase
         package = PackageInformation.LoadPackageInformation(packagefile);
 
         // Capture the values to our cache.
-        if (!asCodesys && !optimized)
+        if (!optimized)
             packageInfo.Add(key, package);
 
         CustomPackageInfo customPackageInfo = null;

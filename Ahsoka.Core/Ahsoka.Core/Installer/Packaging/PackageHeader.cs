@@ -99,7 +99,6 @@ public enum ApplicationType
     Script = 1,
     Dotnet = 2,
     Cpp = 4,
-    CODESYS = 5,
     PowerVision = 6,
 }
 

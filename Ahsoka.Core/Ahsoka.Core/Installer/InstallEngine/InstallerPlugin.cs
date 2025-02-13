@@ -23,8 +23,6 @@ public class InstallerPlugin
         {
             case ApplicationType.Dotnet:
                 return new DotNetInstallerPlugin();
-            case ApplicationType.CODESYS:
-                return new CodesysInstallerPlugin();
             default:
                 return null;
         }

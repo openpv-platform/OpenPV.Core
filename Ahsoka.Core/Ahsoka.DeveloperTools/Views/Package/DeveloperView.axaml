@@ -45,7 +45,6 @@
 			</Grid>
 
 			<CustomerTools:DotNetView IsVisible="{Binding IsDotNet}"/>
-			<CustomerTools:CodesysView IsVisible="{Binding IsCODESYS}"/>
 			<CustomerTools:CppView IsVisible="{Binding IsCPP}"/>
 		</StackPanel>
 

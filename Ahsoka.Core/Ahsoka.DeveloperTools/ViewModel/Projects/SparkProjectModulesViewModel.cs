@@ -107,6 +107,10 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
 
         foreach (var module in modules)
         {
+            // Hide Adding Codesys Modules
+            if (module.Name.ToLower().Contains("codesys"))
+                continue;
+
             if (!ModuleList.Any(x => x.ModuleID == module.ID))
                 this.AvailableModules.Add(new ModuleViewModel(this)
                 {

@@ -244,16 +244,6 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #!/bin/sh
-        ///  /usr/bin/codesys/prestart.sh.
-        /// </summary>
-        internal static string CODESYS_PreStart {
-            get {
-                return ResourceManager.GetString("CODESYS_PreStart", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to #include &quot;DefaultServiceClient.h&quot;
         ///#include &quot;DefaultServiceMessages.hpp&quot;
         ///
@@ -491,6 +481,7 @@ namespace Ahsoka.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to using Ahsoka.Core.Utility;
+        ///using Ahsoka.Core;
         ///using System;
         ///
         ///namespace Ahsoka;

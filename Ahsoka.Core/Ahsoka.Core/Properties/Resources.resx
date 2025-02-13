@@ -169,10 +169,6 @@
   <data name="UntrustedPublicKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\UntrustedPublicKeyPEM.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="CODESYS_PreStart" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CODESYS_PreStart.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    <comment>Codesys PreStart Script</comment>
-  </data>
   <data name="ModuleLicensePublicKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\modulelicensepublickeypem.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

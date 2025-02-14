@@ -1,4 +1,5 @@
-﻿using Ahsoka.Core.Spark;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
 using Ahsoka.Core.Utility;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -23,9 +24,9 @@ internal static class DisplayProvisioningCommands
             Console.WriteLine(info);
         });
 
-        var connectionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(targetConnectionInfoFile), CoreJsonSerializerContext.Default.TargetConnectionInfo);
-        var sparkInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(sparkConnectionInfoFile), CoreJsonSerializerContext.Default.SparkConnectionInfo);
-        var provisionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(provisioningFile), CoreJsonSerializerContext.Default.ProvisionDisplayRequest);
+        var connectionInfo = JsonUtility.DeserializeWithTypeInfo<TargetConnectionInfo>(File.ReadAllText(targetConnectionInfoFile));
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
+        var provisionInfo = JsonUtility.DeserializeWithTypeInfo<ProvisionDisplayRequest>(File.ReadAllText(provisioningFile));
 
         if (!SparkCustomerTools.ProvisionDisplayInSpark(connectionInfo, sparkInfo, provisionInfo, progress))
         {
@@ -44,8 +45,8 @@ internal static class DisplayProvisioningCommands
     {
         IProgress<string> progress = new Progress<string>(Console.WriteLine);
 
-        var sparkInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(sparkConnectionInfoFile), CoreJsonSerializerContext.Default.SparkConnectionInfo);
-        var provisionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(provisioningFile), CoreJsonSerializerContext.Default.ProvisionDisplayRequest);
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
+        var provisionInfo = JsonUtility.DeserializeWithTypeInfo<ProvisionDisplayRequest>(File.ReadAllText(provisioningFile));
 
         if (!SparkCustomerTools.PreProvisionDevices(deviceInfoFile, sparkInfo, provisionInfo, progress))
         {

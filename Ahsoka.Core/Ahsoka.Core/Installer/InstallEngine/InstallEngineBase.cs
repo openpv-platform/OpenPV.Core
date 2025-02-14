@@ -58,7 +58,7 @@ public class InstallEngineBase
                 var key = AesEncryption.KeyFromDeviceId(SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
                 var descriptedKey = AesEncryption.Decrypt(new MemoryStream(data), key.Key, key.IV);
 
-                DeviceKeyInfo info = JsonUtility.DeserializeWithTypeInfo(Encoding.UTF8.GetString(descriptedKey.ToArray()), CoreJsonSerializerContext.Default.DeviceKeyInfo);
+                DeviceKeyInfo info = JsonUtility.DeserializeWithTypeInfo<DeviceKeyInfo>(Encoding.UTF8.GetString(descriptedKey.ToArray()));
                 privateKey = info.PrivateKey;
                 Console.WriteLine($"Using Private Device Key ({Path.GetFileName(appKey)}) to Read Package");
             }

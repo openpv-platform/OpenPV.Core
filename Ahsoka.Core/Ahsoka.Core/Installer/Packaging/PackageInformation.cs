@@ -55,14 +55,14 @@ public class PackageInformation : PackageHeader
             var entry = archive.Entries.FirstOrDefault(x => x.Name.ToLower().EndsWith("packageinfo.json"));
             string filePath = Path.GetTempFileName();
             entry.ExtractToFile(filePath, true);
-            package = ConfigurationFileLoader.LoadFile(filePath, CoreJsonSerializerContext.Default.PackageInformation);
+            package = ConfigurationFileLoader.LoadFile<PackageInformation>(filePath);
             File.Delete(filePath);
         }
         else
             if (isPath)
-            package = ConfigurationFileLoader.LoadFile(path, CoreJsonSerializerContext.Default.PackageInformation);
+            package = ConfigurationFileLoader.LoadFile<PackageInformation>(path);
         else
-            package = ConfigurationFileLoader.LoadFileContents(UpgradeMethod.packageUpgradeExtension, path, CoreJsonSerializerContext.Default.PackageInformation);
+            package = ConfigurationFileLoader.LoadFileContents<PackageInformation>(UpgradeMethod.packageUpgradeExtension, path);
 
         package.Version = VersionUtility.GetAppVersionString();
         package.originalFilePath = path;
@@ -97,7 +97,7 @@ public class PackageInformation : PackageHeader
     internal PackageHeader CopyAsPackageHeader(string signingKey)
     {
         // Serialize and Deserialise as Header to elimate inherited values.
-        var retVal = JsonUtility.DeserializeWithTypeInfo(JsonUtility.Serialize(this), CoreJsonSerializerContext.Default.PackageHeader);
+        var retVal = JsonUtility.DeserializeWithTypeInfo<PackageHeader>(JsonUtility.Serialize(this));
 
         if (retVal.SecurityModelNumber?.Length > 0)
             retVal.SecurityModelNumberData = RSAEncryption.EncryptWithPEMKey(UTF8Encoding.UTF8.GetBytes(retVal.SecurityModelNumber), signingKey);

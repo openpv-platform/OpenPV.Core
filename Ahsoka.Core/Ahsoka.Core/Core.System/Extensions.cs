@@ -111,7 +111,7 @@ public class Extensions
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"AhsokaExtensions - {file}");
                 try
                 {
-                    ExtensionConfiguration extInfoConfiguration = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(file), CoreJsonSerializerContext.Default.ExtensionConfiguration);
+                    ExtensionConfiguration extInfoConfiguration = JsonUtility.DeserializeWithTypeInfo<ExtensionConfiguration>(File.ReadAllText(file));
                     extInfoConfiguration.FilePath = file;
                     if (!Configurations.Any(x => x.PackageName == extInfoConfiguration.PackageName))
                     {

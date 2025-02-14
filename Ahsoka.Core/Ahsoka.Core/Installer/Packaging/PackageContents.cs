@@ -36,7 +36,7 @@ public class PackageContents : PackageHeader
 
         // Decode Header and Translate into Contents Object.
         PackageHeader header = ProtoBuf.Serializer.Deserialize<PackageHeader>(headerData);
-        PackageContents information = JsonUtility.DeserializeWithTypeInfo(JsonUtility.Serialize(header), CoreJsonSerializerContext.Default.PackageContents);
+        PackageContents information = JsonUtility.DeserializeWithTypeInfo<PackageContents>(JsonUtility.Serialize(header));
 
         information.PrivateKey = privateKey;
 

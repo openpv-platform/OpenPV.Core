@@ -1,4 +1,5 @@
-﻿using Ahsoka.Core.Utility;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Install;
 using Ahsoka.Services.System;
 using System;
@@ -36,7 +37,7 @@ internal static class InstallerCommands
                                                  [TargetConnectionInfoFile] - Connection Info File (JSON)")]
     private static void ReturnToInstaller(string connectionInfoFile)
     {
-        var connectionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(connectionInfoFile), CoreJsonSerializerContext.Default.TargetConnectionInfo);
+        var connectionInfo = JsonUtility.DeserializeWithTypeInfo<TargetConnectionInfo>(File.ReadAllText(connectionInfoFile));
 
         IProgress<string> progress = new Progress<string>(Console.WriteLine);
         var config = new ServiceConfiguration()

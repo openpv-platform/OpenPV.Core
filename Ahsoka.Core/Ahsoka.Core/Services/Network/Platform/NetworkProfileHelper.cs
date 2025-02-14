@@ -44,7 +44,7 @@ internal class NetworkProfileHelper
         if (File.Exists(path))
         {
             string fileData = File.ReadAllText(path);
-            NetworkProfilesList networkProfilesList = JsonUtility.DeserializeWithTypeInfo(fileData, CoreJsonSerializerContext.Default.NetworkProfilesList);
+            NetworkProfilesList networkProfilesList = JsonUtility.DeserializeWithTypeInfo<NetworkProfilesList>(fileData);
 
             if (networkProfilesList != null && networkProfilesList.NetworkProfiles != null)
                 return networkProfilesList;

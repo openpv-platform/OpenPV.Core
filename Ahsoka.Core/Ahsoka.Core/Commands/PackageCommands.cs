@@ -22,7 +22,7 @@ internal static class PackageCommands
 
     private static void LoadApplication(string connectionInfoFile, string applicationFile)
     {
-        var connectionInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(connectionInfoFile), CoreJsonSerializerContext.Default.TargetConnectionInfo);
+        var connectionInfo = JsonUtility.DeserializeWithTypeInfo<TargetConnectionInfo>(File.ReadAllText(connectionInfoFile));
 
         var config = new ServiceConfiguration()
         {
@@ -141,7 +141,7 @@ internal static class PackageCommands
                 return;
             }
 
-            customInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(customPackageInfo), CoreJsonSerializerContext.Default.CustomPackageInfo);
+            customInfo = JsonUtility.DeserializeWithTypeInfo<CustomPackageInfo>(File.ReadAllText(customPackageInfo));
         }
 
 
@@ -158,7 +158,7 @@ internal static class PackageCommands
             string packageCert = package.GetPackageCertPath();
             if (File.Exists(packageCert))
             {
-                DeviceKeyInfo info = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(packageCert), CoreJsonSerializerContext.Default.DeviceKeyInfo);
+                DeviceKeyInfo info = JsonUtility.DeserializeWithTypeInfo<DeviceKeyInfo>(File.ReadAllText(packageCert));
                 signingSignature = info.PublicKey;
                 Console.WriteLine($"Creating Package with Private Key {package.PackageSigningCertFile}");
                 Console.WriteLine($"  Note: Use of a private key requires the device be provisioned with this public key to install.");
@@ -225,7 +225,7 @@ internal static class PackageCommands
         string key = null;
         if (File.Exists(pathToKeyFile))
         {
-            DeviceKeyInfo info = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(pathToKeyFile), CoreJsonSerializerContext.Default.DeviceKeyInfo);
+            DeviceKeyInfo info = JsonUtility.DeserializeWithTypeInfo<DeviceKeyInfo>(File.ReadAllText(pathToKeyFile));
             key = info.PrivateKey;
             Console.WriteLine($"Using Private Device Key ({Path.GetFileName(pathToKeyFile)}) to Read Package");
         }

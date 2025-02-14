@@ -355,7 +355,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         string file = GetSettingsPath();
         if (File.Exists(file))
         {
-            SystemSettings systemSettings = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(file), CoreJsonSerializerContext.Default.SystemSettings);
+            SystemSettings systemSettings = JsonUtility.DeserializeWithTypeInfo<SystemSettings>(File.ReadAllText(file));
             if (systemSettings == null)
             {
                 Console.WriteLine($"LoadSystemSettings: systemSettings is null...");

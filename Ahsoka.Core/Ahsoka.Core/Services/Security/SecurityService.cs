@@ -40,7 +40,7 @@ public class SecurityService : AhsokaServiceBase<SecurityMessageTypes.Ids>
         if (File.Exists(deviceSecurityFile))
         {
             var data = AesEncryption.DecryptFile(deviceSecurityFile, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
-            configuration = JsonUtility.DeserializeWithTypeInfo(Encoding.UTF8.GetString(data.ToArray()), CoreJsonSerializerContext.Default.SecurityConfiguration);
+            configuration = JsonUtility.DeserializeWithTypeInfo<SecurityConfiguration>(Encoding.UTF8.GetString(data.ToArray()));
         }
 
         TokenSource.RegisterTokenSource(new AppKeyTokenSource(configuration));

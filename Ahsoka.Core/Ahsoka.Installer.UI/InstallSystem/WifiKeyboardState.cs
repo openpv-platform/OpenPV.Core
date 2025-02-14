@@ -119,11 +119,11 @@ internal class WiFiKeyboardState : InstallerUIStateBase
         KeyBoard keys = new();
 
         if (keyboardState == KeyboardAction.Caps)
-            keys = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText("Assets/CapsKeyboard.json"), InstallerJsonSerializerContext.Default.KeyBoard);
+            keys = JsonUtility.DeserializeWithTypeInfo<KeyBoard>(File.ReadAllText("Assets/CapsKeyboard.json"));
         if (keyboardState == KeyboardAction.Lower)
-            keys = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText("Assets/LowerKeyboard.json"), InstallerJsonSerializerContext.Default.KeyBoard);
+            keys = JsonUtility.DeserializeWithTypeInfo<KeyBoard>(File.ReadAllText("Assets/LowerKeyboard.json"));
         if (keyboardState == KeyboardAction.SymbolsAndNumbers)
-            keys = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText("Assets/SymbolKeyboard.json"), InstallerJsonSerializerContext.Default.KeyBoard);
+            keys = JsonUtility.DeserializeWithTypeInfo<KeyBoard>(File.ReadAllText("Assets/SymbolKeyboard.json"));
 
         return keys;
     }

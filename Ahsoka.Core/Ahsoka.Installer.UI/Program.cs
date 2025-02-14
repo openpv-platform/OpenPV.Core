@@ -17,6 +17,8 @@ class Program
         if (OperatingSystem.IsWindows())
             ConsoleExtension.Hide();
 
+        JsonUtility.AddTypeResolver(InstallerJsonSerializerContext.Default);
+
         ConfigurationLoader.SetRuntimeConfiguration(ConfigurationLoader.CreateDefaultConfiguration());
 
         // Start the Application passing it our drawing area

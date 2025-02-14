@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
@@ -15,7 +16,13 @@ public static class JsonUtility
 
     internal static JsonSerializerOptions Options { get => options; }
 
+    /// <summary>
+    /// List of Type Resolvers
+    /// </summary>
+    static List<IJsonTypeInfoResolver> registeredTypeResolvers = new();
+
     static JsonSerializerOptions options;
+    static JsonSerializerOptions typeOptions;
 
     /// <summary>
     /// Intialize All JsonConvert callse to resolve CamelCase for compatibility with 
@@ -23,9 +30,11 @@ public static class JsonUtility
     /// </summary>
     static JsonUtility()
     {
+        // Used for Reflection Serialization
         options = new JsonSerializerOptions()
         {
             WriteIndented = true,
+            IncludeFields = true,
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -36,6 +45,43 @@ public static class JsonUtility
         options.Converters.Add(new JsonStringEnumConverter(null, true));
         options.Converters.Add(new BooleanConverter());
 
+        // Add Default Type Resolver
+        AddTypeResolver(CoreJsonSerializerContext.Default);
+
+    }
+
+    /// <summary>
+    /// Add Type Resolver to Internal List
+    /// </summary>
+    /// <param name="typeResolver"></param>
+    public static void AddTypeResolver(IJsonTypeInfoResolver typeResolver)
+    {
+        if (typeResolver != null)
+            if (!registeredTypeResolvers.Contains(typeResolver))
+            {
+                lock (registeredTypeResolvers)
+                {
+                    registeredTypeResolvers.Add(typeResolver);
+
+                    // Used for Code Generation Serialization
+                    typeOptions = new JsonSerializerOptions()
+                    {
+                        WriteIndented = true,
+                        IncludeFields = true,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                        PropertyNameCaseInsensitive = true,
+                        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                        NumberHandling = JsonNumberHandling.AllowReadingFromString,
+                        PreferredObjectCreationHandling = JsonObjectCreationHandling.Populate,
+                    };
+
+                    typeOptions.Converters.Add(new JsonStringEnumConverter(null, true));
+                    typeOptions.Converters.Add(new BooleanConverter());
+
+                    foreach(var item in registeredTypeResolvers)
+                        typeOptions.TypeInfoResolverChain.Add(item);
+                }
+            }
     }
 
     /// <summary>
@@ -54,12 +100,10 @@ public static class JsonUtility
     /// </summary>
     /// <typeparam name="T">Type of Object to Deserialize</typeparam>
     /// <param name="json">Json Text</param>
-    /// <param name="typeInfo">Type Info for Deserialization</param>
     /// <returns></returns>
-    public static T DeserializeWithTypeInfo<T>(string json, JsonTypeInfo<T> typeInfo) where T : class, new()
+    public static T DeserializeWithTypeInfo<T>(string json) where T : class, new()
     {
-        return Deserialize<T>(json);
-        //return JsonText.JsonSerializer.Deserialize<T>(json, options);
+        return JsonSerializer.Deserialize<T>(json, typeOptions);
     }
 
     /// <summary>
@@ -69,7 +113,7 @@ public static class JsonUtility
     /// <returns></returns>
     public static string Serialize(object value)
     {
-        return JsonText.JsonSerializer.Serialize(value, Options);
+        return JsonSerializer.Serialize(value, Options);
     }
 }
 

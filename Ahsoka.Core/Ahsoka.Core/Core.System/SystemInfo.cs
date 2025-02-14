@@ -123,7 +123,7 @@ public static class SystemInfo
             var sigData = File.ReadAllBytes(SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareManifestSignatureFile));
 
             // Create Manifest FileInfo
-            FactoryManifest manifest = JsonUtility.DeserializeWithTypeInfo(manifestData, CoreJsonSerializerContext.Default.FactoryManifest);
+            FactoryManifest manifest = JsonUtility.DeserializeWithTypeInfo<FactoryManifest>(manifestData);
 
             // Signature is not included in 
             var signatureCheck = RSAEncryption.VerifyDataSignature(sigData, UTF8Encoding.UTF8.GetBytes(manifestData), Properties.Resources.UntrustedPrivateKeyPEM);
@@ -174,7 +174,7 @@ public static class SystemInfo
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Selecting Windows Configuration");
             string fileName = Environment.ExpandEnvironmentVariables("%USERPROFILE%/Ahsoka/factory/hardware/HardwareConfiguration.json");
             hardwareInfo = File.Exists(fileName) ?
-                 JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(fileName), CoreJsonSerializerContext.Default.HardwareInfo) :
+                 JsonUtility.DeserializeWithTypeInfo<HardwareInfo>(File.ReadAllText(fileName)) :
                  HardwareInfo.GetHardwareInfo(PlatformFamily.Windows64, "Desktop");
         }
         if (OperatingSystem.IsMacOS())
@@ -182,7 +182,7 @@ public static class SystemInfo
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Selecting MacOS Configuration");
             string fileName = Environment.ExpandEnvironmentVariables("/usr/local/Ahsoka/factory/hardware/HardwareConfiguration.json");
             hardwareInfo = File.Exists(fileName) ?
-                 JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(fileName), CoreJsonSerializerContext.Default.HardwareInfo) :
+                 JsonUtility.DeserializeWithTypeInfo<HardwareInfo>(File.ReadAllText(fileName)) :
                  HardwareInfo.GetHardwareInfo(PlatformFamily.MacOSArm64, "Desktop");
         }
         else if (OperatingSystem.IsLinux() && !Environment.Is64BitProcess)
@@ -190,7 +190,7 @@ public static class SystemInfo
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Selecting ST Configuration");
 
             var jsonText = File.ReadAllText("/usr/local/Ahsoka/factory/hardware/HardwareConfiguration.json");
-            var info = JsonUtility.DeserializeWithTypeInfo(jsonText, CoreJsonSerializerContext.Default.HardwareInfo);
+            var info = JsonUtility.DeserializeWithTypeInfo<HardwareInfo>(jsonText);
 
             hardwareInfo = info ?? HardwareInfo.GetHardwareInfo(PlatformFamily.OpenViewLinux, "S50");
         }
@@ -199,7 +199,7 @@ public static class SystemInfo
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Selecting Ubuntu Configuration");
             string fileName = "/usr/local/Ahsoka/factory/hardware/HardwareConfiguration.json";
             hardwareInfo = File.Exists(fileName) ?
-                 JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(fileName), CoreJsonSerializerContext.Default.HardwareInfo) :
+                 JsonUtility.DeserializeWithTypeInfo<HardwareInfo>(File.ReadAllText(fileName)) :
                  HardwareInfo.GetHardwareInfo(PlatformFamily.Ubuntu64, "Desktop");
         }
 
@@ -249,11 +249,11 @@ public static class SystemInfo
     private static LicenseList LoadLicenseInfo()
     {
         LicenseList licenseInfo = new();
-        foreach (var item in JsonUtility.DeserializeWithTypeInfo(Properties.Resources.Licenses, CoreJsonSerializerContext.Default.LicenseList))
+        foreach (var item in JsonUtility.DeserializeWithTypeInfo<LicenseList>(Properties.Resources.Licenses))
             if (!(item.PackageName.StartsWith("Ahsoka.")))
                 licenseInfo.Add(item);
 
-        foreach (var item in JsonUtility.DeserializeWithTypeInfo(Properties.Resources.StaticLicenses, CoreJsonSerializerContext.Default.LicenseList))
+        foreach (var item in JsonUtility.DeserializeWithTypeInfo<LicenseList>(Properties.Resources.StaticLicenses))
             if (!(item.PackageName.StartsWith("Ahsoka.")))
                 licenseInfo.Add(item);
 

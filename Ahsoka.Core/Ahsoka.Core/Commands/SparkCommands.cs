@@ -1,4 +1,5 @@
-﻿using Ahsoka.Core.Utility;
+﻿using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
 using EnovationCloud.Core.Utilities;
 using System;
 using System.Diagnostics.CodeAnalysis;
@@ -50,7 +51,7 @@ internal static class SparkCommands
             [Version] Override the Version in Release Files with this version.")]
     private static void UploadToSparkWithInfo(string sparkConnectionInfoFile, string workingDirectory, string version = null)
     {
-        var sparkInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(sparkConnectionInfoFile), CoreJsonSerializerContext.Default.SparkConnectionInfo);
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
 
         var uploadTool = new SparkTools();
         uploadTool.Upload(sparkInfo.Url, sparkInfo.Login, sparkInfo.Password, workingDirectory, version);
@@ -64,7 +65,7 @@ internal static class SparkCommands
             [FileName] File to Download (leave empty to download all items).")]
     private static void DownloadFromSpark(string sparkConnectionInfoFile, string downloadFolder, string channelName, string channelVersion, string fileName = null)
     {
-        var sparkInfo = JsonUtility.DeserializeWithTypeInfo(File.ReadAllText(sparkConnectionInfoFile), CoreJsonSerializerContext.Default.SparkConnectionInfo);
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
 
         var uploadTool = new SparkTools();
         uploadTool.Download(sparkInfo.Url, sparkInfo.Login, sparkInfo.Password, downloadFolder, channelName, channelVersion, fileName);

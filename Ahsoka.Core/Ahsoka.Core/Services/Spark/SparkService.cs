@@ -364,7 +364,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         if (File.Exists(sub))
         {
             string subFile = File.ReadAllText(sub);
-            var subscription = JsonUtility.DeserializeWithTypeInfo(subFile, CoreJsonSerializerContext.Default.SparkSubscription);
+            var subscription = JsonUtility.DeserializeWithTypeInfo<SparkSubscription>(subFile);
 
             return new SparkSubscriptionInfo()
             {

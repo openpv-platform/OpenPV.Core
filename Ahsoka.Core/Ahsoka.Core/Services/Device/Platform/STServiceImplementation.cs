@@ -36,6 +36,7 @@ internal class STServiceImplementation : DeviceServiceImplementation
                 Name = "ESP32 Onboard Combo Module",
                 DeviceType = DeviceTypes.OnboardWirelessComboModule,
                 AutoEnable = true,
+                DefaultState = DeviceState.Disabled,
             });
 
             config.HardwareItems.Add(new()

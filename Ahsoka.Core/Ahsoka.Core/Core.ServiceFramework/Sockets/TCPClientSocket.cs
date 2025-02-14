@@ -4,6 +4,8 @@ using NetMQ.Sockets;
 using System;
 using System.IO;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.Core;
 /// <summary>
@@ -15,13 +17,14 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
     bool isConnected = false;
 
     // Main Socket Management
-    NetMQPoller socketPoller = new();
-    DealerSocket socket;
-    NetMQQueue<AhsokaClientMessage> sendQueue = new();
+    NetMQPoller socketPoller;
+    NetMQQueue<AhsokaClientMessage> sendQueue;
+    NetMQPoller notificationPoller;
 
-    // Notification Handler
-    NetMQPoller notificationPoller = new();
-    DealerSocket notificationSocket;
+    CountdownEvent isConnectedComplete = new(2);
+
+    Task socketTask;
+    Task notificationTask;
 
     /// <summary>
     /// TCPClientSocket
@@ -36,76 +39,108 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Starting Client {this.endPoint.ServiceConfig.ServiceName} @ {this.endPoint.ServiceConfig.DataURI}");
 
-            // Message Socket
-            socket = new DealerSocket();
-            socket.Options.Identity = this.endPoint.GetClientId();
-            socket.Options.Linger = TimeSpan.FromSeconds(1);
-            socket.Connect(this.endPoint.ServiceConfig.DataURI);
-            socketPoller.Add(socket);
-            socketPoller.Add(sendQueue);
-         
-            socket.ReceiveReady += (o, e) =>
+            socketTask = Task.Run(() =>
             {
-                AhsokaClientMessage response = RecieveMessage(socket);
-                endPoint.HandleResponse(response);
-            };
-
-            sendQueue.ReceiveReady += (o, e) =>
-            {
-                while (sendQueue.Count > 0 && isConnected)
+                // Message Socket
+                using (var socket = new DealerSocket())
+                using (socketPoller = new NetMQPoller())
+                using (sendQueue = new NetMQQueue<AhsokaClientMessage>())
                 {
-                    var request = sendQueue.Dequeue();
-                    if (request != null)
+                    socket.Options.Identity = this.endPoint.GetClientId();
+                    socket.Connect(this.endPoint.ServiceConfig.DataURI);
+                    socketPoller.Add(socket);
+                    socketPoller.Add(sendQueue);
+
+                    socket.ReceiveReady += (o, e) =>
                     {
-                        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Sending Client Message from {endPoint.ServiceConfig.ServiceName} ");
+                        AhsokaClientMessage response = RecieveMessage(socket);
+                        endPoint.HandleResponse(response);
+                    };
 
-                        // Prepare Response Message 
-                        using MemoryStream headerStream = new();
-                        ProtoBuf.Serializer.Serialize(headerStream, request.Header);
-
-                        NetMQMessage message = new();
-                        message.Append(headerStream.ToArray());
-                        message.Append(request.MessageData);
-
-                        bool result = false;
-                        try
+                    sendQueue.ReceiveReady += (o, e) =>
+                    {
+                        while (sendQueue.Count > 0 && isConnected)
                         {
-                            if (socket != null)
-                                result = socket.TrySendMultipartMessage(message);
+                            var request = sendQueue.Dequeue();
+                            if (request != null)
+                            {
+                                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Sending Client Message from {endPoint.ServiceConfig.ServiceName} ");
+
+                                // Prepare Response Message 
+                                using MemoryStream headerStream = new();
+                                ProtoBuf.Serializer.Serialize(headerStream, request.Header);
+
+                                NetMQMessage message = new();
+                                message.Append(headerStream.ToArray());
+                                message.Append(request.MessageData);
+
+                                bool result = false;
+                                try
+                                {
+                                    if (socket != null)
+                                        result = socket.TrySendMultipartMessage(message);
+                                }
+                                catch (Exception) { }
+
+                                AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client Message Completed from {endPoint.ServiceConfig.ServiceName} ");
+                            }
                         }
-                        catch (Exception) { }
+                    };
 
-                        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Sent Client Message Completed from {endPoint.ServiceConfig.ServiceName} ");
-                    }
+                    Thread.CurrentThread.Name = $"{this.endPoint.ServiceConfig.ServiceName}_Client Socket Thread";
+
+                    // Ready
+                    isConnectedComplete.Signal();
+
+                    // Wait for Poller to Stop Here
+                    socketPoller.Run();
+
+                    socket.Disconnect(endPoint.ServiceConfig.DataURI);
+                    socketPoller.Remove(sendQueue);
+                    socketPoller.Remove(socket);
                 }
-            };
+            });
 
-            // Notification Socket
-            notificationSocket = new DealerSocket();
-            notificationSocket.Options.Identity = this.endPoint.GetNotificationId();
-            notificationSocket.Options.Linger = TimeSpan.FromSeconds(1);
-            notificationSocket.Connect(this.endPoint.ServiceConfig.DataURI);
-            notificationPoller.Add(notificationSocket);
-
-            // Listen to Notifications
-            notificationSocket.ReceiveReady += (o, e) =>
+            notificationTask = Task.Run(() =>
             {
-                // Receive Message Data
-                AhsokaClientMessage message = RecieveMessage(notificationSocket);
+                // Notification Socket
+                using (var notificationSocket = new DealerSocket())
+                using (notificationPoller = new())
+                {
+                    notificationSocket.Options.Identity = this.endPoint.GetNotificationId();
+                    notificationSocket.Connect(this.endPoint.ServiceConfig.DataURI);
+                    notificationPoller.Add(notificationSocket);
 
-                // Send to Endpoint to Route / Handle
-                this.endPoint.HandleNotification(message);
-            };
+                    // Listen to Notifications
+                    notificationSocket.ReceiveReady += (o, e) =>
+                    {
+                        // Receive Message Data
+                        AhsokaClientMessage message = RecieveMessage(notificationSocket);
 
-            socketPoller.RunAsync($"{this.endPoint.ServiceConfig.ServiceName}_Client Socket Thread");
-            notificationPoller.RunAsync($"{this.endPoint.ServiceConfig.ServiceName}_Client_Notification Thread");
+                        // Send to Endpoint to Route / Handle
+                        this.endPoint.HandleNotification(message);
+                    };
 
+                    Thread.CurrentThread.Name = $"{this.endPoint.ServiceConfig.ServiceName}_Client_Notification Thread";
+
+                    // Release Startup
+                    isConnectedComplete.Signal();
+
+                    // Wait for Stop
+                    notificationPoller.Run();
+
+                    notificationSocket.Disconnect(endPoint.ServiceConfig.DataURI);
+                    notificationPoller.Remove(notificationSocket);
+                }
+            });
+
+            // Wait for Connection Ready
+            isConnectedComplete.Wait();
             isConnected = true;
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Starting Client {this.endPoint.ServiceConfig.ServiceName} @ {this.endPoint.ServiceConfig.DataURI} with Result {isConnected}");
         }
         catch { isConnected = false; }
-
     }
 
     void IAhsokaClientSocket.Disconnect()
@@ -115,20 +150,13 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
             try
             {
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Disconnecting {endPoint.ServiceConfig.ServiceName}");
-
-                socket.Disconnect(endPoint.ServiceConfig.DataURI);
                 socketPoller.Stop();
-                socketPoller.RemoveAndDispose(sendQueue);
-                socketPoller.RemoveAndDispose(socket);
-                socketPoller.Dispose();
-                socketPoller = null;
+                socketTask.Wait();
+                socketTask = null;
 
-                notificationSocket.Disconnect(endPoint.ServiceConfig.DataURI);
                 notificationPoller.Stop();
-                notificationPoller.RemoveAndDispose(notificationSocket);
-                notificationPoller.Dispose();
-                notificationPoller = null;
-
+                notificationTask.Wait();
+                notificationTask = null;
                 AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
             }
             catch { }
@@ -138,7 +166,7 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
 
     void IAhsokaClientSocket.SendMessage(AhsokaClientMessage socketMessage)
     {
-        sendQueue.Enqueue(socketMessage);
+        sendQueue?.Enqueue(socketMessage);
     }
 
     AhsokaClientMessage RecieveMessage(DealerSocket recieveSocket)

@@ -1,5 +1,6 @@
 ﻿using Ahsoka.Core.Hardware;
 using Ahsoka.Services.System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Timers;
@@ -16,6 +17,8 @@ internal class FileTransferServiceHelper
     readonly int maxBytesPerMessage = 128 * 1024;
     const string tempExtension = ".temp";
     readonly Timer timer = new();
+    int timeoutInMs;
+    DateTime timeoutTime;
 
     static readonly Dictionary<int, FileTransferServiceHelper> transfersInProgress = new();
     #endregion
@@ -38,10 +41,13 @@ internal class FileTransferServiceHelper
         string filePath = Path.Combine(watcherPath, transmitInfo.FileName + tempExtension);
         this.fileStream = new FileStream(filePath, FileMode.Create);
 
+        // Capture Timeout
+        timeoutInMs = transmitInfo.TimeoutInMs;
+
         // Setup Timeout Timer
-        this.timer.Interval = transmitInfo.TimeoutInMs;
+        this.timer.Interval = 1000; // Check Timeout every 1s
         this.timer.Enabled = true;
-        this.timer.AutoReset = false;
+        this.timer.AutoReset = true;
 
         timer.Elapsed += Timer_Elapsed;
     }
@@ -72,7 +78,7 @@ internal class FileTransferServiceHelper
     internal T GetLoadReply<T>() where T : IFileTransmitReply, new()
     {
         // Start Timer for Timeouts
-        this.timer.Start();
+        timer.Start();
 
         return new T()
         {
@@ -90,7 +96,7 @@ internal class FileTransferServiceHelper
             return null;
 
         // Stop Timer
-        timer.Stop();
+        timeoutTime = DateTime.Now.AddMilliseconds(timeoutInMs);
 
         T result = new();
 
@@ -114,7 +120,6 @@ internal class FileTransferServiceHelper
         else
         {
             // Start Thead for next packet.
-            timer.Start();
             result.ReplyStatus = MessageReplyStatus.Continue;
             return result;
         }
@@ -131,11 +136,15 @@ internal class FileTransferServiceHelper
     #region Private Methods
     private void Timer_Elapsed(object sender, ElapsedEventArgs e)
     {
-        EndTransfer();
+        // Check Timeout
+        if (DateTime.Now > timeoutTime)
+            EndTransfer();
     }
 
     private void EndTransfer()
     {
+        timer.Stop();
+
         // Remove File and Transfer Object
         using (fileStream) { }
         transfersInProgress.Remove(this.uploadId);
@@ -146,7 +155,8 @@ internal class FileTransferServiceHelper
         if (File.Exists(filePath)) // "Overwrite"
             File.Delete(filePath);
 
-        File.Move(filePath + tempExtension, filePath);
+        if (File.Exists(filePath + tempExtension))
+            File.Move(filePath + tempExtension, filePath);
     }
     #endregion
 }

@@ -2,6 +2,8 @@
 using NetMQ.Sockets;
 using System;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.Core;
 
@@ -12,6 +14,7 @@ public sealed class TCPServiceSocket : IAhsokaServiceSocket
 {
     // While clients use two dealer sockets, we use a single
     // router socket that can reply / send to either one.
+    Task socketTask;
     RouterSocket socket;
     int socketThreadId = -1;
     IAhsokaServiceEndPoint endPoint;
@@ -20,8 +23,8 @@ public sealed class TCPServiceSocket : IAhsokaServiceSocket
     // the send queue ensures that we don't send messages on the socket
     // from multiple threads.  Unlike C++ we don't need a second thread here since 
     // the send queue acts as our "Pair Socket" handling messages in mutliple threads.
-    NetMQPoller socketPoller = new();
-    NetMQQueue<NetMQMessage> sendQueue = new();
+    NetMQPoller socketPoller;
+    NetMQQueue<NetMQMessage> sendQueue;
 
     bool isConnected = false;
 
@@ -38,47 +41,57 @@ public sealed class TCPServiceSocket : IAhsokaServiceSocket
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Starting Service {endPoint.ServiceConfig.ServiceName} @ {endPoint.ServiceConfig.DataListenURI}");
 
-            socket = new RouterSocket();
-            socket.Options.Linger = TimeSpan.FromSeconds(1);
-            socket.Bind(endPoint.ServiceConfig.DataListenURI);
-            socketPoller.Add(socket);
-            socketPoller.Add(sendQueue);
-            isConnected = true;
-
-            socket.ReceiveReady += (o, e) =>
+            socketTask = Task.Run(() =>
             {
-                if (socketThreadId == -1)
-                    socketThreadId = Environment.CurrentManagedThreadId;
-
-                // Receive Message Data
-                ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId);
-
-                // Decode Request Header
-                using MemoryStream headerData = new(header);
-
-                var message = new AhsokaServiceMessage()
+                using (socket = new())
+                using (socketPoller = new())
+                using (sendQueue = new())
                 {
-                    Header = ProtoBuf.Serializer.Deserialize<AhsokaMessageHeader>(headerData),
-                    MessageData = data
-                };
+                    socket.Options.Linger = TimeSpan.FromSeconds(1);
+                    socket.Bind(endPoint.ServiceConfig.DataListenURI);
+                    socketPoller.Add(socket);
+                    socketPoller.Add(sendQueue);
+                    isConnected = true;
 
-                if (clientId != null)
-                    message.Header.ClientId = clientId;
-
-                this.endPoint.HandleServiceRequest(this, message);
-            };
-
-            sendQueue.ReceiveReady += (o, e) =>
-            {
-                while (sendQueue.Count > 0)
-                    try
+                    socket.ReceiveReady += (o, e) =>
                     {
-                        socket.TrySendMultipartMessage(sendQueue.Dequeue());
-                    }
-                    catch { }
-            };
+                        if (socketThreadId == -1)
+                            socketThreadId = Environment.CurrentManagedThreadId;
 
-            socketPoller.RunAsync($"{endPoint.ServiceConfig.ServiceName}_Handler");
+                        // Receive Message Data
+                        ReceiveMessage(out byte[] header, out byte[] data, out byte[] clientId);
+
+                        // Decode Request Header
+                        using MemoryStream headerData = new(header);
+
+                        var message = new AhsokaServiceMessage()
+                        {
+                            Header = ProtoBuf.Serializer.Deserialize<AhsokaMessageHeader>(headerData),
+                            MessageData = data
+                        };
+
+                        if (clientId != null)
+                            message.Header.ClientId = clientId;
+
+                        this.endPoint.HandleServiceRequest(this, message);
+                    };
+
+                    sendQueue.ReceiveReady += (o, e) =>
+                    {
+                        while (sendQueue.Count > 0)
+                            try { socket.TrySendMultipartMessage(sendQueue.Dequeue()); } catch { }
+                    };
+
+                    Thread.CurrentThread.Name = $"{endPoint.ServiceConfig.ServiceName}_Handler";
+                    
+                    // Run and Wait for Shutdown.
+                    socketPoller.Run();
+
+                    socket.Unbind(endPoint.ServiceConfig.DataListenURI);
+                    socketPoller.Remove(socket);
+                    socketPoller.Remove(sendQueue);
+                }
+            });
 
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Finished Starting Service {endPoint.ServiceConfig.ServiceName} @ {endPoint.ServiceConfig.DataListenURI} with Result {isConnected}");
 
@@ -89,27 +102,20 @@ public sealed class TCPServiceSocket : IAhsokaServiceSocket
     void IAhsokaServiceSocket.Disconnect()
     {
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Disconnecting {endPoint.ServiceConfig.ServiceName}");
-
         if (isConnected)
         {
-            socket.Unbind(endPoint.ServiceConfig.DataListenURI);
+            try
+            {
+                // Stop and Wait for Shutdown
+                socketPoller?.Stop();
+                socketTask?.Wait();
+                socketTask = null;
+                socketPoller = null;
+            }
+            catch { }
+            finally { isConnected = false; }
         }
-
-        isConnected = false;
-
-        if (socketPoller.IsRunning)
-            socketPoller.Stop();
-
-        if (!socket.IsDisposed)
-            socketPoller.RemoveAndDispose(socket);
-        if (!sendQueue.IsDisposed)
-            socketPoller.RemoveAndDispose(sendQueue);
-
-        socketPoller.Dispose();
-        socketPoller = null;
-
         AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"    Disconnected {endPoint.ServiceConfig.ServiceName}");
-
     }
 
     void IAhsokaServiceSocket.SendMessage(AhsokaServiceMessage socketMessage)

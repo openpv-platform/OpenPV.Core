@@ -15,7 +15,7 @@
 					</StackPanel>
 					<StackPanel Margin="20,2" Orientation="Horizontal">
 						<TextBlock FontSize="16" Text="Platform Family:" Width="165"/>
-						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.PlatformFamilyEnum, FallbackValue=Not Connected}"/>
+						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.PlatformFamily, FallbackValue=Not Connected}"/>
 						<TextBlock FontSize="16" Text="{Binding ConnectedHardwareInfo.PlatformQualifier, StringFormat=' ({0})'}"/>
 					</StackPanel>
 					<StackPanel Margin="20,2" Orientation="Horizontal">
@@ -46,7 +46,7 @@
 				<DataGrid VerticalAlignment="Stretch" Grid.Row="1" BorderThickness="0" Margin="25,-15,25,25" SelectionMode="Single"
 						GridLinesVisibility="None"
 						IsReadOnly="True"
-						ItemsSource="{Binding  ConnectedHardwareInfo.VersionInfoes}" AutoGenerateColumns="False">
+						ItemsSource="{Binding  ConnectedHardwareInfo.VersionInfo}" AutoGenerateColumns="False">
 					<DataGrid.Columns>
 						<DataGridTextColumn Header="Component" Binding="{Binding Key}" />
 						<DataGridTextColumn Header="Version" Binding="{Binding Value}" />

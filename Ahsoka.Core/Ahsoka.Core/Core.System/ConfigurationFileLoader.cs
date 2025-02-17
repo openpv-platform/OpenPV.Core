@@ -18,11 +18,15 @@ public class ConfigurationFileLoader
     /// Loads a Configuration File executing any Upgrades needed.
     /// </summary>
     /// <param name="path"></param>
+    /// <param name="useTypeResolver"></param>
     /// <returns></returns>
-    public static T LoadFile<T>(string path) where T : class, new()
+    public static T LoadFile<T>(string path, bool useTypeResolver = true) where T : class, new()
     {
         string data = UpgradeEngine.ExecuteUpgrade(path);
-        return JsonUtility.DeserializeWithTypeInfo<T>(data);
+        if (useTypeResolver)
+            return JsonUtility.DeserializeWithTypeInfo<T>(data);
+        else
+            return JsonUtility.Deserialize<T>(data);
     }
 
     /// <summary>
@@ -30,10 +34,14 @@ public class ConfigurationFileLoader
     /// </summary>
     /// <param name="fileType">File Extension or File Name</param>
     /// <param name="data">data</param>
+    /// <param name="useTypeResolver"></param>
     /// <returns></returns>
-    public static T LoadFileContents<T>(string fileType, string data) where T : class, new()
+    public static T LoadFileContents<T>(string fileType, string data, bool useTypeResolver = true) where T : class, new()
     {
         string contents = UpgradeEngine.ExecuteUpgrade(fileType, data);
-        return JsonUtility.DeserializeWithTypeInfo<T>(contents);
+        if (useTypeResolver)
+            return JsonUtility.DeserializeWithTypeInfo<T>(contents);
+        else
+            return JsonUtility.Deserialize<T>(contents);
     }
 }

@@ -51,7 +51,7 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
                     try
                     {
                         socket.Options.Identity = this.endPoint.GetClientId();
-                        socket.Options.Linger = TimeSpan.FromSeconds(1);
+                        //socket.Options.Linger = TimeSpan.FromSeconds(1); Use 0.  Will now Throw on Connect if not available
                         socket.Connect(this.endPoint.ServiceConfig.DataURI);
                         socketPoller.Add(socket);
                         socketPoller.Add(sendQueue);
@@ -117,7 +117,7 @@ public sealed class TCPClientSocket : IAhsokaClientSocket
                 using (notificationPoller = new())
                 {
                     notificationSocket.Options.Identity = this.endPoint.GetNotificationId();
-                    notificationSocket.Options.Linger = TimeSpan.FromSeconds(1);
+                    //notificationSocket.Options.Linger = TimeSpan.FromSeconds(1); Use 0.  Will now Throw on Connect if not available
 
                     try
                     {

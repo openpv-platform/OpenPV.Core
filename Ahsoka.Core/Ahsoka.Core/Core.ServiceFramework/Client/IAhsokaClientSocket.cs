@@ -9,7 +9,7 @@ public interface IAhsokaClientSocket
     /// Connect and Use Endpoint for Handlign Messages.
     /// </summary>
     /// <param name="endPoint"></param>
-    void Connect(IAhsokaClientEndPoint endPoint);
+    bool Connect(IAhsokaClientEndPoint endPoint);
 
     /// <summary>
     /// Disconnect the Socket

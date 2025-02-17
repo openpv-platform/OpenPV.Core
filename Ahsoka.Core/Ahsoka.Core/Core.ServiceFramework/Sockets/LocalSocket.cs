@@ -19,7 +19,7 @@ internal sealed class LocalSocket : IAhsokaServiceSocket, IAhsokaClientSocket
         serviceEndPoint = endPoint;
     }
 
-    public void Connect(IAhsokaClientEndPoint endPoint)
+    public bool Connect(IAhsokaClientEndPoint endPoint)
     {
         clientEndPoint = endPoint;
 
@@ -41,6 +41,8 @@ internal sealed class LocalSocket : IAhsokaServiceSocket, IAhsokaClientSocket
                 catch (OperationCanceledException) { }
             }
         });
+
+        return true;
     }
 
     public void Disconnect()

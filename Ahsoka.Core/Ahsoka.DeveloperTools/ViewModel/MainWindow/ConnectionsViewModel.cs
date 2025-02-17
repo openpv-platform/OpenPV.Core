@@ -213,7 +213,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             ConnectionList.Add(new ConnectionInfo(this)
             {
                 Description = "OpenViewPro",
-                HostName = "am67-sk",
+                HostName = "OpenViewPro",
                 PlatformFamily = PlatformFamily.OpenViewLinuxPro,
                 PlatformQualifier = "GenericArm64",
                 SystemServicePort = 5001,
@@ -223,6 +223,8 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
 
             ConnectionList.Add(new ConnectionInfo(this)
             {
+                PlatformFamily = PlatformFamily.Windows64,
+                PlatformQualifier = "Desktop",
                 Description = "This Machine",
                 HostName = "localhost",
                 SystemServicePort = 5001,

@@ -114,19 +114,22 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
 
             // AutoStart.  Returns the correct socket to connect (may use LocalSocket)
             socket = AutoStartServiceIfNeeded(clientSocket);
-            socket.Connect(this);
+            var isConnectedTemp = socket.Connect(this);
 
             ((IAhsokaEndPoint)this).CurrentRuntime = AhsokaRuntime.Default;
             AhsokaRuntime.Default.AddEndPointInternal(this);
 
             // Connected then Register
-            isConnected = true;
+            isConnected = isConnectedTemp;
 
             // Register Client for Notifications
-            UpdateClientRegistration(CoreTransportIds.RegisterClient);
+            if (isConnected)
+            {
+                UpdateClientRegistration(CoreTransportIds.RegisterClient);
 
-            // After Connected
-            OnEndPointStarted();
+                // After Connected
+                OnEndPointStarted();
+            }
 
         }
     }

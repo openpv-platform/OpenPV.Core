@@ -6,6 +6,7 @@ using Ahsoka.Services.System;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Threading;
 #pragma warning disable IDE0051 // Remove unused private members
 
 namespace Ahsoka.DesktopOnly.Commands;
@@ -14,6 +15,36 @@ namespace Ahsoka.DesktopOnly.Commands;
 [CommandLinePlugin]
 internal static class PrepCommands
 {
+    [CommandLineMethod(@"     --ReturnToInstaller: Shutdown Current Application and Return to Installer UI
+                                                 [TargetConnectionInfoFile] - Connection Info File (JSON)")]
+    private static void ReturnToInstaller(string connectionInfoFile)
+    {
+        var connectionInfo = JsonUtility.DeserializeWithTypeInfo<TargetConnectionInfo>(File.ReadAllText(connectionInfoFile));
+
+        IProgress<string> progress = new Progress<string>(Console.WriteLine);
+        var config = new ServiceConfiguration()
+        {
+            ServiceName = "SystemService",
+            TcpConnectionAddress = connectionInfo.HostName,
+            DataChannel = 5001,
+        };
+
+        var client = new SystemServiceClient(config);
+        var cancellationTokenSource = new CancellationTokenSource();
+        var prep = RemoteTargetToolFactory.GetToolsForPlatform(connectionInfo.PlatformFamily);
+
+        var result = prep.ReturnToInstaller(connectionInfo, client, cancellationTokenSource, progress);
+
+        if (result == null || !result.IsInstaller)
+        {
+            Console.WriteLine("Return To Installer failed.");
+            Environment.Exit(1);
+        }
+
+        Console.WriteLine("Return To Installer Succeeded.");
+
+    }
+
     [CommandLineMethod(@"     --FactoryPrep: Stores Factory Information in the Cloud (PN/SN/MAC)
             [TargetConnectionInfoFile] - Connection Info File (JSON)
             [SparkConnectionInfoFile] - Spark Connection Info File (JSON)

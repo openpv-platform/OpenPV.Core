@@ -1,4 +1,5 @@
-﻿using Ahsoka.Core.Hardware;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
 using Ahsoka.Core.Spark;
 using Ahsoka.Core.Utility;
 using Ahsoka.Services.System;
@@ -7,7 +8,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 #pragma warning disable IDE0051 // Remove unused private members
 
-namespace Ahsoka.Core.Commands;
+namespace Ahsoka.DesktopOnly.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]
@@ -51,17 +52,4 @@ internal static class PrepCommands
         }
     }
 
-    [CommandLineMethod(@"     --GetHardwareModel: Get Model information to identify the hardware")]
-    private static void GetHardwareModel()
-    {
-        var coreInterop = SystemService.GetInterop();
-        Console.WriteLine($"{RemoteTargetToolFactory.HardwareModelPrefix}{coreInterop.GetHardwareModel()}");
-    }
-
-    [CommandLineMethod(@"     --GetHardwareSerialNumber: Get UniqueId used to identify the hardware")]
-    private static void GetHardwareSerialNumber()
-    {
-        var coreInterop = SystemService.GetInterop();
-        Console.WriteLine($"{RemoteTargetToolFactory.HardwareIdPrefix}{coreInterop.GetHardwareSerialNumber()}");
-    }
 }

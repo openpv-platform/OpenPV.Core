@@ -259,9 +259,6 @@ public class ProfileRequest
 {
     [ProtoMember(1)]
     public string AdapterId { get; set; }
-
-    [ProtoMember(2)]
-    public bool UseOsProfiles { get; set; }
 }
 
 [ProtoContract]

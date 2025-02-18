@@ -11,6 +11,9 @@ namespace Ahsoka.Core.Hardware;
 /// </summary>
 public partial class HardwareInfo
 {
+    internal const string HardwareModelPrefix = "HardwareModel:";
+    internal const string HardwareIdPrefix = "HardwareSerialNumber:";
+    
     /// <summary>
     /// The Family the platform belongs to.  Typically cooresponds to the OS it runs
     /// Matches FactoryInfo

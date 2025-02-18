@@ -1,4 +1,5 @@
-﻿using Ahsoka.Core.Hardware;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
 using Ahsoka.Core.Utility;
 using Ahsoka.Services.Install;
 using Ahsoka.Services.System;
@@ -8,7 +9,7 @@ using System.IO;
 using System.Threading;
 #pragma warning disable IDE0051 // Remove unused private members
 
-namespace Ahsoka.Core.Commands;
+namespace Ahsoka.DesktopOnly.Commands;
 
 [ExcludeFromCodeCoverage]
 [CommandLinePlugin]

@@ -37,14 +37,18 @@
 	</Target>
 
 	<Target Name="BuildSupportPackages" Condition="true" AfterTargets="PostBuildEvent">
-		<MSBuild Projects="../Ahsoka.PublishWindows/Ahsoka.PublishWindows.csproj;../Ahsoka.PublishOpenView/Ahsoka.PublishOpenView.csproj;../Ahsoka.PublishOpenViewPro/Ahsoka.PublishOpenViewPro.csproj;../Ahsoka.PublishUbuntu/Ahsoka.PublishUbuntu.csproj;" BuildInParallel="false" StopOnFirstFailure="true" RunEachTargetSeparately="false" />
+		<MSBuild Projects="../Ahsoka.PublishWindows/Ahsoka.PublishWindows.csproj;
+				 ../Ahsoka.PublishUbuntu/Ahsoka.PublishUbuntu.csproj;
+				 ../Ahsoka.PublishOpenView/Ahsoka.PublishOpenView.csproj;
+				 ../Ahsoka.PublishOpenViewPro/Ahsoka.PublishOpenViewPro.csproj;" 
+				 BuildInParallel="false" StopOnFirstFailure="true" 
+				 RunEachTargetSeparately="true" />
 
 		<!--Copy Spark Package Manifst to Output -->
 		<Copy SourceFiles="OpenPV Dependencies.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV Dependencies.release.json" />
 	</Target>
 
 	<Target Name="BuildDemosAndExtensions" AfterTargets="BuildSupportPackages">
-
 		<MSBuild Projects="../Ahsoka.PublishPowerVision/Ahsoka.PublishPowerVision.csproj;../Ahsoka.PublishNuget/Ahsoka.PublishNuget.csproj;../Ahsoka.PublishExtensions/Ahsoka.PublishExtensions.csproj;../Ahsoka.PublishDemos/Ahsoka.PublishDemos.csproj" BuildInParallel="true" StopOnFirstFailure="true" RunEachTargetSeparately="true" />
 	</Target>
 

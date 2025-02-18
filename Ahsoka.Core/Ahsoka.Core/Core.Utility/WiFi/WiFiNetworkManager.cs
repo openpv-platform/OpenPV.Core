@@ -400,7 +400,7 @@ public sealed class WiFiNetworkManager
                 wifiClient.SetNetworkConfiguration(config);
             }
 
-            var list = wifiClient.GetNetworkProfiles(new ProfileRequest() { AdapterId = defaultAdapterRequest.AdapterId, UseOsProfiles = OperatingSystem.IsWindows() });
+            var list = wifiClient.GetNetworkProfiles(new ProfileRequest() { AdapterId = defaultAdapterRequest.AdapterId});
             foreach (var item in list.NetworkProfiles)
                 networkProfilesList.Add(item);
 

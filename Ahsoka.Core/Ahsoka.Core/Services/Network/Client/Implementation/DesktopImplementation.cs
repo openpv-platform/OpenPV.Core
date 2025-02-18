@@ -21,6 +21,7 @@ internal class DesktopImplementation : ImplementationBase
 
     protected override void OnUpdateConfiguration(AdapterConfiguration adapterConfiguration)
     {
+
     }
 
     protected override WirelessNetworkInfoList OnGetDiscoveredNetworks(string adapterId)
@@ -35,9 +36,6 @@ internal class DesktopImplementation : ImplementationBase
 
     protected override NetworkProfilesList OnGetProfiles(ProfileRequest profileRequest)
     {
-        if (profileRequest.UseOsProfiles == true)
-            throw new NotImplementedException();
-
         return NetworkProfileHelper.GetNetworkProfiles(profileRequest.AdapterId);
     }
 

@@ -5,11 +5,7 @@
 /// </summary>
 public class RemoteTargetToolFactory
 {
-
-    internal const string HardwareModelPrefix = "HardwareModel:";
-    internal const string HardwareIdPrefix = "HardwareSerialNumber:";
-
-    /// <summary>
+/// <summary>
     /// Factory Command to Get a TargetTools Object
     /// </summary>
     /// <param name="platformFamily"></param>

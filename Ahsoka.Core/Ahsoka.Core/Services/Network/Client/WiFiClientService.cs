@@ -20,7 +20,7 @@ public class WiFiClientService : AhsokaServiceBase<WiFiClientMessageTypes.Ids>
     {
         return SystemInfo.CurrentPlatform switch
         {
-            PlatformFamily.Windows64 => new WindowsImplementation(),
+            PlatformFamily.Windows64 => new DesktopImplementation(),
             PlatformFamily.OpenViewLinux => new STImplementation(),
             PlatformFamily.OpenViewLinuxPro => new DesktopImplementation(),
             PlatformFamily.Ubuntu64 => new DesktopImplementation(),

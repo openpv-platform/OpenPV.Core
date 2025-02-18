@@ -24,13 +24,33 @@
 		</PackageReference>
 	</ItemGroup>
 
+	<ItemGroup>
+		<EmbeddedResource Remove="DesktopOnly\**" />
+		<None Remove="DesktopOnly\**" />
+		<Compile Remove="DesktopOnly\**" />
+	</ItemGroup>
+	
+	<Choose>
+		<When Condition="$(IS_DESKTOP) != ''">
+			<ItemGroup>
+				<Compile Condition="$(IS_DESKTOP) == 'YES'"  Include="DesktopOnly\**" />
+				<PackageReference Condition="$(IS_DESKTOP) == 'YES'"  Include="Silk.NET.Input" Version="2.22.0" />
+				<PackageReference Condition="$(IS_DESKTOP) == 'YES'"  Include="Silk.NET.OpenGL" Version="2.22.0" />
+				<PackageReference Condition="$(IS_DESKTOP) == 'YES'"  Include="Silk.NET.Windowing" Version="2.22.0" />
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<Compile Include="DesktopOnly\**" />
+				<PackageReference Include="Silk.NET.Input" Version="2.22.0" />
+				<PackageReference Include="Silk.NET.OpenGL" Version="2.22.0" />
+				<PackageReference Include="Silk.NET.Windowing" Version="2.22.0" />
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+	
 
 	<ItemGroup>
-
-		<PackageReference Include="Silk.NET.Input" Version="2.22.0" />
-		<PackageReference Include="Silk.NET.OpenGL" Version="2.22.0" />
-		<PackageReference Include="Silk.NET.Windowing" Version="2.22.0" />
-		
 		<PackageReference Include="SkiaSharp" Version="3.116.0" />
 		<PackageReference Include="SkiaSharp.NativeAssets.Linux.NoDependencies" Version="3.116.0" />
 		<PackageReference Include="protobuf-net" Version="3.2.45" />

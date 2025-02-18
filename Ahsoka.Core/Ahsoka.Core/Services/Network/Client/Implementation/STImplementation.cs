@@ -146,9 +146,6 @@ internal class STImplementation : ImplementationBase
 
     protected override NetworkProfilesList OnGetProfiles(ProfileRequest profileRequest)
     {
-        if (profileRequest.UseOsProfiles == true)
-            throw new NotImplementedException();
-
         return NetworkProfileHelper.GetNetworkProfiles(profileRequest.AdapterId);
     }
 

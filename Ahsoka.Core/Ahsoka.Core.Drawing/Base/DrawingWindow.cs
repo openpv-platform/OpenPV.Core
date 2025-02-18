@@ -4,10 +4,11 @@ using TouchEventArgs = Ahsoka.Core.Drawing.Utility.TouchEventArgs;
 
 namespace Ahsoka.Core.Drawing.Base;
 
+
 /// <summary>
 /// Class to manage an Accelerated Window and Drawing Context
 /// </summary>
-public class DrawingWindow
+public partial class DrawingWindow
 {
     #region Fields
     bool firstFrame = true;
@@ -15,8 +16,8 @@ public class DrawingWindow
     const int frameSeconds = 10;
     DateTime nextPrintTime = DateTime.Now.AddSeconds(frameSeconds);
     readonly DrawingSize size;
-    readonly IDrawingWindow nativeWindow;
-    readonly SkiaDrawingApi api;
+    IDrawingWindow nativeWindow;
+    SkiaDrawingApi api;
 
     private readonly object eventLock = new(); // Move to Lock in 9.0
     List<TouchEventArgs> eventList = new();
@@ -56,8 +57,7 @@ public class DrawingWindow
     {
         if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacOSArm64 or PlatformFamily.Ubuntu64)
         {
-            nativeWindow = new Platform.DesktopWindow();
-            api = nativeWindow.CreateWindow(this, surfaceId, appId) as SkiaDrawingApi;
+            CreateDesktopWindow(surfaceId, appId);
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
         {
@@ -72,6 +72,9 @@ public class DrawingWindow
 
         size = new(api.ScreenWidth, api.ScreenHeight);
     }
+
+    partial void CreateDesktopWindow(int surfaceId = 2000, string appId = "DrawingWindow");
+    partial void CreateDesktopWindow(bool fullScreen, int width, int height, string appId);
 
     public DrawingWindow(bool fullScreen = false, int width = 800, int height = 480, string appId = "DrawingWindow")
     {
@@ -79,8 +82,7 @@ public class DrawingWindow
 
         if (SystemInfo.CurrentPlatform is PlatformFamily.Windows64 or PlatformFamily.MacOSArm64 or PlatformFamily.Ubuntu64)
         {
-            nativeWindow = new Platform.DesktopWindow();
-            api = nativeWindow.CreateWindow(this, fullScreen, width, height, appId) as SkiaDrawingApi;
+            CreateDesktopWindow(fullScreen, width, height, appId);
         }
         else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
         {
@@ -96,6 +98,7 @@ public class DrawingWindow
         size = new(api.ScreenWidth, api.ScreenHeight);
     }
 
+    
     public DrawingRect GetSurfaceLocation(int surfaceId)
     {
         return nativeWindow.GetSurfaceLocation(surfaceId);

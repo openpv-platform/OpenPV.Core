@@ -102,7 +102,7 @@ public class NetworkServiceTest : LinearTestBase
             Console.WriteLine("Network Profiles");
 
             // Get Profiles Using OS first
-            var profiles = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = wifiAdapterId, UseOsProfiles = true });
+            var profiles = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = wifiAdapterId });
             foreach (var item in profiles.NetworkProfiles)
             {
                 Console.WriteLine($"  SSID:{item.Ssid} ");
@@ -141,7 +141,7 @@ public class NetworkServiceTest : LinearTestBase
             if (rememberedNetwork != null)
             {
                 // Get Saved Networks using Ahsoka Services
-                profiles = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = wifiAdapterId, UseOsProfiles = false });
+                profiles = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = wifiAdapterId });
                 var profileSaved = profiles.NetworkProfiles.FirstOrDefault(x => x.Ssid == rememberedNetwork.Ssid);
                 Assert.IsNotNull(profileSaved);
 
@@ -149,7 +149,7 @@ public class NetworkServiceTest : LinearTestBase
                 client.SetNetworkProfiles(new NetworkProfilesList() { AdapterId = wifiAdapterId });
 
                 // Get Again to Validate Save works.
-                profiles = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = wifiAdapterId, UseOsProfiles = false });
+                profiles = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = wifiAdapterId });
                 Assert.IsTrue(profiles.NetworkProfiles.Count == 0);
             }
         }
@@ -271,7 +271,7 @@ public class NetworkServiceTest : LinearTestBase
 
             // Encrypt and read profiles back
             NetworkProfileHelper.AddNetworkProfile(requestNetwork);
-            ProfileRequest requestProfile = new() { AdapterId = defaultAdapterRequest.AdapterId, UseOsProfiles = false };
+            ProfileRequest requestProfile = new() { AdapterId = defaultAdapterRequest.AdapterId };
             NetworkProfilesList networkProfilesList = client.GetNetworkProfiles(requestProfile);
 
             var profile = networkProfilesList.NetworkProfiles.FirstOrDefault(x => x.Ssid == requestNetwork.Ssid);
@@ -284,7 +284,7 @@ public class NetworkServiceTest : LinearTestBase
             client.SetNetworkProfiles(new NetworkProfilesList() { AdapterId = defaultAdapterRequest.AdapterId });
 
             // Get Again to Validate Save works.
-            networkProfilesList = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = defaultAdapterRequest.AdapterId, UseOsProfiles = false });
+            networkProfilesList = client.GetNetworkProfiles(new ProfileRequest() { AdapterId = defaultAdapterRequest.AdapterId });
             Assert.IsTrue(networkProfilesList.NetworkProfiles.Count == 0);
         }
 

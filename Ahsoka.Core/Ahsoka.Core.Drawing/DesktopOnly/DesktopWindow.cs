@@ -17,7 +17,7 @@ internal class DesktopWindow : IDrawingWindow
     DrawingSize drawingSize;
     GL gl;
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, string appid)
+    public IDrawingApi CreateWindow(DrawingWindow apiWindow, bool fullScreen, int width, int height, string appid)
     {
         if (fullScreen)
         {
@@ -34,13 +34,14 @@ internal class DesktopWindow : IDrawingWindow
 
         return CreateWindow(apiWindow, options);
     }
+
     int IDrawingWindow.GetSurfaceId()
     {
         // Desktop Window doesn't use SurfaceIDs
         return -1;
     }
 
-    IDrawingApi IDrawingWindow.CreateWindow(DrawingWindow apiWindow, int surfaceId, string appid)
+    public IDrawingApi CreateWindow(DrawingWindow apiWindow, int surfaceId, string appid)
     {
 
         WindowOptions options = WindowOptions.Default;
@@ -53,7 +54,7 @@ internal class DesktopWindow : IDrawingWindow
         return CreateWindow(apiWindow, options);
     }
 
-    private IDrawingApi CreateWindow(DrawingWindow apiWindow, WindowOptions options)
+    IDrawingApi CreateWindow(DrawingWindow apiWindow, WindowOptions options)
     {
         window = Silk.NET.Windowing.Window.Create(options);
         window.Load += () =>
@@ -106,7 +107,7 @@ internal class DesktopWindow : IDrawingWindow
 
             context.ResetContext();
 
-            // Handle the Frame (Prepare, Render) returns if New Render was Don
+            // Handle the Frame (Prepare, Render) returns if New Render was Done
             if (apiWindow.HandleFrame())
                 context?.Flush(true, true);
 

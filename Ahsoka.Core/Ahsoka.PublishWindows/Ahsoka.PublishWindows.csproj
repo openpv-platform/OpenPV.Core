@@ -35,7 +35,7 @@
 		<Copy SourceFiles="@(OV_SDK)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\%(RecursiveDir)" OverwriteReadOnlyFiles="true" SkipUnchangedFiles="false" />
 
 		<!-- Create Windows Development Support Package (For Running Tools and Compiling C++)-->
-		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=WindowsOutput" />
+		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -r win-x64 -p:PublishProfile=WindowsOutput" />
 		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\Windows64_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\Windows64_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Windows64_TargetSupport.zip" />
 

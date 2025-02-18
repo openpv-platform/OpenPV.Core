@@ -1,6 +1,7 @@
 ﻿using Ahsoka.Core.Hardware;
 using Ahsoka.Core.Spark;
 using Ahsoka.Core.Utility;
+using Ahsoka.Services.System;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
@@ -54,4 +55,20 @@ internal static class DisplayProvisioningCommands
             Environment.Exit(1);
         }
     }
+
+
+    [CommandLineMethod(@"     --GetHardwareModel: Get Model information to identify the hardware")]
+    private static void GetHardwareModel()
+    {
+        var coreInterop = SystemService.GetInterop();
+        Console.WriteLine($"{HardwareInfo.HardwareModelPrefix}{coreInterop.GetHardwareModel()}");
+    }
+
+    [CommandLineMethod(@"     --GetHardwareSerialNumber: Get UniqueId used to identify the hardware")]
+    private static void GetHardwareSerialNumber()
+    {
+        var coreInterop = SystemService.GetInterop();
+        Console.WriteLine($"{HardwareInfo.HardwareIdPrefix}{coreInterop.GetHardwareSerialNumber()}");
+    }
 }
+

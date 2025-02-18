@@ -174,7 +174,7 @@ internal abstract class ImplementationBase
 
         if (networkAdapter != null)
         {
-            var profileList = GetProfiles(new ProfileRequest() { AdapterId = adapterRequest.AdapterId, UseOsProfiles = OperatingSystem.IsWindows() });
+            var profileList = GetProfiles(new ProfileRequest() { AdapterId = adapterRequest.AdapterId });
             if (profileList.NetworkProfiles.Count == 0)
                 return;
 

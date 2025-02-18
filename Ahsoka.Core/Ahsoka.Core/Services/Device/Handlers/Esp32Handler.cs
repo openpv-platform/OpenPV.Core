@@ -2,7 +2,6 @@
 using Ahsoka.Core.Hardware;
 using Ahsoka.Core.Utility;
 using Ahsoka.Services.Install;
-using Renci.SshNet;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -165,56 +164,5 @@ internal class Esp32Handler : DeviceHandlerBase
 
         base.InstallLocal(fwFile, progress);
     }
-
-    public void InstallRemote(HardwareInfo info,
-        SshClient sshClient,
-        ScpClient scpClient,
-        IProgress<string> progress)
-    {
-        progress.Report("");
-        progress.Report($"Adding network Firmware");
-
-        var firmwareData = GetFirmwareData(info.PlatformFamily, info.PlatformQualifier);
-
-        if (firmwareData == null)
-            throw new Exception("ESP Firmware Package (firmware.zip) is missing from the resources directory");
-
-        if (firmwareData != null)
-        {
-            var zipFileTargetDirectory = $"/tmp/{Guid.NewGuid()}";
-            var zipFileTargetPath = $"{zipFileTargetDirectory}/firmware.zip";
-            var commandResult = sshClient.RunCommand($"mkdir -p {zipFileTargetDirectory}");
-
-            if (commandResult.Result != string.Empty)
-                throw new Exception(commandResult.Result);
-
-            using MemoryStream data = new(firmwareData);
-
-            scpClient.Upload(data, zipFileTargetPath);
-            progress.Report($"   100% Uploaded");
-
-            progress.Report("");
-            progress.Report($"Unziping Firmware on Target");
-            var unzipInstall = sshClient.RunCommand($"unzip {zipFileTargetPath} -d {zipFileTargetDirectory}");
-            progress.Report(unzipInstall.Result);
-
-            progress.Report($"Removing Temp File");
-            var deleteInstallFile = sshClient.RunCommand($"rm {zipFileTargetPath}");
-
-            if (deleteInstallFile.Error != string.Empty)
-                throw new Exception(deleteInstallFile.Result);
-
-            progress.Report($"Granting Execute to Install Script");
-            commandResult = sshClient.RunCommand($"chmod +x {zipFileTargetDirectory}/ESPFirmware/esp32_init.sh");
-
-            progress.Report($"Installing Network Firmware");
-            commandResult = sshClient.RunCommand($"{zipFileTargetDirectory}/ESPFirmware/esp32_init.sh {zipFileTargetDirectory}");
-            if (commandResult.Error != string.Empty)
-                throw new Exception(commandResult.Error);
-
-            commandResult = sshClient.RunCommand($"rm -r {zipFileTargetDirectory}");
-            if (commandResult.Result != string.Empty)
-                throw new Exception(commandResult.Result);
-        }
-    }
 }
+

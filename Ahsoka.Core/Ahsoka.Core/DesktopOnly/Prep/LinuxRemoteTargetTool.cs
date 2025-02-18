@@ -449,7 +449,7 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
         //// Extract Id from Result
         string hardwareIdResult = commandResult.Result;
 
-        int startPos = hardwareIdResult.IndexOf(RemoteTargetToolFactory.HardwareIdPrefix) + RemoteTargetToolFactory.HardwareIdPrefix.Length;
+        int startPos = hardwareIdResult.IndexOf(HardwareInfo.HardwareIdPrefix) + HardwareInfo.HardwareIdPrefix.Length;
         int length = hardwareIdResult.Length - startPos; // Next Charage Return
 
         return hardwareIdResult.Substring(startPos, length).TrimEnd().Replace("\0", "");

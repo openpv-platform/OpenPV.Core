@@ -494,8 +494,6 @@ internal class MainViewModel : ViewModelBase
     {
         if (modelReady)
         {
-            ActiveConnection.Init();
-
             if (IsOffline)
             {
                 var result = await Dialog.ShowDialog("Offline Mode", "You are not currently connected to the internet or can not connect to our cloud services.  Do you wish to enable Offline Mode or Exit?", "Enable Offline", "Exit");

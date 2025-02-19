@@ -62,6 +62,10 @@ internal class FileTransferServiceHelper
             var helper = new FileTransferServiceHelper(uploadId, transmitInfo);
             transfersInProgress.Add(uploadId, helper);
 
+            // Start Timer for Timeouts
+            helper.timer.Start();
+            helper.timeoutTime = DateTime.Now.AddMilliseconds(transmitInfo.TimeoutInMs);
+
             return helper;
         }
         else
@@ -77,9 +81,6 @@ internal class FileTransferServiceHelper
     #region Message Handling Methods
     internal T GetLoadReply<T>() where T : IFileTransmitReply, new()
     {
-        // Start Timer for Timeouts
-        timer.Start();
-
         return new T()
         {
             FileName = this.TransmitInfo.FileName,

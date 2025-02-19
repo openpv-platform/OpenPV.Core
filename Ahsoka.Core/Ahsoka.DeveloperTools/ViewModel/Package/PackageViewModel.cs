@@ -719,7 +719,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
 
             if (!forceInstallerAttempt)
             {
-                var hardwareInfo = ParentViewModel.ActiveConnection.GetHardwareInformation();
+                var hardwareInfo = ParentViewModel.ActiveConnection.Connection.GetHardwareInformation();
                 if (hardwareInfo == null)
                     return "Could not communicate with the target.";
 
@@ -737,7 +737,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
             {
                 if (IsOpenView && (!ParentViewModel.ActiveConnection.IsInstaller || forceInstallerAttempt))
                 {
-                    var hwInfo = ParentViewModel.ActiveConnection.ReturnToInstaller(source, progressString);
+                    var hwInfo = ParentViewModel.ActiveConnection.Connection.ReturnToInstaller(source, progressString);
 
                     // Didn't make it to the Installer....Error Out
                     if (hwInfo == null || !hwInfo.IsInstaller)
@@ -757,7 +757,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
                 }
 
                 // Cancel will stop if needed.
-                var result = ParentViewModel.ActiveConnection.LoadApplicationAsync(stream, true, progressFileInfo);
+                var result = ParentViewModel.ActiveConnection.Connection.LoadApplicationAsync(stream, true, progressFileInfo);
                 var resultValue = result.GetAwaiter().GetResult();
 
                 // Watch for Result
@@ -1004,7 +1004,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     public void Cancel()
     {
         // Prevent Starting new Process
-        ParentViewModel.ActiveConnection.CancelLoadApplication();
+        ParentViewModel.ActiveConnection.Connection.CancelLoadApplication();
         source.Cancel();
         ParentViewModel.Console.Cancel();
     }

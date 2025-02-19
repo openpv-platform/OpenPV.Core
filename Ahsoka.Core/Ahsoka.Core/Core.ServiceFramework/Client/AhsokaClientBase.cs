@@ -287,12 +287,17 @@ public abstract partial class AhsokaClientBase<TTransportIds> : AhsokaEndPoint<T
         {
             // Wait For a Response Object by 
             int remainingTimeout = (int)(cancelTime - DateTime.Now).TotalMilliseconds;
-            responseObjects.TryTake(out response, remainingTimeout);
+            if (remainingTimeout > 0)
+                responseObjects.TryTake(out response, remainingTimeout);
+            else
+                return null;
 
             if (response != null)
             {
                 // Standard Handling
-                if (response.Header.TransportId >= 0 && response.Header.TransportId == request.Header.TransportId)
+                if (response.Header.TransportId >= 0 
+                    && response.Header.TransportId == request.Header.TransportId 
+                    && response.Header.ClientMessageId == request.Header.ClientMessageId)
                 {
                     // Decode Object for Reply
                     using MemoryStream responseData = new(response.MessageData);

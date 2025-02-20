@@ -18,7 +18,7 @@ internal static class UpgradeEngine
         {
             UpgradeMethod method = ClassLoader.CreateType(typeItem) as UpgradeMethod;
             if (!upgradeDictionary.ContainsKey(method.Extension))
-                upgradeDictionary.Add(method.Extension, new List<UpgradeMethod>());
+                upgradeDictionary.Add(method.Extension.ToLower(), new List<UpgradeMethod>());
 
             upgradeDictionary[method.Extension.ToLower()].Add(method);
         }
@@ -65,7 +65,10 @@ internal static class UpgradeEngine
     }
 }
 
-internal abstract class UpgradeMethod
+/// <summary>
+/// Allows upgrades to json documents when loading
+/// </summary>
+public abstract class UpgradeMethod
 {
     internal const string packageUpgradeExtension = "packageinfo.json";
     internal const string canUpgradeExtension = "cancalibration.json";
@@ -87,12 +90,17 @@ internal abstract class UpgradeMethod
     /// </summary>
     /// <param name="path">The path.</param>
     /// <param name="version">The version.</param>
-    protected UpgradeMethod(string path, string version)
+    public UpgradeMethod(string path, string version)
     {
         Extension = path;
         Version = new Version(version);
     }
 
+    /// <summary>
+    /// Executes the upgrade on a raw Json document
+    /// </summary>
+    /// <param name="document"></param>
+    /// <param name="context"></param>
     public abstract void UpgradeData(JsonNode document, Dictionary<string, object> context);
 
 }

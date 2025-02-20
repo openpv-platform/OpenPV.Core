@@ -1,12 +1,14 @@
-﻿using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.Services.System;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
+[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class DisplayProvisioningCommands
 {
@@ -23,9 +25,9 @@ internal static class DisplayProvisioningCommands
             Console.WriteLine(info);
         });
 
-        var connectionInfo = JsonUtility.Deserialize<TargetConnectionInfo>(File.ReadAllText(targetConnectionInfoFile));
-        var sparkInfo = JsonUtility.Deserialize<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
-        var provisionInfo = JsonUtility.Deserialize<ProvisionDisplayRequest>(File.ReadAllText(provisioningFile));
+        var connectionInfo = JsonUtility.DeserializeWithTypeInfo<TargetConnectionInfo>(File.ReadAllText(targetConnectionInfoFile));
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
+        var provisionInfo = JsonUtility.DeserializeWithTypeInfo<ProvisionDisplayRequest>(File.ReadAllText(provisioningFile));
 
         if (!SparkCustomerTools.ProvisionDisplayInSpark(connectionInfo, sparkInfo, provisionInfo, progress))
         {
@@ -42,13 +44,10 @@ internal static class DisplayProvisioningCommands
             string sparkConnectionInfoFile,
             string provisioningFile)
     {
-        IProgress<string> progress = new Progress<string>(info =>
-        {
-            Console.WriteLine(info);
-        });
+        IProgress<string> progress = new Progress<string>(Console.WriteLine);
 
-        var sparkInfo = JsonUtility.Deserialize<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
-        var provisionInfo = JsonUtility.Deserialize<ProvisionDisplayRequest>(File.ReadAllText(provisioningFile));
+        var sparkInfo = JsonUtility.DeserializeWithTypeInfo<SparkConnectionInfo>(File.ReadAllText(sparkConnectionInfoFile));
+        var provisionInfo = JsonUtility.DeserializeWithTypeInfo<ProvisionDisplayRequest>(File.ReadAllText(provisioningFile));
 
         if (!SparkCustomerTools.PreProvisionDevices(deviceInfoFile, sparkInfo, provisionInfo, progress))
         {
@@ -56,4 +55,20 @@ internal static class DisplayProvisioningCommands
             Environment.Exit(1);
         }
     }
+
+
+    [CommandLineMethod(@"     --GetHardwareModel: Get Model information to identify the hardware")]
+    private static void GetHardwareModel()
+    {
+        var coreInterop = SystemService.GetInterop();
+        Console.WriteLine($"{HardwareInfo.HardwareModelPrefix}{coreInterop.GetHardwareModel()}");
+    }
+
+    [CommandLineMethod(@"     --GetHardwareSerialNumber: Get UniqueId used to identify the hardware")]
+    private static void GetHardwareSerialNumber()
+    {
+        var coreInterop = SystemService.GetInterop();
+        Console.WriteLine($"{HardwareInfo.HardwareIdPrefix}{coreInterop.GetHardwareSerialNumber()}");
+    }
 }
+

@@ -1,5 +1,5 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
+﻿using Ahsoka.Core;
+using Ahsoka.Services.Device;
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
@@ -17,11 +17,25 @@ internal class SystemTests
 
         // Start client for NetworkService
         var client = new SystemServiceClient();
-        client.NotificationReceived += Client_NotificationReceived;
+        client.NotificationReceived += SystemClient_NotificationReceived;
         client.Start();
 
         // Test Backlight
         BrightnessTest(client);
+
+        // Stop the Runtimes
+        AhsokaRuntime.Default.StopAllEndPoints();
+    }
+
+    public static void TestDeviceService()
+    {
+        // Start SystemService
+        Console.WriteLine($"Starting Runtimes for DeviceService Test");
+
+        // Start client for NetworkService
+        var client = new DeviceServiceClient();
+        client.NotificationReceived += DeviceClient_NotificationReceived;
+        client.Start();
 
         // Test USB Role Swapping
         bool runUSBTest = false;
@@ -38,8 +52,8 @@ internal class SystemTests
         AhsokaRuntime.Default.StopAllEndPoints();
     }
 
-  
-    private static void USBTest(SystemServiceClient client)
+
+    private static void USBTest(DeviceServiceClient client)
     {
         Thread.Sleep(1000);
         Console.WriteLine("Starting USB Role Swapping Test in SystemService");
@@ -61,7 +75,7 @@ internal class SystemTests
         client.SetUsbInfo(usbInfo);
         Thread.Sleep(100);
         client.GetUsbInfo();
-        Console.WriteLine("Completed USB Role Swapping Test in SystemService");
+        Console.WriteLine("Completed USB Role Swapping Test in DeviceService");
     }
 
     private static void BrightnessTest(SystemServiceClient client)
@@ -81,26 +95,32 @@ internal class SystemTests
         Console.WriteLine("Completed Backlight Test in SystemService");
     }
 
-    private static void Client_NotificationReceived(object sender, NotificationEventArgs<SystemMessageTypes.Ids> e)
+
+    private static void SystemClient_NotificationReceived(object sender, NotificationEventArgs<SystemMessageTypes.Ids> e)
     {
         if (e.TransportId == SystemMessageTypes.Ids.GetBrightness)
         {
             var response = e.NotificationObject as BrightnessInfo;
             Console.WriteLine($"Current Brightness is: {response.Percentage}");
         }
-        else if (e.TransportId == SystemMessageTypes.Ids.GetUsbInfo)
+    }
+
+    private static void DeviceClient_NotificationReceived(object sender, NotificationEventArgs<DeviceMessageTypes.Ids> e)
+    {
+        if (e.TransportId == DeviceMessageTypes.Ids.GetUsbInfo)
         {
             var response = e.NotificationObject as UsbInfo;
             Console.WriteLine($"Current USB Mode is: {response.Mode}");
         }
+
     }
 
-    private static void TestUpdateTouchscreen(SystemServiceClient client)
+    private static void TestUpdateTouchscreen(DeviceServiceClient client)
     {
         Console.WriteLine("Testing UpdateTouchscreen function calls...");
 
         {
-            var reply = client.UpdateTouchTune("/home/root/maxtouch.cfg", "/home/root/maxtouch.fw");
+            var reply = client.UpdateTouchTune(new TouchTuneInfo() { ConfigurationFileName = "/home/root/maxtouch.cfg", FirmwareFileName = "/home/root/maxtouch.fw" });
             Console.WriteLine($"Status = {reply.ReplyStatus}");
             Console.WriteLine($"Reason = {reply.ReplyReason}");
             Console.WriteLine("Tested UpdateTouchscreen configuration and firmware update...\n");
@@ -108,7 +128,7 @@ internal class SystemTests
         }
 
         {
-            var reply = client.UpdateTouchTune("/home/root/maxtouch.cfg");
+            var reply = client.UpdateTouchTune(new TouchTuneInfo() { ConfigurationFileName = "/home/root/maxtouch.cfg" });
             Console.WriteLine($"Status = {reply.ReplyStatus}");
             Console.WriteLine($"Reason = {reply.ReplyReason}");
             Console.WriteLine("Tested UpdateTouchscreen configuration update...\n");
@@ -116,7 +136,7 @@ internal class SystemTests
         }
 
         {
-            var reply = client.UpdateTouchTune();
+            var reply = client.UpdateTouchTune(new TouchTuneInfo());
             Console.WriteLine($"Status = {reply.ReplyStatus}");
             Console.WriteLine($"Reason = {reply.ReplyReason}");
             Console.WriteLine("Tested UpdateTouchscreen update, id only...\n");

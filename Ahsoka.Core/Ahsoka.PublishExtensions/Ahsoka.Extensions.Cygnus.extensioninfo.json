@@ -1,40 +1,21 @@
 ﻿{
-  "extensionName": "Cygnus Reach Service Extension",
+  "extensionName": "Reach Service Extension",
   "packageName": "Ahsoka.Extensions.CygnusReach",
   "uxpackageName": "Ahsoka.Extensions.CygnusReach.UX.Desktop",
   "uxViewModelName": "CygnusReachSetupViewModel",
   "serviceConfigurations": [
     {
       "socketType": "TcpSocket",
-      "serviceName": "CygnusServerInterfaceService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel": 5110,
-      "behaviors": "AutoStart"
-    },
-    {
-      "socketType": "TcpSocket",
-      "serviceName": "CygnusServerService",
+      "serviceName": "ReachService",
       "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel": 5111,
-      "behaviors": "AutoStart"
-    },
-    {
-      "socketType": "TcpSocket",
-      "serviceName": "CygnusService",
-      "tcpListenAddress": "*",
-      "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-      "dataChannel": 5112,
+      "dataChannel": 6112,
       "behaviors": "AutoStart"
     }
   ],
   "hasCommands": "false",
   "hasUx": "false",
-  "minVersion": "3.5.0",
-  "maxVersion": "4.0.0",
+  "minVersion": "4.0.0",
+  "maxVersion": "5.0.0",
   "requireExactVersion": "false"
 }

@@ -16,7 +16,7 @@
 
 			</Border>
 			<DockPanel Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True"
-					   IsVisible="{Binding IsCreate, FallbackValue=true}">
+					   IsVisible="{Binding IsCreate, FallbackValue=false}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="*"/>
@@ -45,7 +45,7 @@
 								IsReadOnly="True"
 								ItemsSource="{Binding Demos}" AutoGenerateColumns="False">
 								<DataGrid.Columns>
-									<DataGridTextColumn Header="Name" Binding="{Binding ProjectName}" />
+									<DataGridTextColumn Header="Name" Binding="{Binding DisplayName}" />
 									<DataGridTextColumn Header="Language" Binding="{Binding Language}" />
 									<DataGridTextColumn Header="Description"  Binding="{Binding Description}" />
 								</DataGrid.Columns>
@@ -56,7 +56,7 @@
 			</DockPanel>
 
 			<DockPanel Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True"
-					   IsVisible="{Binding IsConfigure, FallbackValue=false}">
+					   IsVisible="{Binding IsConfigure, FallbackValue=true}">
 				<Grid >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="*"/>
@@ -90,7 +90,7 @@
 						<TextBlock FontSize="22" Text="Configure Project"/>
 						<Grid Margin="20" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*">
 							<TextBlock Text="Project Name:"  VerticalAlignment="Center" Grid.Row="0" Grid.Column="0" />
-							<TextBox HorizontalAlignment="Left" Margin="5" Text="{Binding ProjectName}" Grid.Row="0"  Width="250"  Grid.Column="1" TextWrapping="1"/>
+							<TextBox Background="WhiteSmoke" IsReadOnly="true" HorizontalAlignment="Left" Margin="5" Text="{Binding ProjectName}" Grid.Row="0"  Width="250"  Grid.Column="1" TextWrapping="1"/>
 
 							<TextBlock ToolTip.Tip="Path to where the project will be created." VerticalAlignment="Center"
 								Text="Project Path:" Grid.Row="1" Grid.Column="0" />
@@ -101,9 +101,20 @@
 							<TextBlock Text="Folder Name:"  VerticalAlignment="Center" Grid.Row="2" Grid.Column="0"/>
 							<StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1"  >
 								<TextBox HorizontalAlignment="Left" VerticalAlignment="Center" 
-										 Margin="5" Text="{Binding DirectoryName}"  Width="250"  Grid.Column="1" TextWrapping="1"/>
+										 Margin="5,5,15,5" Text="{Binding DirectoryName}"  Width="250"  Grid.Column="1" TextWrapping="1"/>
 								<CheckBox IsChecked="{Binding MatchNames}"  />
 								<TextBlock  Text="Match Names" FontSize="12" VerticalAlignment="Center"/>
+							</StackPanel>
+
+							<TextBlock Text="Selected Platform:"  VerticalAlignment="Center" Grid.Row="3" Grid.Column="0"/>
+							<StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" Grid.Row="3" Grid.Column="1"  >
+								<ComboBox ItemsSource="{Binding SelectedProjectList}"
+											SelectedItem="{Binding SelectedProject}" BorderBrush="DimGray"
+											HorizontalAlignment="Left"  VerticalAlignment="Center"
+										 Margin="5"  Width="250"  Grid.Column="1" />
+								<TextBlock TextWrapping="Wrap" Width="250" Margin="10,0"
+										   Text="If more than one platform is included in the demo, select the one to launch."  
+										   VerticalAlignment="Center" FontStyle="Italic" FontSize="12" Grid.Row="3" Grid.Column="0"/>
 							</StackPanel>
 						</Grid>
 					</StackPanel>
@@ -111,8 +122,9 @@
 
 			</DockPanel>
 
+		
 
-			<Border IsVisible="{Binding ShowNoProjects}" Grid.ColumnSpan="2" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+			<Border IsVisible="{Binding ShowNoProjects, FallbackValue=false}" Grid.ColumnSpan="2" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
 				<Border  BoxShadow="5 5 10 2 DarkGray" Height="120" Width="450" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="White" BorderThickness="1">
 					<Grid VerticalAlignment="Center">
 						<TextBlock Foreground="SteelBlue" FontSize="16"

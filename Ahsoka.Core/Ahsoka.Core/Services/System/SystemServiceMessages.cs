@@ -1,9 +1,6 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
-using Ahsoka.Utility;
-using System;
+﻿using Ahsoka.Core;
+using Ahsoka.Installer;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Ahsoka.Services.System;
 
@@ -78,7 +75,7 @@ public class SystemServiceMessages : AhsokaMessagesBase
     public const string InstallerVersionFactory = "InstallerVersionFactory";
 
     /// <InheritDoc/>
-    public SystemServiceMessages()
+    public SystemServiceMessages() : base(SystemService.Name)
     {
         this.RegisterServiceRequest(SystemMessageTypes.Ids.Echo, typeof(EchoValue), typeof(EchoValue));
         this.RegisterServiceRequest(SystemMessageTypes.Ids.GetServiceInfo, typeof(EmptyNotification), typeof(ServiceInfo));
@@ -90,14 +87,13 @@ public class SystemServiceMessages : AhsokaMessagesBase
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.GetBrightness, typeof(EmptyNotification), typeof(BrightnessInfo));
         this.RegisterServiceRequest(SystemMessageTypes.Ids.SetBrightness, typeof(BrightnessInfo), typeof(BrightnessInfo));
-        this.RegisterServiceRequest(SystemMessageTypes.Ids.GetUsbInfo, typeof(EmptyNotification), typeof(UsbInfo));
-        this.RegisterServiceRequest(SystemMessageTypes.Ids.SetUsbInfo, typeof(UsbInfo), typeof(EmptyNotification));
-
-        this.RegisterServiceRequest(SystemMessageTypes.Ids.SetSerialConfig, typeof(RS485ConfigNotification), typeof(EmptyNotification));
         this.RegisterServiceRequest(SystemMessageTypes.Ids.SetBootLogo, typeof(BootLogoInfo), typeof(EmptyNotification));
-        this.RegisterServiceRequest(SystemMessageTypes.Ids.UpdateTouchTune, typeof(TouchTuneInfo), typeof(TouchTuneInfoReply));
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.RequestShutdown, typeof(ShutdownInformation), typeof(EmptyNotification));
+
+        // Test Calls
+        this.RegisterServiceRequest(SystemMessageTypes.Ids.RequestNotif, typeof(EchoValue), typeof(EmptyNotification), false, true);
+        this.RegisterServiceNotification(SystemMessageTypes.Ids.TestNotif, typeof(EchoValue), false, true);
     }
 
     /// <InheritDoc/>
@@ -125,12 +121,18 @@ public class SystemServiceMessages : AhsokaMessagesBase
         var result = base.OnGetAdditionalClientResources(type);
         result.Add("inc\\services\\SystemServiceClientExtensions.h", Properties.Resources.SystemServiceClientExtensionsH);
 
-        result.Add("Ahsoka.Proto\\SystemService.proto", Properties.Resources.SystemService);
+        result.Add("Ahsoka.Proto\\SystemService.proto", GetProtoMessageFile());
 
         if (includeImplementation)
             result.Add("inc\\services\\SystemServiceClientExtensions.cxx", Properties.Resources.SystemServiceClientExtensionsCXX);
 
         return result;
+    }
+
+    /// <InheritDoc/>
+    public override byte[] GetProtoMessageFile()
+    {
+        return this.GenerateProtoFile("AhsokaSystem", typeof(SystemMessageTypes.Ids));
     }
 
 }

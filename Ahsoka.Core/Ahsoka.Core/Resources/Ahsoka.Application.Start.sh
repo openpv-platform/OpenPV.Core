@@ -5,14 +5,13 @@ echo "App Start Time" $(date +%T.%3N)
 
 cd ${ApplicationFolder}
 
-if [ -f ../app_env.sh ];
-then
-    . ../app_env.sh
-fi
-
-if [ -f ./start_ui_helper.sh ];
-then
-    ./start_ui_helper.sh
+DIR=".appinfo/start"
+if [ -d "$DIR" ]; then
+	for FILE in "$DIR"/*; do
+		if [ -f "$FILE" ]; then	    
+			. "$FILE"
+		fi
+	done
 fi
 
 ${PreReleaseScript}

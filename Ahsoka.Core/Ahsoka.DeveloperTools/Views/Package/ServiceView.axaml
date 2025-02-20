@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+         	 xmlns:material="using:Material.Icons.Avalonia"
+             x:Class="Ahsoka.DeveloperTools.Views.ServiceView"  d:DesignWidth="740">
+
+	<Grid Margin="0,-3,0,0" Height="30" RowDefinitions="*" ColumnDefinitions="30,*,auto,20"
+						  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+
+	
+
+		<Button IsVisible="{Binding !IsExtension}" Margin="0,2,0,0"
+				HorizontalAlignment="Left"
+				 BorderThickness="0"
+				 Width="24" Grid.RowSpan="3"
+				 Height="24"
+				 VerticalContentAlignment="Center"
+				ToolTip.Tip="Check to to include Configuration in Service Config."
+				 Command="{Binding IncludeChanged}">
+			<Grid>
+				<material:MaterialIcon IsVisible="{Binding IsIncluded}" Width="20" Height="20" Foreground="SteelBlue" Kind="CheckboxMarked"></material:MaterialIcon>
+				<material:MaterialIcon IsVisible="{Binding !IsIncluded}" Width="20" Height="20" Foreground="Gray" Kind="CheckboxBlank"></material:MaterialIcon>
+			</Grid>
+		</Button>
+		<Grid Grid.RowSpan="3"
+			ToolTip.Tip="Automatically Included based on Imported Extension."
+			HorizontalAlignment="Left" Width="24"
+			Height="24" Margin="0,3,0,0" IsVisible="{Binding IsExtension}">
+			<material:MaterialIcon Width="20" Height="20" Foreground="DarkGray" Kind="CheckboxMarked"></material:MaterialIcon>
+		</Grid>
+
+		<TextBlock Grid.RowSpan="3" Text="{Binding ServiceNameFull}" ToolTip.Tip="{Binding ServiceNameFull}"
+				   Margin="0,3,0,0"  HorizontalAlignment="Stretch"
+				   FontSize="14" Grid.Column="1" TextWrapping="NoWrap" />
+
+		<Button IsVisible="{Binding IsIncluded}" VerticalAlignment="Center" FontSize="12"  Grid.Row="1" MinHeight="25" Grid.Column="2" Content="Show Options..." 
+				 Command="{Binding ShowEditor}"/>
+
+
+		
+	</Grid>
+
+</UserControl>

@@ -1,6 +1,4 @@
-﻿using Ahsoka.System;
-
-namespace Ahsoka;
+﻿namespace Ahsoka.Core;
 
 /// <summary>
 ///  Returns Minimum Values Needed for Compatible Firmware

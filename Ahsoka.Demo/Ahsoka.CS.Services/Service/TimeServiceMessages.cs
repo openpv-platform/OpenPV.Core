@@ -1,5 +1,5 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Installer;
 using System.Collections.Generic;
 
 namespace Ahsoka.Services.Demo;
@@ -12,7 +12,7 @@ namespace Ahsoka.Services.Demo;
 /// </summary>
 internal class TimeServiceMessages : AhsokaMessagesBase
 {
-    public TimeServiceMessages()
+    public TimeServiceMessages() : base(TimeService.Name)
     {
         // Here we define a message that Takes Empty Notification (used when no data is needed) and returns the Current TimeInfo.
         this.RegisterServiceRequest(TimeServiceMessageTypes.Ids.GetTime, typeof(EmptyNotification), typeof(TimeInfo));

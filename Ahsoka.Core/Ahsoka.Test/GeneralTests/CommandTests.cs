@@ -1,5 +1,5 @@
+using Ahsoka.Core;
 using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
@@ -9,9 +9,8 @@ namespace Ahsoka.Test;
 [TestClass]
 public class CommandTests : LinearTestBase
 {
-   
-    public TestContext TestContext { get; set; }
 
+    public TestContext TestContext { get; set; }
 
     [TestMethod]
     public void TestClientCodeGenerator()

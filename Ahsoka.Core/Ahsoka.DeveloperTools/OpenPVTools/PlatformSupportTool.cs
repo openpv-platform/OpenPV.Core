@@ -1,6 +1,6 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.DeveloperTools.ViewModel;
 using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.IO;
@@ -53,7 +53,7 @@ internal class PlatformSupportTool : SparkToolBase
         {
             if (Name.StartsWith(PlatformFamily.OpenViewLinux.ToString()))
                 this.IncludedProfiles = PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
-            else if (Name.ToLower().StartsWith(PlatformFamily.MacosArm64.ToString().ToLower()))
+            else if (Name.ToLower().StartsWith(PlatformFamily.MacOSArm64.ToString().ToLower()))
                 this.IncludedProfiles = PluginsViewModel.profileCSharp;
             else if (Name.StartsWith(PlatformFamily.Ubuntu64.ToString()))
                 this.IncludedProfiles = PluginsViewModel.profileCPP;
@@ -75,7 +75,7 @@ internal class PlatformSupportTool : SparkToolBase
         UpdateLocalTool();
 
         this.HasInfo = true;
-        
+
     }
 
     public override string GetInfo(IToolViewModel vm)
@@ -96,7 +96,7 @@ internal class PlatformSupportTool : SparkToolBase
             string folderName = Path.GetFileName(folder);
             string versionFile = Path.Combine(folder, VersionFileName);
             string version = this.Version;
-            
+
             if (File.Exists(versionFile))
                 version = File.ReadAllText(versionFile);
 
@@ -107,8 +107,8 @@ internal class PlatformSupportTool : SparkToolBase
         if (firmwareFileName != null)
         {
             string firmwareFolder = localPath + "_Firmware";
-            string imageFile = "image.*." + firmwareFileName.Replace("Firmware_","");
-            string fileName = Directory.EnumerateFiles(firmwareFolder, imageFile).FirstOrDefault();
+            string imageFile = "image.*." + firmwareFileName.Replace("Firmware_", "");
+            string fileName = Directory.EnumerateFiles(firmwareFolder, imageFile, SearchOption.AllDirectories).FirstOrDefault();
             string versionNumber = this.Version;
 
             if (File.Exists(fileName))
@@ -145,7 +145,7 @@ internal class PlatformSupportTool : SparkToolBase
             }
         }
         catch { }
-      
+
         if (File.Exists(imageFileName))
             if (PlatformFamily == PlatformFamily.OpenViewLinux)
                 this.firmwareTool = new PlatformFirmwareTool(imageFileName, PlatformFamily);
@@ -159,7 +159,7 @@ internal class PlatformSupportTool : SparkToolBase
     protected override async Task ExecuteDownload(IToolViewModel toolVM, CancellationTokenSource cancellationToken)
     {
         string value = Path.GetDirectoryName(LocalPath);
-       
+
         if (Directory.Exists(value))
             Directory.Delete(value, true);
 
@@ -181,18 +181,18 @@ internal class PlatformSupportTool : SparkToolBase
                     File.Delete(pathToDownload);
                 }
             }
-            
+
             UpdateLocalTool();
         });
 
-        
+
     }
 
     private string GetFirmwareVersionFile(string overrideLocal = "")
     {
         string value = overrideLocal == string.Empty ? Path.GetDirectoryName(LocalPath) : overrideLocal;
 
-        string fileName =  Path.Combine(Path.Combine(value), this.PlatformFamily.ToString() + "_Firmware.zip.customertools.version");
+        string fileName = Path.Combine(Path.Combine(value), this.PlatformFamily.ToString() + "_Firmware.zip.customertools.version");
         if (File.Exists(fileName))
             return File.ReadAllText(fileName).TrimEnd();
         else

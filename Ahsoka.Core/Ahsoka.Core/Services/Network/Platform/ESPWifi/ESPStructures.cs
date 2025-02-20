@@ -82,17 +82,6 @@ internal struct ESPHostedWifiScanList
     public int encryptionMode;
 }
 
-/*
- * This is how we would represent a C union of structures, but it is easier to invoke the
- * underlying function with one or the other and overload our function with two separate structures.
-[System.Runtime.InteropServices.StructLayout(LayoutKind.Explicit)]
-public struct ESPHostedControlConfig
-{
-    [System.Runtime.InteropServices.FieldOffset(0)] public ESPHostedStationConfig station;
-    [System.Runtime.InteropServices.FieldOffset(0)] public ESPHostedSoftAPConfig softap;
-}
-*/
-
 [ExcludeFromCodeCoverage]
 [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
 internal struct ESPHostedWifiConnectedStationsList

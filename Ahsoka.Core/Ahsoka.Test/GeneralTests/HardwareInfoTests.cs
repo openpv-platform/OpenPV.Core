@@ -1,6 +1,6 @@
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
@@ -41,8 +41,7 @@ public class HardwareInfoTests : LinearTestBase
             TcpListenAddress = "127.0.0.1",
             TcpConnectionAddress = "127.0.0.1",
             ServiceName = "FakeConfig",
-            SocketType = TransportSocketTypes.SerialSocket,
-            Behaviors =  EndPointBehaviors.AutoStart
+            Behaviors = EndPointBehaviors.AutoStart
         });
 
         string result = JsonUtility.Serialize(runtimeconfig);

@@ -11,7 +11,7 @@ namespace Ahsoka.DeveloperTools;
 
 internal class PlatformHelpTool : SparkToolBase
 {
-    public const string Folder =  "APIHelp";
+    public const string Folder = "APIHelp";
     readonly ReleaseDTO viewModel;
     readonly static List<string> frameworks = ["net8.0", "net6.0", "net5.0", "NETStandard2.1", "NETStandard2.0"];
 
@@ -19,7 +19,7 @@ internal class PlatformHelpTool : SparkToolBase
     {
         return CustomerToolPaths.GetToolPath(Folder);
     }
-    
+
     public PlatformHelpTool(ReleaseDTO viewModel) :
         base(viewModel, false)
     {
@@ -29,7 +29,7 @@ internal class PlatformHelpTool : SparkToolBase
         this.Description = viewModel.ChannelName;
         this.Name = viewModel.ChannelName;
         this.Version = viewModel.ContainerVersion;
-       
+
         this.IncludedProfiles = PluginsViewModel.profileWSL + "," + PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
         this.LocalPath = GetHelpPath();
     }
@@ -47,7 +47,7 @@ internal class PlatformHelpTool : SparkToolBase
         string extractPath = LocalPath;
 
         PackagingUtility.ExtractPackage(downloadFile, extractPath, null, null);
-       
+
         // Delete File
         File.Delete(downloadFile);
 

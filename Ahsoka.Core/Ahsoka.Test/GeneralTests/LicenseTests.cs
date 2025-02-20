@@ -1,6 +1,6 @@
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Security;
@@ -22,7 +22,7 @@ public class LicenseTests : LinearTestBase
     [TestMethod]
     public void TestLicenseManager()
     {
-        string fileName = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(System.Hardware.FactoryPaths.ModuleLicenseFile);
+        string fileName = SystemInfo.HardwareInfo.TargetPathInfo.GetFactoryPath(FactoryPaths.ModuleLicenseFile);
         if (File.Exists(fileName))
             File.Delete(fileName);
 
@@ -55,7 +55,7 @@ public class LicenseTests : LinearTestBase
 
         SystemInfo.HardwareInfo.FactoryInfo.DeviceId = oldLicenseID;
     }
-   
+
     /// <summary>
     /// Test code for when need to add factory data for a unit already in the field
     /// Requires admin or DeviceProvisioning
@@ -78,7 +78,7 @@ public class LicenseTests : LinearTestBase
             SerialNumber = "45000544424",
             PlatformFamily = PlatformFamily.OpenViewLinux.ToString(),
             PlatformQualifier = "S70",
-            FactoryInfo = JsonUtility.Serialize(HardwareInfo.GetHardwareInfo(PlatformFamily.OpenViewLinux,"S70")),
+            FactoryInfo = JsonUtility.Serialize(HardwareInfo.GetHardwareInfo(PlatformFamily.OpenViewLinux, "S70")),
             DevicePublicKey = string.Empty,
         };
 

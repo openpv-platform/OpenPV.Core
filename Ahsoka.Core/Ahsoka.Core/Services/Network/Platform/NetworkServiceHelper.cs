@@ -1,6 +1,5 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Network.ESPWifi;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -27,7 +26,7 @@ internal class NetworkServiceHelper
     const string miscSection = "Misc";
     const string poolOffset = "PoolOffset";
     const string poolSize = "PoolSize";
-              
+
     const string dhcpServerSection = "DHCPServer";
     const string ssid = "SSID";
     const string channelNumber = "ChannelNumber";
@@ -57,14 +56,14 @@ internal class NetworkServiceHelper
         }
 
         string fileContents;
-        if (updateConfiguration.ClientConfiguration.ConnectionType == IPAddressConfiguration.StaticIP)
+        if (updateConfiguration.ClientConfiguration.ConnectionType == IPAddressConfiguration.StaticIp)
         {
             fileContents = Properties.Resources.WirelessClientStatic;
             fileContents = fileContents.Replace("<ADAPTERID>", updateConfiguration.AdapterId);
             fileContents = fileContents.Replace("<MAC>", updateConfiguration.OverrideMacAddress);
-            fileContents = fileContents.Replace("<ADDRESS>", updateConfiguration.ClientConfiguration.IPAddress);
+            fileContents = fileContents.Replace("<ADDRESS>", updateConfiguration.ClientConfiguration.IpAddress);
             fileContents = fileContents.Replace("<DNS>", updateConfiguration.ClientConfiguration.Dns);
-            fileContents = fileContents.Replace("<GATEWAY>", updateConfiguration.ClientConfiguration.GatewayIP);
+            fileContents = fileContents.Replace("<GATEWAY>", updateConfiguration.ClientConfiguration.GatewayIp);
         }
         else
         {
@@ -85,13 +84,31 @@ internal class NetworkServiceHelper
         RestartNetworkServices();
     }
 
-    public static void WriteAccessPointConfiguration(AdapterConfiguration updateConfiguration)
+    public static void ReadClientConfiguration(AdapterConfiguration updateConfiguration, bool readDefault = false)
     {
         // Paths
         GetPaths(updateConfiguration.AdapterId, out string pathToUserLinuxNetDFile, out string pathToSystemLinuxNetDFile);
-        Console.WriteLine(pathToUserLinuxNetDFile);
-        Console.WriteLine(pathToSystemLinuxNetDFile);
 
+        // Determine Path
+        string pathToLoad = pathToUserLinuxNetDFile;
+        if (!File.Exists(pathToUserLinuxNetDFile) || readDefault)
+            pathToLoad = pathToSystemLinuxNetDFile;
+
+        Dictionary<string, Dictionary<string, string>> networkUnitData = ParseNetworkFile(pathToLoad);
+
+        updateConfiguration.ClientConfiguration = new IPConfiguration()
+        {
+            ConnectionType = (networkUnitData[networkSection][dhcpEnabledName] == "NO") ? IPAddressConfiguration.StaticIp : IPAddressConfiguration.Dhcp,
+            IpAddress = networkUnitData[networkSection][ipAddressName],
+            GatewayIp = networkUnitData[networkSection][gatewayName],
+            Dns = networkUnitData[networkSection][dnsName],
+        };
+    }
+
+    public static void WriteAccessPointConfiguration(AccessPointServiceConfiguration updateConfiguration)
+    {
+        // Paths
+        GetPaths(updateConfiguration.AdapterId, out string pathToUserLinuxNetDFile, out string pathToSystemLinuxNetDFile);
         string pathToLoad;
 
         if (updateConfiguration.SaveAsDefault)
@@ -108,6 +125,7 @@ internal class NetworkServiceHelper
             // Save Runtime Folder
             pathToLoad = pathToUserLinuxNetDFile;
         }
+
 
         string fileContents;
         if (updateConfiguration.DhcpServerConfiguration != null)
@@ -143,35 +161,14 @@ internal class NetworkServiceHelper
         if (!Directory.Exists(directoryPath))
             Directory.CreateDirectory(directoryPath);
 
-        AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Network Configuration for {updateConfiguration.AdapterId} to {pathToLoad}");
+        AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Network Configuration for {updateConfiguration.AdapterId} written to {pathToLoad}");
         File.WriteAllText(pathToLoad, fileContents);
 
         // Restart Network Service in SystemD
         RestartNetworkServices();
     }
 
-    public static void ReadClientConfiguration(AdapterConfiguration updateConfiguration, bool readDefault = false)
-    {
-        // Paths
-        GetPaths(updateConfiguration.AdapterId, out string pathToUserLinuxNetDFile, out string pathToSystemLinuxNetDFile);
-
-        // Determine Path
-        string pathToLoad = pathToUserLinuxNetDFile;
-        if (!File.Exists(pathToUserLinuxNetDFile) || readDefault)
-            pathToLoad = pathToSystemLinuxNetDFile;
-
-        Dictionary<string, Dictionary<string, string>> networkUnitData = ParseNetworkFile(pathToLoad);
-
-        updateConfiguration.ClientConfiguration = new IPConfiguration()
-        {
-            ConnectionType = (networkUnitData[networkSection][dhcpEnabledName] == "YES") ? IPAddressConfiguration.Dhcp : IPAddressConfiguration.StaticIP,
-            IPAddress = networkUnitData[networkSection][ipAddressName],
-            GatewayIP = networkUnitData[networkSection][gatewayName],
-            Dns = networkUnitData[networkSection][dnsName],
-        };
-    }
-
-    public static void ReadAPConfiguration(AdapterConfiguration updateConfiguration, bool readDefault = false)
+    public static void ReadAccessPointConfiguration(AccessPointServiceConfiguration updateConfiguration, bool readDefault = false)
     {
         // Paths
         GetPaths(updateConfiguration.AdapterId, out string pathToUserLinuxNetDFile, out string pathToSystemLinuxNetDFile);
@@ -209,7 +206,6 @@ internal class NetworkServiceHelper
             Console.WriteLine(ex.Message);
         }
     }
-
     public static bool RestartNetworkServices()
     {
         // Network Services are only managed with SystemD on Linux.
@@ -225,7 +221,7 @@ internal class NetworkServiceHelper
                 return false;
             }
 
-            AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Network Services Restarted");
+            AhsokaLogging.LogMessage(AhsokaVerbosity.Low, $"Network Services Restarted");
             return true;
         }
         catch (Exception)

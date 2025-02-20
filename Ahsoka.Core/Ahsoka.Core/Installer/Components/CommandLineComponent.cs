@@ -1,11 +1,11 @@
-﻿using Ahsoka.Installer.InstallEngine;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Extensions = Ahsoka.System.Extensions;
+using Extensions = Ahsoka.Core.Extensions;
 
 namespace Ahsoka.Installer.Components;
 
@@ -24,7 +24,7 @@ internal class CommandLineComponent : PackageComponentBase
 
     protected override string GetPackagingPath(string buildLocation, PackageInformation info)
     {
-        if (overridePath != null) 
+        if (overridePath != null)
             return overridePath;
 
         return base.GetPackagingPath(buildLocation, info);
@@ -38,7 +38,7 @@ internal class CommandLineComponent : PackageComponentBase
     {
         PackageComponent componentData = null;
 
-        if (info.CanUseOptimizerdServiceManager())
+        if (info.OptimizedServiceManager && info.CanUseOptimizerdServiceManager())
         {
             progress.Report(new PackageProgressInfo() { Message = " " });
             progress.Report(new PackageProgressInfo() { Message = "      Generating Optimized Service Manager" });
@@ -47,7 +47,7 @@ internal class CommandLineComponent : PackageComponentBase
             // Path to Output
             string path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             overridePath = Path.Combine(path, "publish");
-           
+
             IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
             {
                 string result = info.Data?.TrimStart();

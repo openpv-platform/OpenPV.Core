@@ -1,7 +1,6 @@
-﻿using Ahsoka.Core.Drawing;
-using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Drawing.Utility;
+using Ahsoka.Core.Utility;
 using System;
 
 namespace Ahsoka.Installer.UI;
@@ -18,10 +17,14 @@ class Program
         if (OperatingSystem.IsWindows())
             ConsoleExtension.Hide();
 
+        JsonUtility.AddTypeResolver(InstallerJsonSerializerContext.Default);
+
         ConfigurationLoader.SetRuntimeConfiguration(ConfigurationLoader.CreateDefaultConfiguration());
 
         // Start the Application passing it our drawing area
         new ApplicationController()
             .RunApplication(InstallerDrawingManager.Default);
+
+        ApplicationContext.Exit();
     }
 }

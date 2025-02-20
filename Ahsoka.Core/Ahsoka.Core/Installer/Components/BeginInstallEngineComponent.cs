@@ -1,8 +1,8 @@
-﻿using Ahsoka.Installer.InstallEngine;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,13 +49,6 @@ internal class BeginInstallEngineComponent : InstallEngineComponent
         {
             Directory.Delete(appDataPath, true);
             context.Log.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Removing Local App Data @ {appDataPath}" });
-        }
-
-        string dependencyRoot = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.DependencyRoot);
-        if (!Directory.Exists(dependencyRoot))
-        {
-            Directory.CreateDirectory(dependencyRoot);
-            context.Log.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"System Root Created at {dependencyRoot}" });
         }
 
         string factoryRoot = SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.FactoryRoot);

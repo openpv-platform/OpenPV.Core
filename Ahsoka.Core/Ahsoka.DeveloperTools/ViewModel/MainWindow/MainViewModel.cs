@@ -1,14 +1,13 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
-using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -17,12 +16,8 @@ using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using static NetMQ.NetMQSelector;
-using static NuGet.Packaging.PackagingConstants;
-using SystemConsole = System.Console;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -292,34 +287,7 @@ internal class MainViewModel : ViewModelBase
 
         if (UseInternalCommandLine)
         {
-            var currentDirectory = Environment.CurrentDirectory;
-            if (workingDirectory != null)
-                Environment.CurrentDirectory = workingDirectory;
-
-            using var localConsole = new LocalConsoleWriter();
-            EventHandler<LocalConsoleWriterEventArgs> handler = (sender, e) =>
-            {
-                progressString.Report(new CommandLineProgressInfo() { IsWriteLine = e.IsWriteLine, Message = e.Value });
-            };
-
-            localConsole.WriteLineEvent += handler;
-            localConsole.WriteEvent += handler;
-
-            SystemConsole.SetOut(localConsole);
-
-            /// Split Arguments
-            var args = new List<string>();
-            args.AddRange(Regex.Matches(processArgs, @"[\""].+?[\""]|[^ ]+")
-                            .Cast<Match>()
-                            .Select(m => m.Value.Trim('"'))
-                            .ToList());
-
-            CommandLine.Execute(args.ToArray());
-
-            localConsole.WriteLineEvent -= handler;
-            localConsole.WriteEvent += handler;
-            if (workingDirectory != null)
-                Environment.CurrentDirectory = currentDirectory;
+            LocalCommandLine.RunWithLocalConsole(processArgs, workingDirectory, progressString);
         }
         else
         {
@@ -387,6 +355,11 @@ internal class MainViewModel : ViewModelBase
 
         // Run Machine / Tools Downloads
         string pathToKits = CustomerToolPaths.GetToolPath(PlatformSupportPathInfo.PlatformSupportRootFolderName);
+
+        // Run Local Command Line for Tests
+        if (Debugger.IsAttached && Directory.Exists(PlatformSupportPathInfo.PlatformSupportRootFolder))
+            pathToKits = PlatformSupportPathInfo.PlatformSupportRootFolder;
+
         pathToCommand = Path.Combine(pathToKits, PlatformSupportPathInfo.GetPlatformFolderName(SystemInfo.CurrentPlatform), "CommandLine", "Ahsoka.CommandLine");
 
         if (Environment.OSVersion.Platform == PlatformID.Win32NT)
@@ -501,7 +474,7 @@ internal class MainViewModel : ViewModelBase
             InitUI();
     }
 
-    
+
     private bool IsSparkAvailable()
     {
         try
@@ -513,7 +486,7 @@ internal class MainViewModel : ViewModelBase
                 return true;
         }
         catch { }
-        
+
         return false;
     }
 
@@ -521,19 +494,21 @@ internal class MainViewModel : ViewModelBase
     {
         if (modelReady)
         {
-            ActiveConnection.Init();
-
             if (IsOffline)
             {
                 var result = await Dialog.ShowDialog("Offline Mode", "You are not currently connected to the internet or can not connect to our cloud services.  Do you wish to enable Offline Mode or Exit?", "Enable Offline", "Exit");
                 if (!result)
                     Environment.Exit(0);
                 else
-                   await Dialog.ShowDialog("Offline Mode Enabled", "You can open and build Packages but can not acess Projects, Plugins or Account Information.  Please restart the Developer Toolkit to re-enable these features.", "OK");
-            
+                    await Dialog.ShowDialog("Offline Mode Enabled", "You can open and build Packages but can not acess Projects, Plugins or Account Information.  Please restart the Developer Toolkit to re-enable these features.", "OK");
+
             }
             else if (showNewVersionHelp)
                 Plugins.OpenPopup(showNewVersionHelp);
+
+            // Fix Crash on Initial Login
+            if (!IsOffline)
+                Updates.RefreshList();
 
         }
     }
@@ -547,10 +522,15 @@ internal class MainViewModel : ViewModelBase
             return;
         }
 
+        ShowHelpPath(helpFile, true);
+    }
+
+    internal void ShowHelpPath(string helpFile, bool isLocal)
+    {
         using var myProcess = new Process();
         string command = "explorer.exe";
         string args = $"\"{helpFile}\"";
-        string folder = Path.Combine(Path.GetDirectoryName(helpFile));
+        string folder = isLocal ? Path.Combine(Path.GetDirectoryName(helpFile)) : Environment.CurrentDirectory;
 
         if (OperatingSystem.IsLinux())
             command = "xdg-open";
@@ -839,7 +819,7 @@ internal class MainViewModel : ViewModelBase
         {
             account = SparkAccountClient.SharedSparkClient.GetAccount();
         }
-        catch {}
+        catch { }
 
         var error = new ErrorReportDTO()
         {
@@ -947,7 +927,7 @@ public class RecentItem
 #region OfflineData
 public class OffLineData
 {
-    public TeamDTO Team { get;set ; }
+    public TeamDTO Team { get; set; }
     public List<OfflineModule> Modules { get; set; } = new();
 }
 

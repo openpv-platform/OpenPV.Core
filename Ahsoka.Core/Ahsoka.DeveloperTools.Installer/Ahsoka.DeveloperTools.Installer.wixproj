@@ -11,10 +11,10 @@
     <SuppressValidation>True</SuppressValidation>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.1" />
-    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.1" />
-    <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.1" />
-    <PackageReference Include="WixToolset.Heat" Version="5.0.1" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.Heat" Version="5.0.2" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="OpenPV-Icon.ico" />
@@ -27,7 +27,7 @@
     <Exec Condition="true" Command="dotnet publish ..\Ahsoka.DeveloperTools\Ahsoka.DeveloperTools.csproj -p:PublishProfile=WindowsOutputs" />
   </Target>
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+    <PackageReference Include="GitVersion.MsBuild" Version="[5.12.0]">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

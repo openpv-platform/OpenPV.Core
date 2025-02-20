@@ -1,4 +1,4 @@
-﻿using Ahsoka.System;
+﻿using Ahsoka.Core;
 using System;
 using System.IO;
 
@@ -13,8 +13,8 @@ internal static class LinuxPathInfo
     {
         if (OperatingSystem.IsWindows())
         {
-            systemPath = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetServiceDataPath(Ahsoka.System.Hardware.ServiceDataPaths.NetworkProfileFolder), "etc/systemd");
-            runtimePath = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetServiceDataPath(Ahsoka.System.Hardware.ServiceDataPaths.NetworkProfileFolder), "run/systemd");
+            systemPath = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetServiceDataPath(Ahsoka.Core.Hardware.ServiceDataPaths.NetworkProfileFolder), "etc/systemd");
+            runtimePath = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetServiceDataPath(Ahsoka.Core.Hardware.ServiceDataPaths.NetworkProfileFolder), "run/systemd");
         }
         else
         {

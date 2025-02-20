@@ -1,0 +1,51 @@
+
+
+void HandleGlobalRegistry(void *data, struct wl_registry *registry,
+		       uint32_t name, const char *interface, uint32_t version)
+{
+
+}
+
+
+void InitLayerManager(DrawingWindowContext& context)
+{
+	context.registryCallback = HandleGlobalRegistry;
+}
+
+void CreateLayoutSurface(DrawingWindowContext& context)
+{
+	CreateXdgLayer(&context);
+	context.surfaceId = 20000; // Not RealID
+}
+
+int UpdateSurfaceLocationImpl(int surfaceId, int x, int y, int w, int h, bool commitChanges)
+{
+	return 1;
+}
+
+int UpdateSurfaceSourceImpl(int surfaceId, int x, int y, int w, int h, bool commitChanges)
+{
+	return 1;
+}
+
+int UpdateSurfaceVisibilityImpl(int surfaceId, bool visibility, float opacity, bool commitChanges)
+{
+	return 1;
+}
+
+bool GetSurfaceVisibilityImpl(int surfaceId)
+{
+	return 1;
+}
+
+float GetSurfaceOpacityImpl(int surfaceId)
+{
+	return 1.0f;
+}
+
+int GetSurfaceLocationImpl(int surfaceId, int* x, int* y, int *w, int *h)
+{
+	return 1;
+}
+
+void CloseLayerManager(){}

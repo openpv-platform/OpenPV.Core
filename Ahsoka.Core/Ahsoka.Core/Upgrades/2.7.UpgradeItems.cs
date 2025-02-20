@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Nodes;
 
-namespace Ahsoka.Utility;
+namespace Ahsoka.Core.Utility;
 
 
 internal class UpgradeItemsCAN_2_7 : UpgradeMethod
@@ -45,7 +45,7 @@ internal class UpgradeItemsCAN_2_7 : UpgradeMethod
                 item["transmitNodes"] = new JsonArray { "-1", txNode };
                 item["receiveNodes"] = new JsonArray { "-1", rxNode };
             }
-        }      
+        }
     }
 }
 
@@ -59,6 +59,6 @@ internal class UpgradeItemsPackage_2_7 : UpgradeMethod
         {
             string calibrationPath = document["canCalibrationFiles"]["1"].GetValue<string>();
             document["canCalibration"] = calibrationPath;
-        }     
+        }
     }
 }

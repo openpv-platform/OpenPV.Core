@@ -52,7 +52,7 @@ public static class TokenSource
 
     internal static void RegisterTokenSource(ITokenSource tokenSource)
     {
-        if (tokenSource != null && Default != null )
+        if (tokenSource != null && Default != null)
             throw new ArgumentException("Token Source can not be reset");
         Default = tokenSource;
     }

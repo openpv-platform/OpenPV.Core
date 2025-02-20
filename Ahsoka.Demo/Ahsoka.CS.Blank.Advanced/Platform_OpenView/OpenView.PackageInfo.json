@@ -1,0 +1,70 @@
+{
+  "version": "4.0.1.10078",
+  "applicationType": "Dotnet",
+  "execCommand": "Ahsoka.CS.Blank.Advanced",
+  "packageName": "Ahsoka.CS.Blank.Advanced.Select",
+  "packageDescription": "Advanced Ahsoka Starter Project",
+  "applicationVersion": "3.0",
+  "packageApplicationFolder": "../Platform_OpenView/publish",
+  "packageOutputDirectory": "PackageOutput",
+  "packageSigningCertFile": "No Value",
+  "licenses": [],
+  "optimizedServiceManager": false,
+  "customPackageInfo": {
+    "includeApplication": false,
+    "includeBootLogo": false,
+    "includeInstallerUI": false,
+    "includeFirmwareUpdate": false
+  },
+  "dotNetInfo": {
+    "projectPath": "../Ahsoka.CS.Blank.Advanced.csproj",
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfile.pubxml"
+  },
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensionInfo": [],
+      "startupDelay": 3,
+      "serviceKey": "ServiceKey",
+      "requireChallenge": "NotRequired",
+      "services": [
+        {
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": 3
+        },
+        {
+          "serviceName": "SecurityService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "dataChannel": 5007,
+          "isExtension": false,
+          "behaviors": "AutoStart"
+        }
+      ]
+    },
+    "environmentValues": []
+  },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "",
+    "orientation": 0,
+    "surfaceSetup": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
+  },
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
+  "securityMode": "None",
+  "applicationId": "6e05ae42-c6be-40df-ae8f-d138273ba3f7",
+  "components": []
+}

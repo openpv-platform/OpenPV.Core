@@ -1,6 +1,6 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Services.Security;
 using Ahsoka.Services.System;
-using Ahsoka.System;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,19 +13,34 @@ public class Program
     {
         Console.WriteLine("Starting Ahsoka Blank Application");
 
+        // Create Security Service Client and Start the Services
+        SecurityServiceClient securityClient = new();
+
         // Create a Service Client for our Ahsoka Runtimes.  The System Service can access
         // information about the system such as versions and cpu temp as well as other features
         // such as the LCD Brightness and Buzzer States.
         // by default this client will run in our current process and use TCPIP
-        SystemServiceClient client = new();
+        // Note that we start the service here.
+        SystemServiceClient systemClient = new();
 
-        // In our advanced scenario we will start a Runtime ourselves (rather than allowing Dispatcher to run it)
-        // allowing us to control the threads that will be used in the system.   The Runtime startup uses a "Builder" 
-        // pattern allowing us to specify advanced parameters such as multiple clients, runing the services on a separate process
-        // or custom startups that don't start the services directly such as when runnign services on a separate physical system (PC, Remote Display)
-        // Our example, mimics the basic demo and simply starts the services in this process.
-        // We capture the runtime itself to allow us to shut it down manually if needed.
-       
+        // If using Security, Request a Token (The Example Key is included in this project which you can import into your project).
+        // Once you recieve the token, you must call waitfortoken in case it was configured for "Challenge"
+        // in this example, we simply rely on the API key to validate the clients
+        var request = securityClient.RequestToken(new TokenRequestInfo()
+        {
+            // Replace with your own key or import cert from project
+            ApiKey = "6x2jf9BlqylJO4MtUmEab7M3LdSw68ZAhB18vXEbIjOYF3xXgAUe9/DqQd3LDjD5fnOmmwHIc6n2tAKHJPkJXA==",
+            ClientIds = { ((IAhsokaClientEndPoint)systemClient).GetClientId() },
+            ClientDescription = "TestClient"
+        });
+
+        // Waits for Accepted Token to be Recieved
+        var systemServiceToken = securityClient.WaitForToken(request.RequestId);
+        if (!systemServiceToken.TokenIsValid)
+            AhsokaLogging.LogMessage(AhsokaVerbosity.High, "The token was not valid");
+        else
+            systemClient.SetToken(systemServiceToken);
+
 
         CancellationTokenSource source = new();
         var backgroundWorkThread = Task.Run(() =>
@@ -38,7 +53,7 @@ public class Program
                 //
                 // NOTE here we only consume the single call (and no other threads access Client) 
                 // Print the Current CPU Temperature
-                var returnValue = client.GetHardwareInformation();
+                var returnValue = systemClient.GetHardwareInformation();
                 Console.WriteLine($"\r\n   CPU Temperature:{returnValue.CpuTempInC}");
 
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, "\r\nPress <enter> to Stop Application");
@@ -82,7 +97,8 @@ public class Program
         // Here we will do the final cleanup of our runtime(s).   
         // Note that we could also call AhsokaRuntime.Default.ShutdownAll(); which
         // will request and wait for a any runtimes that were started to shutdown and
-        client.Stop();
+        systemClient.Stop();
+        securityClient.Stop();
 
         // Finally lets call the Application Context Exit.  This ensures that any other processes running in our service "Ahsoka.Application"
         // are shutdown as well.  This will typically always be the last line of code in your app but is handled for you when using Dispatcher.

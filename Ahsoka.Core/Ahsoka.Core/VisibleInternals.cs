@@ -3,7 +3,8 @@
 [assembly: InternalsVisibleTo("OpenPV.DeveloperToolkit")]
 [assembly: InternalsVisibleTo("Ahsoka.Test")]
 
-namespace Ahsoka;
+namespace Ahsoka.Core;
+
 internal class VisibleInternals
 {
 

@@ -32,21 +32,21 @@
 		<Copy SourceFiles="@(DISTRO_FIRMWARE)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport_Firmware\%(RecursiveDir)" />
 
 		<!-- Create OpenView "Select" Target Support Package (For Prep, Runtimes, Etc.) -->
-		<Exec Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=LinuxProOutputs" />
+		<Exec Condition="true" Command="dotnet clean ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj" />
+		<Exec Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:IS_DESKTOP=NO -p:PublishProfile=LinuxProOutputs" />
 		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\InstallerUI\InstallerVersion.txt" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
 		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\OpenViewLinuxPro_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
 		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\OpenViewLinuxPro_Firmware.zip.customertools.version" Lines="Firmware_$(OpenViewProBSP.substring(20)).zip" Overwrite="true" Encoding="UTF-8" />
 
-		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=LinuxProOutputs" />
+		<Exec Condition="true" Command="dotnet clean ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj" />
+		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:IS_DESKTOP=NO -p:PublishProfile=LinuxProOutputs" />
 
 		<!-- Dependencies for OpenView "Select" -->
 		<ItemGroup>
-			<OV_Dependencies Include="..\..\Ahsoka.Thirdparty\PreBuiltArm64\**" />
-			<!--<OV_Firmware Include="$(PlatformSupportRoot)\BuildOutputs\Firmware\OpenViewLinuxPro_TargetSupport\**" />-->
+			<OV_Firmware Include="$(PlatformSupportRoot)\BuildOutputs\Apps\OpenViewLinuxPro_TargetSupport\**" />
 			<OV_HardwareDefs Include="*HardwareConfiguration.json" />
 		</ItemGroup>
-		<Copy SourceFiles="@(OV_Dependencies)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\Dependency\%(RecursiveDir)" />
-		<!--<Copy SourceFiles="@(OV_Firmware)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\Resources\%(RecursiveDir)" />-->
+		<Copy SourceFiles="@(OV_Firmware)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\Apps\%(RecursiveDir)" />
 		<Copy SourceFiles="@(OV_HardwareDefs)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\Hardware\%(RecursiveDir)" />
 
 		<!-- Create OpenView "Select" Package -->
@@ -56,7 +56,7 @@
 	</Target>
 
 	<ItemGroup>
-		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+		<PackageReference Include="GitVersion.MsBuild" Version="[5.12.0]">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

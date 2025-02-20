@@ -39,12 +39,12 @@
 						 BorderBrush="LightGray"/>
 
 				
-				<Button DockPanel.Dock="Right" Padding="2" Command="{Binding ActiveConnection.StopApplication}" ToolTip.Tip="Stop Application" >
+				<Button DockPanel.Dock="Right" Padding="2" Command="{Binding ActiveConnection.Connection.StopApplication}" ToolTip.Tip="Stop Application" >
 					<Viewbox Stretch="Uniform" Width="20" Height="20">
 						<material:MaterialIcon Kind="Stop"></material:MaterialIcon>
 					</Viewbox>
 				</Button>
-				<Button DockPanel.Dock="Right"  Padding="2" Command="{Binding ActiveConnection.RebootDisplay}" ToolTip.Tip="Reboot Display" >
+				<Button DockPanel.Dock="Right"  Padding="2" Command="{Binding ActiveConnection.Connection.RebootDisplay}" ToolTip.Tip="Reboot Display" >
 					<Viewbox Stretch="Uniform" Width="20" Height="20">
 						<material:MaterialIcon Kind="RestartAlert"></material:MaterialIcon>
 					</Viewbox>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Ahsoka.Dispatch;
+namespace Ahsoka.Core.Dispatch;
 
 /// <summary>
 /// Interface for Input Based Model Callbacks

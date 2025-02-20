@@ -1,13 +1,14 @@
 ﻿#pragma warning disable CS1591
-using Ahsoka.System;
-using Ahsoka.Utility;
+using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Services.Device;
+using Ahsoka.Services.LayerManager;
 using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Numerics;
 using System.Text;
 
 namespace Ahsoka.Installer;
@@ -19,14 +20,13 @@ public class PackageInformation : PackageHeader
     // Package Type
     public string Version { get; set; }
     public ApplicationType ApplicationType { get; set; } = ApplicationType.Dotnet;
-    public Orientation SystemOrientation { get; set; } = Orientation.DefaultOrientation;
+
     public string ExecCommand { get; set; }
     public string PackageName { get; set; }
     public string PackageDescription { get; set; }
     public string ApplicationVersion { get; set; }
     public string PackageApplicationFolder { get; set; }
     public string PackageOutputDirectory { get; set; }
-    public string StartupLogoPath { get; set; }
     public string PackageSigningCertFile { get; set; }
     public List<ModuleLicense> Licenses { get; set; } = new();
 
@@ -40,7 +40,11 @@ public class PackageInformation : PackageHeader
 
     public ServiceInfo ServiceInfo { get; set; } = new();
 
-    public static PackageInformation LoadPackageInformation(string path)
+    public LayerManagerConfiguration ScreenConfiguration { get; set; } = new();
+
+    public HardwareConfiguration HardwareConfiguration { get; set; } = new();
+
+    public static PackageInformation LoadPackageInformation(string path, bool isPath = true)
     {
         PackageInformation package;
         if (path.ToLower().EndsWith("opvpackage"))
@@ -50,12 +54,15 @@ public class PackageInformation : PackageHeader
             using ZipArchive archive = new ZipArchive(zipFile);
             var entry = archive.Entries.FirstOrDefault(x => x.Name.ToLower().EndsWith("packageinfo.json"));
             string filePath = Path.GetTempFileName();
-            entry.ExtractToFile(filePath,true);
+            entry.ExtractToFile(filePath, true);
             package = ConfigurationFileLoader.LoadFile<PackageInformation>(filePath);
             File.Delete(filePath);
         }
         else
-             package = ConfigurationFileLoader.LoadFile<PackageInformation>(path);
+            if (isPath)
+            package = ConfigurationFileLoader.LoadFile<PackageInformation>(path);
+        else
+            package = ConfigurationFileLoader.LoadFileContents<PackageInformation>(UpgradeMethod.packageUpgradeExtension, path);
 
         package.Version = VersionUtility.GetAppVersionString();
         package.originalFilePath = path;
@@ -77,7 +84,7 @@ public class PackageInformation : PackageHeader
 
         string path = Path.Combine(Path.GetDirectoryName(originalFilePath), PackageOutputDirectory);
         if (isCustomPackage)
-            return Path.Combine(path, PackageName + ".custom" +PackageType.GetFileExtension());
+            return Path.Combine(path, PackageName + ".custom" + PackageType.GetFileExtension());
         else
             return Path.Combine(path, PackageName + PackageType.GetFileExtension());
     }
@@ -90,7 +97,7 @@ public class PackageInformation : PackageHeader
     internal PackageHeader CopyAsPackageHeader(string signingKey)
     {
         // Serialize and Deserialise as Header to elimate inherited values.
-        var retVal = JsonUtility.Deserialize<PackageHeader>(JsonUtility.Serialize(this));
+        var retVal = JsonUtility.DeserializeWithTypeInfo<PackageHeader>(JsonUtility.Serialize(this));
 
         if (retVal.SecurityModelNumber?.Length > 0)
             retVal.SecurityModelNumberData = RSAEncryption.EncryptWithPEMKey(UTF8Encoding.UTF8.GetBytes(retVal.SecurityModelNumber), signingKey);
@@ -108,7 +115,7 @@ public class PackageInformation : PackageHeader
     {
         return originalFilePath;
     }
-    
+
     public string GetPackageCertPath()
     {
         return GetPackageCertPath(this.PackageSigningCertFile, KeyTypes.PackageSigningKey);
@@ -116,16 +123,19 @@ public class PackageInformation : PackageHeader
 
     public static string GetPackageCertPath(string keyName, KeyTypes type)
     {
-        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+        return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "AhsokaData",
-            "AhsokaCerts", 
+            "AhsokaCerts",
             (type == KeyTypes.PackageSigningKey ? keyName + ".appcert" : keyName + ".servicecert"));
     }
 
     internal string GetPackageExtentionFolder()
     {
         if (ApplicationType == Installer.ApplicationType.Dotnet)
-            return Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()),"obj", Extensions.ExtensionsFolder);
+        {
+            string projectFolder = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), DotNetInfo.ProjectPath));
+            return Path.Combine(projectFolder, "obj", Extensions.ExtensionsFolder);
+        }
         else
             return Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), Extensions.ExtensionsFolder);
 
@@ -133,8 +143,11 @@ public class PackageInformation : PackageHeader
 
     internal bool CanUseOptimizerdServiceManager()
     {
+        if (!OperatingSystem.IsWindows())
+            return false;
+
         ProcessUtility.RunProcess("dotnet", "--list-sdks", null, out string result, out string error);
-        return result.Contains("8.0.") && OptimizedServiceManager && (PlatformFamily is PlatformFamily.OpenViewLinux or PlatformFamily.OpenViewLinuxPro);
+        return result.Contains("8.0.") && OptimizedServiceManager && (PlatformFamily is PlatformFamily.Windows64 or PlatformFamily.OpenViewLinux or PlatformFamily.OpenViewLinuxPro);
     }
 }
 
@@ -147,6 +160,13 @@ public class DotNetInformation
 public class CppInformation
 {
     public string ProjectPath { get; set; }
+    public CPPProjectType ProjectType { get; set; }
+}
+
+public enum CPPProjectType
+{
+    QT,
+    VSCode
 }
 
 public class ServiceInfo

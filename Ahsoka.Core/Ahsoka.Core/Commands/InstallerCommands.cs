@@ -1,16 +1,17 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Install;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Threading;
 #pragma warning disable IDE0051 // Remove unused private members
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.DesktopOnly.Commands;
 
+[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class InstallerCommands
 {
@@ -28,38 +29,10 @@ internal static class InstallerCommands
         AhsokaRuntime.Default.StartEndPoints(installService);
 
         // Blocks Until Done
-        installService.WaitForStop(); 
+        installService.WaitForStop();
 
         Console.WriteLine("Service Shutdown Completed");
     }
 
-    [CommandLineMethod(@"     --ReturnToInstaller: Shutdown Current Application and Return to Installer UI
-                                                 [TargetConnectionInfoFile] - Connection Info File (JSON)")]
-    private static void ReturnToInstaller(string connectionInfoFile)
-    {
-        var connectionInfo = JsonUtility.Deserialize<TargetConnectionInfo>(File.ReadAllText(connectionInfoFile));
-
-        IProgress<string> progress = new Progress<string>(Console.WriteLine);
-        var config = new System.ServiceConfiguration()
-        {
-            ServiceName = "SystemService",
-            TcpConnectionAddress = connectionInfo.HostName,
-            DataChannel = 5001,
-        };
-
-        var client = new SystemServiceClient(config);
-        var cancellationTokenSource = new CancellationTokenSource();
-        var prep = RemoteTargetToolFactory.GetToolsForPlatform(connectionInfo.PlatformFamily);
-
-        var result = prep.ReturnToInstaller(connectionInfo, client, cancellationTokenSource, progress);
-
-        if (result == null || !result.IsInstaller)
-        {
-            Console.WriteLine("Return To Installer failed.");
-            Environment.Exit(1);
-        }
-
-        Console.WriteLine("Return To Installer Succeeded.");
-
-    }
+  
 }

@@ -1,4 +1,4 @@
-﻿using Ahsoka.Utility;
+﻿using Ahsoka.Core.Utility;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -22,7 +22,7 @@ namespace Ahsoka.DeveloperTools.ViewModel;
 
 internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
 {
-    List<SparkReleaseViewModel> releaseList;
+    List<SparkReleaseViewModel> releaseList = new List<SparkReleaseViewModel>();
     SparkReleaseViewModel selectedViewModel;
     bool show = false;
     bool updateAvailable = false;
@@ -103,8 +103,8 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
 
     public UpdatesViewModel(MainViewModel parentViewModel) :
         base(parentViewModel)
-    {
-        RefreshList();
+    { 
+
     }
 
     internal void ShowUpdates()
@@ -294,7 +294,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
                             ParentViewModel.Dialog.ShowDialog("Error Occurred During Install", ex.Message, "Ok").GetAwaiter().GetResult();
                             return;
                         }
-                        
+
                         if (OperatingSystem.IsWindows())
                             Environment.Exit(0);
                         else
@@ -303,7 +303,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
                                 if (App.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime lifetime)
                                 {
                                     lifetime.MainWindow.Close();
-                                     
+
                                 }
                             });
                     }
@@ -317,7 +317,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
 
     private string CreateExeFolderPath()
     {
-        var exeFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "EnovationControls", SelectedRelease.ReleaseName.Replace(" ","_") + "_" + SelectedRelease.ContainerVersion.Replace(".","_"));
+        var exeFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "EnovationControls", SelectedRelease.ReleaseName.Replace(" ", "_") + "_" + SelectedRelease.ContainerVersion.Replace(".", "_"));
 
         // This should be the path to where the Binaries folder will go
         return exeFolder;
@@ -346,15 +346,19 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
     {
         // Get the text from the ReleaseNotes field of the container
         ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
-        string releaseNotesFile = token.ReleaseNotes;
 
-        // See if ReleaseNotes text matches the name of a file in the container, and get its download token
-        string URL = GetReleaseNotesURL(releaseNotesFile);
+        var notes = token.Contents.FirstOrDefault(x => x.Path == token.ReleaseNotes);
 
-        if (!String.IsNullOrEmpty(URL))
+        if (notes != null)
         {
-            // Launch release notes HTML file using download token
-            Process.Start(URL);
+            _ = Task.Run(() =>
+            {
+                string tempFile = Path.GetTempFileName() + ".html";
+                ParentViewModel.Downloads.ExecuteDownload("Downloading Help", tempFile, notes.DownloadToken);
+
+                // Launch release notes HTML file using download token
+                ParentViewModel.ShowHelpPath(tempFile, true);
+            });
         }
         else
         {
@@ -487,7 +491,6 @@ internal class SparkReleaseViewModel : ChildViewModelBase<UpdatesViewModel>
     {
         get; internal set;
     }
-
 
     public string ContainerVersion
     {

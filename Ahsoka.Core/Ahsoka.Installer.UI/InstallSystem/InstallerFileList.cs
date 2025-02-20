@@ -1,5 +1,5 @@
-﻿using Ahsoka.System;
-using Ahsoka.System.Hardware;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -99,7 +99,7 @@ internal class InstallerFileList
 
         fileList.Clear();
 
-        selectedFile = fileList.IndexOf(currentSelectedItem);
+        selectedFile = tempList.IndexOf(currentSelectedItem);
 
         if (selectedFile < 0)
             selectedFile = 0;
@@ -110,8 +110,6 @@ internal class InstallerFileList
                 if (item.EndsWith(PackageType.opvEncrypted.GetFileExtension()))
                     fileList?.Add(item);
         }
-
-        Console.WriteLine("Refresh() items");
 
         if (!tempList.SequenceEqual(fileList))
         {

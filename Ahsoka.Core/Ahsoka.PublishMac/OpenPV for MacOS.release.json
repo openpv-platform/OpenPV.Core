@@ -7,7 +7,7 @@
   "ReleaseName": "OpenPV Developer Tools",
   "ContainerName": "OpenPV",
   "ContainerVersion": "1.0.0",
-  "ReleaseNotes": null,
+  "ReleaseNotes": "ReleaseNotes.html",
   "LaunchPath": "OpenPV.DeveloperToolkit.exe",
   "InstallCommand": null,
   "UnInstallCommand": null,
@@ -16,6 +16,12 @@
   "Contents": [
     {
       "Path": "MacOS.DeveloperToolkit.zip",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "ReleaseNotes.html",
       "DownloadToken": null,
       "SizeInBytes": 0,
       "Hash": null

@@ -1,7 +1,7 @@
 ﻿
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
@@ -11,15 +11,20 @@ namespace Ahsoka.Test;
 [TestClass]
 public class TestInitializer : LinearTestBase
 {
-   [AssemblyInitialize]
+    [AssemblyInitialize]
     public static void AssemblyInit(TestContext context)
     {
+        var extTests = new ExtensionTests();
+        extTests.TestExtensions();
+
+        JsonUtility.IsTesting = true;
+
         // Remove Any Existing Ahsoka Folders
         string ahsokaFolder = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/Ahsoka";
-        if (Directory.Exists(ahsokaFolder)) 
+        if (Directory.Exists(ahsokaFolder))
             Directory.Delete(ahsokaFolder, true);
 
-        ProcessUtility.RunProcess("taskkill", "/im Ahsoka.CommandLine.exe /f",null, out string result, out string error);
+        ProcessUtility.RunProcess("taskkill", "/im Ahsoka.CommandLine.exe /f", null, out string result, out string error);
 
         Extensions.LoadExtensions();
 
@@ -30,6 +35,9 @@ public class TestInitializer : LinearTestBase
 
         // Create Hardware Info
         HardwareInfo hardware = HardwareInfo.GetHardwareInfo(PlatformFamily.Windows64, "Desktop");
+
+        // Update DeviceID's to match to ensure that Encryption / Decryption uses the same value.
+        SystemInfo.HardwareInfo.FactoryInfo.DeviceId = hardware.FactoryInfo.DeviceId = Guid.NewGuid();
 
         var info = new TargetConnectionInfo() { PlatformFamily = hardware.PlatformFamily, PlatformQualifier = hardware.PlatformQualifier, HostName = "localhost", UserName = "" };
 

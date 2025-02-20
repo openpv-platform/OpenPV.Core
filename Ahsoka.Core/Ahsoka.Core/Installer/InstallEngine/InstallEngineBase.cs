@@ -1,11 +1,9 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Ahsoka.Installer.Components;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
-using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +13,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using static NetMQ.NetMQSelector;
 
 namespace Ahsoka.Installer.InstallEngine;
 
@@ -44,24 +41,35 @@ public class InstallEngineBase
     public static InstallEngineBase GetPackagingEngine(PackageInformation packageInfo)
     {
         var type = SelectInstallEngine(packageInfo.PlatformFamily, packageInfo.PlatformQualifier);
-        return  Activator.CreateInstance(type, packageInfo) as InstallEngineBase;
+        return Activator.CreateInstance(type, packageInfo) as InstallEngineBase;
     }
 
     public static InstallEngineBase GetInstallEngine(Stream fileStream, string privateKey = null)
     {
-        string appKey = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
-        if (File.Exists(appKey))
+        try
         {
-            DeviceKeyInfo info = JsonUtility.Deserialize<DeviceKeyInfo>(File.ReadAllText(appKey));
-            privateKey = info.PrivateKey;
-            Console.WriteLine($"Using Private Device Key ({Path.GetFileName(appKey)}) to Read Package");
+            string appKey = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
+            if (File.Exists(appKey))
+            {
+                Console.WriteLine($"Decrypting Key Information");
+
+                // Decrypt Device App Key
+                var data = File.ReadAllBytes(appKey);
+                var key = AesEncryption.KeyFromDeviceId(SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+                var descriptedKey = AesEncryption.Decrypt(new MemoryStream(data), key.Key, key.IV);
+
+                DeviceKeyInfo info = JsonUtility.DeserializeWithTypeInfo<DeviceKeyInfo>(Encoding.UTF8.GetString(descriptedKey.ToArray()));
+                privateKey = info.PrivateKey;
+                Console.WriteLine($"Using Private Device Key ({Path.GetFileName(appKey)}) to Read Package");
+            }
+
+            privateKey ??= PrivateSigningkey;
+
+            PackageContents packageContents = PackageContents.ReadPackageContents(fileStream, privateKey);
+            var type = SelectInstallEngine(packageContents.PlatformFamily, packageContents.PlatformQualifier);
+            return Activator.CreateInstance(type, packageContents) as InstallEngineBase;
         }
-
-        privateKey ??= PrivateSigningkey;
-
-        PackageContents packageContents = PackageContents.ReadPackageContents(fileStream, privateKey);
-        var type = SelectInstallEngine(packageContents.PlatformFamily, packageContents.PlatformQualifier);
-        return Activator.CreateInstance(type, packageContents) as InstallEngineBase;
+        catch (Exception ex) { Console.WriteLine(ex.Message); return null; }
     }
     #endregion
 
@@ -218,7 +226,11 @@ public class InstallEngineBase
             // Write File
             WriteOutputPackage(PackageInformation, fs, data.Values.ToList(), pemKey);
         }
-        catch { throw; }
+        catch (Exception ex)
+        {
+            progress?.Report(new PackageProgressInfo() { Message = $"Package Error\r\n{ex.Message}\r\n{ex.StackTrace}" });
+            throw;
+        }
         finally
         {
             // Run Cleanup Processes.
@@ -260,13 +272,13 @@ public class InstallEngineBase
                     progress.Report(new PackageProgressInfo() { Message = $"Executing Shell Command from..." });
                     progress.Report(new PackageProgressInfo() { Message = $"   {pathToCommand}" });
                     progress.Report(new PackageProgressInfo() { Message = $" " });
-                    progress.Report(new PackageProgressInfo() { Message = $"With Arguments..."});
+                    progress.Report(new PackageProgressInfo() { Message = $"With Arguments..." });
                     progress.Report(new PackageProgressInfo() { Message = $"   {processArgs}" });
                     progress.Report(new PackageProgressInfo() { Message = $" " });
 
                     IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
                     {
-                        progress.Report(new PackageProgressInfo() { Message = info.Data});
+                        progress.Report(new PackageProgressInfo() { Message = info.Data });
                     });
 
                     if (OperatingSystem.IsLinux())
@@ -279,14 +291,15 @@ public class InstallEngineBase
 
     private List<InstallerPlugin> RunInstallerPreReqs(IProgress<PackageProgressInfo> progress)
     {
-        List<InstallerPlugin> installedPlugins = new List<InstallerPlugin>();
-
-        // Add App Plugins Last
-        installedPlugins.Add(InstallerPlugin.GetApplicationPlugin(PackageInformation.ApplicationType));
-        installedPlugins.Add(new StartupInstallerPlugin()); // Generates Start Scripts.
-
-        foreach (var item in Extensions.GetExtensions<InstallerPlugin>())
-            installedPlugins.Add(item);
+        List<InstallerPlugin> installedPlugins =
+        [
+            // Add App Plugins Last
+            InstallerPlugin.GetApplicationPlugin(PackageInformation.ApplicationType),
+            new StartupInstallerPlugin(), // Generates Start Scripts.
+            new LayerManagerPlugin(),
+            new DeviceManagerPlugin(),
+             .. InstallerPlugin.GetExtensionPlugins(this.packageInfo.PlatformFamily),
+        ];
 
         // Remove Nulls
         installedPlugins = installedPlugins.Where(x => x != null).ToList();
@@ -294,6 +307,7 @@ public class InstallEngineBase
         // Run Prerequisite Checks
         foreach (var item in installedPlugins)
             item.CheckPrerequisites(PackageInformation, progress, cancelToken.Token);
+
         return installedPlugins;
     }
 
@@ -463,11 +477,11 @@ public class InstallEngineBase
         // Optional Components.
         components.Add(new StartLogoComponent());
         components.Add(new InstallerUIComponent());
-        components.Add(new NetworkFirmwareComponent());
+        components.Add(new DeviceFirmwareComponent());
 
         // Add any Extensions
-        var results = System.Extensions.GetExtensions<InstallEngineComponent>();
-        foreach(var item in results)
+        var results = InstallEngineComponent.GetExtensionPlugins(packedComponentData.PlatformFamily);
+        foreach (var item in results)
         {
             components.Add(item);
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, $"Loading {item.ComponentName} Installer Extension");
@@ -657,7 +671,7 @@ public class InstallEngineBase
 
         if (Directory.Exists(path))
         {
-            var list = new DirectoryInfo(path).GetDirectories().OrderBy(x=>x.CreationTime);
+            var list = new DirectoryInfo(path).GetDirectories().OrderBy(x => x.CreationTime);
             foreach (var dir in list)
                 if (dir == list.Last())
                 {

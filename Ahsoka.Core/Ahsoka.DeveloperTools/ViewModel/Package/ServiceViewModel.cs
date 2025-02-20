@@ -1,8 +1,7 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer;
 using Ahsoka.Services.Security;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -16,24 +15,22 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
     ServiceConfigurationViewModel selectedService;
     bool securityShown = false;
     string apiKey = string.Empty;
+    bool editorShowing = false;
 
-    public ServiceEnableDisable[] ServiceEnableDisableItems { get; init; } = Enum.GetValues<ServiceEnableDisable>();
-
-    public ChallengeOptions[] RequireChallengeOptions { get; init; } = Enum.GetValues<ChallengeOptions>();
-
-    public ChallengeOptions RequireChallenge
+    public bool EditorShown
     {
         get
         {
-            return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge;
+            return editorShowing;
         }
         set
         {
-            ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge = value;
+            editorShowing = value;
             OnPropertyChanged();
         }
-
     }
+
+    public ServiceEnableDisable[] ServiceEnableDisableItems { get; init; } = Enum.GetValues<ServiceEnableDisable>();
 
     public string ApiKey
     {
@@ -46,6 +43,22 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
             if (apiKey != value)
                 apiKey = value;
 
+            OnPropertyChanged();
+        }
+
+    }
+
+    public ChallengeOptions[] RequireChallengeOptions { get; init; } = Enum.GetValues<ChallengeOptions>();
+
+    public ChallengeOptions RequireChallenge
+    {
+        get
+        {
+            return ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge;
+        }
+        set
+        {
+            ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.RequireChallenge = value;
             OnPropertyChanged();
         }
 
@@ -96,8 +109,6 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
             OnPropertyChanged(nameof(ApiKey));
         }
     }
-    
-    public TransportSocketTypes[] SocketTypes { get; init; } = Enum.GetValues<TransportSocketTypes>();
 
     public ObservableCollection<ServiceConfigurationViewModel> Services
     {
@@ -168,16 +179,31 @@ internal class ServiceViewModel : ChildViewModelBase<PackageViewModel>
         SecurityShown = !SecurityShown;
     }
 
+    public void ShowEditor()
+    {
+        EditorShown = true; ;
+    }
+
+    public void HideEditor()
+    {
+        EditorShown = false;
+    }
 }
 
 internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewModel>
 {
     ExtensionViewModel extension;
-    readonly  ServiceConfiguration defaultValues;
+    readonly ServiceConfiguration defaultValues;
     string extentionName;
-   
+
+    public void ShowEditor()
+    {
+        ParentViewModel.SelectedService = this;
+        ParentViewModel.ShowEditor();
+    }
+
     public bool IsExtension { get; set; }
-  
+
     public string ServiceName { get; private set; }
 
     public string ServiceNameFull { get; }
@@ -185,6 +211,28 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     public ServiceConfiguration CurrentServiceConfiguration
     {
         get { return ParentViewModel.ParentViewModel.ServiceConfiguration.Services.FirstOrDefault(x => x.ServiceName == this.ServiceName); }
+    }
+
+    public bool LocalOnly
+    {
+        get
+        {
+            if (CurrentServiceConfiguration != null)
+                return CurrentServiceConfiguration.TcpListenAddress == "localhost";
+            else
+                return true;
+        }
+        set
+        {
+            if (CurrentServiceConfiguration != null)
+            {
+                if (value)
+                    CurrentServiceConfiguration.TcpListenAddress = "localhost";
+                else
+                    CurrentServiceConfiguration.TcpListenAddress = "*";
+            }
+            OnPropertyChanged();
+        }
     }
 
     public bool IsIncluded
@@ -205,11 +253,9 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
                     ServiceName = defaultValues.ServiceName,
                     TcpConnectionAddress = defaultValues.TcpConnectionAddress,
                     TcpListenAddress = defaultValues.TcpListenAddress,
-                    BleServiceUuidBase = defaultValues.BleServiceUuidBase,
                     DataChannel = defaultValues.DataChannel,
                     IsExtension = defaultValues.IsExtension,
                     Behaviors = defaultValues.Behaviors,
-                    SocketType = defaultValues.SocketType
                 };
 
                 ParentViewModel.ParentViewModel.ServiceConfiguration.Services.Add(item);
@@ -220,8 +266,7 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
             }
 
             OnPropertyChanged();
-            OnPropertyChanged(nameof(ServicePort)); 
-            OnPropertyChanged(nameof(ServiceUUID));
+            OnPropertyChanged(nameof(ServicePort));
         }
     }
 
@@ -245,7 +290,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
         }
     }
 
-
     public bool ServiceAutoStart
     {
         get
@@ -266,22 +310,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
         }
     }
 
-    public TransportSocketTypes SocketType
-    {
-        get
-        {
-            if (CurrentServiceConfiguration != null)
-                return CurrentServiceConfiguration.SocketType;
-            else
-                return TransportSocketTypes.TcpSocket;
-        }
-        set
-        {
-            CurrentServiceConfiguration.SocketType = value;
-            OnPropertyChanged();
-        }
-    }
-
     public int ServicePort
     {
         get
@@ -294,22 +322,6 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
         set
         {
             SetPort(CurrentServiceConfiguration, value);
-            OnPropertyChanged();
-        }
-    }
-
-    public string ServiceUUID
-    {
-        get
-        {
-            if (CurrentServiceConfiguration != null)
-                return CurrentServiceConfiguration.BleServiceUuidBase;
-            else
-                return Guid.Empty.ToString();
-        }
-        set
-        {
-            CurrentServiceConfiguration.BleServiceUuidBase = value;
             OnPropertyChanged();
         }
     }
@@ -354,5 +366,5 @@ internal class ServiceConfigurationViewModel : ChildViewModelBase<ServiceViewMod
     }
 
 
- 
+
 }

@@ -1,6 +1,4 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.System;
-using EnovationCloud.Core.DataTransferObjects;
+﻿using Ahsoka.Core;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,14 +15,14 @@ internal class PlatformFirmwareTool : OpenPVToolBase
 {
     string pathToFirmware = string.Empty;
     PlatformFamily family = PlatformFamily.Any;
-    public PlatformFirmwareTool(string pathToFirmware, PlatformFamily family) 
+    public PlatformFirmwareTool(string pathToFirmware, PlatformFamily family)
     {
         this.family = family;
         this.PackageType = "Target Firmware";
         this.Description = "Distribution for " + family;
         this.CanInstall = true;
-        
-        
+
+
         this.Name = Path.GetFileName(pathToFirmware) + " (Firmware)";
         this.CanLaunch = false;
         InstallText = "To install firmware, first put the target into DFU mode using a magnet, then hit continue to begin the update.  Note that this process requires that you have downloaded the appropriate flash tools.";
@@ -65,7 +63,7 @@ internal class PlatformFirmwareTool : OpenPVToolBase
         {
             try
             {
-               
+
                 toolModel.MainViewModel.Console.AddConsoleLine($"Extracting files from zipped folder");
 
                 string zipPath = Path.Combine(downloadDirectory, "TempExtract");
@@ -78,8 +76,8 @@ internal class PlatformFirmwareTool : OpenPVToolBase
 
                 toolModel.MainViewModel.Console.AddConsoleLine($"Beginning Installation of {downloadFileName}");
 
-                string result = ""; 
-                if (family ==  PlatformFamily.OpenViewLinux)
+                string result = "";
+                if (family == PlatformFamily.OpenViewLinux)
                     result = InstallOnTargetLinux(installFile, toolModel);
 
                 Directory.Delete(zipPath, true);
@@ -124,12 +122,12 @@ internal class PlatformFirmwareTool : OpenPVToolBase
         toolVM.MainViewModel.Console.ClearConsole();
         using (Process pProcess = new())
         {
-            if (OperatingSystem.IsLinux() )
+            if (OperatingSystem.IsLinux())
             {
                 pProcess.StartInfo.FileName = "/bin/bash";
                 pProcess.StartInfo.Arguments = $"-c \"sudo {pathToCli} -l usb\"";
             }
-            else if ( OperatingSystem.IsMacOS())
+            else if (OperatingSystem.IsMacOS())
             {
                 pProcess.StartInfo.FileName = pathToCli;
                 pProcess.StartInfo.Arguments = $"-l usb";

@@ -1,18 +1,10 @@
-﻿<Project TreatAsLocalProperty="IGNORE_PREREQS">
+﻿<Project>
 	
 	<Target Name="CheckPreReqs" BeforeTargets="PreBuildEvent"
-		 Condition="(!Exists('..\..\BuildOutputs\Firmware\OpenViewLinux_TargetSupport\ESPFirmware.zip')
-				  OR !Exists('..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Services.ST.so'))
+		 Condition="$(IGNORE_PREREQS) != 'YES' and (!Exists('..\..\BuildOutputs\Firmware\OpenViewLinux_TargetSupport\ESPFirmware.zip'))
 				  AND '$(OS)' != 'Unix'">
 		<Error Text="Pre-Requisites appear to be missing - Please  build Ahsoka.BuildPreReqs before building Ahsoka.Core or set 'IGNORE_PREREQS' = YES Currently Set to '$(IGNORE_PREREQS)'" Condition="$(IGNORE_PREREQS) != 'YES'"/>
 	</Target>
-
-	<Target Name="BeforeBuild" BeforeTargets="PreBuildEvent">
-		<Message Text="Updating Configuration Proto" Importance="high"/>
-		<Delete Files="..\..\Ahsoka.Shared\Configuration.proto" />
-		<Copy SourceFiles="Proto\Configuration.proto" DestinationFolder="..\..\Ahsoka.Shared" OverwriteReadOnlyFiles="true"  />
-	</Target>
-
 	
 	<!--Note that this will only run once.  To generate licenses again, you must delete the file.-->
 	<Target Name="GenerateLicenseFile" BeforeTargets="PreBuildEvent"
@@ -23,25 +15,20 @@
 		<Exec Command="dotnet project-licenses -i . -o --outfile ../Ahsoka.Core/Resources/Licenses.json -j -p false" />
 	</Target>
 
-	<ItemGroup Label="Native Libraries For Core" Condition="$(IGNORE_PREREQS) != 'YES' and '$(OS)' != 'Unix'" >
-		<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Services.ST.so">
-			<Link>AhsokaLib\Ahsoka.Services.ST.so</Link>
-			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Services.ST.so</PackagePath>
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<IncludeInPackage>true</IncludeInPackage>
-			<Pack>true</Pack>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Visible>true</Visible>
-		</Content>
+	<!--Note that this will only run once.  To generate licenses again, you must delete the file.-->
+	<Target Name="AddContent" BeforeTargets="PreBuildEvent">
+
+		<ItemGroup Label="Native Libraries For Core" Condition="$(IGNORE_PREREQS) != 'YES' and '$(OS)' != 'Unix'">
+			<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Wifi.OpenViewLinux.so">
+				<Link>AhsokaLib\Ahsoka.Wifi.OpenViewLinux.so</Link>
+				<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Wifi.OpenViewLinux.so</PackagePath>
+				<PackageCopyToOutput>true</PackageCopyToOutput>
+				<IncludeInPackage>true</IncludeInPackage>
+				<Pack>true</Pack>
+				<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+				<Visible>true</Visible>
+			</Content>
+		</ItemGroup>
 		
-		<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Wifi.ST.so">
-			<Link>AhsokaLib\Ahsoka.Wifi.ST.so</Link>
-			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Wifi.ST.so</PackagePath>
-			<PackageCopyToOutput>true</PackageCopyToOutput>
-			<IncludeInPackage>true</IncludeInPackage>
-			<Pack>true</Pack>
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Visible>true</Visible>
-		</Content>
-	</ItemGroup>
+	</Target>
 </Project>

@@ -61,22 +61,6 @@ namespace Ahsoka.DeveloperTools.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;Project&gt;
-        ///	&lt;PropertyGroup Condition=&quot;$([MSBuild]::IsOSPlatform(&apos;Windows&apos;))&quot;&gt;
-        ///		&lt;AhsokaCommandLinePath&gt;$(ProjectDir)obj\PlatformSupport\Windows64_TargetSupport\CommandLine\Ahsoka.CommandLine.exe&lt;/AhsokaCommandLinePath&gt;
-        ///	&lt;/PropertyGroup&gt;
-        ///	&lt;PropertyGroup Condition=&quot;$([MSBuild]::IsOSPlatform(&apos;OSX&apos;))&quot;&gt;
-        ///		&lt;AhsokaCommandLinePath&gt;$(ProjectDir)obj\PlatformSupport\MacOSARM64_TargetSupport\CommandLine\Ahsoka.CommandLine&lt;/AhsokaCommandLinePath&gt;
-        ///	&lt;/PropertyGroup&gt;
-        ///	&lt;PropertyGroup Condition=&quot;$([MSBuild]::IsOSPlatfo [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string BuildProps {
-            get {
-                return ResourceManager.GetString("BuildProps", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {
         ///    &quot;version&quot;: 3,
         ///    &quot;configurePresets&quot;: [
@@ -164,6 +148,7 @@ namespace Ahsoka.DeveloperTools.Properties {
         ///   Looks up a localized string similar to {
         ///  &quot;DemoSparkChannelName&quot;: &quot;OpenPV Demos&quot;,
         ///  &quot;ExtensionSparkChannelName&quot;: &quot;OpenPV Extensions&quot;,
+        ///  &quot;HelpSparkChannelName&quot;: &quot;OpenPV Help&quot;,
         ///  &quot;PlatformSupportSparkChannelName&quot;: &quot;OpenPV Dependencies&quot;,
         ///  &quot;FirmwareResources&quot;: {
         ///    &quot;Name&quot;: &quot;OpenView Firmware Resources&quot;,
@@ -171,7 +156,7 @@ namespace Ahsoka.DeveloperTools.Properties {
         ///    &quot;DevelopmentPlatform&quot;: &quot;Any&quot;,
         ///    &quot;Resources&quot;: [
         ///      {
-        ///        &quot;DownloadPath&quot;: &quot;https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/OpenViewRe [rest of string was truncated]&quot;;.
+        ///        &quot;DownloadPath&quot;: &quot;https://powervisionsparkprod.blob.core.wind [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OpenViewPlatformSupport {
             get {

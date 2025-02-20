@@ -1,18 +1,16 @@
-using Ahsoka.DeveloperTools.OpenPVTools;
+using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.Spark;
+using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Ahsoka.Installer.Components;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
 using NuGet.Common;
 using NuGet.Configuration;
-using NuGet.Protocol;
 using NuGet.Protocol.Core.Types;
 using NuGet.Versioning;
 using System;
@@ -21,6 +19,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 
 namespace Ahsoka.Test;
@@ -47,11 +46,11 @@ public class GeneralTests : LinearTestBase
         Assert.IsTrue(knownValues.Any(x => x.Key == SystemService.Name));
 
         var systemKeys = knownValues.FirstOrDefault(x => x.Key == SystemService.Name);
-        Assert.IsTrue(systemKeys.Value.Any(x=>x.Name == "Available"));
+        Assert.IsTrue(systemKeys.Value.Any(x => x.Name == "Available"));
 
-        Assert.IsTrue(knownValues.Any(x => x.Key == NetworkService.Name));
-       
-        var networkKeys = knownValues.FirstOrDefault(x => x.Key == NetworkService.Name);
+        Assert.IsTrue(knownValues.Any(x => x.Key == WiFiClientService.Name));
+
+        var networkKeys = knownValues.FirstOrDefault(x => x.Key == WiFiClientService.Name);
         Assert.IsTrue(networkKeys.Value.Any(x => x.Name == "ClientNetworkName"));
     }
 
@@ -67,7 +66,7 @@ public class GeneralTests : LinearTestBase
         var providers = Repository.Provider.GetCoreV3();
         var repository = new SourceRepository(source, providers);
 
-        var search =  repository.GetResourceAsync<PackageSearchResource>().GetAwaiter().GetResult();
+        var search = repository.GetResourceAsync<PackageSearchResource>().GetAwaiter().GetResult();
         var filter = new SearchFilter(false);
 
         IEnumerable<IPackageSearchMetadata> response = search.SearchAsync($"packageid:{packageName}", filter, skip: 0, take: 20, NullLogger.Instance, CancellationToken.None).GetAwaiter().GetResult();
@@ -76,8 +75,8 @@ public class GeneralTests : LinearTestBase
         var results = versions.Select(x => x.Version);
         var minVersion = new NuGetVersion(minVersionString);
         var maxVersion = new NuGetVersion(maxVersionString);
-        
-        var thisVersion = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(NuGetVersionFloatBehavior.Major,minVersion,"")).FindBestMatch(results)?.ToFullString();
+
+        var thisVersion = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(NuGetVersionFloatBehavior.Major, minVersion, "")).FindBestMatch(results)?.ToFullString();
         Console.WriteLine($"Minor Finds {thisVersion}");
 
         thisVersion = new VersionRange(minVersion, true, maxVersion, false, new FloatRange(NuGetVersionFloatBehavior.PrereleaseMinor, minVersion, "")).FindBestMatch(results)?.ToFullString();
@@ -100,10 +99,13 @@ public class GeneralTests : LinearTestBase
 
         // Serialize a Hardware Info from both Manual and Auto and compare 
         // should find if someone missed a property
-        var info1 = JsonConvert.DeserializeObject<HardwareInfo>(jsonText);
+        var info1 = JsonSerializer.Deserialize<HardwareInfo>(jsonText, JsonUtility.Options);
+        //info1.CANInfo = null; // No longer supported
+        //info1.IOInfo = null;// No longer supported
+        //info1.BluetoothInfo = null;// No longer supported
         var info2 = JsonUtility.Deserialize<HardwareInfo>(jsonText);
 
-        string newText1 = JsonConvert.SerializeObject(info1);
+        string newText1 = JsonSerializer.Serialize(info1, JsonUtility.Options);
         string newText2 = JsonUtility.Serialize(info2);
 
         //File.WriteAllText(@"C:\Users\Jake\Desktop\HardwareConfiguration.test1", newText1);
@@ -233,12 +235,12 @@ public class GeneralTests : LinearTestBase
 
         StringBuilder builder = new();
         CancellationTokenSource source = new();
-        var progress = new LocalProgress<CommandOutput>(info =>
+        var progress = new LocalProgress<CommandLineProgressInfo>(info =>
         {
-            builder.AppendLine(info.Data);
+            builder.AppendLine(info.Message);
         });
 
-        ProcessUtility.RunProcessAsync(commandLine, "InvalidArgs", null, progress, source.Token);
+        LocalCommandLine.RunWithLocalConsole("InvalidArgs", null, progress);
 
         string results = builder.ToString();
 
@@ -296,6 +298,27 @@ public class GeneralTests : LinearTestBase
     }
 
     [TestMethod]
+    public void EncryptionAESTest()
+    {
+        string stringData = "Hello, World!";
+        MemoryStream plaintext = new(UTF8Encoding.UTF8.GetBytes(stringData));
+        Console.WriteLine(plaintext);
+        // Generate a random key and IV
+
+        var data = AesEncryption.KeyFromDeviceId(Guid.NewGuid());
+
+        // Encrypt / Decrypt
+        var ciphertext = AesEncryption.Encrypt(plaintext, data.Key, data.IV);
+        var decryptedText = AesEncryption.Decrypt(ciphertext, data.Key, data.IV);
+
+        var resultString = Encoding.UTF8.GetString(decryptedText.ToArray());
+
+        Assert.AreEqual(stringData, resultString);
+
+    }
+
+
+    [TestMethod]
     public void TestUpgradeInfo()
     {
         FirmwareUpdateInfo info = JsonUtility.Deserialize<FirmwareUpdateInfo>(Properties.Resources.OpenView_upgradeinfo);
@@ -320,11 +343,25 @@ public class GeneralTests : LinearTestBase
         Assert.AreEqual(model.ValueObject, this);
         Assert.AreEqual(model.Value, 1234);
 
-        var parms =  parent.GetPropertyMap();
-        Assert.AreEqual(parms.SystemName,this.GetType().Namespace);
+        var parms = parent.GetPropertyMap();
+        Assert.AreEqual(parms.SystemName, this.GetType().Namespace);
 
     }
 
+    [TestMethod]
+    public void TestProjectUpgrade()
+    {
+        string folder = Path.GetDirectoryName(Assembly.GetCallingAssembly().Location);
+        string file = Path.Combine(folder, "BuildFolder", "OpenLinuxST.PackageInfo.json");
+        if (File.Exists(file))
+            file = Path.GetFullPath(file);
+
+        var packageInfo = PackageInformation.LoadPackageInformation(file);
+
+        file = Path.Combine(folder, "BuildFolder", "STDemoPackage.1.cancalibration.json");
+
+        string result = UpgradeEngine.ExecuteUpgrade(file);
+    }
 
     public class TestViewModelParent : ViewModelBase
     {
@@ -370,5 +407,5 @@ public class GeneralTests : LinearTestBase
     }
 
 
-   
+
 }

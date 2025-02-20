@@ -1,13 +1,10 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
-using Ahsoka.Services.Install;
-using System.Collections.Generic;
+﻿using Ahsoka.Core;
 
 namespace Ahsoka.Services.Security;
 
 internal class SecurityServiceMessages : AhsokaMessagesBase
 {
-    public SecurityServiceMessages()
+    public SecurityServiceMessages() : base(SecurityService.Name)
     {
         // Client has a Public Key and can Sign it.
         this.RegisterServiceRequest(SecurityMessageTypes.Ids.RequestToken, typeof(TokenRequestInfo), typeof(TokenRequestResponse));
@@ -16,10 +13,11 @@ internal class SecurityServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(SecurityMessageTypes.Ids.AuthorizationComplete, typeof(Token));
     }
 
-    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+
+    /// <InheritDoc/>
+    public override byte[] GetProtoMessageFile()
     {
-        var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\SecurityService.proto", Properties.Resources.SecurityService);
-        return result;
+        return this.GenerateProtoFile("AhsokaSecurity", typeof(SecurityMessageTypes.Ids));
     }
+
 }

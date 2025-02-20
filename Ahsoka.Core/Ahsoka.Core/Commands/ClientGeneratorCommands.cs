@@ -1,12 +1,9 @@
 ﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
-using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
+[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class ClientGeneratorCommands
 {

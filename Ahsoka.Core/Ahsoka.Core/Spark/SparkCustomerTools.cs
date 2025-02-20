@@ -1,9 +1,8 @@
 ﻿#pragma warning disable CS1591
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Spark;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using System;
@@ -11,11 +10,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Ahsoka.Spark;
+namespace Ahsoka.Core.Spark;
 
 public static class SparkCustomerTools
 {
-   
+
     public static bool ProvisionDisplayInSpark(ITargetConnectionInfo connectionInfo,
                                                 SparkConnectionInfo sparkInfo,
                                                 IProvisionDisplayRequest provisioningInfo,
@@ -63,7 +62,7 @@ public static class SparkCustomerTools
         try
         {
             var licenseInfo = PushSparkLicenseInfo(sub, teamDto.TeamID, teamDto.ReleaseDeviceGroup, provisioningInfo, progress, false);
-            
+
             // Push License List to Display
             progress.Report("Loading License File onto Target");
             client.UpdateLicenseInfo(licenseInfo);
@@ -112,7 +111,7 @@ public static class SparkCustomerTools
 
         // Get Module Info and Check if Valid
         progress.Report("Sending License List to Spark for Signing.");
-        ProvisioningResult result = SparkAccountClient.SharedSparkClient.ProvisionDeviceLicenses(teamID.ToString(), subInfo.DeviceId, new ProvisioningInfo() { ModuleLicenseList = list, DeviceInfo = deviceDto});
+        ProvisioningResult result = SparkAccountClient.SharedSparkClient.ProvisionDeviceLicenses(teamID.ToString(), subInfo.DeviceId, new ProvisioningInfo() { ModuleLicenseList = list, DeviceInfo = deviceDto });
 
         if (!RSAEncryption.VerifyDataSignature(result.ModuleLicenseInfo.Signature, result.ModuleLicenseInfo.LicenseData, Properties.Resources.ModuleLicensePublicKeyPEM))
         {
@@ -131,7 +130,7 @@ public static class SparkCustomerTools
 
         // Check if OTA License is Included
         if (result.DeviceInfo != null)
-        {        
+        {
             progress.Report($"Device Provisioned to Group - {result.DeviceInfo.GroopName}");
         }
 
@@ -142,7 +141,7 @@ public static class SparkCustomerTools
     {
 
         // Update Container name
-        uploadInfo.ContainerName = uploadInfo.ReleaseName + " " + uploadInfo.ContainerVersion;
+        uploadInfo.ContainerName = $"{uploadInfo.ReleaseName}_{team.TeamID.ToString().Substring(0, 8)}";
 
         // File Names
         string outputFilePath = uploadInfo.Contents.First().Path;
@@ -262,7 +261,7 @@ public static class SparkCustomerTools
                     if (cols.Length < 4)
                         progress.Report($"Error Importing Line {lineNumber}");
 
-                    deviceList.Add(new ProvisionItem(Enum.Parse<System.PlatformFamily>(cols[0]), cols[1], cols[2], cols[3]));
+                    deviceList.Add(new ProvisionItem(Enum.Parse<PlatformFamily>(cols[0]), cols[1], cols[2], cols[3]));
 
                     progress.Report($"Found DeviceID: {cols[3]} to Provision");
                 }
@@ -280,7 +279,7 @@ public static class SparkCustomerTools
 
     static SparkServiceClient CreateClient(string hostName)
     {
-        var config = new System.ServiceConfiguration()
+        var config = new ServiceConfiguration()
         {
             ServiceName = "SparkService",
             TcpConnectionAddress = hostName,

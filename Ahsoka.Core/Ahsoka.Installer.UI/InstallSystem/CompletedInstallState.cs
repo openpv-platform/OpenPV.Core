@@ -1,5 +1,7 @@
-﻿using Ahsoka.Core.Drawing;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -15,10 +17,31 @@ internal class CompletedInstallState : InstallerUIStateBase
     public CompletedInstallState(Services.Install.InstallCompleteInfo info)
     {
         this.info = info;
+
+        Task.Run(() =>
+        {
+            while (count > 0)
+            {
+                Task.Delay(1000).Wait();
+                InstallerDrawingManager.Default.Invalidate();
+                count--;
+            }
+            InstallerDrawingManager.Default.SystemClient.RequestServiceShutdown(Services.System.ShutdownTypes.Reboot);
+            if (SystemInfo.IsDesktop())
+            {
+                ApplicationContext.Exit();
+                Environment.Exit(0);
+            }
+
+        });
     }
 
-    protected override void OnDrawState(IDrawingApi drawingApi, int width, int height)
+    protected override void OnDrawState(DrawFrameArgs args)
     {
+        IDrawingApi drawingApi = args.DrawingApi;
+        int width = args.Width;
+        int height = args.Height;
+
         DrawingImage installImage;
 
         if (info.Result == Services.Install.InstallResult.Success)
@@ -56,23 +79,11 @@ internal class CompletedInstallState : InstallerUIStateBase
 
         drawingApi.DrawText(result.ToString(), installImagePosition.X + 92, installImagePosition.Y + 30, textInfo);
 
-        Task.Delay(1000).Wait();
-
-        if (count > 0)
-        {
-            InstallerDrawingManager.Default.Refresh();
-            count--;
-        }
-        else
-        {
-            InstallerDrawingManager.Default.SystemClient.RequestServiceShutdown(Services.System.ShutdownTypes.Reboot);
-        }
-
     }
 
     protected override InstallerUIStateBase OnHandleAction(string action)
     {
-        if (action == InstallerDrawingManager.RefreshAction)
+        if (action == InstallerDrawingManager.InvalidateAction)
         {
             return this;
         }

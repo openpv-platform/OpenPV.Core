@@ -1,10 +1,9 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.Installer;
 using Ahsoka.Installer.Components;
 using Ahsoka.Installer.InstallEngine;
-using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -18,7 +17,7 @@ internal class CppViewModel : ViewModelBase
 {
     private readonly MainViewModel parentViewModel;
     private readonly PackageInformation packageInfo;
- 
+
     public void UpdateSDK()
     {
         Task.Run(() => { InstallSDK(false).GetAwaiter().GetResult(); });
@@ -26,7 +25,7 @@ internal class CppViewModel : ViewModelBase
 
     public async Task NeedsUpdate(bool isGenerating = false)
     {
-        if (parentViewModel.SelectedPackage.IsOpenView && (packageInfo.ApplicationType is  ApplicationType.Cpp or ApplicationType.CODESYS) || SdkNeedsUpdate)
+        if (parentViewModel.SelectedPackage.IsOpenView && (packageInfo.ApplicationType is ApplicationType.Cpp) || SdkNeedsUpdate)
         {
             UpdateSDKUpdateState(parentViewModel);
 
@@ -39,6 +38,24 @@ internal class CppViewModel : ViewModelBase
                     SdkNeedsUpdate = false;
                 }
             }
+        }
+    }
+
+    public CPPProjectType ProjectType
+    {
+        get { return packageInfo.CppInfo.ProjectType; }
+        set
+        {
+            packageInfo.CppInfo.ProjectType = value;
+            OnPropertyChanged();
+        }
+    }
+
+    public CPPProjectType[] ProjectTypes
+    {
+        get
+        {
+            return Enum.GetValues<CPPProjectType>().ToArray();
         }
     }
 
@@ -114,7 +131,9 @@ internal class CppViewModel : ViewModelBase
 
     private string GetFrameworkInfoPath()
     {
-        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ".platform_support//AhsokaFrameworkInfo.json");
+        string projectPath = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ProjectPath);
+        projectPath = Path.GetFullPath(projectPath);
+        return Path.Combine(projectPath, ".platform_support//AhsokaFrameworkInfo.json");
     }
 
     public CppViewModel(MainViewModel parentViewModel, PackageInformation packageInfo)
@@ -135,6 +154,17 @@ internal class CppViewModel : ViewModelBase
         var frameworkInfo = GetFrameworkInfo();
         var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion();
 
+        if (frameworkInfo != null)
+            if (new Version(frameworkInfo.FrameworkVersion).Major < new Version(parentViewModel.GetVersion()).Major)
+            {
+                string packageExtensionFolder = parentViewModel.SelectedPackage.PackageInfo.GetPackageExtentionFolder();
+                if (Directory.Exists(packageExtensionFolder))
+                    Directory.Delete(packageExtensionFolder, true);
+
+                foreach (var item in parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions)
+                    item.InstalledVersion = "0.0";
+            }
+
         if (!cliExists || !extensionsUpToDate || frameworkNeedsUpdate)
             SdkNeedsUpdate = true;
     }
@@ -152,20 +182,20 @@ internal class CppViewModel : ViewModelBase
         if (!isGenerating)
             parentViewModel.StartProcess(null);
 
+        string directoryForFramework = string.Empty;
         string result = "SDK Not Updated";
         bool finishedInstall = false;
         try
         {
-          
-            string projectPath = Path.GetDirectoryName(packageInfo.GetPackageInfoPath());
-            if (!Directory.Exists(Path.Combine(projectPath, ProjectPath)))
+            string projectPath = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()),ProjectPath);
+            if (!Directory.Exists(projectPath))
             {
                 parentViewModel.Console.AddConsoleLine("Please Select a Project Path.");
                 return;
             }
 
             string pathToFramework = GetFrameworkInfoPath();
-            string directoryForFramework = Path.GetDirectoryName(pathToFramework);
+            directoryForFramework = Path.GetDirectoryName(pathToFramework);
 
             // Clear and Begin Work
             parentViewModel.Console.ClearConsole();
@@ -173,7 +203,7 @@ internal class CppViewModel : ViewModelBase
 
             if (Directory.Exists(directoryForFramework))
                 Directory.Delete(directoryForFramework, true);
-            
+
             Directory.CreateDirectory(directoryForFramework);
 
             var progressString = new Progress<string>(info =>
@@ -183,11 +213,11 @@ internal class CppViewModel : ViewModelBase
 
             await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
 
-            System.PlatformFamily[] platformsToSupport = 
-            { 
-                packageInfo.PlatformFamily, 
-                System.PlatformFamily.Ubuntu64, 
-                PlatformFamily.Windows64 
+            PlatformFamily[] platformsToSupport =
+            {
+                packageInfo.PlatformFamily,
+                PlatformFamily.Ubuntu64,
+                PlatformFamily.Windows64
             };
             parentViewModel.SelectedPackage.Deps.CheckDependencies(SystemInfo.CurrentPlatform, platformsToSupport);
 
@@ -197,7 +227,7 @@ internal class CppViewModel : ViewModelBase
                 string pathToSdk = Path.Combine(parentViewModel.GetPlatformPath(platform), "SDK");
 
                 // Copy Command Line
-                if ( !Directory.Exists(pathToSdk) && platform != PlatformFamily.Windows64) // We use Windows CLI to Build on Windows
+                if (!Directory.Exists(pathToSdk) && platform != PlatformFamily.Windows64) // We use Windows CLI to Build on Windows
                 {
                     parentViewModel.Console.AddConsoleLine($"Could not find target support for {platform}.\n" +
                         $"Please download the necessary files from the PlugIns tab.");
@@ -206,7 +236,7 @@ internal class CppViewModel : ViewModelBase
                 }
 
                 parentViewModel.Console.AddConsoleLine($"");
-                      
+
                 result = await Task.Run(() =>
                 {
                     Stopwatch stopwatch = Stopwatch.StartNew();
@@ -233,7 +263,7 @@ internal class CppViewModel : ViewModelBase
             bool sdkCompleted = await Task.Run(() =>
             {
                 var progress = new Progress<CommandLineProgressInfo>(info =>
-                { 
+                {
                     if (info.IsWriteLine)
                         parentViewModel.Console.AddConsoleLine(info.Message);
                     else
@@ -245,7 +275,7 @@ internal class CppViewModel : ViewModelBase
                     DotNetViewModel.RunSdkCommands(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), parentViewModel, progress);
                     return true;
                 }
-                catch (Exception ex) 
+                catch (Exception ex)
                 {
                     parentViewModel.Console.AddConsoleLine(ex.Message);
                     return false;
@@ -267,10 +297,20 @@ internal class CppViewModel : ViewModelBase
                 finishedInstall = true;
             }
         }
-        catch (IOException)
+        catch (Exception ex)
         {
             finishedInstall = false;
-            parentViewModel.Console.AddConsoleLine($"Unable to Remove and Re-Add the SDK Folder");
+
+            if (ex is UnauthorizedAccessException || ex is IOException)
+            {
+                parentViewModel.Console.AddConsoleLine($"Unable to Remove and Re-Add the SDK Folder.\r\n  This is usually caused by have an application running (such as Ahsoka.CommandLine) from the sdk folder path.");
+                parentViewModel.Console.AddConsoleLine($"The error occurred at {directoryForFramework}.");
+            }
+            else
+            {
+                parentViewModel.Console.AddConsoleLine($"Unknown Error Occured with the message.");
+                parentViewModel.Console.AddConsoleLine(ex.Message);
+            }
         }
         finally
         {
@@ -304,4 +344,5 @@ internal class CppViewModel : ViewModelBase
 public class CppFrameworkInfo
 {
     public string FrameworkVersion { get; set; }
+    public PlatformFamily PlatformFamily { get; set; }
 }

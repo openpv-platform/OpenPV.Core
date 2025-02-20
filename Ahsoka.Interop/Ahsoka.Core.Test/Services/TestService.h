@@ -1,0 +1,37 @@
+#pragma once
+#include <string>
+#include <functional>
+#include <memory>
+#include "AhsokaRuntimeBuilder.h"
+#include "AhsokaConfiguration.h"
+#include "AhsokaServiceEndPoint.h"
+#include "TestServiceMessages.h"
+
+using namespace std;
+using namespace AhsokaCore;
+using namespace AhsokaServiceFramework;
+
+namespace AhsokaCore
+{
+	class TestService : public AhsokaServiceFramework::AhsokaServiceEndPoint<TestMessageTypes>
+	{
+		public:
+
+			TestService(ServiceConfiguration config):
+				AhsokaServiceFramework::AhsokaServiceEndPoint<TestMessageTypes>(config, TestServiceMessages()) 
+			{
+
+			}	
+			
+			void OnHandleReceive(AhsokaMessageHeader& messageHeader, AhsokaMessageType_t& message)
+			{
+				if (messageHeader.transport_id() == EchoTest)
+				{
+					SendMessageInternal(messageHeader, &message, false);
+
+					messageHeader.set_transport_id(EchoTestNotification);
+					SendMessageInternal(messageHeader, 0, true);
+				}
+			}
+	};
+}

@@ -1,14 +1,15 @@
-﻿using Ahsoka.Installer.InstallEngine;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
 using Ahsoka.Services.Network;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using Mono.Unix;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Ahsoka.Installer.Components;
@@ -28,7 +29,7 @@ public class ApplicationOutputConstants
 internal class ApplicationOutputComponent : FileSystemComponentBase
 {
     #region Fields
-    public const string CoProcessorFolder = ".coprocessor"; 
+    public const string CoProcessorFolder = ".coprocessor";
     public const string AppNameFile = "AppName.txt";
     public const string AppVersionFile = "AppVersion.txt";
     public const string AppTypeFile = "AppType.txt";
@@ -58,10 +59,10 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         return SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot);
     }
 
-    protected override PackageComponent OnCreateFilePackageStream(string buildLocation, 
-        PackageInformation info, 
-        Dictionary<string, byte[]> additionalFiles, 
-        List<InstallerPlugin> installerPlugins, 
+    protected override PackageComponent OnCreateFilePackageStream(string buildLocation,
+        PackageInformation info,
+        Dictionary<string, byte[]> additionalFiles,
+        List<InstallerPlugin> installerPlugins,
         IProgress<PackageProgressInfo> progress)
     {
         // Add Version Info to .appinfo Folder
@@ -75,9 +76,9 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         if (File.Exists(pathToCert))
         {
             var fileData = File.ReadAllText(pathToCert);
-            var keyData = JsonUtility.Deserialize<DeviceKeyInfo>(fileData);
+            var keyData = JsonUtility.DeserializeWithTypeInfo<DeviceKeyInfo>(fileData);
 
-            var securityConfig = new ServiceFramework.SecurityConfiguration()
+            var securityConfig = new SecurityConfiguration()
             {
                 ApplicationId = info.ApplicationId.ToByteArray(),
                 RequireChallenge = info.ServiceInfo.RuntimeConfiguration.RequireChallenge,
@@ -89,7 +90,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
         additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AppNameFile}"] = Encoding.UTF8.GetBytes(info.PackageName);
         additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AppTypeFile}"] = Encoding.UTF8.GetBytes(info.ApplicationType.ToString());
-      
+
         // Attributes to add to the Install Package
         Dictionary<string, string> attributes = new()
         {
@@ -98,7 +99,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             { ExecCommandKeyAttribute, info.ExecCommand }
         };
 
-        foreach(var license in info.Licenses)
+        foreach (var license in info.Licenses)
             attributes[RequiredLicenseAttribute + license.LicenseName] = license.LicenseId.ToString();
 
         // Run Plugins To allow them to Prepare App Folder (or replace it.
@@ -126,6 +127,12 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)
     {
+        //Clear Legacy Startup Files
+        string envFile = SystemInfo.HardwareInfo.TargetPathInfo.GetAhsokaPath(ApplicationOutputComponent.AppEnvironmentScriptName);
+        string startFile = SystemInfo.HardwareInfo.TargetPathInfo.GetAhsokaPath(ApplicationOutputComponent.UIHelperScriptName);
+        if (File.Exists(envFile)) File.Delete(envFile);
+        if (File.Exists(startFile)) File.Delete(startFile);
+
         var valid = ValidateLicenses(context, item);
         if (!valid)
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"One or more licenses were not valid." });
@@ -178,9 +185,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
             // Extract Start Script, Environment Script and UI Helper if Needed.
             AddScript(context, StartScriptName);
-            AddScript(context, AppEnvironmentScriptName);
-            AddScript(context, UIHelperScriptName);
-   
+
             // Get the Applicatoin Type and Command / Name and pass it to the Plugin so it can make any 
             // modifications to the system specific to this application type.
             ApplicationType projectType = Enum.Parse<ApplicationType>(item.Attributes[ApplicationTypeKeyAttribute]);
@@ -189,13 +194,25 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Application Type {projectType} found with app command {appCommand}" });
 
+            List<InstallerPlugin> installedPlugins =
+            [
+                // Add App Plugins Last
+                InstallerPlugin.GetApplicationPlugin(projectType),
+                .. InstallerPlugin.GetExtensionPlugins(SystemInfo.CurrentPlatform),
+            ];
 
-            // Run Installer Plugin to handle 
-            InstallerPlugin appPlugin = InstallerPlugin.GetApplicationPlugin(projectType);
-            appPlugin?.ModifyTargetInstall(workingDirectory, appCommand);
+            // Remove Nulls
+            installedPlugins = installedPlugins.Where(x => x != null).ToList();
+
+            // Run Prerequisite Checks
+            foreach (var appPlugin in installedPlugins)
+            {
+                context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Running Installer Plugin - {appPlugin.GetType().Name}" });
+                appPlugin.ModifyTargetInstall(workingDirectory, appCommand);
+            }
 
             // Should we use add the CommandLine App?
-            var autoStart = File.Exists(Path.Combine(workingDirectory, ApplicationOutputConstants.AppInfoFolder,"AutoStartEnabled"));
+            var autoStart = File.Exists(Path.Combine(workingDirectory, ApplicationOutputConstants.AppInfoFolder, "AutoStartEnabled"));
             var appType = File.ReadAllText(Path.Combine(workingDirectory, ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.AppTypeFile));
             context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"AutoStart: {autoStart}  AppType: {appType}" });
 
@@ -216,12 +233,22 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Failed to enable Ahsoka.Application.service" });
             else
                 context.Log?.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Enabled Ahsoka.Application.service" });
+
+            // Get Version of Installed Software
+            // Encrypt the Service Key
+            string file = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot), ApplicationOutputConstants.AppInfoFolder, ApplicationOutputComponent.ServiceSecurityFile);
+            if (File.Exists(file))
+            {
+                context.Log.Report(new InstallLogInfo() { LogMessageType = LogMessageType.Information, LogMessage = $"Encrypting Service Key" });
+                var data = AesEncryption.EncryptFile(file, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+                File.WriteAllBytes(file, data.ToArray());
+            }
         }
 
 
         void AddCommandLine(InstallContext context, PackageComponent item)
         {
-            string workingDirectory = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot),"CommandLine");
+            string workingDirectory = Path.Combine(SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot), "CommandLine");
 
             string tempFile = SystemInfo.HardwareInfo.TargetPathInfo.GetTempFileName();
             using (FileStream installer = new(tempFile, FileMode.Create))
@@ -229,7 +256,8 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
             context.Log?.Report(new InstallLogInfo()
             {
-                LogMessage = $"Inflating CommandLine to {workingDirectory}", LogMessageType = LogMessageType.Information,
+                LogMessage = $"Inflating CommandLine to {workingDirectory}",
+                LogMessageType = LogMessageType.Information,
             });
 
             // Extract Zip to Output Area
@@ -243,7 +271,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             // Remove Temp File
             File.Delete(tempFile);
         }
-        
+
         return result;
     }
 
@@ -272,7 +300,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
     {
         // Path to Script on Target
         string pathToScriptFile = $"{SystemInfo.HardwareInfo.FactoryInfo.RootPath}/{fileToCopy}";
-       
+
         // Extract Start Script from Package
         string pathToPackagesStartScript = $"{SystemInfo.HardwareInfo.TargetPathInfo.GetRootPaths(RootPaths.ApplicationRoot)}/{ComponentType.ToString().ToUpperInvariant()}.{fileToCopy}";
         if (File.Exists(pathToPackagesStartScript))

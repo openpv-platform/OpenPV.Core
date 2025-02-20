@@ -31,7 +31,7 @@ target_link_libraries(Ahsoka.CPP.Services PRIVATE ${AhsokaLibs})
 
 add_ahsoka(Ahsoka.CPP.Services)
 
-File(GLOB Calibration *.cancalibration.json)
+File(GLOB Calibration CANServiceConfiguration.json)
 FILE(COPY ${Calibration} DESTINATION ${AHSOKA_BUILD_OUTPUTS})
 
 # Required to Deploy to the Target

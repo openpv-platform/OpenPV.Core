@@ -135,7 +135,7 @@
 					MinWidth="65"
 					Command="{Binding SelectedPackage.GenerateInstallPackage}" >
 				<StackPanel>
-					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="Webpack"></material:MaterialIcon>
+					<material:MaterialIcon Width="20" Height="20" Foreground="SteelBlue" Kind="PackageVariantClosed"></material:MaterialIcon>
 					<TextBlock  HorizontalAlignment="Center" FontSize="11" Text="Generate"/>
 				</StackPanel>
 			</Button>	

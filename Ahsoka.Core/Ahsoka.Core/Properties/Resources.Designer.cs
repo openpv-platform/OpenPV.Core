@@ -91,14 +91,13 @@ namespace Ahsoka.Properties {
         ///
         ///cd ${ApplicationFolder}
         ///
-        ///if [ -f ../app_env.sh ];
-        ///then
-        ///    . ../app_env.sh
-        ///fi
-        ///
-        ///if [ -f ./start_ui_helper.sh ];
-        ///then
-        ///    ./start_ui_helper.sh
+        ///DIR=&quot;.appinfo/start&quot;
+        ///if [ -d &quot;$DIR&quot; ]; then
+        ///	for FILE in &quot;$DIR&quot;/*; do
+        ///		if [ -f &quot;$FILE&quot; ]; then	    
+        ///			. &quot;$FILE&quot;
+        ///		fi
+        ///	done
         ///fi
         ///
         ///${PreReleaseScript}
@@ -199,6 +198,42 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [Unit]
+        ///Description=Ahsoka Layer Manager Service for IVI Shell
+        ///Wants=ahsoka-early.target
+        ///
+        ///[Service]
+        ///Type=forking
+        ///ExecStart=/usr/local/Ahsoka/factory/weston/layer_manager_start.sh
+        ///
+        ///[Install]
+        ///WantedBy=multi-user.target
+        ///.
+        /// </summary>
+        internal static string Ahsoka_LayerManager {
+            get {
+                return ResourceManager.GetString("Ahsoka_LayerManager", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #!/bin/sh
+        ///echo &quot;Layer Manager Start Time&quot; $(date +%T.%3N)
+        ///. /etc/profile.d/app_profile.sh
+        ///
+        ///sleep 4
+        ///
+        ///chmod +x /usr/local/Ahsoka/factory/weston/Ahsoka.LayerManager
+        ////usr/bin/stdbuf -oL /usr/local/Ahsoka/factory/weston/Ahsoka.LayerManager &amp;
+        ///.
+        /// </summary>
+        internal static string Ahsoka_LayerManagerStart {
+            get {
+                return ResourceManager.GetString("Ahsoka_LayerManagerStart", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] CMakeLists {
@@ -209,29 +244,8 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #!/bin/sh
-        ///  /usr/bin/codesys/prestart.sh.
-        /// </summary>
-        internal static string CODESYS_PreStart {
-            get {
-                return ResourceManager.GetString("CODESYS_PreStart", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Configuration {
-            get {
-                object obj = ResourceManager.GetObject("Configuration", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to #include &quot;DefaultServiceClient.h&quot;
         ///#include &quot;DefaultServiceMessages.hpp&quot;
-        ///#include &quot;AhsokaClientEndPoint.h&quot;
         ///
         ///using namespace std;
         ///using namespace DefaultNameSpace;
@@ -241,7 +255,12 @@ namespace Ahsoka.Properties {
         ///    typedef AhsokaClientEndPoint&lt;DefaultTransportIdEnum&gt; DefaultService_t;
         ///	
         ///	DefaultServiceClient::DefaultServiceClient():
-        ///       AhsokaServiceFramework::AhsokaEndPointWithCallback&lt;DefaultTransportIdEnum&gt;(new DefaultService_t(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceM [rest of string was truncated]&quot;;.
+        ///       AhsokaServiceFramework::AhsokaClientEndPoint&lt;DefaultTransportIdEnum&gt;(AhsokaConfiguration::GetServiceConfiguration(DefaultServiceName), DefaultServiceMessages())
+        ///    {
+        ///        
+        ///    }
+        ///
+        ///    DefaultServiceClient [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CPPClientCode {
             get {
@@ -255,6 +274,7 @@ namespace Ahsoka.Properties {
         ///#include &lt;functional&gt;
         ///#include &lt;memory&gt;
         ///#include &quot;AhsokaServices.h&quot;
+        ///#include &quot;AhsokaClientEndPoint.h&quot;
         ///
         ///using namespace std;
         ///using namespace DefaultNameSpace;
@@ -267,11 +287,9 @@ namespace Ahsoka.Properties {
         ///{
         ///	const std::string DefaultServiceName = &quot;DefaultService&quot;;
         ///
-        ///	class DefaultServiceClient : public AhsokaServiceFramework::AhsokaEndPointWithCallback&lt;DefaultTransportIdEnum&gt;
+        ///	class DefaultServiceClient : public AhsokaServiceFramework::AhsokaClientEndPoint&lt;DefaultTransportIdEnum&gt;
         ///	{
-        ///		public:
-        ///
-        ///			DefaultService [rest of string was truncated]&quot;;.
+        ///	 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string CPPClientHeader {
             get {
@@ -338,6 +356,35 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #!/bin/sh
+        ///
+        ///echo &quot;Running custom init.&quot;
+        ///
+        ///# weston environment variables when weston is launched pre-systemd
+        ///export XDG_RUNTIME_DIR=/tmp/xdg-runtime-dir
+        ///export WAYLAND_DISPLAY=&quot;wayland-1&quot;
+        ///export WESTON_USER=root
+        ///export WL_EGL_GBM_FENCE=0
+        ///export XDG_CONFIG_DIRS=/usr/local/Ahsoka/current:/usr/local/Ahsoka/factory:/etc/xdg/weston
+        ///
+        ///# Needed for Xwayland
+        ///export DISPLAY=:0
+        ///
+        ///# udevd may be necessary for touchscreen
+        ///udevd &amp;
+        ///UDEV=$!
+        ///
+        ///# Prep all needed weston mount points
+        ///mount -t proc none /proc
+        ///mount -t sysfs none /s [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string hlio_early {
+            get {
+                return ResourceManager.GetString("hlio_early", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;services&quot;: [
         ///    {
@@ -362,26 +409,6 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] InstallService {
-            get {
-                object obj = ResourceManager.GetObject("InstallService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] IotService {
-            get {
-                object obj = ResourceManager.GetObject("IotService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] JournalOverride {
             get {
                 object obj = ResourceManager.GetObject("JournalOverride", resourceCulture);
@@ -390,7 +417,7 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;flamencist@mail.ru&quot;],&quot;Description&quot;:&quot;Doxygen.exe for build documentation.&quot;,&quot;LicenseUrl&quot;:&quot;&quot;,&quot;LicenseType&quot;:&quot;&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;EnovationCloud.Core&quot;,&quot;PackageVersion&quot;:&quot;4.6.0&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;EnovationCloud.Core&quot;],&quot;Description&quot;:&quot;Package Description&quot;,&quot;LicenseUrl&quot;:&quot;https://www.nuget.org/packages/EnovationCloud.Core/4.6.0/License&quot;,&quot;LicenseType&quot;:&quot;LICEN [rest of string was truncated]&quot;;.
+        ///   Looks up a localized string similar to [{&quot;PackageName&quot;:&quot;Doxygen&quot;,&quot;PackageVersion&quot;:&quot;1.8.14&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;flamencist@mail.ru&quot;],&quot;Description&quot;:&quot;Doxygen.exe for build documentation.&quot;,&quot;LicenseUrl&quot;:&quot;&quot;,&quot;LicenseType&quot;:&quot;&quot;,&quot;Repository&quot;:{&quot;Type&quot;:&quot;&quot;,&quot;Url&quot;:&quot;&quot;,&quot;Commit&quot;:&quot;&quot;}},{&quot;PackageName&quot;:&quot;EnovationCloud.Core&quot;,&quot;PackageVersion&quot;:&quot;4.9.0&quot;,&quot;PackageUrl&quot;:&quot;&quot;,&quot;Copyright&quot;:&quot;&quot;,&quot;Authors&quot;:[&quot;EnovationCloud.Core&quot;],&quot;Description&quot;:&quot;Package Description&quot;,&quot;LicenseUrl&quot;:&quot;https://www.nuget.org/packages/EnovationCloud.Core/4.9.0/License&quot;,&quot;LicenseType&quot;:&quot;LICEN [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Licenses {
             get {
@@ -425,24 +452,13 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] NetworkService {
-            get {
-                object obj = ResourceManager.GetObject("NetworkService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to {
         ///  &quot;services&quot;: [
         ///    {
         ///      &quot;socketType&quot;: &quot;TcpSocket&quot;,
         ///      &quot;serviceName&quot;: &quot;InstallService&quot;,
-        ///      &quot;tcpListenAddress&quot;: &quot;*&quot;,
+        ///      &quot;tcpListenAddress&quot;: &quot;localhost&quot;,
         ///      &quot;tcpConnectionAddress&quot;: &quot;localhost&quot;,
-        ///      &quot;bleServiceUuidBase&quot;: &quot;96730000-8f5d-4cef-8289-744c8faa1a66&quot;,
         ///      &quot;dataChannel&quot;: 5000,
         ///      &quot;behaviors&quot;: &quot;AutoStart&quot;
         ///    },
@@ -451,7 +467,11 @@ namespace Ahsoka.Properties {
         ///      &quot;serviceName&quot;: &quot;SystemService&quot;,
         ///      &quot;tcpListenAddress&quot;: &quot;*&quot;,
         ///      &quot;tcpConnectionAddress&quot;: &quot;localhost&quot;,
-        ///      &quot;bleServiceUuidBase&quot;: &quot;96730000-8f5d [rest of string was truncated]&quot;;.
+        ///      &quot;dataChannel&quot;: 5001,
+        ///      &quot;behaviors&quot;: &quot;AutoStart&quot;
+        ///    },
+        ///    {
+        ///      &quot;socketType&quot;: &quot;TcpSock [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string OPVServicesConfiguration {
             get {
@@ -460,7 +480,8 @@ namespace Ahsoka.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to using Ahsoka.Utility;
+        ///   Looks up a localized string similar to using Ahsoka.Core.Utility;
+        ///using Ahsoka.Core;
         ///using System;
         ///
         ///namespace Ahsoka;
@@ -471,7 +492,7 @@ namespace Ahsoka.Properties {
         ///    {
         ///        Console.WriteLine(DateTime.Now.ToString(&quot;hh:mm:ss.fff&quot;));
         ///
-        ///        /*ClassLoaderAdds*/
+        ////*ClassLoaderAdds*/
         ///
         ///        CommandLine.Execute(args);
         ///    }
@@ -481,6 +502,17 @@ namespace Ahsoka.Properties {
         internal static string Program_cs {
             get {
                 return ResourceManager.GetString("Program_cs", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to syntax = &quot;proto3&quot;;
+        ///
+        ///package %PACKAGE_NAME%;.
+        /// </summary>
+        internal static string ProtoTemplate {
+            get {
+                return ResourceManager.GetString("ProtoTemplate", resourceCulture);
             }
         }
         
@@ -510,29 +542,9 @@ namespace Ahsoka.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] SecurityService {
-            get {
-                object obj = ResourceManager.GetObject("SecurityService", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
         internal static byte[] Services {
             get {
                 object obj = ResourceManager.GetObject("Services", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] SparkService {
-            get {
-                object obj = ResourceManager.GetObject("SparkService", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -570,16 +582,6 @@ namespace Ahsoka.Properties {
         internal static string StaticLicenses {
             get {
                 return ResourceManager.GetString("StaticLicenses", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] SystemService {
-            get {
-                object obj = ResourceManager.GetObject("SystemService", resourceCulture);
-                return ((byte[])(obj));
             }
         }
         
@@ -645,6 +647,24 @@ namespace Ahsoka.Properties {
         internal static string UntrustedPublicKeyPEM {
             get {
                 return ResourceManager.GetString("UntrustedPublicKeyPEM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to [core]
+        ///shell=ivi-shell.so
+        ///modules=ivi-controller.so
+        ///
+        ///[ivi-shell]
+        ///ivi-id-agent-module=ivi-id-agent.so
+        ///
+        ///[desktop-app-default]
+        ///default-surface-id=2000000
+        ///default-surface-id-max=2001000.
+        /// </summary>
+        internal static string weston_ini {
+            get {
+                return ResourceManager.GetString("weston_ini", resourceCulture);
             }
         }
         

@@ -1,11 +1,6 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.System;
-using Ahsoka.Utility;
-using Avalonia.Controls;
-using ShimSkiaSharp;
+﻿using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.ViewModel;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -31,7 +26,7 @@ internal class OpenViewProFlashTool : OpenPVToolBase
 
     protected override Task ExecuteDownload(IToolViewModel toolVM, CancellationTokenSource token)
     {
-        return  base.ExecuteDownload(toolVM, token).ContinueWith((r) =>
+        return base.ExecuteDownload(toolVM, token).ContinueWith((r) =>
         {
             string fileName = Path.GetFileName(this.Resources.First().DownloadPath);
             string zipPath = Path.Combine(LocalPath, fileName);
@@ -47,23 +42,23 @@ internal class OpenViewProFlashTool : OpenPVToolBase
 
         if (OperatingSystem.IsLinux())
         {
-           /* pathToScript = Path.Combine(LocalPath, "stm_installer_linux.zip");
-            zipPath = Path.Combine(LocalPath, "TempExtract");
-            ZipFile.ExtractToDirectory(pathToScript, zipPath, true);
-            List<string> file = Directory.GetFiles(zipPath, "*.linux", SearchOption.AllDirectories).ToList();
-            executable = file.First();
-            args = "";
-            admin = false;*/
+            /* pathToScript = Path.Combine(LocalPath, "stm_installer_linux.zip");
+             zipPath = Path.Combine(LocalPath, "TempExtract");
+             ZipFile.ExtractToDirectory(pathToScript, zipPath, true);
+             List<string> file = Directory.GetFiles(zipPath, "*.linux", SearchOption.AllDirectories).ToList();
+             executable = file.First();
+             args = "";
+             admin = false;*/
         }
         else if (OperatingSystem.IsMacOS())
         {
-           /* pathToScript = Path.Combine(LocalPath, "stm_installer_mac.zip");
-            zipPath = Path.Combine(LocalPath, "TempExtract");
-            ZipFile.ExtractToDirectory(pathToScript, zipPath, true);
-            List<string> file = Directory.GetFiles(zipPath, "SetupSTM32CubeProgrammer-2_14_0_macos", SearchOption.AllDirectories).ToList();
-            executable = file.First();
-            args = "";
-            admin = false;*/
+            /* pathToScript = Path.Combine(LocalPath, "stm_installer_mac.zip");
+             zipPath = Path.Combine(LocalPath, "TempExtract");
+             ZipFile.ExtractToDirectory(pathToScript, zipPath, true);
+             List<string> file = Directory.GetFiles(zipPath, "SetupSTM32CubeProgrammer-2_14_0_macos", SearchOption.AllDirectories).ToList();
+             executable = file.First();
+             args = "";
+             admin = false;*/
         }
         else if (OperatingSystem.IsWindows())
         {

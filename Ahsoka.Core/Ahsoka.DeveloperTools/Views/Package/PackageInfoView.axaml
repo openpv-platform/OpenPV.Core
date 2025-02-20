@@ -27,32 +27,11 @@
 					VerticalContentAlignment="Center"
 					Command="{Binding SelectedPackage.GenerateInstallPackage}" >
 				<StackPanel Orientation="Horizontal">
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Webpack"></material:MaterialIcon>
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="PackageVariantClosed"></material:MaterialIcon>
 					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Generate Package"/>
 				</StackPanel>
 			</Button>
-			<Button Margin="3,3,5,3"
-					HorizontalAlignment="Stretch"
-					Height="38"
-					IsVisible="{Binding SelectedPackage.IsOpenView}"
-					VerticalContentAlignment="Center"
-					Command="{Binding SelectedPackage.DeletePackage}" >
-				<StackPanel Orientation="Horizontal">
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Delete"></material:MaterialIcon>
-					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Delete Package"/>
-				</StackPanel>
-			</Button>
-			<Button Margin="3,3,5,3"
-					HorizontalAlignment="Stretch"
-					Height="38"
-					IsVisible="{Binding SelectedPackage.IsOpenView}"
-					VerticalContentAlignment="Center"
-					Command="{Binding SelectedPackage.GoToPackage}" >
-				<StackPanel Orientation="Horizontal">
-					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="OpenInApp"></material:MaterialIcon>
-					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Show Package Folder"/>
-				</StackPanel>
-			</Button>
+		
 			<Button Margin="3,3,5,3"
 					HorizontalAlignment="Stretch"
 					Height="38"
@@ -64,6 +43,27 @@
 				</StackPanel>
 			</Button>
 
+			<Button Margin="3,13,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding SelectedPackage.ShowCustomPackage}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="PackageVariant"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Create Custom"/>
+				</StackPanel>
+			</Button>
+
+			<Button Margin="3,3,5,3"
+				HorizontalAlignment="Stretch"
+				Height="38"
+				VerticalContentAlignment="Center"
+				Command="{Binding SelectedPackage.LoadToTargetCustom}">
+				<StackPanel Orientation="Horizontal">
+					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="DownloadOutline"></material:MaterialIcon>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Load Custom "/>
+				</StackPanel>
+			</Button>
 			<TextBlock FontSize="18"
 			   VerticalAlignment="Top"
 			   HorizontalAlignment="Center"
@@ -118,7 +118,7 @@
 					Command="{Binding SelectedPackage.LaunchDevTool}" >
 				<StackPanel Orientation="Horizontal">
 					<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Launch"></material:MaterialIcon>
-					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch Container"/>
+					<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Launch Project"/>
 				</StackPanel>
 			</Button>
 
@@ -130,12 +130,13 @@
 				</StackPanel.Styles>
 
 				<Border Margin="20,20,20,0" Padding="3"  BorderThickness="0,0,0,1">
-					<Grid Margin="5" ColumnDefinitions="150,Auto,25,125,Auto" RowDefinitions="36,36,36,*">
+					<Grid Margin="5" ColumnDefinitions="150,Auto,25,125,Auto" RowDefinitions="36,56,36,*">
 						<TextBlock TabIndex="0" Text="Package Name:" Grid.Row="0" Grid.Column="0"/>
 						<TextBox Text="{Binding PackageName, FallbackValue=PackageName}" Grid.Row="0"  Width="250"  Grid.Column="1" TextWrapping="1"/>
 
-						<TextBlock TabIndex="0" Text="Package Description:" Grid.Row="1" Grid.Column="0"/>
-						<TextBox Text="{Binding PackageDescription, FallbackValue=PackageDescription}" Grid.Row="1"  Width="450"  Grid.Column="1" TextWrapping="1"/>
+						<TextBlock TabIndex="0" Text="Package Description:"  Grid.Row="1" VerticalAlignment="Top" Margin="4,8" Grid.Column="0"/>
+						<TextBox Text="{Binding PackageDescription, FallbackValue=PackageDescription}" 
+								 Grid.Row="1"  Width="450" Height="56" Grid.Column="1" TextWrapping="1"/>
 
 						<TextBlock Text="Target Platform:" Grid.Row="2" Grid.Column="0"/>
 						<ComboBox  Grid.Row="2" Grid.Column="1" SelectedItem="{Binding PlatformDescription}"
@@ -173,7 +174,8 @@
 
 						<TextBlock IsVisible="{Binding IsOpenView}" Text="Optimize Services:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
 						<StackPanel Orientation="Horizontal" Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
-							<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding GenerateOptimizedServiceManager}" />
+							<CheckBox IsEnabled="{Binding SupportsOptimized}" IsVisible="{Binding IsOpenView}" 
+									  IsChecked="{Binding GenerateOptimizedServiceManager}" ToolTip.Tip="Currently only supported on Windows Compiles" />
 							<TextBlock IsVisible="{Binding IsOpenView}" FontStyle="Italic" Foreground="DimGray" 
 									   Text="Generates an optimized service manager executable (requires SDK)"
 									   ToolTip.Tip="Compiles an optimized executable which includes your extensions. This improves boot times and performance of services however you should disable this option if you need to remotely debug services"/>
@@ -216,6 +218,72 @@
 			
 			</StackPanel>
 		</ScrollViewer>
+
+		<Border Margin="0,-50,0,0" Background="#00555555" 
+				IsVisible="{Binding SelectedPackage.CustomShown, FallbackValue=false}" Grid.ColumnSpan="2"  BorderThickness="0,0,0,0" >
+			<Border  BoxShadow="5 5 10 2 DarkGray" HorizontalAlignment="Center" VerticalAlignment="Center"
+					 BorderBrush="DarkGray" Background="White" BorderThickness="1">
+				<Grid Margin="50" ColumnDefinitions="150,Auto,Auto" RowDefinitions="*,*,*,*,*,*,">
+					<TextBlock Text="Custom Install Components  "
+							   ToolTip.Tip="Custom Installs allow you to create installs which include optional features or exclude normally installed features." Background="White" Margin="-10,-30"  FontSize="15"
+							   Foreground="SteelBlue" Grid.Row="0" Grid.ColumnSpan="3" HorizontalAlignment="Left"  Grid.Column="0"/>
+
+					<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Application:" Grid.Row="1" Margin="5,10" Grid.Column="0"/>
+					<StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3">
+						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding SelectedPackage.IncludeAppComponents}"/>
+						<TextBlock VerticalAlignment="Center" IsVisible="{Binding SelectedPackage.IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+								   Text="Adds All Application Components (Installer, App, Extensions)."
+								   ToolTip.Tip="Checking this checkbox creates a standard install package with only the Application Updaters."/>
+					</StackPanel>
+					<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Installer UI:" Grid.Row="2" Margin="5,10" Grid.Column="0"/>
+					<StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3">
+						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding SelectedPackage.IncludeInstallerUI}" />
+						<TextBlock VerticalAlignment="Center" IsVisible="{Binding SelectedPackage.IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+								   Text="Adds a component to updates the Installer UI on the Target" />
+					</StackPanel>
+					<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Firmware:" Grid.Row="3" Margin="5,10" Grid.Column="0"/>
+					<StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3">
+						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding SelectedPackage.IncludeFirmwareUpdate}"/>
+						<TextBlock VerticalAlignment="Center" IsVisible="{Binding SelectedPackage.IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+								   Text="Adds a delta Firmware Upgrader Component to the installer."
+								   ToolTip.Tip="Adds a delta upgrader component to your install package which upgrades the base image.  This does increase install times as well as require a reboot as part of the install process."/>
+					</StackPanel>
+					<TextBlock IsVisible="{Binding IsOpenView}" Text="Update Boot Logo:" Grid.Row="4" Margin="5,10" Grid.Column="0"/>
+					<StackPanel Orientation="Horizontal"
+								Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="3">
+						<CheckBox IsVisible="{Binding IsOpenView}" IsChecked="{Binding SelectedPackage.IncludeBootLogo}"/>
+						<TextBlock VerticalAlignment="Center" IsVisible="{Binding SelectedPackage.IsOpenView}" FontStyle="Italic" Foreground="DimGray"
+								   Text="Updates the Boot Logo"
+								   ToolTip.Tip="Boot logos are always included in the default Application but can be excluded from custom packages."/>
+					</StackPanel>
+					<StackPanel Margin="0,20,-30,-30" Grid.Row="5" Grid.Column="3" HorizontalAlignment="Right"
+								 Grid.ColumnSpan="2" Orientation="Horizontal">
+						<Button
+								Margin="10,0,0,0"
+								HorizontalAlignment="Right"
+								Height="38"
+								VerticalContentAlignment="Center"
+								Command="{Binding SelectedPackage.GenerateCustomPackage}">
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="PackageVariantClosed"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Generate Package"/>
+							</StackPanel>
+						</Button>
+						<Button Margin="10,0,0,0"
+								HorizontalAlignment="Right"
+								Height="38"
+								VerticalContentAlignment="Center"
+								Command="{Binding SelectedPackage.CancelCustom}">
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Cancel"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Cancel Generation"/>
+							</StackPanel>
+						</Button>
+					</StackPanel>
+				</Grid>
+			</Border>
+		</Border>
+
 
 	</Grid>
 </UserControl>

@@ -1,8 +1,50 @@
-﻿using System;
+﻿using Ahsoka.Core;
+using Ahsoka.DeveloperTools.Core;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using SystemConsole = System.Console;
 
 namespace Ahsoka.DeveloperTools.ViewModel;
+
+public class LocalCommandLine()
+{
+    public static void RunWithLocalConsole(string processArgs, string workingDirectory, IProgress<CommandLineProgressInfo> progressString)
+    {
+        var currentDirectory = Environment.CurrentDirectory;
+        if (workingDirectory != null)
+            Environment.CurrentDirectory = workingDirectory;
+
+        using var localConsole = new LocalConsoleWriter();
+
+        EventHandler<LocalConsoleWriterEventArgs> handler = (sender, e) =>
+        {
+            progressString.Report(new CommandLineProgressInfo() { IsWriteLine = e.IsWriteLine, Message = e.Value });
+        };
+
+        localConsole.WriteLineEvent += handler;
+        localConsole.WriteEvent += handler;
+
+        SystemConsole.SetOut(localConsole);
+
+        /// Split Arguments
+        var args = new List<string>();
+        args.AddRange(Regex.Matches(processArgs, @"[\""].+?[\""]|[^ ]+")
+                        .Cast<Match>()
+                        .Select(m => m.Value.Trim('"'))
+                        .ToList());
+
+        CommandLine.Execute(args.ToArray());
+
+        localConsole.WriteLineEvent -= handler;
+        localConsole.WriteEvent += handler;
+        if (workingDirectory != null)
+            Environment.CurrentDirectory = currentDirectory;
+    }
+}
 
 public class LocalConsoleWriterEventArgs : EventArgs
 {

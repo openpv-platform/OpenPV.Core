@@ -1,11 +1,9 @@
 ﻿using Ahsoka.Installer;
-using Avalonia.Controls.Documents;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Utilities;
 using System;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;

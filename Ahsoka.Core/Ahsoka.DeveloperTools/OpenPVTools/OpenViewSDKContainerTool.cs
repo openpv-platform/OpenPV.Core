@@ -1,24 +1,18 @@
-﻿using Ahsoka.Utility;
-using NuGet.Protocol.Plugins;
-using Renci.SshNet;
-using SixLabors.ImageSharp;
+﻿using Ahsoka.Core.Utility;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static SkiaSharp.HarfBuzz.SKShaper;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ahsoka.DeveloperTools;
 
 internal class OpenViewProSDKContainerTool : OpenViewSDKContainerTool
 {
     public OpenViewProSDKContainerTool() :
-     base("openpv/openviewpro_sdk_3_0", "Ahsoka.Platform.Pro.3.0", true)
+     base("openpv/openviewpro_sdk_4_0", "Ahsoka.Platform.Pro.4.0", true)
     {
-        this.InstallText = "This process will download the 3.0 OpenView Pro SDK Container to your Operating System (Requires Docker)";
+        this.InstallText = "This process will download the 4.0 OpenView Pro SDK Container to your Operating System (Requires Docker)";
     }
 }
 
@@ -26,9 +20,9 @@ internal class OpenViewProSDKContainerTool : OpenViewSDKContainerTool
 internal class OpenViewSelectSDKContainerTool : OpenViewSDKContainerTool
 {
     public OpenViewSelectSDKContainerTool() :
-       base("openpv/openview_sdk_3_0", "Ahsoka.Platform.3.0", true)
+       base("openpv/openview_sdk_4_0", "Ahsoka.Platform.4.0", true)
     {
-        this.InstallText = "This process will download the 3.0 OpenView Select SDK Container to your Operating System (Requires Docker)";
+        this.InstallText = "This process will download the 4.0 OpenView Select SDK Container to your Operating System (Requires Docker)";
     }
 }
 
@@ -55,7 +49,7 @@ internal abstract class OpenViewSDKContainerTool : DockerBaseTool
     {
         if (OperatingSystem.IsWindows())
         {
-            if (!CheckDependencies(toolVM)) return;          
+            if (!CheckDependencies(toolVM)) return;
 
             var path = await toolVM.MainViewModel.FolderLocatorAsync("Please select your development folder");
             if (!Directory.Exists(path)) return;

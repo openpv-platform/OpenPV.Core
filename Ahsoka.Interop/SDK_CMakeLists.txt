@@ -23,7 +23,7 @@ get_filename_component(Services inc/services/ ABSOLUTE)
 set(Headers ${Messages} ${Services})
 
 #Create Variable for Library
-get_filename_component(Library lib/libAhsoka.Client.Shared.so ABSOLUTE)
+get_filename_component(Library lib/libAhsoka.Core.a ABSOLUTE)
 
 # Set Globals
 set(AhsokaHeaders ${Headers} ${PROTO_HEADER_DIR} PARENT_SCOPE)
@@ -40,7 +40,6 @@ function(add_ahsoka target_name)
             COMMAND echo Remove Outputs
             COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
             COMMAND ${CMAKE_COMMAND} -E remove_directory ${CMAKE_SOURCE_DIR}/Outputs/.appinfo
-            COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_SOURCE_DIR}/Outputs/libAhsoka.Client.Shared.so
     )
 
     ADD_CUSTOM_COMMAND(TARGET ${target_name}
@@ -49,7 +48,6 @@ function(add_ahsoka target_name)
             COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/.platform_support/$ENV{AhsokaPlatform}_TargetSupport/CommandLine ${CMAKE_SOURCE_DIR}/Outputs/CommandLine
             COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/.platform_support/.appinfo ${CMAKE_SOURCE_DIR}/Outputs/.appinfo
-            COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/.platform_support/$ENV{AhsokaPlatform}_TargetSupport/SDK/lib/libAhsoka.Client.Shared.so ${CMAKE_SOURCE_DIR}/Outputs/libAhsoka.Client.Shared.so
     )
 
 endfunction()

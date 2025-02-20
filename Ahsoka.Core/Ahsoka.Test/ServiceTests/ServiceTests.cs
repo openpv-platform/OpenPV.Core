@@ -1,15 +1,15 @@
-using Ahsoka.Dispatch;
-using Ahsoka.ServiceFramework;
+using Ahsoka.Core;
+using Ahsoka.Core.Dispatch;
+using Ahsoka.Core.Hardware;
 using Ahsoka.Services;
+using Ahsoka.Services.Device;
 using Ahsoka.Services.Network;
 using Ahsoka.Services.System;
-using Ahsoka.Services.System.Platform;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,6 +18,10 @@ namespace Ahsoka.Test;
 [TestClass]
 public class ServiceTests : LinearTestBase
 {
+    static AutoResetEvent enabledEvent = new(false);
+    static AutoResetEvent disabledEvent = new(false);
+
+
     public TestContext TestContext { get; set; }
 
     [TestMethod]
@@ -66,7 +70,6 @@ public class ServiceTests : LinearTestBase
         Console.WriteLine("");
     }
 
-
     [TestMethod]
     public void AutoStartTests()
     {
@@ -91,6 +94,8 @@ public class ServiceTests : LinearTestBase
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
         systemClient.Start();
 
+        string image = Path.GetFullPath("Ahsoka/Resources/EnovLogo.png");
+
         // Request Service Shutdown
         try
         {
@@ -107,16 +112,115 @@ public class ServiceTests : LinearTestBase
             AhsokaLogging.LogMessage(AhsokaVerbosity.High, ex.Message);
         }
 
-      
+        if (File.Exists(image))
+        {
+            var bootLogo = new BootLogoInfo()
+            {
+                Path = image
+            };
+
+            // Forced Error
+            systemClient.SetBootLogo(bootLogo);
+
+            bootLogo.Rotation = BootLogoRotation.Rotate90;
+            systemClient.SetBootLogo(bootLogo);
+
+            bootLogo.Rotation = BootLogoRotation.Rotate180;
+            systemClient.SetBootLogo(bootLogo);
+
+            bootLogo.Rotation = BootLogoRotation.Rotate270;
+            systemClient.SetBootLogo(bootLogo);
+        }
+
         systemClient.RequestServiceShutdown();
-       
+
 
         // Stop the Runtimes
         AhsokaRuntime.Default.StopAllEndPoints();
     }
 
+
     [TestMethod]
-    public void TestBaseServiceComponents()
+    public void TestNotifications()
+    {
+        int receiveConcurrentCount = 0;
+        int receiveCount = 0;
+
+        // Create and Start Service
+        SystemServiceClient systemClient = new();
+        systemClient.Start();
+
+        Stopwatch watch = new();
+        watch.Start();
+
+        // Start a Thread and Run Test
+        var task1 = Task.Run(() =>
+        {
+            RunTest(systemClient, out receiveCount);
+        });
+
+        // Create Confurrent Client and Run Test
+        // This should use the local service / with a local socket.
+        var task2 = Task.Run(() =>
+        {
+            SystemServiceClient secondClient = new();
+            secondClient.Start();
+
+            RunTest(secondClient, out receiveConcurrentCount);
+
+            secondClient.Stop();
+        });
+
+        // Wait for Concurrent Task to Finish
+        Task.WaitAll(task1, task2);
+
+        watch.Stop();
+
+        Console.WriteLine("");
+        Console.WriteLine($"Performance Test: {(receiveCount + receiveConcurrentCount)} Request/Response Calls completed in {watch.ElapsedMilliseconds}ms");
+        Console.WriteLine($"                : {((float)(receiveCount + receiveConcurrentCount) / watch.ElapsedMilliseconds) * 1000} Calls Per Second");
+        Console.WriteLine("");
+
+        systemClient.Stop();
+
+        AhsokaRuntime.Default.StopAllEndPoints();
+    }
+
+    private void RunTest(SystemServiceClient systemClient, out int receiveCount)
+    {
+        Semaphore messageReceived = new(0, 1);
+
+        int totalRuns;
+
+        int receiveCountLocal = 0;
+        totalRuns = 100000;
+
+        // List to Message Notifications
+        systemClient.NotificationReceived += (sender, args) =>
+        {
+            if (args.TransportId == SystemMessageTypes.Ids.TestNotif)
+            {
+                receiveCountLocal++;
+                if (receiveCountLocal == totalRuns)
+                    messageReceived.Release();
+            }
+        };
+
+        for (int i = 0; i < totalRuns; i++)
+        {
+            systemClient.EchoNotif("Test Value");
+        }
+
+        messageReceived.WaitOne(30000);
+
+        Assert.AreEqual(totalRuns, receiveCountLocal);
+
+        receiveCount = receiveCountLocal;
+
+    }
+
+    [TestMethod]
+    public void TestSystemService()
     {
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
@@ -126,18 +230,53 @@ public class ServiceTests : LinearTestBase
         // Run Sample Test Code
         ServiceSelfTests.RunEchoPerfTest(100000, systemClient);
         ServiceSelfTests.PrintServerMetrics(systemClient);
-      
+
         var brightness = systemClient.GetBrightness();
         systemClient.SetBrightness(brightness);
-
-        var usb = systemClient.GetUsbInfo();
-        systemClient.SetUsbInfo(usb);
 
         // Request Service Shutdown
         systemClient.RequestServiceShutdown();
 
         // Stop the Runtimes
         AhsokaRuntime.Default.StopAllEndPoints();
+    }
+
+
+    //[TestMethod]
+    public void TestDeviceService()
+    {
+        // Create Client Runtime and Add Services
+        DeviceServiceClient deviceClient = new();
+        deviceClient.NotificationReceived += SystemClient_NotificationReceived;
+        deviceClient.Start();
+
+        var usbInfo = deviceClient.GetUsbInfo();
+        deviceClient.SetUsbInfo(usbInfo);
+
+        var wifiDevice = deviceClient.GetDevices(new DeviceInfoRequest() { FeatureSearch = SupportedFeatures.Wifi }).Devices.FirstOrDefault();
+        if (wifiDevice != null)
+        {
+            deviceClient.EnableDeviceNotifications();
+            deviceClient.EnableDevice(wifiDevice);
+            Assert.IsTrue(enabledEvent.WaitOne(2000));
+            deviceClient.DisableDevice(wifiDevice);
+            Assert.IsTrue(disabledEvent.WaitOne(2000));
+        }
+
+        // Stop the Runtimes
+        AhsokaRuntime.Default.StopAllEndPoints();
+    }
+
+    private void SystemClient_NotificationReceived(object sender, AhsokaClientBase<DeviceMessageTypes.Ids>.AhsokaNotificationArgs e)
+    {
+        if (e.TransportId == DeviceMessageTypes.Ids.DeviceEnabled)
+        {
+            enabledEvent.Set();
+        }
+        else if (e.TransportId == DeviceMessageTypes.Ids.DeviceDisabled)
+        {
+            disabledEvent.Set();
+        }
     }
 
     [TestMethod]
@@ -163,19 +302,15 @@ public class ServiceTests : LinearTestBase
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
         systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-        var set = AhsokaRuntime.CreateBuilder()
-                     .AddClients(systemClient)
-                     .StartWithInternalServices();
+        systemClient.Start();
 
         // Request Service Shutdown
-        set.RequestShutdown();
-        set.WaitForShutdown();
+        systemClient.Stop();
+        systemClient.WaitForStop();
 
-        set = AhsokaRuntime.CreateBuilder()
-                    .AddClients(systemClient)
-                    .StartWithInternalServices();
+        systemClient.Start();
 
-        AhsokaRuntime.ShutdownAll();
+        AhsokaRuntime.Default.StopAllEndPoints();
     }
 
     [TestMethod]
@@ -188,43 +323,6 @@ public class ServiceTests : LinearTestBase
     }
 
 
-    [TestMethod]
-    public void TestBaseServiceExternalComponents()
-    {
-        // Test Configuration Builder
-        RuntimeConfiguration config = new();
-        var systemItem = ConfigurationLoader.GetServiceConfig("SystemService");
-        systemItem.Behaviors = EndPointBehaviors.NoBehavior; // Don't AutoStart
-        config.Services.Add(systemItem);
-       
-        string commandLine = Path.Combine(PlatformSupportPathInfo.GetPlatformSupportPath(PlatformFamily.Windows64), "CommandLine", "Ahsoka.CommandLine.exe");
-      
-        // Create Client Runtime and Add Services
-        SystemServiceClient systemClient = new(systemItem);
-        systemClient.NotificationReceived += ApplicationServiceClient_NotificationReceived;
-        systemClient.Start();
-
-        AhsokaRuntime.StartProcessExecutable(commandLine, [systemClient]);
-
-        
-        // Run Sample Test Code
-        var task = Task.Run(() =>
-        {
-            ServiceSelfTests.RunEchoPerfTest(10000, systemClient);
-            ServiceSelfTests.PrintServerMetrics(systemClient);
-
-            // Request Service Shutdown
-            systemClient.RequestServiceShutdown();
-        });
-
-        var result = task.Wait(10000);
-
-        // Stop the Runtimes
-        AhsokaRuntime.Default.StopAllEndPoints();
-
-        Assert.IsTrue(result,"The test process did not complete");
-    }
-
     private void ApplicationServiceClient_NotificationReceived(object sender, NotificationEventArgs<SystemMessageTypes.Ids> e)
     {
         if (e.TransportId == SystemMessageTypes.Ids.RequestShutdown)
@@ -234,10 +332,7 @@ public class ServiceTests : LinearTestBase
     [TestMethod]
     public void TestWindowsPrep()
     {
-        var progress = new Progress<string>(info =>
-        {
-            Console.WriteLine(info);
-        });
+        var progress = new Progress<string>(Console.WriteLine);
 
         var prep = RemoteTargetToolFactory.GetToolsForPlatform(PlatformFamily.Windows64);
 
@@ -264,7 +359,7 @@ public class ServiceTests : LinearTestBase
     {
         Task.Run(() =>
         {
-            Thread.Sleep(1000);
+            Thread.Sleep(10);
             ApplicationContext.Exit();
         });
 
@@ -277,7 +372,7 @@ public class ServiceTests : LinearTestBase
     {
         // Create Client Runtime and Add Services
         SystemServiceClient systemClient = new();
-        NetworkServiceClient netClient = new();
+        WiFiClientServiceClient netClient = new();
 
         Dispatcher.Default.RegisterCallback((o, e) => { }, netClient);
         Dispatcher.Default.RegisterCallback<NotificationEventArgs<SystemMessageTypes.Ids>>(ApplicationServiceClient_NotificationReceived, systemClient);

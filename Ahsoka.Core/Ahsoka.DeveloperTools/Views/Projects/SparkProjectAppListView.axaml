@@ -41,7 +41,7 @@
 					</Style>
 				</DataGrid.Styles>
 				<DataGrid.Columns>
-					<DataGridTextColumn Header="Application Name" Width="200" Binding="{Binding DTO.ContainerName}" IsReadOnly="True"/>
+					<DataGridTextColumn Header="Application Name" Width="200" Binding="{Binding ContainerName}" IsReadOnly="True"/>
 					<DataGridTextColumn Header="Current Track" Binding="{Binding DTO.TrackType}" IsReadOnly="True"/>
 					<DataGridTextColumn Header="Release Version" Binding="{Binding DTO.ContainerVersion}" IsReadOnly="True"/>
 					<DataGridTextColumn Header="Created On" CellStyleClasses="DateValue" Binding="{Binding DTO.CreationDate, StringFormat={}{0:M/d/yyyy}}" IsReadOnly="True"/>

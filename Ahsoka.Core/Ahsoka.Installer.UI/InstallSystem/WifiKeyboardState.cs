@@ -1,6 +1,7 @@
-﻿using Ahsoka.Core.Drawing;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Drawing;
 using Ahsoka.Core.Drawing.Base;
-using Ahsoka.Utility;
+using Ahsoka.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,8 +21,12 @@ internal class WiFiKeyboardState : InstallerUIStateBase
         this.returnState = returnState;
     }
 
-    protected override void OnDrawState(IDrawingApi drawingApi, int width, int height)
+    protected override void OnDrawState(DrawFrameArgs args)
     {
+        IDrawingApi drawingApi = args.DrawingApi;
+        int width = args.Width;
+        int height = args.Height;
+
         DrawKeyboard(drawingApi, width, height);
     }
 
@@ -52,6 +57,11 @@ internal class WiFiKeyboardState : InstallerUIStateBase
 
         float padding = 4;
         float imageSize = 56;
+
+        if (width < 500)
+            imageSize = 35;
+        else if (width < 601)
+            imageSize = 44;
 
         int maxColumns = 0;
         foreach (var item in layout.KeyRow)
@@ -109,11 +119,11 @@ internal class WiFiKeyboardState : InstallerUIStateBase
         KeyBoard keys = new();
 
         if (keyboardState == KeyboardAction.Caps)
-            keys = JsonUtility.Deserialize<KeyBoard>(File.ReadAllText("Assets/CapsKeyboard.json"));
+            keys = JsonUtility.DeserializeWithTypeInfo<KeyBoard>(File.ReadAllText("Assets/CapsKeyboard.json"));
         if (keyboardState == KeyboardAction.Lower)
-            keys = JsonUtility.Deserialize<KeyBoard>(File.ReadAllText("Assets/LowerKeyboard.json"));
+            keys = JsonUtility.DeserializeWithTypeInfo<KeyBoard>(File.ReadAllText("Assets/LowerKeyboard.json"));
         if (keyboardState == KeyboardAction.SymbolsAndNumbers)
-            keys = JsonUtility.Deserialize<KeyBoard>(File.ReadAllText("Assets/SymbolKeyboard.json"));
+            keys = JsonUtility.DeserializeWithTypeInfo<KeyBoard>(File.ReadAllText("Assets/SymbolKeyboard.json"));
 
         return keys;
     }

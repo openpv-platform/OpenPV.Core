@@ -11,6 +11,11 @@
     "userName": "root",
     "password": ""
   },
+  "screenInfo": {
+    "screenWidth": "1024",
+    "screenHeight": "600",
+    "screenDpi": "96"
+  },
   "networkInfo": {
     "adapterInfoList": [
       {

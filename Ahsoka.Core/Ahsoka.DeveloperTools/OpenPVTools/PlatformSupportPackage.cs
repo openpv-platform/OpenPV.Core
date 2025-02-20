@@ -1,8 +1,7 @@
-﻿using Ahsoka.System;
-using Ahsoka.Utility;
-using Newtonsoft.Json;
+﻿using Ahsoka.Core.Utility;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Text.Json.Serialization;
 
 namespace Ahsoka.DeveloperTools.OpenPVTools;
 
@@ -13,7 +12,7 @@ internal class PlatformSupportPackage : ViewModelBase
 
     #region Properties
     public string HelpSparkChannelName { get; set; }
-    
+
     public string ExtensionSparkChannelName { get; set; }
 
     public string ExtensionSparkVersionFilter { get { return GetCurrentMajorMinor(); } }

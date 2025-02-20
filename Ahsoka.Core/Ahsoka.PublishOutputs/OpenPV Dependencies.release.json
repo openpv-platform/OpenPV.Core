@@ -7,7 +7,7 @@
   "ReleaseName": "OpenPV Dependencies",
   "ContainerName": "OpenPV",
   "ContainerVersion": "1.0.0",
-  "ReleaseNotes": null,
+  "ReleaseNotes": "ReleaseNotes.html",
   "InstallCommand": null,
   "UnInstallCommand": null,
   "SizeInBytes": 0,

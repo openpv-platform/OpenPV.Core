@@ -1,4 +1,4 @@
-﻿using Ahsoka.Spark;
+﻿using Ahsoka.Core.Spark;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Security;
@@ -99,7 +99,7 @@ public class SparkTests : LinearTestBase
         string tmpFolder = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
         SparkTools tools = new();
-        tools.Download(info.Url,info.Login, info.Password, tmpFolder, "OpenPV Dependencies", "1.254.0", "Windows64_TargetSupport.zip");
+        tools.Download(info.Url, info.Login, info.Password, tmpFolder, "OpenPV Dependencies", "1.254.0", "Windows64_TargetSupport.zip");
 
         Assert.IsNotNull(Directory.GetFiles(tmpFolder).FirstOrDefault(x => x.EndsWith("Windows64_TargetSupport.zip")));
 

@@ -1,10 +1,8 @@
-﻿using Ahsoka.Installer.InstallEngine;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
-using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Processing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,29 +23,16 @@ internal class StartLogoComponent : InstallEngineComponent
        List<InstallerPlugin> installedPlugins,
        IProgress<PackageProgressInfo> progress = null)
     {
-        if (!this.IsEnabled ||info.StartupLogoPath == null)
+        if (!this.IsEnabled || info.ScreenConfiguration?.BootLogoPath == null)
             return null;
 
-        string logoPath = Path.GetFullPath(info.StartupLogoPath, Path.GetDirectoryName(info.GetPackageInfoPath()));
+        string logoPath = Path.GetFullPath(info.ScreenConfiguration?.BootLogoPath, Path.GetDirectoryName(info.GetPackageInfoPath()));
         if (!File.Exists(logoPath))
             return null;
 
         var data = new MemoryStream(File.ReadAllBytes(logoPath));
-        if (info.SystemOrientation != Orientation.DefaultOrientation)
-        {
-            var image = Image.Load(data);
-            if (info.SystemOrientation == Orientation.Rotate180)
-                image.Mutate(x => x.Rotate(180));
-            else if (info.SystemOrientation == Orientation.Rotate270)
-                image.Mutate(x => x.Rotate(270));
-            else if (info.SystemOrientation == Orientation.Rotate90)
-                image.Mutate(x => x.Rotate(90));
-
-            data.Dispose();
-            data = new MemoryStream();
-            image.SaveAsPng(data);
-            data.Seek(0, SeekOrigin.Begin);
-        }
+        if (info.ScreenConfiguration != null && info.ScreenConfiguration.Orientation != 0)
+            data = ImageUtility.RotateImage(info.ScreenConfiguration.Orientation, data);
 
         var component = new PackageComponent()
         {

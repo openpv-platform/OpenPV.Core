@@ -1,7 +1,6 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using System;
 using System.IO;
 using System.Linq;
@@ -45,7 +44,7 @@ internal class NetworkProfileHelper
         if (File.Exists(path))
         {
             string fileData = File.ReadAllText(path);
-            NetworkProfilesList networkProfilesList = JsonUtility.Deserialize<NetworkProfilesList>(fileData);
+            NetworkProfilesList networkProfilesList = JsonUtility.DeserializeWithTypeInfo<NetworkProfilesList>(fileData);
 
             if (networkProfilesList != null && networkProfilesList.NetworkProfiles != null)
                 return networkProfilesList;

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
     AhsokaSystem::SystemServiceClient client;
 
     auto runtime = AhsokaRuntime::CreateBuilder()
-        .AddClient(&client)
+        .AddEndPoint(&client)
         .SetServiceExecutable("./CommandLine/Ahsoka.CommandLine")
         .StartWithExternalServices();
 
@@ -32,12 +32,6 @@ int main(int argc, char *argv[])
         << client.GetBrightness().get()->percentage()
         << std::endl;
 
-    auto usbInfo = client.GetUsbInfo();
-    std::cout << std::endl << "USB Info: "
-        << usbInfo.get()->mode() << " " << usbInfo.get()->mount_point()
-        << std::endl;
-
-    //client.RequestServiceShutdown();
     runtime.RequestShutdown();
     runtime.WaitForShutdown();
 

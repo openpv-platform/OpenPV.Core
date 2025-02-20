@@ -1,13 +1,12 @@
-using Ahsoka.ServiceFramework;
+using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Security;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
+using System.Text;
 
 namespace Ahsoka.Test;
 
@@ -22,17 +21,17 @@ public class SecurityServiceTests : LinearTestBase
         // Test Data
         var key = ECDsaEncryption.GenerateNewKeyPair();
         var appid = Guid.NewGuid().ToByteArray(); // Real app uses TeamID / APPID
-        var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.ServiceSecurityFile);
+        var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.Core.Hardware.InstallerPaths.ServiceSecurityFile);
 
         if (File.Exists(devicePublicKeyFile))
             File.Delete(devicePublicKeyFile);
 
         // Test the ECDsaEncryption Functions
         TestEncryption(key, appid);
-      
+
         // Create Device and Service KeyFiles
-        var keyInfo = CreateKeyFiles(key, appid,  ChallengeOptions.NotRequired, devicePublicKeyFile);
-     
+        var keyInfo = CreateKeyFiles(key, appid, ChallengeOptions.NotRequired, devicePublicKeyFile);
+
         //Test TokenSource (AppTokenSource) used by Services.
         string apiKey = TestTokenSource(keyInfo, Guid.NewGuid().ToByteArray());
 
@@ -41,12 +40,12 @@ public class SecurityServiceTests : LinearTestBase
 
         // Enable Security on the System Service.
         var systemConfig = ConfigurationLoader.GetServiceConfig(SystemService.Name);
-        systemConfig.Behaviors =  EndPointBehaviors.AutoStart | EndPointBehaviors.SecurityEnabled;
+        systemConfig.Behaviors = EndPointBehaviors.AutoStart | EndPointBehaviors.SecurityEnabled;
 
         // Create Service Clients for Testing
         var securityServiceClient = new SecurityServiceClient();
         var systemClient = new SystemServiceClient(systemConfig);
-        AhsokaRuntime.Default.StartEndPoints(securityServiceClient,systemClient);
+        AhsokaRuntime.Default.StartEndPoints(securityServiceClient, systemClient);
 
         // Begin By Requesting a Token for the SystemService from the Security Service
         var request = securityServiceClient.RequestToken(new TokenRequestInfo()
@@ -67,7 +66,7 @@ public class SecurityServiceTests : LinearTestBase
             Assert.Fail("Should Fail Without Token");
         }
         catch { }
-        
+
 
         // Set the Token, we should now have access to the Service
         try
@@ -75,9 +74,9 @@ public class SecurityServiceTests : LinearTestBase
             systemClient.SetToken(token);
             var info = systemClient.GetHardwareInformation();
         }
-        catch 
-        { 
-            Assert.Fail("Should Succeed With Token"); 
+        catch
+        {
+            Assert.Fail("Should Succeed With Token");
         }
 
 
@@ -92,13 +91,13 @@ public class SecurityServiceTests : LinearTestBase
 
     }
 
-    
+
     [TestMethod]
     public void TestChallengeSecurityService()
     {
         var key = ECDsaEncryption.GenerateNewKeyPair();
         var appid = Guid.NewGuid().ToByteArray(); // Real app uses TeamID / APPID
-        var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.System.Hardware.InstallerPaths.ServiceSecurityFile);
+        var devicePublicKeyFile = SystemInfo.HardwareInfo.TargetPathInfo.GetInstallerPath(Ahsoka.Core.Hardware.InstallerPaths.ServiceSecurityFile);
 
         if (File.Exists(devicePublicKeyFile))
             File.Delete(devicePublicKeyFile);
@@ -136,6 +135,8 @@ public class SecurityServiceTests : LinearTestBase
         {
             if (args.NotificationObject is ChallengeRequestInfo info)
             {
+                Console.WriteLine("Starting Up");
+
                 // Complete Challenge
                 securityServiceClient.CompleteChallenge(new ChallengeCompleteInfo()
                 {
@@ -144,6 +145,8 @@ public class SecurityServiceTests : LinearTestBase
                     AcceptRequest = true,
                     ClientIdSigned = generateSecret ? securityServiceClient.GetLocalSecret() : null // Returns Locally signed ClientID, Required for Accept.
                 });
+
+                Console.WriteLine("Ending");
             }
         };
 
@@ -222,9 +225,11 @@ public class SecurityServiceTests : LinearTestBase
         var appDir = Path.GetDirectoryName(configurationFile);
         if (!Directory.Exists(appDir))
             Directory.CreateDirectory(appDir);
-        
+
         // Write Key File
-        File.WriteAllText(configurationFile, JsonUtility.Serialize(config));
+        var aesKey = AesEncryption.KeyFromDeviceId(SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+        var data = AesEncryption.Encrypt(new MemoryStream(Encoding.UTF8.GetBytes(JsonUtility.Serialize(config))), aesKey.Key, aesKey.IV);
+        File.WriteAllBytes(configurationFile, data.ToArray());
 
         return config;
     }

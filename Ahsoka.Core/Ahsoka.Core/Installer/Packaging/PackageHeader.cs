@@ -1,5 +1,5 @@
 ﻿#pragma warning disable CS1591
-using Ahsoka.System;
+using Ahsoka.Core;
 using ProtoBuf;
 using System;
 using System.Collections.Generic;
@@ -47,7 +47,6 @@ public class PackageHeader
     public string SecuritySerialNumber { get; set; }
 
     [ProtoMember(9, IsRequired = true)]
-    [JsonIgnore]
     public Guid ApplicationId { get; set; } = Guid.Empty;
 
     [ProtoMember(100, IsRequired = true)]
@@ -94,22 +93,12 @@ public enum PackageType
     opvClear = 2,
 }
 
-public enum Orientation
-{
-    DefaultOrientation = 0,
-    Rotate90 = 1,
-    Rotate180 = 2,
-    Rotate270 = 3,
-}
-
-
 public enum ApplicationType
 {
     Unknown = 0,
     Script = 1,
     Dotnet = 2,
     Cpp = 4,
-    CODESYS = 5,
     PowerVision = 6,
 }
 
@@ -145,7 +134,7 @@ public static class PlatformExtensions
         return family switch
         {
             PlatformFamily.Windows64 => "win",
-            PlatformFamily.MacosArm64 => "macOS",
+            PlatformFamily.MacOSArm64 => "macOS",
             PlatformFamily.OpenViewLinux => "linux",
             _ => "any",
         };

@@ -1,11 +1,9 @@
-﻿#pragma warning disable CS1591
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
 using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.System;
-using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Security;
@@ -14,73 +12,87 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Ahsoka.Services.Spark;
 
+
+/// <summary>
+/// Spark Service Manages OTA Updates
+/// </summary>
 [AhsokaService(Name)]
 public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 {
     #region Fields
     CancellationTokenSource source = new();
     string autoProvisionAddress = "enovation.powervisionspark.com";
-    public const string Name = "SparkService";
+    internal const string Name = "SparkService";
     static readonly string deviceSigningKey = SystemInfo.HardwareInfo.GetDeviceSigningKey();
     #endregion
 
     #region Methods
+
+    /// <summary>
+    /// Default CTOR
+    /// </summary>
     public SparkService() :
         this(ConfigurationLoader.GetServiceConfig(Name))
     {
     }
 
+    /// <summary>
+    /// CTOR Accepting Custom Configuration
+    /// </summary>
+    /// <param name="config"></param>
     public SparkService(ServiceConfiguration config) :
         base(config, new SparkServiceMessages())
     {
     }
 
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    /// <summary>
+    /// Handles Service Requests from Clients
+    /// </summary>
+    /// <param name="request"></param>
+    protected override void OnHandleServiceRequest(AhsokaServiceRequest request)
     {
-        switch (messageHeader.TransportId.IntToEnum<SparkMessageTypes.Ids>())
+        switch (request.TransportId)
         {
-
             case SparkMessageTypes.Ids.SetSparkSubscription:
 
-                HandleSetSparkSubscription(messageHeader, message as SparkSubscription);
+                HandleSetSparkSubscription(request, request.Message as SparkSubscription);
                 break;
 
             case SparkMessageTypes.Ids.GetSparkSubscription:
 
-                HandleGetSparkSubscription(messageHeader);
+                HandleGetSparkSubscription(request);
                 break;
 
             case SparkMessageTypes.Ids.GetAvailableReleases:
 
-                HandleGetSparkReleases(messageHeader);
+                HandleGetSparkReleases(request);
                 break;
 
             case SparkMessageTypes.Ids.GetRelease:
 
                 source = new CancellationTokenSource();
-                HandleGetRelease(messageHeader, message as SparkReleaseDownloadRequest, source);
+                HandleGetRelease(request, request.Message as SparkReleaseDownloadRequest, source);
                 break;
 
             case SparkMessageTypes.Ids.UpdateLicenseInfo:
 
-                HandleUpdateLicenseFile(messageHeader, message as ModuleLicenseInfo);
+                HandleUpdateLicenseFile(request, request.Message as ModuleLicenseInfo);
                 break;
 
             case SparkMessageTypes.Ids.SubscribeToAppChange:
-                HandleSubscribeToAppChange(messageHeader);
+                HandleSubscribeToAppChange(request);
                 break;
 
             case SparkMessageTypes.Ids.UnsubscribeToAppChange:
-                HandleUnsubscribeToAppChange(messageHeader);
+                HandleUnsubscribeToAppChange(request);
                 break;
         }
     }
 
-    private void HandleSubscribeToAppChange(AhsokaMessageHeader messageHeader)
+    private void HandleSubscribeToAppChange(AhsokaServiceRequest messageHeader)
     {
         SparkSubscriptionInfo info = GetSparkSubscription();
 
@@ -93,7 +105,6 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 
         SparkDisplayClient.SharedSparkClient.SubscribeToAppChanges((changesDto) =>
         {
-            var reply = CreateReplyMessageHeader(messageHeader, SparkMessageTypes.Ids.AppChangeNotification);
             var info = new AppChangeInfo()
             {
                 ChannelName = changesDto.ChannelName,
@@ -101,28 +112,29 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 AppEvent = (AppChangesEnum)changesDto.AppEvent,
                 Message = changesDto.Message,
             };
-            SendMessageInternal(reply, info);
+
+            SendNotification(SparkMessageTypes.Ids.AppChangeNotification, info);
         });
 
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
 
     }
 
-    private void HandleUnsubscribeToAppChange(AhsokaMessageHeader messageHeader) 
-    { 
+    private void HandleUnsubscribeToAppChange(AhsokaServiceRequest messageHeader)
+    {
         SparkDisplayClient.SharedSparkClient.UnsubscribeToAppChanges();
 
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
     }
 
-    private void HandleUpdateLicenseFile(AhsokaMessageHeader messageHeader, ModuleLicenseInfo licenseInfo)
+    private void HandleUpdateLicenseFile(AhsokaServiceRequest messageHeader, ModuleLicenseInfo licenseInfo)
     {
         WriteLicenseFile(licenseInfo);
 
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
     }
 
-    private async void HandleGetRelease(AhsokaMessageHeader messageHeader, SparkReleaseDownloadRequest downloadRequest, CancellationTokenSource source)
+    private async void HandleGetRelease(AhsokaServiceRequest messageHeader, SparkReleaseDownloadRequest downloadRequest, CancellationTokenSource source)
     {
         try
         {
@@ -154,7 +166,6 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
             string pathToFile = downloadRequest.PathToFile;
             if (urlToDownload == null) throw new ApplicationException("Package does not contain OpenPV install");
 
-            var reply = CreateReplyMessageHeader(messageHeader, SparkMessageTypes.Ids.GetReleaseNotification);
 
             using var client = new DownloadUtility(urlToDownload, pathToFile);
             client.ProgressChanged += (totalFileSize, totalBytesDownloaded, progressPercentage) =>
@@ -167,7 +178,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                     Status = MessageReplyStatus.Continue
                 };
 
-                SendMessageInternal(reply, notification);
+                SendNotification(SparkMessageTypes.Ids.GetReleaseNotification, notification);
             };
 
             await client.StartDownload(TimeSpan.FromSeconds(downloadRequest.TimeoutInSeconds), source);
@@ -180,7 +191,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 Status = MessageReplyStatus.Success
             };
 
-            SendMessageInternal(messageHeader, downloadCompleteMessage);
+            SendResponse(messageHeader, downloadCompleteMessage);
 
         }
         catch (Exception ex)
@@ -193,25 +204,25 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 Status = MessageReplyStatus.Error,
                 ResultText = ex.Message
             };
-            SendMessageInternal(messageHeader, downloadError);
+            SendResponse(messageHeader, downloadError);
         }
     }
 
-    private void HandleGetSparkReleases(AhsokaMessageHeader messageHeader)
+    private void HandleGetSparkReleases(AhsokaServiceRequest messageHeader)
     {
         try
         {
             SparkSubscriptionInfo info = GetSparkSubscription();
 
             // If no Provision INformation
-            if (String.IsNullOrEmpty(info.ChannelName)) 
+            if (String.IsNullOrEmpty(info.ChannelName))
             {
                 var subInfo = AutoProvisionDeviceDTO();
                 if (info == null)
                 {
-                    AhsokaLogging.LogMessage( AhsokaVerbosity.High, "Could not retrieve Auto-Provisioning Info.");
+                    AhsokaLogging.LogMessage(AhsokaVerbosity.High, "Could not retrieve Auto-Provisioning Info.");
 
-                    SendMessageInternal(messageHeader, new SparkReleaseInfo()
+                    SendResponse(messageHeader, new SparkReleaseInfo()
                     {
                         ResultText = "Could not Auto Provision Display",
                         Result = MessageReplyStatus.Error
@@ -254,7 +265,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
 
             results.Result = MessageReplyStatus.Success;
 
-            SendMessageInternal(messageHeader, results);
+            SendResponse(messageHeader, results);
         }
         catch (Exception ex)
         {
@@ -266,22 +277,22 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                 ResultText = "Could not retrieve results from Spark"
             };
 
-            SendMessageInternal(messageHeader, results);
+            SendResponse(messageHeader, results);
         }
     }
 
-    private void HandleGetSparkSubscription(AhsokaMessageHeader messageHeader)
+    private void HandleGetSparkSubscription(AhsokaServiceRequest messageHeader)
     {
         var subscription = GetSparkSubscription();
 
-        SendMessageInternal(messageHeader, subscription);
+        SendResponse(messageHeader, subscription);
     }
 
-    private void HandleSetSparkSubscription(AhsokaMessageHeader messageHeader, SparkSubscription sparkSubscription)
+    private void HandleSetSparkSubscription(AhsokaServiceRequest messageHeader, SparkSubscription sparkSubscription)
     {
         WriteSubscriptionInfo(sparkSubscription);
 
-        SendMessageInternal(messageHeader);
+        SendResponse(messageHeader);
 
     }
 
@@ -295,7 +306,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         // Fetch Hardware ID
         var coreInterop = SystemService.GetInterop();
         var hardwareID = coreInterop.GetHardwareSerialNumber();
-        
+
         try
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"Attemping to Auto Provision at address {autoProvisionAddress}");
@@ -318,7 +329,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
                     ReleaseName = results.SubscriptionInfo.ApplicationName,
                     DeviceId = results.DeviceInfo.DeviceID.ToString(),
                     SubscriptionUrl = autoProvisionAddress,
-                    IsFactorySubscrption = false,
+                    IsFactorySubscription = false,
                 };
 
                 // Write License Info
@@ -331,7 +342,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
             }
 
             return null;
-        } 
+        }
         catch (Exception ex)
         {
             if (ex.InnerException is SparkException sparkEx)
@@ -339,9 +350,9 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
             else
                 AhsokaLogging.LogMessage(AhsokaVerbosity.High, ex.Message);
 
-            return null; 
+            return null;
         }
-                    
+
     }
 
     private static SparkSubscriptionInfo GetSparkSubscription()
@@ -353,7 +364,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         if (File.Exists(sub))
         {
             string subFile = File.ReadAllText(sub);
-            var subscription = JsonUtility.Deserialize<SparkSubscription>(subFile);
+            var subscription = JsonUtility.DeserializeWithTypeInfo<SparkSubscription>(subFile);
 
             return new SparkSubscriptionInfo()
             {
@@ -383,9 +394,9 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
         string deviceKey = deviceSigningKey;
 
         //  Since the Display uses PEM Keys, we must convert to XML
-        if (deviceKey != null  && deviceKey.Contains("BEGIN RSA PUBLIC KEY"))
+        if (deviceKey != null && deviceKey.Contains("BEGIN RSA PUBLIC KEY"))
             deviceKey = RSAEncryption.ConvertPEMToPublicXML(deviceKey);
-       
+
         return deviceKey;
     }
 
@@ -393,7 +404,7 @@ public class SparkService : AhsokaServiceBase<SparkMessageTypes.Ids>
     {
         string path = SystemInfo.HardwareInfo.TargetPathInfo.GetCloudPath(CloudPaths.SparkSubscriptionFile);
 
-        if (sparkSubscription.IsFactorySubscrption)
+        if (sparkSubscription.IsFactorySubscription)
             path = SystemInfo.HardwareInfo.TargetPathInfo.GetCloudPath(CloudPaths.FactorySubscriptionFile);
 
         string directory = Path.GetDirectoryName(path);

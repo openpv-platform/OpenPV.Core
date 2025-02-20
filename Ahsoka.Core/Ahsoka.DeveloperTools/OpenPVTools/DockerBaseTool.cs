@@ -1,10 +1,8 @@
-﻿using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Utility;
 using Avalonia.Threading;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -44,7 +42,7 @@ internal abstract class DockerBaseTool : OpenPVToolBase
             OnPropertyChanged();
         }
     }
-    
+
 
     private void UpdateVersion()
     {

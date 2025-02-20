@@ -1,14 +1,11 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.Services.System;
-using Ahsoka.System;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Ahsoka.Dispatch;
+namespace Ahsoka.Core.Dispatch;
 
 /// <summary>
 /// Dispatch Engine for managing Dispatch Queues Ahsoka Applications
@@ -67,7 +64,7 @@ public class Dispatcher
     /// </summary>
     public Dispatcher()
     {
-       
+
     }
 
     /// <summary>
@@ -100,7 +97,7 @@ public class Dispatcher
 
         // Call Ahsoka Release Startup 
         ApplicationContext.ReleaseStartup();
-        
+
         if (alternativeInvoker == null)
             RunInvokerCore(autoStopDispatcherSources);
         else
@@ -147,7 +144,7 @@ public class Dispatcher
     /// <param name="source"></param>
     public void RegisterTimerCallback<T>(Action<object, T> timeElapsedCallback, TimeSpan interval, object source = null) where T : class
     {
-         AddAutoStartInternal(source as IDispatchSource);
+        AddAutoStartInternal(source as IDispatchSource);
 
         // If Timer Exists, Add Dispatcher, otherwise create a new timer / tracker
         if (this.timers.TryGetValue(interval.TotalMilliseconds, out TimerTracker tracker))
@@ -320,7 +317,7 @@ public class Dispatcher
             item.AutoStart(this);
 
     }
-    
+
     private void StartBackgroundIfNotRunning()
     {
         // Wait for Start
@@ -370,7 +367,12 @@ public class Dispatcher
 
         // Start AutoStart Objects
         if (autoStopDispatcherSources)
-            foreach (var source in startupObjects) { source.AutoStop(this); }
+        {
+            foreach (var source in startupObjects)
+                source.AutoStop(this);
+            foreach (var source in endpoints)
+                source.Stop();
+        }
     }
 
     private void InvokeEventItem(EventItem messageData)
@@ -401,7 +403,6 @@ public class Dispatcher
     {
         AddAutoStartInternal(startupItem);
     }
-
     #endregion
 
     #region Internal Types

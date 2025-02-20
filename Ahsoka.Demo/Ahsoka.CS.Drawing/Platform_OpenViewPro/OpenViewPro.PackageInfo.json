@@ -1,0 +1,89 @@
+{
+  "version": "4.0.1.10085",
+  "applicationType": "Dotnet",
+  "execCommand": "Ahsoka.CS.Drawing",
+  "packageName": "Ahsoka.CS.Drawing.Pro",
+  "packageDescription": "Drawing, LayerManager, and Touch With SKIA using Ahsoka DrawingAPI",
+  "applicationVersion": "3.0",
+  "packageApplicationFolder": "../Platform_OpenViewPro/publish",
+  "packageOutputDirectory": "PackageOutput",
+  "licenses": [],
+  "optimizedServiceManager": false,
+  "customPackageInfo": {
+    "includeApplication": true,
+    "includeBootLogo": false,
+    "includeInstallerUI": true,
+    "includeFirmwareUpdate": true
+  },
+  "dotNetInfo": {
+    "projectPath": "..\\Ahsoka.CS.Drawing.csproj",
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfilePro.pubxml"
+  },
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensionInfo": [],
+      "startupDelay": 0,
+      "requireChallenge": "NotRequired",
+      "services": [
+        {
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": "AutoStart"
+        }
+      ]
+    },
+    "environmentValues": []
+  },
+  "screenConfiguration": {
+    "showUnknownSurfaces": true,
+    "bootLogoPath": "EnovLogo.png",
+    "orientation": 0,
+    "surfaceSetup": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [
+      {
+        "name": "IO Control Module",
+        "deviceType": "IoControlModule",
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": false
+      },
+      {
+        "name": "WiFi Module",
+        "deviceType": "OnboardWifiModule",
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": false
+      },
+      {
+        "name": "Bluetooth Module",
+        "deviceType": "OnboardBtModule",
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": false
+      },
+      {
+        "name": "Ethernet",
+        "deviceType": "OnboardEthernet",
+        "defaultState": "NoState",
+        "customStartup": "",
+        "autoEnable": false
+      }
+    ],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
+  },
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinuxPro",
+  "platformQualifier": "GenericArm64",
+  "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "components": []
+}

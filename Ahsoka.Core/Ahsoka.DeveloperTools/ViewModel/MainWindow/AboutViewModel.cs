@@ -1,6 +1,5 @@
-﻿using Ahsoka.System;
-using Ahsoka.Utility;
-using Microsoft.IdentityModel.Tokens;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,7 +19,7 @@ internal class AboutViewModel : ChildViewModelBase<MainViewModel>
 
     public LicenseInfo SelectedLicense { get; set; }
 
-    public AboutViewModel(MainViewModel parentViewModel):base(parentViewModel)
+    public AboutViewModel(MainViewModel parentViewModel) : base(parentViewModel)
     {
         var version = FileVersionInfo.GetVersionInfo(Assembly.GetEntryAssembly().Location);
 

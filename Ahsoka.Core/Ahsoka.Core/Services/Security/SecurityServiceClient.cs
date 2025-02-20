@@ -1,12 +1,11 @@
-﻿using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Ahsoka.Services.Iot;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace Ahsoka.Services.Security;
@@ -58,13 +57,13 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     {
         lock (requests) // Protect the List until we get response so notification doesn't get stepped on.
         {
-            var response = SendNotificationWithResponse<TokenRequestResponse>(SecurityMessageTypes.Ids.RequestToken, tokenRequest);
+            var response = SendMessageWithResponse<TokenRequestResponse>(SecurityMessageTypes.Ids.RequestToken, tokenRequest);
             if (usingWaitMethod)
                 requests[response.RequestId.ToGuid()] = null;
-            
+
             return response;
         }
-        
+
     }
 
     /// <summary>
@@ -73,27 +72,28 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
     /// <param name="completeInfo">Challenge Completed</param>
     public TopicResult CompleteChallenge(ChallengeCompleteInfo completeInfo)
     {
-        return SendNotificationWithResponse<TopicResult>(SecurityMessageTypes.Ids.CompleteChallenge, completeInfo);
+        return SendMessageWithResponse<TopicResult>(SecurityMessageTypes.Ids.CompleteChallenge, completeInfo);
     }
 
     /// <summary>
     /// Handle Simple Token Requests
     /// </summary>
-    /// <param name="messageHeader"></param>
-    /// <param name="message"></param>
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    /// <param name="args"></param>
+    protected override void OnReceiveNotification(AhsokaNotificationArgs args)
     {
-        if (messageHeader.TransportId == SecurityMessageTypes.Ids.AuthorizationComplete.EnumToInt() && message is Token token)
+        if (args.TransportId == SecurityMessageTypes.Ids.AuthorizationComplete && args.NotificationObject is Token token)
         {
-          
             // Accept Challenge Token and Release WaitEvent
             lock (requests)
-                requests[token.RequestId.ToGuid()] = token;
-
+            {
+                if (token.RequestId != null)
+                    requests[token.RequestId.ToGuid()] = token;
+            }
             waitForChallengeAccept.Set();
+
+            args.ShouldRaiseEvent = false;
         }
 
-        base.OnHandleReceive(messageHeader, message);
     }
 
     /// <summary>
@@ -130,9 +130,12 @@ public class SecurityServiceClient : AhsokaClientBase<SecurityMessageTypes.Ids>
             AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Generating Client Secret for Local Security Client");
             try
             {
-                return RSAEncryption.GetSignatureWithKey(((IAhsokaClientEndPoint)this).GetClientId(), File.ReadAllText(path));
+                var data = AesEncryption.DecryptFile(path, SystemInfo.HardwareInfo.FactoryInfo.DeviceId);
+                string key = Encoding.UTF8.GetString(data.ToArray());
+
+                return RSAEncryption.GetSignatureWithKey(((IAhsokaClientEndPoint)this).GetClientId(), key);
             }
-            catch {}
+            catch { }
         }
 
         return null;

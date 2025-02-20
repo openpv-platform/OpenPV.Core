@@ -1,6 +1,6 @@
-﻿using Ahsoka.Installer.InstallEngine;
+﻿using Ahsoka.Core.Utility;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,8 +41,6 @@ internal class EndInstallEngineComponent : InstallEngineComponent
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)
     {
-
-
         return InstallResult.Success;
     }
     #endregion

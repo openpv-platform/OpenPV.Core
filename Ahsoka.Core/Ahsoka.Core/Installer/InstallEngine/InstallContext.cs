@@ -1,7 +1,7 @@
-﻿using Ahsoka.Services.Install;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Services.Install;
 using System;
 using System.IO;
 
@@ -32,7 +32,7 @@ public class InstallContext
     /// </summary>
     public InstallEngineBase InstallEngine { get; internal set; }
 
-    internal string PassKey { get;  set; }
+    internal string PassKey { get; set; }
     private InstallService Service { get; set; }
 
     internal InstallContext(InstallEngineBase installEngine, InstallService service, string passKey)

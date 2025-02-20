@@ -1,18 +1,9 @@
-﻿using Ahsoka.Utility;
-using Mono.Unix.Native;
-using NuGet.Protocol.Plugins;
-using ShimSkiaSharp;
+﻿using Ahsoka.Core.Utility;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Net.WebRequestMethods;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -30,7 +21,7 @@ internal class DotNetSDKTool : OpenPVToolBase
         this.PackageType = "Software Install";
         this.CanInstall = true;
         this.InstallText = "This process will install the DotNet SDK Needed for Optimized Service Managers.";
-        this.IncludedProfiles = PluginsViewModel.profileCPP + "," + PluginsViewModel.profileCSharp;
+        this.IncludedProfiles = "None";
         this.Description = "Service Manager Compile Tools (DotNet SDK)";
         this.Resources = new();
         if (OperatingSystem.IsWindows())
@@ -42,13 +33,13 @@ internal class DotNetSDKTool : OpenPVToolBase
 
         if (result != null)
         {
-             var lines = Regex.Split(result, "\r\n|\r|\n");
-            foreach(var item in lines)
+            var lines = Regex.Split(result, "\r\n|\r|\n");
+            foreach (var item in lines)
             {
                 if (item.StartsWith("8."))
                 {
                     string versionTemp = item.Substring(0, item.IndexOf("["));
-                    if (String.Compare(versionTemp,this.Version) > 0)
+                    if (String.Compare(versionTemp, this.Version) > 0)
                         this.Version = versionTemp;
 
                     isDownloaded = true;
@@ -86,7 +77,7 @@ internal class DotNetSDKTool : OpenPVToolBase
 
                 if (OperatingSystem.IsWindows())
                     ProcessUtility.RunProcessAsync("powershell.exe", $"-NoProfile -ExecutionPolicy ByPass -File \"dotnet-install.ps1\" --version 8.0.303 ", LocalPath, progressText, CancellationToken.None);
-               else
+                else
                     ProcessUtility.RunProcessAsync("dotnet-install.sh", $" --version 8.0.303 ", LocalPath, progressText, CancellationToken.None);
 
                 return "";
@@ -105,5 +96,5 @@ internal class DotNetSDKTool : OpenPVToolBase
             toolVM.MainViewModel.FinishProcess(result.Result, result.Result == "");
         });
     }
-   
+
 }

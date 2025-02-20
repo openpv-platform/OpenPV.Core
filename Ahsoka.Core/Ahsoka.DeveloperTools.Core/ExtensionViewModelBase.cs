@@ -1,7 +1,6 @@
-﻿using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
 using Avalonia.Controls;
-using System;
 
 namespace Ahsoka.DeveloperTools.Core;
 

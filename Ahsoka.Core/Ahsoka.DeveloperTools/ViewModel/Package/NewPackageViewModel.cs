@@ -1,12 +1,15 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
+﻿using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
-using Ahsoka.Utility;
 using Avalonia.Controls;
+using NuGet.Packaging;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -15,11 +18,17 @@ internal class NewPackageViewModel : ViewModelBase
     #region Fields
     private readonly MainViewModel parentViewModel;
     private bool isCreate, matchNames = true;
-    private string projectName, projectPath, directoryName;
+    private string projectName, projectPath, directoryName, selectedProject;
 
     #endregion
 
     #region Properties
+
+    public ObservableCollection<String> SelectedProjectList
+    {
+        get; private set;
+    } = new();
+
     public ObservableCollection<CustomerDemoInfoViewModel> Demos
     {
         get; private set;
@@ -42,6 +51,8 @@ internal class NewPackageViewModel : ViewModelBase
 
     public string ProjectPath { get { return projectPath; } set { projectPath = value; OnPropertyChanged(); } }
 
+    public string SelectedProject { get { return selectedProject; } set { selectedProject = value; OnPropertyChanged(); } }
+
     public string DirectoryName
     {
         get
@@ -63,6 +74,8 @@ internal class NewPackageViewModel : ViewModelBase
         Demos = new();
         IsCreate = true;
 
+        List<CustomerDemoInfoViewModel> demos = new();
+
         //load demos
         string demoFiles = GetTemplateFolder();
 
@@ -76,8 +89,9 @@ internal class NewPackageViewModel : ViewModelBase
                         if (entry.Name.ToLower().EndsWith(PackageViewModel.packageInfoExtension.ToLower()))
                         {
                             var data = new StreamReader(entry.Open());
-                            var demoProject = JsonUtility.Deserialize<PackageInformation>(data.ReadToEnd());
-                            Demos.Add(new CustomerDemoInfoViewModel(demoProject) { FileName = file });
+                            string json = data.ReadToEnd();
+                            var demoProject = PackageInformation.LoadPackageInformation(json, false);
+                            demos.Add(new CustomerDemoInfoViewModel(demoProject) { FileName = file });
                         }
                 }
                 catch { }
@@ -98,13 +112,33 @@ internal class NewPackageViewModel : ViewModelBase
                             if (entry.Name.ToLower().EndsWith(PackageViewModel.packageInfoExtension.ToLower()))
                             {
                                 var data = new StreamReader(entry.Open());
-                                var demoProject = JsonUtility.Deserialize<PackageInformation>(data.ReadToEnd());
-                                Demos.Add(new CustomerDemoInfoViewModel(demoProject) { FileName = file });
+                                string json = data.ReadToEnd();
+                                var demoProject = PackageInformation.LoadPackageInformation(json, false);
+                                demos.Add(new CustomerDemoInfoViewModel(demoProject) { FileName = file });
                             }
                     }
                     catch { }
                 }
             }
+
+
+        var results = from p in demos
+                      group p by p.FileName into g
+                      select new { PrimaryDemo = g.FirstOrDefault(), AllDemos = g.ToList() };
+
+        foreach (var item in results)
+        {
+            Demos.Add(item.PrimaryDemo);
+            item.PrimaryDemo.DemoList.AddRange(item.AllDemos.Select(x => x.ProjectName));
+
+            item.PrimaryDemo.OriginalName = item.PrimaryDemo.ProjectName;
+
+            if (item.AllDemos.Count == 1)
+                item.PrimaryDemo.DisplayName = item.PrimaryDemo.ProjectName;
+            else
+                item.PrimaryDemo.DisplayName = item.PrimaryDemo.ProjectName.Replace(".Select", "").Replace(".Pro", "");
+        }
+
 
         ShowNoProjects = Demos.Count == 0;
     }
@@ -152,32 +186,12 @@ internal class NewPackageViewModel : ViewModelBase
             PackagingUtility.ExtractPackage(pathToLoad, projectFolder, progress, log);
             string launchFile = string.Empty;
 
-            foreach (var item in Directory.GetFiles(projectFolder, "*", SearchOption.AllDirectories))
+            var packageInfo = Directory.GetFiles(projectFolder, $"*.packageInfo.json", SearchOption.AllDirectories);
+            foreach (var item in packageInfo)
             {
-                if (item.Contains(SelectedDemo.ProjectName))
-                {
-                    string directory = Path.GetDirectoryName(item);
-                    string fileName = Path.GetFileName(item);
-                    string newPath = Path.Combine(directory, fileName.Replace(SelectedDemo.ProjectName, ProjectName));
-                    if (newPath != item)
-                        File.Move(item, newPath);
-                }
-                else if (item.Contains(SelectedDemo.ProjectName.Replace('.', '_')))
-                {
-                    string directory = Path.GetDirectoryName(item);
-                    string fileName = Path.GetFileName(item);
-                    string newPath = Path.Combine(directory, fileName.Replace(SelectedDemo.ProjectName.Replace('.', '_'), ProjectName.Replace('.', '_')));
-                    if (newPath != item)
-                        File.Move(item, newPath);
-                }
-
-                if (item.Contains(".PackageInfo") || item.Contains("CMakeLists"))
-                {
-                    if (launchFile == String.Empty && item.Contains(".PackageInfo")) { launchFile = item; }
-
-                    var text = File.ReadAllText(item);
-                    File.WriteAllText(item, text.Replace(SelectedDemo.ProjectName, ProjectName).Replace(SelectedDemo.ProjectName.Replace('.', '_'), ProjectName.Replace('.', '_')));
-                }
+                var demoProject = PackageInformation.LoadPackageInformation(item, true);
+                if (demoProject.PackageName == selectedProject)
+                    launchFile = item;
             }
 
             parentViewModel.Popup.DismissPopup();
@@ -204,7 +218,7 @@ internal class NewPackageViewModel : ViewModelBase
 
     private void ShowFinishedDialog(object sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == "ConsoleVisible" && !parentViewModel.Console.ConsoleVisible )
+        if (e.PropertyName == "ConsoleVisible" && !parentViewModel.Console.ConsoleVisible)
         {
             parentViewModel.Dialog.ShowDialog("Project Created", $"Your project is now ready for development at... \r\n\r\n{Path.GetDirectoryName(this.ProjectPath)}", "Ok");
             parentViewModel.Console.PropertyChanged -= ShowFinishedDialog;
@@ -216,7 +230,11 @@ internal class NewPackageViewModel : ViewModelBase
         if (SelectedDemo != null)
         {
             IsCreate = false;
-            ProjectName = SelectedDemo.ProjectName;
+            ProjectName = SelectedDemo.DisplayName;
+            SelectedProjectList.Clear();
+            SelectedProjectList.AddRange(SelectedDemo.DemoList);
+            SelectedProject = SelectedProjectList.First();
+
         }
         else
             _ = parentViewModel.Dialog.ShowDialog("Missing Information", "Must select project to continue", "Ok");
@@ -241,9 +259,15 @@ internal class NewPackageViewModel : ViewModelBase
 
 public class CustomerDemoInfoViewModel : ViewModelBase
 {
+    public List<String> DemoList { get; set; } = new();
+
     public PackageInformation Model { get; init; }
 
     public string FileName { get; set; }
+
+    public string DisplayName { get; set; }
+
+    public string OriginalName { get; set; }
 
     public string ProjectName { get { return Model.PackageName; } set { Model.PackageName = value; OnPropertyChanged(); } }
 

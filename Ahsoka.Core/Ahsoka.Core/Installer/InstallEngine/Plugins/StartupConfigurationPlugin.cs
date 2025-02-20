@@ -1,9 +1,8 @@
-﻿using Ahsoka.Installer.Components;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.Components;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -18,10 +17,10 @@ internal class StartupInstallerPlugin : InstallerPlugin
     public const string OverrideWorkingFolder = "OverrideWorkingFolder";
     public const string OverrideApplicationName = "OverrideAppName";
 
-    public override void AddAdditionalApplicationFiles(string buildLocation, 
-        Dictionary<string, string> attributes, 
-        Dictionary<string, byte[]> additionalFiles, 
-        PackageInformation info, 
+    public override void AddAdditionalApplicationFiles(string buildLocation,
+        Dictionary<string, string> attributes,
+        Dictionary<string, byte[]> additionalFiles,
+        PackageInformation info,
         IProgress<PackageProgressInfo> progress)
     {
         if (attributes.TryGetValue(OverrideWorkingFolder, out string workingDirectory))
@@ -39,18 +38,18 @@ internal class StartupInstallerPlugin : InstallerPlugin
         startScriptFileContents = startScriptFileContents.Replace("${ApplicationFolder}", workingDirectory);
 
         AddStartupCommands(buildLocation, additionalFiles, attributes, info, ref startScriptFileContents);
-        
+
         additionalFiles[$"{ApplicationOutputComponent.ComponentTypeGuid}.{ApplicationOutputComponent.StartScriptName}"] = UTF8Encoding.UTF8.GetBytes(startScriptFileContents);
 
         var builder = AddEnvironmentValues(info);
         if (builder.Length > 0)
-            additionalFiles[$"{ApplicationOutputComponent.ComponentTypeGuid}.{ApplicationOutputComponent.AppEnvironmentScriptName}"] = UTF8Encoding.UTF8.GetBytes(builder.ToString());
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/start/{ApplicationOutputComponent.AppEnvironmentScriptName}"] = UTF8Encoding.UTF8.GetBytes(builder.ToString());
     }
 
     private static StringBuilder AddEnvironmentValues(PackageInformation info)
     {
         StringBuilder builder = new();
-       
+
         AddOrientationAttribute(builder, info);
 
         foreach (var variable in info.ServiceInfo.EnvironmentValues)
@@ -104,15 +103,15 @@ internal class StartupInstallerPlugin : InstallerPlugin
         if (Directory.Exists(pathToCommandLine))
         {
             AhsokaLogging.LogMessage(AhsokaVerbosity.Low, "Removing Command Line, Package CommandLine will be used.");
-            Directory.Delete(pathToCommandLine,true);
+            Directory.Delete(pathToCommandLine, true);
 
         }
-        
+
         // Add Configuration File Use Custom or Default Depending on Setup.
         var stream = new MemoryStream();
         byte[] jsonData = null;
         ProtoBuf.Serializer.Serialize(stream, info.ServiceInfo.RuntimeConfiguration);
-        jsonData = Encoding.UTF8.GetBytes( JsonUtility.Serialize(info.ServiceInfo.RuntimeConfiguration));
+        jsonData = Encoding.UTF8.GetBytes(JsonUtility.Serialize(info.ServiceInfo.RuntimeConfiguration));
 
         additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AutoStartFileName}"] = stream.ToArray(); // Place Copy Here as Indicator that we are using Auto Start.
         additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/{AutoStartFileName + ".json"}"] = jsonData; // Place JSON so we can read it.
@@ -120,21 +119,17 @@ internal class StartupInstallerPlugin : InstallerPlugin
         if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup != StartOptions.NoAutoStart || info.ApplicationType != ApplicationType.Dotnet)
             additionalFiles[pathRelativeToExecutable + $"/{AutoStartFileName}"] = stream.ToArray();
 
-        return targetCommandLinePath.Replace("\\","/");
+        return targetCommandLinePath.Replace("\\", "/");
     }
 
     private static void AddOrientationAttribute(StringBuilder builder, PackageInformation info)
     {
-        // App Orientation to App Keys
-        string orientation = "0";
-        if (info.SystemOrientation == Orientation.Rotate90)
-            orientation = "90";
-        if (info.SystemOrientation == Orientation.Rotate180)
-            orientation = "180";
-        if (info.SystemOrientation == Orientation.Rotate270)
-            orientation = "270";
+        if (info.ScreenConfiguration != null)
+        {        // App Orientation to App Keys
+            string orientation = info.ScreenConfiguration.Orientation.ToString();
 
-        builder.Append($"export {OrientationKeyAttribute.ToUpperInvariant()}={orientation}\n");
+            builder.Append($"export {OrientationKeyAttribute.ToUpperInvariant()}={orientation}\n");
+        }
     }
 
 }

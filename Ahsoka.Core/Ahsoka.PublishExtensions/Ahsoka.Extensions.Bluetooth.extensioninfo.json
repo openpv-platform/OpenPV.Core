@@ -7,7 +7,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "BluetoothService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5104,
@@ -17,7 +17,7 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "BluetoothDataService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
       "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5105,
@@ -27,7 +27,7 @@
   ],
   "hasCommands": "false",
   "hasUx": "true",
-  "minVersion": "3.6.0",
-  "maxVersion": "4.0.0",
+  "minVersion": "4.0.0",
+  "maxVersion": "5.0.0",
   "requireExactVersion": "false"
 }

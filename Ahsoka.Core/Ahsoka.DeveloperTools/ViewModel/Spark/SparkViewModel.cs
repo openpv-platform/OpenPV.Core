@@ -1,18 +1,17 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
+﻿using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
 using Ahsoka.DeveloperTools.Views;
+using Ahsoka.Installer;
 using Ahsoka.Services.System;
-using Ahsoka.Spark;
-using EnovationCloud.Core.DataTransferObjects;
-using Ahsoka.Utility;
 using Avalonia.Threading;
+using EnovationCloud.Core.Client;
+using EnovationCloud.Core.DataTransferObjects;
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
-using EnovationCloud.Core.Client;
-using Ahsoka.Installer;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -55,13 +54,13 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
     {
         get
         {
-            return AvailableCerts.FirstOrDefault(x=>x.DeviceKeyName == ParentViewModel.SelectedPackage.PackageInfo.PackageSigningCertFile);
+            return AvailableCerts.FirstOrDefault(x => x.DeviceKeyName == ParentViewModel.SelectedPackage.PackageInfo.PackageSigningCertFile);
         }
         set
         {
             string newValue = value == null ? String.Empty : value.DeviceKeyName;
             if (newValue != ParentViewModel.SelectedPackage.PackageInfo.PackageSigningCertFile)
-                 ParentViewModel.SelectedPackage.PackageInfo.PackageSigningCertFile = newValue;
+                ParentViewModel.SelectedPackage.PackageInfo.PackageSigningCertFile = newValue;
             OnPropertyChanged();
         }
     }
@@ -159,7 +158,7 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
 
     internal async void ProvisionDisplay()
     {
-        var licenseDisplay = await ParentViewModel.Dialog.ShowDialog("Aquire Licenses?", "This process will allocate the 'Required' licenses to the connected target.   If the target already has a license it will be restored.   Are you sure you wish to proceed?", "Yes","No");
+        var licenseDisplay = await ParentViewModel.Dialog.ShowDialog("Aquire Licenses?", "This process will allocate the 'Required' licenses to the connected target.   If the target already has a license it will be restored.   Are you sure you wish to proceed?", "Yes", "No");
         if (!licenseDisplay)
             return;
 
@@ -194,8 +193,8 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
             ParentViewModel.Console.AddConsoleLine("Target is not connected.  Please connect to provision display in Spark");
             return;
         }
-        string versionString = ParentViewModel.ActiveConnection.ConnectedHardwareInfo.VersionInfoes[SystemServiceMessages.SDKVersion];
-        
+        string versionString = ParentViewModel.ActiveConnection.ConnectedHardwareInfo.VersionInfo[SystemServiceMessages.SDKVersion];
+
         Version.TryParse(versionString, out Version version);
         var versionCompat = new Version("2.1");
         if (version < versionCompat)
@@ -256,7 +255,7 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
             return;
         }
 
-        if (!this.SelectedTeam.Modules.ModuleList.Any(x=>x.ModuleName == "OTA Cloud Service"))
+        if (!this.SelectedTeam.Modules.ModuleList.Any(x => x.ModuleName == "OTA Cloud Service"))
         {
             await ParentViewModel.Dialog.ShowDialog("Missing License", "The selected Project has not licensed the 'OTA Cloud Service' Module", "OK");
             return;
@@ -376,7 +375,7 @@ internal class PackageModuleViewModel : ChildViewModelBase<SparkViewModel>
 {
     int totalQuantity;
 
-    public string ModuleId { get; set; } 
+    public string ModuleId { get; set; }
     public string ModuleName { get; set; }
 
     public int TotalQuantity
@@ -410,7 +409,7 @@ internal class PackageModuleViewModel : ChildViewModelBase<SparkViewModel>
 
     public PackageModuleViewModel(SparkViewModel teamVM, LicensedModuleViewModel moduleItem) : base(teamVM)
     {
-        this.ModuleName =  moduleItem.ModuleName ?? "No Modules Listed";
+        this.ModuleName = moduleItem.ModuleName ?? "No Modules Listed";
         this.ModuleId = moduleItem.ModuleID;
         TotalQuantity = moduleItem.TotalQuantity;
     }

@@ -1,8 +1,8 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.Views;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using NuGet.Packaging;
@@ -46,7 +46,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             OnPropertyChanged();
         }
     }
-   
+
     public ExtensionViewModel SelectedExtension
     {
         get { return selectedExtension; }
@@ -153,7 +153,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             {
                 if (extension.TryGetTarget(out var asm))
                 {
-                    if (asm.GetName().Name.Equals(Path.GetFileNameWithoutExtension(item.ExtensionConfiguration.UXLibraryFilename),StringComparison.OrdinalIgnoreCase))
+                    if (asm.GetName().Name.Equals(Path.GetFileNameWithoutExtension(item.ExtensionConfiguration.UXLibraryFilename), StringComparison.OrdinalIgnoreCase))
                         foreach (var defType in asm.DefinedTypes)
                         {
                             if (defType.IsSubclassOf(typeof(ExtensionViewModelBase)) && !defType.IsAbstract &&
@@ -207,8 +207,8 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     }
 
     public void CancelAdd()
-    { 
-        AddExtensionsShown = false; 
+    {
+        AddExtensionsShown = false;
     }
 
     public async void AddExtensionContinued()
@@ -266,9 +266,9 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
                 {
                     ParentViewModel.ParentViewModel.Dialog.ShowDialog("Extension Not Available", "This extension not not currently available. This may be due to an incompatiblity with the currently released extension. Contact the extension developer for more information.", "Ok");
                 }
-                
+
             });
-            
+
         });
 
     }
@@ -286,13 +286,13 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             if (Directory.Exists(packageExtensionFolder))
                 Directory.Delete(packageExtensionFolder, true);
 
-            ParentViewModel.ServiceConfiguration.ExtensionInfo.Remove(ParentViewModel.ServiceConfiguration.ExtensionInfo.FirstOrDefault(x=>x.ExtensionName == extension.ExtensionName));
+            ParentViewModel.ServiceConfiguration.ExtensionInfo.Remove(ParentViewModel.ServiceConfiguration.ExtensionInfo.FirstOrDefault(x => x.ExtensionName == extension.ExtensionName));
 
             foreach (var service in ParentViewModel.ServiceViewModel.Services.ToArray())
                 if (extension.ExtensionConfiguration.ServiceConfigurations.Any(x => x.ServiceName == service.ServiceName))
                 {
                     service.IsIncluded = false;
-                   
+
                     ParentViewModel.ServiceViewModel.Services.Remove(service);
                 }
         }
@@ -350,7 +350,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         var view = container.Child;
         container.Child = null;
         ParentViewModel.ParentViewModel.Popup.DismissPopup(currentPopup);
-       
+
         currentPopup = null;
     }
 
@@ -418,7 +418,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
     public void FinishProcess(string result, bool closeConsole)
     {
-        ParentViewModel.ParentViewModel.FinishProcess(result,closeConsole);
+        ParentViewModel.ParentViewModel.FinishProcess(result, closeConsole);
     }
 
     public void AddConsoleLine(string consoleLine)
@@ -466,19 +466,19 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
     bool installed = false;
 
     public string ExtensionName { get { return configuration.ExtensionName; } }
-    
+
     public string InstalledVersion { get { return configuration.InstalledVersion ?? "0.0"; } set { configuration.InstalledVersion = value; OnPropertyChanged(); } }
 
-    public string AvailableVersion 
-    { 
-        get { return configuration.AvailableVersion ?? "0.0"; } 
-        set 
-        { 
-            configuration.AvailableVersion = value; 
-            OnPropertyChanged(); 
+    public string AvailableVersion
+    {
+        get { return configuration.AvailableVersion ?? "0.0"; }
+        set
+        {
+            configuration.AvailableVersion = value;
+            OnPropertyChanged();
             IsInstalled = configuration.AvailableVersion == configuration.InstalledVersion;
-            OnPropertyChanged(nameof(IsInstalled)); 
-        } 
+            OnPropertyChanged(nameof(IsInstalled));
+        }
     }
 
     public ObservableCollection<string> AvailableVersions
@@ -489,7 +489,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
 
     public bool HasUx { get { return configuration.HasUx; } }
 
-    public bool IsInstalled { get { return installed; } set { installed = value; OnPropertyChanged(); }}
+    public bool IsInstalled { get { return installed; } set { installed = value; OnPropertyChanged(); } }
 
     public ExtensionConfiguration ExtensionConfiguration { get => configuration; set => configuration = value; }
 
@@ -511,13 +511,13 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
     public void UpdateExtension()
     {
         var token = new CancellationTokenSource();
-        
+
         ParentViewModel.IsWorking = true;
         Task.Run(async () =>
         {
             await DownloadExtension(ParentViewModel.PreRelease, token);
             this.IsInstalled = true;
-       
+
         }).ContinueWith((t) =>
         {
             ParentViewModel.IsWorking = false;
@@ -576,7 +576,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
         {
             ParentViewModel.ShowUx(this.ExtensionName);
         }
-        catch 
+        catch
         {
             await ParentViewModel.ParentViewModel.ParentViewModel.Dialog.ShowDialog("Extension Not Available", "This extensions does not appear to have a Configuration Tool. This may be due to an incompatiblity with the currently released extension. Contact the extension developer for more information.", "Ok");
         }

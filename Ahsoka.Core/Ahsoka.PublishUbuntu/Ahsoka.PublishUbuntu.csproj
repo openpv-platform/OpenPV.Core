@@ -22,23 +22,26 @@
 	<Target Name="CreateUbuntuPublishOutputs" AfterTargets="PostBuildEvent" Condition="!Exists('$(PlatformSupportRoot)\SparkUpload\Ubuntu64_TargetSupport.zip')">
 
 		<!-- Publish .deb for Ubuntu -->
-		<Exec Command="dotnet msbuild ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj -target:CreateDeb -property:TargetFramework=net8.0 -property:RuntimeIdentifier=linux-x64 -property:SelfContained=true -property:Configuration=Release -property:PublishWithAspNetCoreTargetManifest=false" />
+		<Exec Condition="true" Command="dotnet clean ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj" />
+		<Exec Command="dotnet msbuild ../Ahsoka.DeveloperTools/Ahsoka.DeveloperTools.csproj   -target:CreateDeb -property:TargetFramework=net8.0 -property:IS_DESKTOP=YES -property:RuntimeIdentifier=linux-x64 -property:SelfContained=true -property:Configuration=Release -property:PublishWithAspNetCoreTargetManifest=false" />
 		<Copy SourceFiles="OpenPV for Ubuntu.release.json" DestinationFiles="$(PlatformSupportRoot)\SparkUpload\OpenPV for Ubuntu.release.json" />
 		<Copy SourceFiles="UbuntuHardwareConfiguration.json" DestinationFiles="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\Hardware\UbuntuHardwareConfiguration.json" />
 
 		<!--DISABLED - Create Installer UI  -->
-		<Exec Condition="true" Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:PublishProfile=UbuntuOutputs" />
+		<Exec Condition="true" Command="dotnet clean ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj" />
+		<Exec Condition="true" Command="dotnet publish ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj -p:IS_DESKTOP=NO  -p:PublishProfile=UbuntuOutputs" />
 		<WriteLinesToFile Condition="true" File="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\InstallerUI\InstallerVersion.txt" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
 
 		<!-- Create Ubuntu Development Support Package (For Running Tools and Compiling C++)  DISABLED-->
-		<Exec Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:PublishProfile=UbuntuOutputs" />
+		<Exec Condition="true" Command="dotnet clean ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj" />
+		<Exec Condition="true" Command="dotnet publish ../Ahsoka.CommandLine/Ahsoka.CommandLine.csproj -p:IS_DESKTOP=NO  -p:PublishProfile=UbuntuOutputs" />
 		<WriteLinesToFile File="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\Ubuntu64_TargetSupport.zip.customertools.version" Lines="$(GitVersion_SemVer)" Overwrite="true" Encoding="UTF-8" />
 		<ZipDirectory Overwrite="true" SourceDirectory="$(PlatformSupportRoot)\PlatformSupport\Ubuntu64_TargetSupport\" DestinationFile="$(PlatformSupportRoot)\SparkUpload\Ubuntu64_TargetSupport.zip" />
 
 	</Target>
 
 	<ItemGroup>
-		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+		<PackageReference Include="GitVersion.MsBuild" Version="[5.12.0]">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>

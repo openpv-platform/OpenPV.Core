@@ -1,4 +1,5 @@
-﻿using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using System;
 
 namespace Ahsoka;
@@ -13,7 +14,7 @@ class Program
         // Initialing Assembly Resolver
         AssemblyResolver.Init();
         Console.WriteLine($"Loading Extensions ...");
-        System.Extensions.LoadExtensions(null, false, "CommandLine");
+        Extensions.LoadExtensions(null, false, "CommandLine");
 
         CommandLine.Execute(args);
     }

@@ -1,8 +1,8 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.Installer;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Extensions = Ahsoka.System.Extensions;
+using Extensions = Ahsoka.Core.Extensions;
 
 #pragma warning disable CS0436 // Type conflicts with imported type for GitVersionInformation
 
@@ -20,11 +20,11 @@ internal class DotNetViewModel : ViewModelBase
 {
     private readonly MainViewModel parentViewModel;
     private readonly PackageInformation packageInfo;
-   
+
     public bool SdkNeedsUpdate
-    { 
-        get; 
-        set; 
+    {
+        get;
+        set;
     }
 
     public void UpdateSDK()
@@ -65,7 +65,7 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-   
+
     public string ProjectPath
     {
         get { return packageInfo.DotNetInfo.ProjectPath; }
@@ -75,7 +75,7 @@ internal class DotNetViewModel : ViewModelBase
             OnPropertyChanged();
         }
     }
-    
+
     public string PublishProfile
     {
         get { return packageInfo.DotNetInfo.PublishProfile; }
@@ -128,7 +128,8 @@ internal class DotNetViewModel : ViewModelBase
 
     private string GetFrameworkInfoPath()
     {
-        return Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), $"obj/{PlatformSupportPathInfo.PlatformSupportRootFolderName_App}/AhsokaFrameworkInfo.json");
+        string projectPath = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ProjectPath));
+        return Path.Combine(projectPath, $"obj/{PlatformSupportPathInfo.PlatformSupportRootFolderName_App}/AhsokaFrameworkInfo.json");
     }
 
     public DotNetViewModel(MainViewModel parentViewModel, PackageInformation packageInfo)
@@ -147,7 +148,18 @@ internal class DotNetViewModel : ViewModelBase
         var extensionsUpToDate = parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => !x.IsInstalled) ||
                                  parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Count() == 0;
         var frameworkInfo = GetFrameworkInfo();
-        var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion();
+        var frameworkNeedsUpdate = frameworkInfo?.FrameworkVersion != parentViewModel.GetVersion() || frameworkInfo?.PlatformFamily != parentViewModel.SelectedPackage.PlatformFamily;
+
+        if (frameworkInfo != null)
+            if (new Version(frameworkInfo.FrameworkVersion).Major < new Version(parentViewModel.GetVersion()).Major)
+            {
+                string packageExtensionFolder = parentViewModel.SelectedPackage.PackageInfo.GetPackageExtentionFolder();
+                if (Directory.Exists(packageExtensionFolder))
+                    Directory.Delete(packageExtensionFolder, true);
+
+                foreach (var item in parentViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions)
+                    item.InstalledVersion = "0.0";
+            }
 
         if (!cliExists || !extensionsUpToDate || frameworkNeedsUpdate)
             SdkNeedsUpdate = true;
@@ -178,7 +190,7 @@ internal class DotNetViewModel : ViewModelBase
         string result = "Process Ended";
         try
         {
-            string projectPath = Path.GetDirectoryName(packageInfo.GetPackageInfoPath());
+            string projectPath = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), ProjectPath));
             if (!Directory.Exists(Path.Combine(projectPath)))
             {
                 parentViewModel.Console.AddConsoleLine("Please Select a Project Path.");
@@ -192,7 +204,7 @@ internal class DotNetViewModel : ViewModelBase
             parentViewModel.Console.ClearConsole();
             parentViewModel.Console.AddConsoleLine($"Beginning SDK Install to Project Path {directoryForFramework}");
 
-            
+
             if (Directory.Exists(directoryForFramework))
                 Directory.Delete(directoryForFramework, true);
 
@@ -206,14 +218,14 @@ internal class DotNetViewModel : ViewModelBase
             await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
 
             //needs method for determining platforms to load
-            List<System.PlatformFamily> platformsToSupport = new() { packageInfo.PlatformFamily };
+            List<PlatformFamily> platformsToSupport = new() { packageInfo.PlatformFamily };
 
             if (OperatingSystem.IsWindows())
-                platformsToSupport.Add(System.PlatformFamily.Windows64);
+                platformsToSupport.Add(PlatformFamily.Windows64);
             if (OperatingSystem.IsLinux())
-                platformsToSupport.Add(System.PlatformFamily.Ubuntu64);
+                platformsToSupport.Add(PlatformFamily.Ubuntu64);
             if (OperatingSystem.IsMacOS())
-                platformsToSupport.Add(System.PlatformFamily.MacosArm64);
+                platformsToSupport.Add(PlatformFamily.MacOSArm64);
 
             foreach (var platform in platformsToSupport)
             {
@@ -233,17 +245,16 @@ internal class DotNetViewModel : ViewModelBase
                         parentViewModel.Console.AddConsoleText(info.Message);
                 });
 
-                RunSdkCommands(projectPath, parentViewModel, progress);
+                RunSdkCommands(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), parentViewModel, progress);
             });
 
             parentViewModel.Console.AddConsoleLine($" ");
 
-            string fileInfo = JsonUtility.Serialize(new CppFrameworkInfo() { FrameworkVersion = parentViewModel.GetVersion() });
+            string fileInfo = JsonUtility.Serialize(new CppFrameworkInfo() { FrameworkVersion = parentViewModel.GetVersion(), PlatformFamily = packageInfo.PlatformFamily });
             File.WriteAllText(GetFrameworkInfoPath(), fileInfo);
             OnPropertyChanged(nameof(InstalledFramework));
             OnPropertyChanged(nameof(FrameworkButtonText));
 
-            File.WriteAllText(Path.Combine(projectPath, "Directory.Build.props"), Properties.Resources.BuildProps);
             finishedInstall = true;
         }
         catch (IOException)

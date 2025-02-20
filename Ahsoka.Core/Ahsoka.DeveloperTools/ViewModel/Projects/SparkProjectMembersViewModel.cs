@@ -1,6 +1,6 @@
-﻿using Ahsoka.DeveloperTools.Views;
-using Ahsoka.Spark;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Views;
 using Avalonia.Controls;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
@@ -207,7 +207,10 @@ internal partial class SparkProjectMembersViewModel : ChildViewModelBase<SparkPr
         var memberList = TeamMembers.ToArray();
         var member = SelectedTeamMember;
 
-        if (!ParentViewModel.IsOwner)
+        if (!ParentViewModel.IsAdmin)
+            return;
+
+        if (SelectedTeamMember.IsOwner)
             return;
 
         var teamVM = FindParent<SparkProjectEditorViewModel>();
@@ -221,7 +224,7 @@ internal partial class SparkProjectMembersViewModel : ChildViewModelBase<SparkPr
 
             // Forcing a new object for now until web is connected
             member = JsonUtility.Deserialize<TeamDTO>(JsonUtility.Serialize(member));
-            SparkAccountClient.SharedSparkClient.ChangeMemberRole(member.TeamID, member.MemberEmailAddress, member.MemberRole); 
+            SparkAccountClient.SharedSparkClient.ChangeMemberRole(member.TeamID, member.MemberEmailAddress, member.MemberRole);
 
         }).ContinueWith(result =>
         {

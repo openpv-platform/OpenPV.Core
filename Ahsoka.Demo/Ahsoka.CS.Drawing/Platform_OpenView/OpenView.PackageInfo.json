@@ -1,0 +1,70 @@
+{
+  "version": "4.0.1.10065",
+  "applicationType": "Dotnet",
+  "execCommand": "Ahsoka.CS.Drawing",
+  "packageName": "Ahsoka.CS.Drawing.Select",
+  "packageDescription": "Drawing and Touch With SKIA using Ahsoka DrawingAPI",
+  "applicationVersion": "3.0",
+  "packageApplicationFolder": "../Platform_OpenView/publish",
+  "packageOutputDirectory": "PackageOutput",
+  "licenses": [],
+  "optimizedServiceManager": false,
+  "customPackageInfo": {
+    "includeApplication": false,
+    "includeBootLogo": false,
+    "includeInstallerUI": false,
+    "includeFirmwareUpdate": false
+  },
+  "dotNetInfo": {
+    "projectPath": "../Ahsoka.CS.Drawing.csproj",
+    "publishProfile": "../Properties/PublishProfiles/LinuxProfile.pubxml"
+  },
+  "serviceInfo": {
+    "runtimeConfiguration": {
+      "serviceStartup": "NoAutoStart",
+      "releaseOption": "NoAutoStart",
+      "extensionInfo": [],
+      "startupDelay": 0,
+      "requireChallenge": "NotRequired",
+      "services": [
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "SystemService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "dataChannel": 5001,
+          "isExtension": false,
+          "behaviors": "AutoStart"
+        },
+        {
+          "socketType": "TcpSocket",
+          "serviceName": "DeviceService",
+          "tcpListenAddress": "*",
+          "tcpConnectionAddress": "localhost",
+          "dataChannel": 5009,
+          "isExtension": false,
+          "behaviors": "AutoStart"
+        }
+      ]
+    },
+    "environmentValues": []
+  },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "EnovLogo.png",
+    "orientation": "DefaultOrientation",
+    "surfaceSetups": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
+  },
+  "packageType": "opvEncrypted",
+  "packageStructureVersion": 1,
+  "platformFamily": "OpenViewLinux",
+  "platformQualifier": "S70",
+  "securityMode": "None",
+  "applicationId": "00000000-0000-0000-0000-000000000000",
+  "components": []
+}

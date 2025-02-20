@@ -7,7 +7,7 @@
   "ReleaseName": "OpenPV Developer Tools",
   "ContainerName": "OpenPV",
   "ContainerVersion": "1.0.0",
-  "ReleaseNotes": null,
+  "ReleaseNotes": "ReleaseNotes.html",
   "InstallCommand": null,
   "UnInstallCommand": null,
   "SizeInBytes": 0,
@@ -15,6 +15,12 @@
   "Contents": [
     {
       "Path": "OpenPV.DeveloperToolkit.*.deb",
+      "DownloadToken": null,
+      "SizeInBytes": 0,
+      "Hash": null
+    },
+    {
+      "Path": "ReleaseNotes.html",
       "DownloadToken": null,
       "SizeInBytes": 0,
       "Hash": null

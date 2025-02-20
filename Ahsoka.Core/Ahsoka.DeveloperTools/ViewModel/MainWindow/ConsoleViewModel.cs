@@ -1,5 +1,5 @@
-﻿using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using Avalonia.Threading;
 using Renci.SshNet;
 using System.IO;
@@ -120,6 +120,11 @@ internal class ConsoleViewModel : ChildViewModelBase<MainViewModel>, ICanCancel
             latestString = console.ToString();
             OnPropertyChanged(nameof(ConsoleOutput));
         }
+    }
+
+    internal void FetchLayerManagerJournal()
+    {
+        RunJournalCommandAsync("LayerManager", "Ahsoka.LayerManager", null);
     }
 
     internal void FetchInstallerJournal()

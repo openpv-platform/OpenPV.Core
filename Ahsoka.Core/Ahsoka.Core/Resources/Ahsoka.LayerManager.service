@@ -1,0 +1,10 @@
+[Unit]
+Description=Ahsoka Layer Manager Service for IVI Shell
+Wants=ahsoka-early.target
+
+[Service]
+Type=forking
+ExecStart=/usr/local/Ahsoka/factory/weston/layer_manager_start.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -5,7 +5,7 @@ using EnovationCloud.Core.Security;
 using System;
 using System.Collections.Generic;
 
-namespace Ahsoka.Spark;
+namespace Ahsoka.Core.Spark;
 
 public class SparkConnectionInfo
 {
@@ -53,12 +53,12 @@ public class ProvisionDisplayRequest : IProvisionDisplayRequest
 
 public class ProvisionItem
 {
-    public System.PlatformFamily ProvisionPlatformFamily { get; init; }
+    public PlatformFamily ProvisionPlatformFamily { get; init; }
     public string ProvisionPartNumber { get; init; }
     public string ProvisionSerialNumber { get; init; }
     public string ProvisionDeviceId { get; init; }
 
-    public ProvisionItem(System.PlatformFamily provisionPlatformFamily, string provisionPartNumber, string provisionSerialNumber, string provisionDeviceId)
+    public ProvisionItem(PlatformFamily provisionPlatformFamily, string provisionPartNumber, string provisionSerialNumber, string provisionDeviceId)
     {
         this.ProvisionPlatformFamily = provisionPlatformFamily;
         this.ProvisionPartNumber = provisionPartNumber;

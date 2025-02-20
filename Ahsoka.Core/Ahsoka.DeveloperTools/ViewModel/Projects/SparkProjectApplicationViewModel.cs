@@ -1,15 +1,14 @@
-﻿using Ahsoka.DeveloperTools.Views;
-using Ahsoka.Spark;
-using EnovationCloud.Core.DataTransferObjects;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Views;
 using Avalonia.Controls;
 using Avalonia.Threading;
+using EnovationCloud.Core.Client;
+using EnovationCloud.Core.DataTransferObjects;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
-using EnovationCloud.Core.Client;
-using Ahsoka.Services.System;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -88,13 +87,13 @@ internal partial class SparkProjectApplicationViewModel : ChildViewModelBase<Spa
                 foreach (var item in result)
                 {
                     item.ContainerName = item.ContainerName.Replace(item.ContainerVersion, "");
-                    this.Applications.Add(new ApplicationViewModel(item));
+                    this.Applications.Add(new ApplicationViewModel(item, this.ParentViewModel.Model.TeamID.ToString().Substring(0, 8)));
                 }
-               
+
                 SelectedApplication = this.Applications.FirstOrDefault(x => x.DTO.ContainerName == tempApp?.DTO.ContainerName && x.DTO.ContainerVersion == tempApp?.DTO.ContainerVersion);
                 OnPropertyChanged(nameof(SelectedApplication));
                 ParentViewModel.Devices.LoadComplete();
-            });           
+            });
         }
         catch { } // Not Containers
     }
@@ -196,12 +195,22 @@ internal partial class SparkProjectApplicationViewModel : ChildViewModelBase<Spa
 internal class ApplicationViewModel
 {
     ContainerDTO dto;
+    string teamId;
+
+    public string ContainerName
+    {
+        get
+        {
+            return dto.ContainerName.Replace($"_{teamId}", "");
+        }
+    }
 
     internal ContainerDTO DTO { get { return dto; } }
 
-    internal ApplicationViewModel(ContainerDTO dto)
+    internal ApplicationViewModel(ContainerDTO dto, string teamId)
     {
         this.dto = dto;
+        this.teamId = teamId;
     }
 
     public override string ToString()

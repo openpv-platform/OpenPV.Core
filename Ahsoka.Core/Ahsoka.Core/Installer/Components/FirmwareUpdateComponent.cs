@@ -1,13 +1,11 @@
-﻿using Ahsoka.Installer.InstallEngine;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading;
 
 namespace Ahsoka.Installer.Components;
@@ -28,7 +26,7 @@ internal class FirmwareUpdateComponent : FileSystemComponentBase
     {
         if (this.IsEnabled)
         {
-           
+
             if (UpdatePath == null || !File.Exists(UpdatePath))
             {
                 string error = $"Could not find an appropriate firmware upgrade file for {info.PlatformFamily}.";

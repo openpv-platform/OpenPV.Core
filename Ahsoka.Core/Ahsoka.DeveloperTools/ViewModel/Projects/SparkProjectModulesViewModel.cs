@@ -1,9 +1,8 @@
-﻿using Ahsoka.DeveloperTools.Views;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Views;
 using Avalonia.Controls;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -60,7 +59,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
     }
 
     internal void GetTeamModules()
-    {        
+    {
         var teamModules = SparkAccountClient.SharedSparkClient.GetTeamModules(ParentViewModel.TeamID);
 
         this.ModuleList.Clear();
@@ -93,7 +92,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
             ModuleDescription = vm.ModuleDescription,
             Packages = vm.Packages,
             IsSelected = true
-        });        
+        });
 
         this.addproductView = new SparkProjectUpdateModuleList() { DataContext = this };
         UpdateCart();
@@ -108,6 +107,10 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
 
         foreach (var module in modules)
         {
+            // Hide Adding Codesys Modules
+            if (module.Name.ToLower().Contains("codesys"))
+                continue;
+
             if (!ModuleList.Any(x => x.ModuleID == module.ID))
                 this.AvailableModules.Add(new ModuleViewModel(this)
                 {
@@ -181,10 +184,10 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
             }
 
             await Task.Run(async () =>
-            {              
+            {
                 var checkoutCanceled = root.Dialog.ShowDialog("Checkout",
                         "Please finalize purchase in your browser or press cancel to invalidate", "Cancel");
-                
+
                 var count = ParentViewModel.Modules.ModuleList.Count;
                 do
                 {
@@ -196,7 +199,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
                         return false;
                     }
 
-                    await Task.Delay(5000);                    
+                    await Task.Delay(5000);
                 } while (ParentViewModel.Modules.ModuleList.Count == count);
                 return true;
             }).ContinueWith(result =>
@@ -205,7 +208,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
                 {
                     root.Dialog.CancelMessage();
                 }
-            });                               
+            });
         }
     }
 
@@ -238,7 +241,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
             }
 
             GetTeamModules();
-            
+
             _ = root.Dialog.ShowDialog("Payment Success",
                     "Process completed. Invoice is available through the billing portal", "Ok");
         }
@@ -254,7 +257,7 @@ internal partial class SparkProjectModulesViewModel : ChildViewModelBase<SparkPr
             {
                 stringBuilder.AppendLine($"{item.ModuleName} {item.TotalQuantity}");
                 purchaseInfo.Add(new PurchaseOrderDTO() { ProductID = item.ModuleID, PriceID = item.SelectedPackage.Package.PriceID, Quantity = item.PurchaseQuantity });
-            }              
+            }
         }
 
         if (stringBuilder.Length == 0)

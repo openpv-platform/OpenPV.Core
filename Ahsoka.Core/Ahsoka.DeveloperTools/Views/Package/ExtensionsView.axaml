@@ -2,8 +2,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-           	  xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
-		  	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+           	 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+		  	 xmlns:sys="clr-namespace:System;assembly=mscorlib"
 		     mc:Ignorable="d" d:DesignWidth="1085" d:DesignHeight="450"
              xmlns:material="using:Material.Icons.Avalonia"
              x:Class="Ahsoka.DeveloperTools.Views.ExtensionsView">
@@ -147,7 +147,7 @@
 			</Border>
 
 		</Grid>
-		<Grid IsVisible="{Binding AddExtensionsShown, FallbackValue=true}" IsEnabled="{Binding !IsWorking}"
+		<Grid IsVisible="{Binding AddExtensionsShown, FallbackValue=false}" IsEnabled="{Binding !IsWorking}"
 					Grid.ColumnSpan="3" Grid.RowSpan="10" Background="#33FFFFFF">
 			
 			<Border Grid.Row="0" Grid.Column="2" BorderBrush="Gainsboro" BorderThickness="0"  Height="350" Width="650"  
@@ -211,7 +211,6 @@
 							</ListBox.ItemTemplate>
 						</ListBox>
 					</Border>
-
 				</Grid>
 			</Border>
 		</Grid>

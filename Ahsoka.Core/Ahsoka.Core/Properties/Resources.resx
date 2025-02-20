@@ -124,9 +124,6 @@
   <data name="Ahsoka.Application" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ahsoka.application.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Ahsoka.Application.Start" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\resources\ahsoka.application.start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Ahsoka.Installer" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\ahsoka.installer.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -172,10 +169,6 @@
   <data name="UntrustedPublicKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\UntrustedPublicKeyPEM.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="CODESYS_PreStart" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\CODESYS_PreStart.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    <comment>Codesys PreStart Script</comment>
-  </data>
   <data name="ModuleLicensePublicKeyPEM" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\resources\modulelicensepublickeypem.pem;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -200,30 +193,6 @@
   <data name="Functions" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\Ahsoka.Interop\Ahsoka.Proto\Functions.cmake;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="InstallService" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\InstallService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="IotService" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\IotService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="NetworkService" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\NetworkService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="SecurityService" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\SecurityService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="SparkService" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\SparkService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="SystemService" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\SystemService.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="CMakeLists" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\CMakeLists.txt;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Configuration" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Proto\Configuration.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
   <data name="Services" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\Ahsoka.Shared\Services.proto;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -238,5 +207,26 @@
   </data>
   <data name="Publish_xmlpub" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CommandLine\Publish.xmlpub.template;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="Ahsoka_LayerManager" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ahsoka.LayerManager.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Ahsoka_LayerManagerStart" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ahsoka.LayerManagerStart.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="weston_ini" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\weston.ini.service;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="hlio_early" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\hlio-early.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="Ahsoka.Application.Start" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Ahsoka.Application.Start.sh;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="ProtoTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ClientTemplates\ProtoTemplate.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
+  </data>
+  <data name="CMakeLists" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CMakeLists.txt;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

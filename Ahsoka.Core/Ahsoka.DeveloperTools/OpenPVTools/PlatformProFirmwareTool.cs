@@ -1,10 +1,9 @@
-﻿using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.System;
+﻿using Ahsoka.Core;
+using Ahsoka.DeveloperTools.ViewModel;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,6 +11,8 @@ namespace Ahsoka.DeveloperTools;
 
 internal class PlatformProFirmwareTool : PlatformFirmwareTool
 {
+    string vidPid = "0451:6165";
+
     string pathToFirmware = string.Empty;
     PlatformFamily family = PlatformFamily.Any;
 
@@ -74,7 +75,7 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
 
                 string result = "";
                 if (family == PlatformFamily.OpenViewLinuxPro)
-                    result = ExecuteDFUInstall(firmwareFolder , toolModel, pathToCli);
+                    result = ExecuteDFUInstall(firmwareFolder, toolModel, pathToCli);
 
                 Directory.Delete(firmwareFolder, true);
                 if (result == "")
@@ -101,31 +102,28 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
 
     private string ExecuteDFUInstall(string firmwareDir, IToolViewModel toolModel, string dfuName)
     {
+
         toolModel.MainViewModel.Console.AddConsoleLine($"Beginning Firmware Load");
         toolModel.MainViewModel.Console.AddConsoleLine($" ");
         toolModel.MainViewModel.Console.AddConsoleLine($"Loading initial tiboot3.bin to R5 core RAM.");
-        RunCommand(dfuName, $"-R -a bootloader -D ./dfu-tiboot3-j722s-hs-fs-evm-r5.bin -w", firmwareDir, toolModel);
+        RunCommand(dfuName, $"-R -a bootloader -d {vidPid} -D ./dfu-tiboot3-j722s-hs-fs-evm-r5.bin -w", firmwareDir, toolModel);
 
         toolModel.MainViewModel.Console.AddConsoleLine($" ");
         toolModel.MainViewModel.Console.AddConsoleLine($"Loading A53 binaries to RAM.");
-        RunCommand(dfuName, $"-R -a tispl.bin -D ./dfu-tispl.bin -w", firmwareDir, toolModel);
-        RunCommand(dfuName, $"-R -a u-boot.img -D ./dfu-u-boot.img -w", firmwareDir, toolModel);
+        RunCommand(dfuName, $"-R -a tispl.bin -d {vidPid} -D ./dfu-tispl.bin -w", firmwareDir, toolModel);
+        RunCommand(dfuName, $"-R -a u-boot.img -d {vidPid} -D ./dfu-u-boot.img -w", firmwareDir, toolModel);
 
         toolModel.MainViewModel.Console.AddConsoleLine($" ");
         toolModel.MainViewModel.Console.AddConsoleLine($"Loading tiboot3.bin to NOR");
-        RunCommand(dfuName, $"-a tiboot3.bin -D ./tiboot3.bin -w", firmwareDir, toolModel);
+        RunCommand(dfuName, $"-a tiboot3.bin -d {vidPid} -D ./tiboot3.bin -w", firmwareDir, toolModel);
 
         toolModel.MainViewModel.Console.AddConsoleLine($" ");
-        toolModel.MainViewModel.Console.AddConsoleLine($"Loading tispl.bin to NOR");
-        RunCommand(dfuName, $"-a tispl.bin -D ./tispl.bin -w", firmwareDir, toolModel);
-
-        toolModel.MainViewModel.Console.AddConsoleLine($" ");
-        toolModel.MainViewModel.Console.AddConsoleLine($"Loading u-boot.img to NOR");
-        RunCommand(dfuName, $"-R -a u-boot.img -D ./u-boot.img -w", firmwareDir, toolModel);
+        toolModel.MainViewModel.Console.AddConsoleLine($"Loading fitImage to NOR");
+        RunCommand(dfuName, $"-R -a tispl.bin -d {vidPid} -D ./fitImage -w", firmwareDir, toolModel);
 
         toolModel.MainViewModel.Console.AddConsoleLine($" ");
         toolModel.MainViewModel.Console.AddConsoleLine($"Loading rootfs to EMMC");
-        RunCommand(dfuName, $"-R -a rootfs -D ./hlio-image-openviewpro-base-j722s-evm.ext4 -w", firmwareDir, toolModel);
+        RunCommand(dfuName, $"-R -a rootfs -d {vidPid} -D ./hlio-image-openviewpro-base-j722s-evm.rootfs.ext4 -w", firmwareDir, toolModel);
 
         return "Firmware Installed";
     }
@@ -171,7 +169,7 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
             {
                 var line = pProcess.StandardOutput.ReadLine();
                 toolModel.MainViewModel.Console.AddConsoleLine(line);
-                if (line.ToLower().Contains("found dfu: [0451:6165]"))
+                if (line.ToLower().Contains($"found dfu: [{vidPid}]"))
                     result = $"Connected to DevKit";
 
             }
@@ -240,7 +238,7 @@ internal class PlatformProFirmwareTool : PlatformFirmwareTool
         }
 
         return "";
-    
+
 
     }
 

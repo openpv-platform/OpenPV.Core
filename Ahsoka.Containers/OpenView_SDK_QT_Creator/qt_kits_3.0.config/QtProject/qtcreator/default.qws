@@ -40,55 +40,55 @@
   <variable>value-ProjectTree.ExpandData</variable>
   <valuelist type="QVariantList">
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/OpenViewLinux/SDK/Ahsoka.Proto</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/OpenViewLinux/SDK/Ahsoka.Proto</value>
     <value type="QString">Ahsoka.Proto</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/Ubuntu64/SDK/Ahsoka.Proto</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/Ubuntu64/SDK/Ahsoka.Proto</value>
     <value type="QString">Ahsoka.Proto</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared</value>
-    <value type="QString">Ahsoka.Client.Shared</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core</value>
+    <value type="QString">Ahsoka.Core</value>
    </valuelist>
    <valuelist type="QVariantList">
     <value type="QString">/projects/Ahsoka.QT.Blank</value>
     <value type="QString">Ahsoka.QT.Blank</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/OpenViewLinux</value>
-    <value type="QString">Ahsoka.Client.Shared/OpenViewLinux</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/OpenViewLinux</value>
+    <value type="QString">Ahsoka.Core/OpenViewLinux</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/OpenViewLinux/SDK/inc</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/OpenViewLinux/SDK/inc</value>
     <value type="QString">inc</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/OpenViewLinux/SDK/Ahsoka.Proto</value>
-    <value type="QString">Ahsoka.Client.Shared/OpenViewLinux/SDK/Ahsoka.Proto</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/OpenViewLinux/SDK/Ahsoka.Proto</value>
+    <value type="QString">Ahsoka.Core/OpenViewLinux/SDK/Ahsoka.Proto</value>
    </valuelist>
    <valuelist type="QVariantList">
     <value type="QString">/projects/Ahsoka.QT.Blank</value>
     <value type="QString">Source Files</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/Ubuntu64</value>
-    <value type="QString">Ahsoka.Client.Shared/Ubuntu64</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/Ubuntu64</value>
+    <value type="QString">Ahsoka.Core/Ubuntu64</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/Ubuntu64/SDK</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/Ubuntu64/SDK</value>
     <value type="QString">SDK</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/OpenViewLinux</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/OpenViewLinux</value>
     <value type="QString">OpenViewLinux</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/OpenViewLinux/SDK/inc/services</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/OpenViewLinux/SDK/inc/services</value>
     <value type="QString">services</value>
    </valuelist>
    <valuelist type="QVariantList">
-    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Client.Shared/OpenViewLinux/SDK</value>
+    <value type="QString">/projects/Ahsoka.QT.Blank/Ahsoka.Core/OpenViewLinux/SDK</value>
     <value type="QString">SDK</value>
    </valuelist>
    <valuelist type="QVariantList">

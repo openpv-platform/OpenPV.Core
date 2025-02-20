@@ -1,10 +1,9 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer;
 using Ahsoka.Services.Spark;
-using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
 using EnovationCloud.Core.Security;
@@ -156,10 +155,18 @@ public class SparkTeamsTests : LinearTestBase
 
         try
         {
-            SparkCustomerTools.PreProvisionDevices(null, sparkLogin, subInfo, progress, items);
-            var device = SparkAccountClient.SharedSparkClient.GetTeamDevices(team.TeamID.ToString(), null).Devices.FirstOrDefault(x => x.DeviceID == newFactoryInfo.DeviceID) ;
+            // Pass Null DeviceInfo
+            SparkCustomerTools.PreProvisionDevices(null, sparkLogin, subInfo, progress, null);
 
-            SparkAccountClient.SharedSparkClient.DeleteTeamDevice(device,team);
+            SparkCustomerTools.PreProvisionDevices(null, sparkLogin, subInfo, progress, items);
+            var device = SparkAccountClient.SharedSparkClient.GetTeamDevices(team.TeamID.ToString(), null).Devices.FirstOrDefault(x => x.DeviceID == newFactoryInfo.DeviceID);
+
+            SparkAccountClient.SharedSparkClient.DeleteTeamDevice(device, team);
+
+            subInfo.ApplicationId = Guid.NewGuid();
+            SparkCustomerTools.PreProvisionDevices(null, sparkLogin, subInfo, progress, items);
+
+
         }
         catch { }
 
@@ -235,7 +242,7 @@ public class SparkTeamsTests : LinearTestBase
 
         sparkClient.NotificationReceived += SparkClient_NotificationReceived;
         sparkClient.SubscribeToAppChanges();
-        
+
         // Upload an App
         var containerTemp = TestContainers(team, "1.1");
 
@@ -301,12 +308,12 @@ public class SparkTeamsTests : LinearTestBase
 
         // Get Containers and Validate its Uploadex
         var containers = SparkProjectTools.GetTeamContainers(team.TeamID, null);
-        Assert.IsTrue(containers.Containers.Any(x=>x.ContainerName == uploadInfo.ContainerName));
+        Assert.IsTrue(containers.Containers.Any(x => x.ContainerName == uploadInfo.ContainerName));
 
         SparkProjectTools.PromoteApplication(team, containers.Containers.First());
         SparkProjectTools.DemoteApplication(team, containers.Containers.First());
 
-        foreach(var item in containers.Containers)
+        foreach (var item in containers.Containers)
             SparkProjectTools.RemoveTeamContainer(team, item);
 
         containers = SparkProjectTools.GetTeamContainers(team.TeamID, null);

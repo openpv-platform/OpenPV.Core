@@ -1,14 +1,13 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Utility;
 using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace Ahsoka.Commands;
+namespace Ahsoka.Core.Commands;
 
+[ExcludeFromCodeCoverage]
 [CommandLinePlugin]
 internal static class ServiceCommands
 {
@@ -27,7 +26,7 @@ internal static class ServiceCommands
         else
         {
             string config = File.ReadAllText(configurationFile);
-            configuration = JsonUtility.Deserialize<RuntimeConfiguration>(config);       
+            configuration = JsonUtility.DeserializeWithTypeInfo<RuntimeConfiguration>(config);
         }
 
         // Run and Block Executable Until Shutdown
@@ -37,7 +36,7 @@ internal static class ServiceCommands
 
         // Get a list of Running Services.  We will wait for the whole list to stop.
         var list = AhsokaRuntime.Default.ServiceEndPoints.Select(x => x.GetWaitHandle()).ToArray();
-      
+
         // Blocks Until Services Shutdown
         WaitHandle.WaitAll(list);
 

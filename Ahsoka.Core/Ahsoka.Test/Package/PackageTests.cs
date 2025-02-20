@@ -1,11 +1,9 @@
+using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using Ahsoka.Installer;
 using Ahsoka.Installer.InstallEngine;
-using Ahsoka.ServiceFramework;
 using Ahsoka.Services.Install;
-using Ahsoka.System;
-using Ahsoka.Utility;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NetMQ.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -42,29 +40,24 @@ public class PackagingTests : LinearTestBase
     }
 
     [TestMethod]
-    public void TestPackagesInProc()
+    public void TestPackages()
     {
-        RunPackageTest(true, "AhsokaCairo", "S70", PlatformFamily.OpenViewLinux);
+        RunPackageTest(false, "AhsokaCairo", "S70", PlatformFamily.OpenViewLinux);
     }
 
-    [TestMethod]
-    public void TestCodesysPackage()
+    //[TestMethod]
+    public void TestPackagesOptimized()
     {
-        PackageInformation package = PackagingTests.CreatePackage(out string fileName, asCodesys:true);
-        File.Delete(fileName);
+        RunPackageTest(true);
     }
 
-    [TestMethod]
-    public void TestPackagesOutProc()
-    {
-        RunPackageTest(false);
-    }
-
-    private static void RunPackageTest(bool runInProc, string packageToTest = "", string qualifier = "Desktop", PlatformFamily family = PlatformFamily.Windows64)
+    private static void RunPackageTest(bool optimize, string packageToTest = "", string qualifier = "Desktop", PlatformFamily family = PlatformFamily.Windows64)
     {
         PackageInformation package = packageToTest == "" ?
-                    CreatePackage(out string tempFilePath) :
-                    CreatePackage(out tempFilePath, family, qualifier, packageToTest);
+                    CreatePackage(out string tempFilePath, PlatformFamily.Windows64, "Desktop", "AhsokaCairo", optimize) :
+                    CreatePackage(out tempFilePath, family, qualifier, packageToTest, optimize);
+
+        package.OptimizedServiceManager = optimize;
 
         // Open the File to Read Data
         using (FileStream stream = new(tempFilePath, FileMode.Open))
@@ -117,7 +110,7 @@ public class PackagingTests : LinearTestBase
 
         try
         {
-            var result = client.StartServiceAndInstall(newTempFile, "PassCode", runInProc);
+            var result = client.StartServiceAndInstall(newTempFile, "PassCode", true);
         }
         finally
         {
@@ -127,12 +120,12 @@ public class PackagingTests : LinearTestBase
         }
     }
 
-    static Orientation nextOrientation = Orientation.DefaultOrientation;
-    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo", bool asCodesys = false)
+    static int nextOrientation = 0;
+    public static PackageInformation CreatePackage(out string path, PlatformFamily family = PlatformFamily.Windows64, string qualifier = "Desktop", string packageToTest = "AhsokaCairo", bool optimized = false)
     {
         string key = family.ToString() + qualifier + packageToTest;
 
-        if (!asCodesys)
+        if (!optimized)
             if (packageInfo.TryGetValue(key, out PackageInformation info))
             {
                 path = info.GetOutputFullPath();
@@ -152,25 +145,15 @@ public class PackagingTests : LinearTestBase
 
         Environment.CurrentDirectory = appOutputs;
 
-        string packagefile = Path.Combine(appOutputs, "OpenLinuxST.PackageInfo.json");
-        PackageInformation package = JsonUtility.Deserialize<PackageInformation>(File.ReadAllText(packagefile));
-        package.OptimizedServiceManager = false;
+        string packagefile = Path.Combine(appOutputs, "Platform_OpenView", "OpenView.PackageInfo.json");
+        PackageInformation package = PackageInformation.LoadPackageInformation(packagefile);
+        package.OptimizedServiceManager = optimized;
 
-        if (asCodesys)
-        {
-            package.ApplicationType = ApplicationType.CODESYS;
-            Directory.CreateDirectory(appOutputs + "\\publish");
-            string appname = Path.Combine(appOutputs, "publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".app");
-            string crc = Path.Combine(appOutputs, "publish", Path.GetFileNameWithoutExtension(package.ExecCommand) + ".crc");
-            File.WriteAllText(appname, string.Empty);
-            File.WriteAllText(crc, string.Empty);
-        }
+        package.ScreenConfiguration.Orientation = nextOrientation;
 
-        package.SystemOrientation = nextOrientation;
-
-        nextOrientation = nextOrientation + 1;
-        if (nextOrientation > Orientation.Rotate270)
-            nextOrientation = Orientation.DefaultOrientation;
+        nextOrientation = nextOrientation + 90;
+        if (nextOrientation > 270)
+            nextOrientation = 0;
 
         package.SecurityMode = SecurityModes.None;
         package.SecurityModelNumber = "MyModelNumber";
@@ -181,7 +164,7 @@ public class PackagingTests : LinearTestBase
         package.PackageOutputDirectory = "OutputFolder";
 
         // Write Fake Exe so we don't have to build
-        string appFolder = Path.Combine(appOutputs, package.PackageApplicationFolder);
+        string appFolder = Path.Combine(appOutputs, "Platform_OpenView", package.PackageApplicationFolder);
         if (!Directory.Exists(appFolder))
             Directory.CreateDirectory(appFolder);
 
@@ -195,16 +178,32 @@ public class PackagingTests : LinearTestBase
         package = PackageInformation.LoadPackageInformation(packagefile);
 
         // Capture the values to our cache.
-        if (!asCodesys)
+        if (!optimized)
             packageInfo.Add(key, package);
+
+        CustomPackageInfo customPackageInfo = null;
+        if (optimized)
+        {
+            string firmwareFile = Path.Combine(tempPath, "image.test.zip");
+            File.WriteAllText(firmwareFile, "Test");
+            customPackageInfo = new CustomPackageInfo()
+            {
+                IncludeApplication = true,
+                IncludeBootLogo = true,
+                IncludeInstallerUI = true,
+                IncludeFirmwareUpdate = true,
+                FirmwareUpgradePath = firmwareFile,
+                InstallerUpgradePath = tempPath
+            };
+        }
 
         // Get an Engine and Create the Package File
         InstallEngineBase createPackageEngine = InstallEngineBase.GetPackagingEngine(package);
         path = createPackageEngine.CreateInstallPackage(null, new Progress<PackageProgressInfo>(info =>
         {
             Console.WriteLine(info.Message);
-        }));
-        
+        }), customPackageInfo);
+
         return package;
     }
 

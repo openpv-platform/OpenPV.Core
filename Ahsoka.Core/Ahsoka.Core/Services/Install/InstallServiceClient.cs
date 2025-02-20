@@ -1,9 +1,8 @@
-﻿using Ahsoka.Installer.Components;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.Installer.Components;
 using Ahsoka.Installer.InstallEngine;
-using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -34,7 +33,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
     /// Default Constructor using Default Service Configuration
     /// </summary>
     public InstallServiceClient()
-        : base(ConfigurationLoader.GetServiceConfig(InstallService.Name), new InstallServiceMessages())
+        : base(ConfigurationLoader.GetServiceConfig(InstallService.Name), new InstallServiceMessages(), false)
     {
 
     }
@@ -48,13 +47,6 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
         return new InstallService(this.ServiceConfig);
     }
 
-    /// <summary>
-    /// Override and Disable AutoStart
-    /// </summary>
-    protected override void AutoStartServiceIfNeeded()
-    {
-        // Configuration Service Always Requires Manual Start
-    }
 
     /// <summary>
     /// Creates an install service and notifies it to begin the install process. 
@@ -78,8 +70,10 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
                 // Start Async Service
                 internalService = new InstallService();
-                AhsokaRuntime.Default.StartEndPoints(internalService);
+                internalService.Start();
+                unpackReady.Set();
 
+                internalService.WaitForStop();
             }
             else
             {
@@ -96,7 +90,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
                     RunServiceOutOfProcess(installerPath, installerArgs); // Blocks until finished
 
                     AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, "Installer Process Finished.");
-                   
+
                     // Remove Installer Folder
                     string path = Path.GetDirectoryName(installerPath);
                     while (Path.Exists(path))
@@ -116,9 +110,8 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
         // Send Install Command to Service to Install
         var clientTask = Task.Run(() =>
         {
-            // Wait for Unpack if running Real Installer.
-            if (!useLocalInstaller)
-                unpackReady.WaitOne();
+            // Wait for Unpack
+            unpackReady.WaitOne();
 
             if (!unpackSuccessful)
                 return new InstallCompleteInfo() { Message = "Unable to Read Package", Result = InstallResult.InvalidFile };
@@ -161,23 +154,23 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
     }
 
     /// <inheritdoc/>
-    protected override void OnHandleReceive(AhsokaMessageHeader messageHeader, object message)
+    protected override void OnReceiveNotification(AhsokaNotificationArgs args)
     {
-        switch (messageHeader.TransportId.IntToEnum<InstallMessageTypes.Ids>())
+        switch (args.TransportId)
         {
             case InstallMessageTypes.Ids.InstallProgress:
-                installerUI?.InstallProgress((InstallProgressInfo)message);
+                installerUI?.InstallProgress((InstallProgressInfo)args.NotificationObject);
                 break;
 
             case InstallMessageTypes.Ids.InstallLog:
-                installerUI?.Log((InstallLogInfo)message);
+                installerUI?.Log((InstallLogInfo)args.NotificationObject);
                 break;
         }
     }
 
     private InstallCompleteInfo ExecuteInstall(string installFile, string passKey)
     {
-        return SendNotificationWithResponse<InstallCompleteInfo>(InstallMessageTypes.Ids.InstallPackage, new InstallPackageRequest() { InstallPackagePath = installFile, InstallPassKey = passKey });
+        return SendMessageWithResponse<InstallCompleteInfo>(InstallMessageTypes.Ids.InstallPackage, new InstallPackageRequest() { InstallPackagePath = installFile, InstallPassKey = passKey });
     }
 
     private void RunServiceOutOfProcess(string installerPath, string installerArgs)
@@ -226,7 +219,8 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
         installerUI?.Log(new InstallLogInfo()
         {
-            LogMessage = $"Extracting Installer to {tempInstallerPackageFile}", LogMessageType = LogMessageType.Information
+            LogMessage = $"Extracting Installer to {tempInstallerPackageFile}",
+            LogMessageType = LogMessageType.Information
         });
 
         try
@@ -267,7 +261,7 @@ public class InstallServiceClient : AhsokaClientBase<InstallMessageTypes.Ids>
 
             return true;
         }
-        catch 
+        catch
         {
             installerArguements = pathToInstallerFile = string.Empty;
 

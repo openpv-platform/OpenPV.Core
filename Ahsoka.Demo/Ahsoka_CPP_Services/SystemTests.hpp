@@ -12,7 +12,7 @@ class SystemTests
             SystemServiceClient client;
 
             auto runtime = AhsokaRuntime::CreateBuilder()
-                .AddClient(&client)
+                .AddEndPoint(&client)
                 .SetServiceExecutable(pathToServiceExe)
                 .StartWithExternalServices();
 
@@ -37,12 +37,6 @@ class SystemTests
             std::cout << std::endl << "Getting Brightness value: " 
                 << client.GetBrightness().get()->percentage()
                 << std::endl;
-
-            auto usbInfo = client.GetUsbInfo();
-            std::cout << std::endl << "USB Info: " 
-                << usbInfo.get()->mode() << " " << usbInfo.get()->mount_point()
-                << std::endl;   
-
 
             client.RequestServiceShutdown();
             runtime.RequestShutdown();

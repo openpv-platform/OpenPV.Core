@@ -1,11 +1,10 @@
-﻿using Ahsoka.DeveloperTools.Views;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Views;
+using Ahsoka.Services.Security;
 using Ahsoka.Services.System;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using Avalonia.Media;
-using Renci.SshNet;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -19,21 +18,12 @@ namespace Ahsoka.DeveloperTools.ViewModel;
 internal class ActiveConnectionViewModel : ViewModelBase
 {
     #region Connection Management Fields
-    readonly Timer timer = new(5000);
-    readonly object syncRoot = new();
-    GetHardwareInformationReply hardwareInfo;
-    SystemServiceClient client;
     ConnectionInfo selectedInfo;
     bool isConnected = false;
-    bool isInited = false;
     bool isInstaller = false;
+    GetHardwareInformationReply hardwareInfo;
     string connectionString = string.Empty;
     private readonly MainViewModel parentViewModel;
-
-    public ActiveConnectionViewModel(MainViewModel mainViewModel)
-    {
-        this.parentViewModel = mainViewModel;
-    }
     #endregion
 
     #region Properties
@@ -45,7 +35,6 @@ internal class ActiveConnectionViewModel : ViewModelBase
             isConnected = value;
             OnPropertyChanged();
             OnPropertyChanged(nameof(ConnectionColor));
-            UpdateConnectedDescription();
         }
     }
 
@@ -74,10 +63,12 @@ internal class ActiveConnectionViewModel : ViewModelBase
         get { return selectedInfo; }
         set
         {
+            if (selectedInfo != null)
+                selectedInfo.IsActive = false;
+
             selectedInfo = value;
+            selectedInfo.IsActive = true;
             OnPropertyChanged();
-            if (value != null)
-                Reconnect(value);
         }
     }
 
@@ -94,169 +85,9 @@ internal class ActiveConnectionViewModel : ViewModelBase
     }
     #endregion
 
-    #region Methods
-    public void Init()
+    public ActiveConnectionViewModel(MainViewModel mainViewModel)
     {
-        // Create Connection
-        lock (syncRoot)
-            StartConnection(Connection);
-
-        // Start Timer to Listen
-        timer.Elapsed += Timer_Tick;
-        timer.Start();
-
-        isInited = true;
-    }
-
-    private void StartConnection(ConnectionInfo value)
-    {
-        lock (syncRoot)
-        {
-            var config = new ServiceConfiguration()
-            {
-                ServiceName = "SystemService",
-                TcpConnectionAddress = value.HostName,
-                DataChannel = value.SystemServicePort,
-            };
-
-            if (client == null)
-            {
-                client = new(config);
-                UpdateConnectedDescription();
-                AhsokaRuntime.Default.StartEndPoints(client);
-            }
-            else
-            {
-                UpdateConnectedDescription();
-                AhsokaRuntime.Default.StopEndPoints(client);
-
-                client = new(config);
-                AhsokaRuntime.Default.StartEndPoints(client);
-            }
-        }
-    }
-
-    private void Reconnect(ConnectionInfo value)
-    {
-        if (!isInited)
-            return;
-
-        lock (syncRoot)
-        {
-            StartConnection(value);
-        }
-    }
-
-    private void Timer_Tick(object sender, EventArgs e)
-    {
-        try
-        {
-            timer.Stop();
-
-            lock (syncRoot)
-            {
-                ConnectedHardwareInfo = client.GetHardwareInformation(2000);
-
-                // Clear any Line Endings
-                if (ConnectedHardwareInfo != null)
-                {
-                    var items = ConnectedHardwareInfo.VersionInfoes.ToArray();
-                    ConnectedHardwareInfo.VersionInfoes.Clear();
-                    foreach (var item in items)
-                        ConnectedHardwareInfo.VersionInfoes[item.Key] = item.Value.ReplaceLineEndings("");
-                }
-
-                IsConnected = hardwareInfo != null;
-                IsInstaller = hardwareInfo != null && hardwareInfo.IsInstaller;
-
-                // Failed Message....Atttempt to Reconnect.
-                if (hardwareInfo == null)
-                    Reconnect(Connection);
-            }
-        }
-        catch (Exception)
-        {
-            Debug.WriteLine(e.ToString());
-            IsConnected = false;
-        }
-        finally
-        {
-            timer.Start();
-        }
-    }
-
-
-    internal GetHardwareInformationReply GetHardwareInformation(int timeoutInMs = 2000)
-    {
-        lock (syncRoot)
-            return client.GetHardwareInformation(timeoutInMs);
-    }
-
-    internal Task<MessageReplyStatus> LoadApplicationAsync(FileStream stream, bool autoLoad, Progress<FileTransmitProgressInfo> progressString)
-    {
-        lock (syncRoot)
-            return client.LoadApplicationAsync(stream, autoLoad, progressString);
-    }
-
-    private void UpdateConnectedDescription()
-    {
-        var connection = parentViewModel.Connections.ConnectionList.FirstOrDefault(x => x.ConnectionAddress == Connection.ConnectionAddress);
-
-        string isConnectedString = IsConnected ? "Connected" : "Waiting for Connection";
-        string appName = hardwareInfo != null ? $"({hardwareInfo?.ApplicationName})" : "";
-
-        if (connection != null)
-            ConnectionDescription = $"{isConnectedString} to {connection.Description} {appName}";
-        else
-            ConnectionDescription = $"{isConnectedString} to {Connection.ConnectionAddress} {appName}";
-    }
-
-    internal void CancelLoadApplication()
-    {
-        client.CancelLoadApplication();
-    }
-
-    internal void RebootDisplay()
-    {
-        parentViewModel.Console.ClearConsole();
-
-        parentViewModel.StartProcess();
-        IsConnected = false;
-        Task.Run(() =>
-        {
-            if (isConnected)
-            {
-                lock (syncRoot)
-                    client.RequestServiceShutdown(ShutdownTypes.Reboot);
-            }
-            else
-            {
-                var prep = RemoteTargetToolFactory.GetToolsForPlatform(this.Connection.PlatformFamily);
-                prep.Reboot(this.Connection);
-            }
-
-        }).ContinueWith(result =>
-        {
-            parentViewModel.FinishProcess("Reboot Display Sent", !result.IsFaulted);
-        });
-    }
-
-    internal void StopApplication()
-    {
-        parentViewModel.Console.ClearConsole();
-
-        parentViewModel.StartProcess(null);
-
-        IsConnected = false;
-        Task.Run(() =>
-        {
-            var prep = RemoteTargetToolFactory.GetToolsForPlatform(this.Connection.PlatformFamily);
-            prep.StopApplication(this.Connection, IsInstaller);
-
-        }).ContinueWith(result =>
-        {
-            parentViewModel.FinishProcess("Stop Application Sent", !result.IsFaulted);
-        });
+        this.parentViewModel = mainViewModel;
     }
 
     public void ShowConnectionDetails()
@@ -271,26 +102,6 @@ internal class ActiveConnectionViewModel : ViewModelBase
     {
         parentViewModel.Popup.DismissPopup();
     }
-
-    internal GetHardwareInformationReply ReturnToInstaller(CancellationTokenSource source, IProgress<string> progressString)
-    {
-        lock (syncRoot)
-        {
-            // Restart the Installer
-            TargetConnectionInfo connectionInfo = new()
-            {
-                HostName = parentViewModel.ActiveConnection.Connection.HostName,
-                UserName = parentViewModel.ActiveConnection.Connection.UserName,
-                PrivateKeyFile = parentViewModel.ActiveConnection.Connection.PrivateKeyFile,
-            };
-
-            // Switch to Installer and Check Result.
-            var prep = RemoteTargetToolFactory.GetToolsForPlatform(connectionInfo.PlatformFamily);
-            return prep.ReturnToInstaller(connectionInfo, client, source, progressString);
-        }
-    }
-    #endregion
-
 }
 
 

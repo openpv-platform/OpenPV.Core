@@ -1,6 +1,4 @@
-﻿using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
-using System;
+﻿using Ahsoka.Core.Hardware;
 using System.IO;
 
 namespace Ahsoka.DeveloperTools.ViewModel;

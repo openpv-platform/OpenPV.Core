@@ -1,12 +1,12 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Installer;
 using System.Collections.Generic;
 
 namespace Ahsoka.Services.Install;
 
 internal class InstallServiceMessages : AhsokaMessagesBase
 {
-    public InstallServiceMessages()
+    public InstallServiceMessages() : base(InstallService.Name)
     {
         this.RegisterServiceRequest(InstallMessageTypes.Ids.InstallPackage, typeof(InstallPackageRequest), typeof(InstallCompleteInfo));
         this.RegisterServiceNotification(InstallMessageTypes.Ids.InstallProgress, typeof(InstallProgressInfo));
@@ -16,8 +16,14 @@ internal class InstallServiceMessages : AhsokaMessagesBase
     protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
     {
         var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\InstallService.proto", Properties.Resources.InstallService);
+        result.Add("Ahsoka.Proto\\InstallService.proto", GetProtoMessageFile());
         return result;
+    }
+
+    /// <InheritDoc/>
+    public override byte[] GetProtoMessageFile()
+    {
+        return this.GenerateProtoFile("AhsokaInstall", typeof(InstallMessageTypes.Ids));
     }
 
 }

@@ -1,9 +1,10 @@
 ﻿#pragma warning disable CS1591
-using Ahsoka.Utility;
-using Newtonsoft.Json;
+using Ahsoka.Core;
+using Ahsoka.Core.Utility;
 using System;
 using System.IO;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace Ahsoka.Installer;
 
@@ -35,7 +36,7 @@ public class PackageContents : PackageHeader
 
         // Decode Header and Translate into Contents Object.
         PackageHeader header = ProtoBuf.Serializer.Deserialize<PackageHeader>(headerData);
-        PackageContents information = JsonUtility.Deserialize<PackageContents>(JsonUtility.Serialize(header));
+        PackageContents information = JsonUtility.DeserializeWithTypeInfo<PackageContents>(JsonUtility.Serialize(header));
 
         information.PrivateKey = privateKey;
 
@@ -69,7 +70,7 @@ public class PackageContents : PackageHeader
             information.IsSignatureValid = information.HeaderCRC == Crc32.CalculateCrc32(headerData);
         }
         catch (Exception) { Console.WriteLine("Signature could not be validated"); }
-      
+
         return information;
     }
 

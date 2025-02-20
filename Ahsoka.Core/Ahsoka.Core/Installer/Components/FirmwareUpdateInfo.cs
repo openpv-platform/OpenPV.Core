@@ -1,9 +1,9 @@
-﻿using Ahsoka.System;
+﻿using Ahsoka.Core;
 using System.Collections.Generic;
 
-namespace Ahsoka.DeveloperTools.OpenPVTools;
+namespace Ahsoka.Installer;
 
-internal class FirmwareUpdateInfo 
+internal class FirmwareUpdateInfo
 {
     #region Properties
     public PlatformFamily PlatformFamily { get; set; }

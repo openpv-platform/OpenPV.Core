@@ -1,6 +1,6 @@
-﻿using Ahsoka.DeveloperTools.Spark;
+﻿using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Spark;
 using Ahsoka.DeveloperTools.ViewModel;
-using Ahsoka.Utility;
 using Avalonia.Threading;
 using EnovationCloud.Core.Client;
 using EnovationCloud.Core.DataTransferObjects;
@@ -109,7 +109,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
     public string PasswordNew
     {
-        get { return newPassword != null ?  SecureLocalStrings.ToInsecureString(newPassword) : string.Empty; }
+        get { return newPassword != null ? SecureLocalStrings.ToInsecureString(newPassword) : string.Empty; }
         set { newPassword = SecureLocalStrings.ToSecureString(value); ; OnPropertyChanged(); }
     }
 
@@ -134,7 +134,7 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
         if (settings.RememberMe && !String.IsNullOrEmpty(settings.RefreshToken))
         {
-           
+
             RememberMe = true;
             LoginName = settings.LoginName;
 
@@ -147,13 +147,16 @@ internal class SparkLoginViewModel : ChildViewModelBase<MainViewModel>
 
             if (ParentViewModel.IsOffline)
             {
+                // TODO: TEMP CODE Until Spark Fixed.   Without it IsRefresh will crash.
+                SparkAccountClient.SharedSparkClient.CurrentAuthorization = authDTO;
+
                 var result = SparkAccountClient.SharedSparkClient.IsRefreshTokenStillValid(authDTO);
                 if (result)
                 {
                     // Allow Login to Continue without Logging In.
                     parentViewModel.LogIn();
                     return;
-                }    
+                }
             };
 
             try

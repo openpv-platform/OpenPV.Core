@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" >
 	<PropertyGroup>
 		<RootNamespace>Ahsoka</RootNamespace>
 		<GenerateDocumentationFile>True</GenerateDocumentationFile>
@@ -23,20 +23,17 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+		<EmbeddedResource Remove="DesktopOnly\**" />
+		<None Remove="DesktopOnly\**" />
+		<Compile Remove="DesktopOnly\**" />
+	
 		<Compile Remove="Properties\**" />
 		<EmbeddedResource Remove="Properties\**" />
 		<None Remove="Properties\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\..\Ahsoka.Shared\Functions.cmake" Link="Proto\Functions.cmake" />
-		<None Include="..\..\Ahsoka.Shared\CMakeLists.txt" Link="Proto\CMakeLists.txt" />
-		<None Include="..\..\Ahsoka.Shared\Services.proto" Link="Proto\Services.proto" />
-	</ItemGroup>
-	
-	<ItemGroup>
-		<AdditionalFiles Include="Proto\*.proto" />
-		<AdditionalFiles Include="..\..\Ahsoka.Shared\Services.proto" />
+		<None Include="..\..\Ahsoka.Shared\CMakeLists.txt" Link="Resources\CMakeLists.txt" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -46,6 +43,7 @@
 	<ItemGroup>
 	  <None Remove="Resources\CommandLine\Publish.xmlpub.template" />
 	</ItemGroup>
+	
 	<ItemGroup>
 		<None Include="LICENSE.txt" Pack="true" PackagePath="\" />
 		<None Include="README.md" Pack="true" PackagePath="\" />
@@ -57,11 +55,7 @@
 			<AutoGen>True</AutoGen>
 			<DependentUpon>Resources.resx</DependentUpon>
 		</Compile>
-	</ItemGroup>
-
-
-
-	<ItemGroup>
+		
 		<EmbeddedResource Include="Properties\Resources.resx">
 			<Generator>ResXFileCodeGenerator</Generator>
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -69,20 +63,16 @@
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="EnovationCloud.Core" Version="4.7.0" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.0" />
+		<PackageReference Include="EnovationCloud.Core" Version="4.9.0" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.1" />
 		<PackageReference Include="NetMQ" Version="4.0.1.13" />
-		<PackageReference Include="protobuf-net" Version="3.2.30" />
-		<PackageReference Include="protobuf-net.BuildTools" Version="3.2.33">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
-		<PackageReference Include="System.Drawing.Common" Version="8.0.8" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.2" />
+		<PackageReference Include="protobuf-net" Version="3.2.45" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.2.1" />
 		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
 		<PackageReference Include="MQTTnet" Version="4.3.7.1207" />
-		<PackageReference Include="SSH.NET" Version="2024.1.0" />
+		<PackageReference Include="System.Text.Json" Version="8.0.5" />
+		<PackageReference Include="Usb.Events" Version="11.1.0.1" />
 	</ItemGroup>
 
 	<ItemGroup Label="Windows Only Modules - If Only I could Figure Out how to Exclude Them???">
@@ -90,10 +80,22 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="SimpleWifi.netstandard" Version="2.0.0" />
-		<PackageReference Include="System.Security.Cryptography.Xml" Version="8.0.1" />
 	</ItemGroup>
 
+	<Choose>
+		<When Condition="$(IS_DESKTOP) != ''">
+			<ItemGroup>
+				<Compile Condition="$(IS_DESKTOP) == 'YES'" Include="DesktopOnly\**" />
+				<PackageReference Condition="$(IS_DESKTOP) == 'YES'" Include="SSH.NET" Version="2024.2.0" />
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<Compile Include="DesktopOnly\**" />
+				<PackageReference Include="SSH.NET" Version="2024.2.0" />
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
 
 	<ItemGroup>
 		<None Update="Ahsoka.Core.props">
@@ -101,12 +103,12 @@
 			<Pack>true</Pack>
 		</None>
 	</ItemGroup>
-	
+
 	<ItemGroup>
-	  <PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
-	    <PrivateAssets>all</PrivateAssets>
-	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-	  </PackageReference>
+		<PackageReference Include="GitVersion.MsBuild" Version="[5.12.0]">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 	
 	<ItemGroup>

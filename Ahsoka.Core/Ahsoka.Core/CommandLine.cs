@@ -1,13 +1,9 @@
-﻿using Ahsoka.ServiceFramework;
-using Ahsoka.System;
-using Ahsoka.Utility;
+﻿using Ahsoka.Core.Utility;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 
-namespace Ahsoka;
+namespace Ahsoka.Core;
 
 #pragma warning disable CS1591
 
@@ -111,7 +107,7 @@ public static class CommandLine
     {
         Dictionary<string, CommandInfo> methods = new();
 
-        var assemblies = System.Extensions.GetExtensionLibraries(true);
+        var assemblies = Extensions.GetExtensionLibraries(true);
 
         foreach (var asmwf in assemblies)
         {

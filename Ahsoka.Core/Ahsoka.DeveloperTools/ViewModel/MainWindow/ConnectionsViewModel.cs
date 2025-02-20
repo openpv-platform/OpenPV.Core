@@ -1,13 +1,11 @@
-﻿using Ahsoka.DeveloperTools.Core;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
+using Ahsoka.Core.Spark;
+using Ahsoka.Core.Utility;
+using Ahsoka.DeveloperTools.Core;
 using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
-using Ahsoka.Installer.InstallEngine;
-using Ahsoka.Spark;
-using Ahsoka.System;
-using Ahsoka.System.Hardware;
-using Ahsoka.Utility;
 using EnovationCloud.Core.Client;
-using Renci.SshNet;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,7 +13,6 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Runtime;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -189,8 +186,9 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                         PrivateKey = item.PrivateKey,
                         PrivateAppKey = item.PrivateAppKey,
                         UserName = item.UserName,
-                        IsFavorite = item.IsFavorite
-
+                        IsFavorite = item.IsFavorite,
+                        SecurityServicePort = item.SecurityServicePort,
+                        APIKey = item.APIKey,
                     };
 
                     ConnectionList.Add(newItem);
@@ -208,24 +206,29 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                 PlatformFamily = PlatformFamily.OpenViewLinux,
                 PlatformQualifier = "S50",
                 SystemServicePort = 5001,
+                SecurityServicePort = 5007,
                 UserName = "root",
             });
 
             ConnectionList.Add(new ConnectionInfo(this)
             {
                 Description = "OpenViewPro",
-                HostName = "am67-sk",
+                HostName = "OpenViewPro",
                 PlatformFamily = PlatformFamily.OpenViewLinuxPro,
                 PlatformQualifier = "GenericArm64",
                 SystemServicePort = 5001,
+                SecurityServicePort = 5007,
                 UserName = "root",
             });
 
             ConnectionList.Add(new ConnectionInfo(this)
             {
+                PlatformFamily = PlatformFamily.Windows64,
+                PlatformQualifier = "Desktop",
                 Description = "This Machine",
                 HostName = "localhost",
                 SystemServicePort = 5001,
+                SecurityServicePort = 5007,
                 UserName = "root",
             });
 
@@ -237,6 +240,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
                 PlatformFamily = PlatformFamily.PowerVision,
                 PlatformQualifier = "Any",
                 SystemServicePort = 5001,
+                SecurityServicePort = 5007,
                 UserName = "root",
             });
 
@@ -291,12 +295,25 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             ParentViewModel.Console.AddConsoleLine(info);
         });
 
+
         var prepItem = RemoteTargetToolFactory.GetToolsForPlatform(this.EditConfigurationInfo.PlatformFamily);
 
         ParentViewModel.StartProcess();
 
         await Task.Run(() =>
         {
+            if (ParentViewModel.ActiveConnection.Connection != EditConfigurationInfo)
+            {
+                ParentViewModel.Console.AddConsoleLine("Selected Connection does not match Active Connection");
+                throw new Exception("Incorrect Device Connection");
+            }
+            if (!ParentViewModel.ActiveConnection.IsConnected)
+            {
+                ParentViewModel.Console.AddConsoleLine("No Active Connection Found");
+                throw new Exception("Incorrect Device Connection");
+            }
+
+
             string keyName = string.Empty;
             KeyFileInfo keyFileInfo = null;
 
@@ -329,10 +346,12 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             // Add Key To Display
             if (File.Exists(editInfo.PrivateAppKeyFile))
             {
+                var hardwareID = Guid.Parse(ParentViewModel.ActiveConnection.ConnectedHardwareInfo.DeviceId);
+
                 var info = HardwareInfo.GetHardwareInfo(editInfo.PlatformFamily, editInfo.PlatformQualifier);
                 var targetSigningKey = info.TargetPathInfo.GetInstallerPath(InstallerPaths.ApplicationSigningKeyPath);
-              
-                result += SshUtility.AddApplicationKey(this.EditConfigurationInfo, this.editInfo.PrivateAppKeyFile, targetSigningKey);
+
+                result += SshUtility.AddApplicationKey(this.EditConfigurationInfo, this.editInfo.PrivateAppKeyFile, targetSigningKey, hardwareID);
             }
 
 
@@ -490,6 +509,8 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             var connection = SshUtility.CreateSshClient(editInfo);
             var result = connection.RunCommand("cat /sys/firmware/devicetree/base/serial-number"); // This Needs to change but don't want to be reliant on the command being on the unit.
             var hardwareID = result.Result.Replace("\0", "");
+            if (String.IsNullOrEmpty(hardwareID))
+                hardwareID = "0";
 
             return SparkAccountClient.SharedSparkClient.GetFactoryInfo(hardwareInfo.PlatformFamily.ToString(), hardwareID);
 
@@ -497,12 +518,15 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
         {
             try
             {
-                FactoryInfo = new ManufacturingInfo()
-                {
-                    MacAddress = result.Result.MacAddress,
-                    PartNumber = result.Result.PartNumber,
-                    SerialNumber = result.Result.SerialNumber,
-                };
+                if (result.Result == null)
+                    FactoryInfo = new ManufacturingInfo();
+                else
+                    FactoryInfo = new ManufacturingInfo()
+                    {
+                        MacAddress = result.Result.MacAddress,
+                        PartNumber = result.Result.PartNumber,
+                        SerialNumber = result.Result.SerialNumber,
+                    };
 
                 FactoryPrepConnectionInfo = new SparkConnectionInfo()
                 {
@@ -612,7 +636,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            var hardwareInfo = ParentViewModel.ActiveConnection.GetHardwareInformation();
+            var hardwareInfo = ParentViewModel.ActiveConnection.Connection.GetHardwareInformation();
             var connectedInfo = hardwareInfo.PlatformFamily;
             var packageInfo = EditConfigurationInfo.PlatformFamily;
 
@@ -624,7 +648,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             // Load Package
             using (var stream = new FileStream(ApplicationFile, FileMode.Open, FileAccess.Read))
             {
-                var result = ParentViewModel.ActiveConnection.LoadApplicationAsync(stream, true, progressString);
+                var result = ParentViewModel.ActiveConnection.Connection.LoadApplicationAsync(stream, true, progressString);
 
                 // Wait and Check Result
                 result.GetAwaiter().GetResult();
@@ -649,6 +673,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
             Description = "New Item",
             HostName = "localhost",
             SystemServicePort = 5001,
+            SecurityServicePort = 5007,
             UserName = "root",
         };
 
@@ -794,7 +819,7 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
         });
     }
 
-  
+
 
     internal async void DisableRDP()
     {
@@ -835,238 +860,3 @@ internal class ConnectionsViewModel : ChildViewModelBase<MainViewModel>, ICanCan
     #endregion
 }
 
-#region ConnectionInfo
-internal class ConnectionInfo : ChildViewModelBase<ConnectionsViewModel>, ITargetConnectionInfo
-{
-    string description;
-    string qualifier;
-    string hostName;
-    int port;
-    bool isFavorite;
-    string userName;
-    string privateKey;
-    string privateAppKey;
-    PlatformFamily family;
-
-    public bool IsFavorite
-    {
-        get { return isFavorite; }
-        set
-        {
-            isFavorite = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string PlatformDescription
-    {
-        get
-        {
-            var hardwareInfo = HardwareInfo.GetHardwareInfo(PlatformFamily, PlatformQualifier);
-
-            return hardwareInfo?.PlatformDescription;
-        }
-        set
-        {
-            if (value == null)
-                return;
-
-            var hardwareInfo = HardwareInfo.GetHardwareInfoByDescription(value);
-            if (hardwareInfo != null)
-            {
-                PlatformFamily = hardwareInfo.PlatformFamily;
-                PlatformQualifier = hardwareInfo.PlatformQualifier;
-            }
-            OnPropertyChanged();
-        }
-    }
-
-    public List<String> SshKeys
-    {
-        get
-        {
-            string folder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
-            List<string> returnList = new List<string>() { "(None)" };
-
-            if (Path.Exists(folder))
-                returnList.AddRange(Directory.GetFiles(folder, "*.pub", SearchOption.AllDirectories).Select(Path.GetFileNameWithoutExtension));
-            return returnList;
-        }
-        set { }
-    }
-
-    public List<String> SigningKeys
-    {
-        get
-        {
-            string path = Path.GetDirectoryName(PackageInformation.GetPackageCertPath("Test", KeyTypes.PackageSigningKey));
-            List<string> returnList = new List<string>(){ "(None)" };
-
-            if (Path.Exists(path))
-                returnList.AddRange(Directory.GetFiles(path, "*.appcert").Select(Path.GetFileNameWithoutExtension));
-
-            return returnList;
-        }
-        set { }
-    }
-
-
-    public PlatformFamily PlatformFamily
-    {
-        get { return family; }
-        set
-        {
-            if (value != PlatformFamily.Any)
-            {
-                family = value;
-            }
-        }
-    }
-
-    public string Description
-    {
-        get { return description; }
-        set
-        {
-            description = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string PlatformQualifier
-    {
-        get { return qualifier; }
-        set
-        {
-            qualifier = value;
-        }
-    }
-
-    public string HostName
-    {
-        get { return hostName; }
-        set
-        {
-            hostName = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public int Port
-    {
-        get;
-        set;
-    }
-
-    public int SystemServicePort
-    {
-        get { return port; }
-        set
-        {
-            port = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string UserName
-    {
-        get { return userName; }
-        set
-        {
-            userName = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string PrivateKeyFile
-    {
-        get 
-        {
-            string pathToKeys = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
-            string pathToKey = Path.Combine(pathToKeys, PrivateKey);
-            if (File.Exists(pathToKey))
-                return pathToKey;
-            else
-            {
-                pathToKey = Path.Combine(pathToKeys, "Ahsoka", PrivateKey);
-                if (File.Exists(pathToKey))
-                    return pathToKey;
-            }
-            return string.Empty; }
-       
-    }
-
-    public string PrivateKey
-    {
-        get
-        {
-            if (SshKeys.Contains(privateKey))
-                return privateKey;
-            else
-                return "(None)"; ; }
-        set
-        {
-            privateKey = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string PrivateAppKeyFile
-    {
-        get
-        {
-            string path = PackageInformation.GetPackageCertPath(PrivateAppKey, KeyTypes.PackageSigningKey);
-            if (File.Exists(path))
-                return path;
-            
-            return string.Empty;
-        }
-
-    }
-
-    public string PrivateAppKey
-    {
-        get
-        {
-            if (SigningKeys.Contains(privateAppKey))
-                return privateAppKey;
-            else
-                return "(None)";
-        }
-        set
-        {
-            privateAppKey = value;
-            OnPropertyChanged();
-        }
-    }
-
-    public string ConnectionAddress
-    {
-        get
-        {
-            return $"tcp://{HostName}:{SystemServicePort}";
-        }
-    }
-
-    public override string ToString()
-    {
-        return Description.ToString();
-    }
-
-    internal string GetReleaseName()
-    {
-        return family.ToString();
-    }
-
-    public void FavoriteChanged()
-    {
-        this.IsFavorite = !IsFavorite;
-
-    }
-
-    public ConnectionInfo(ConnectionsViewModel parentViewModel) : base(parentViewModel)
-    {
-
-    }
-}
-#endregion

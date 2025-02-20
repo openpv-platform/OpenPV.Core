@@ -21,7 +21,7 @@
 		<RemoveDir Directories="$(Download_Root)FirmwareDownload" />
 	</Target>
 
-	<Target Name="DownloadBSPs" AfterTargets="PostBuildEvent" >
+	<Target Name="DownloadBSPs" AfterTargets="PostBuildEvent">
 		<!--This section Downloads the BSP to be included in the OpenView Package the Version used is specfied in the OpenViewBSP Property Above.
 		Note that this requires that you have the SparkLogin and SparkPassword stored in your local Secrets file...same values used for tests.-->
 
@@ -53,11 +53,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="JsonPeek" Version="1.2.0" />
-		<PackageReference Include="GitVersion.MsBuild" Version="5.12.0">
+		<PackageReference Include="GitVersion.MsBuild" Version="[5.12.0]">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.1" />
 	</ItemGroup>
 
 </Project>

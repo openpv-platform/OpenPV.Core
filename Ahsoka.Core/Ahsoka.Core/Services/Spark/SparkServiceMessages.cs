@@ -1,13 +1,11 @@
-﻿using Ahsoka.Installer;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
 using EnovationCloud.Core.DataTransferObjects;
-using System.Collections.Generic;
 
 namespace Ahsoka.Services.Spark;
 
 internal class SparkServiceMessages : AhsokaMessagesBase
 {
-    public SparkServiceMessages()
+    public SparkServiceMessages() : base(SparkService.Name)
     {
         this.RegisterServiceRequest(SparkMessageTypes.Ids.SetSparkSubscription, typeof(SparkSubscription), typeof(EmptyNotification));
         this.RegisterServiceRequest(SparkMessageTypes.Ids.GetSparkSubscription, typeof(EmptyNotification), typeof(SparkSubscriptionInfo));
@@ -20,11 +18,9 @@ internal class SparkServiceMessages : AhsokaMessagesBase
         this.RegisterServiceNotification(SparkMessageTypes.Ids.AppChangeNotification, typeof(AppChangeInfo));
     }
 
-    protected override Dictionary<string, byte[]> OnGetAdditionalClientResources(ApplicationType type, bool includeImplementation)
+    /// <InheritDoc/>
+    public override byte[] GetProtoMessageFile()
     {
-        var result = base.OnGetAdditionalClientResources(type);
-        result.Add("Ahsoka.Proto\\SparkService.proto", Properties.Resources.SparkService);
-        return result;
+        return this.GenerateProtoFile("AhsokaSpark", typeof(SparkMessageTypes.Ids));
     }
 }
-

@@ -47,17 +47,21 @@
 			</StackPanel.Styles>
 			<Border Margin="20,10,0,0" Padding="3" BorderBrush="WhiteSmoke" BorderThickness="0,0,0,0">
 				<Grid Margin="5" ColumnDefinitions="175,Auto,Auto" RowDefinitions="*,*,*,*,*">
-					<TextBlock Text="C++ Project Folder:" Grid.Row="0" Grid.Column="0"/>
-					<TextBox Text="{Binding ProjectPath}" Grid.Row="0" Width="300" Grid.Column="1" />
-					<Button  Margin="5,0"  Grid.Row="0" Grid.Column="2" Content="Choose Path..." Command="{Binding SetProjectDirectory}"/>
+					<TextBlock   Text="Development Tool:" Grid.Column="0" />
+					<ComboBox   HorizontalAlignment="Left" Grid.Column="1" Width="200"
+								SelectedItem="{Binding ProjectType}"
+								ItemsSource="{Binding ProjectTypes}"/>
+					<TextBlock Text="C++ Project Folder:" Grid.Row="1" Grid.Column="0"/>
+					<TextBox Text="{Binding ProjectPath}" Grid.Row="1" Width="300" Grid.Column="1" />
+					<Button  Margin="5,0"  Grid.Row="1" Grid.Column="2" Content="Choose Path..." Command="{Binding SetProjectDirectory}"/>
 					<TextBlock VerticalAlignment="Bottom" Text="{Binding InstalledFramework, FallbackValue=(No Framework Installed)}" 
 							   MaxWidth="400" Grid.ColumnSpan="4" HorizontalAlignment="Left" 
 							   Padding="0,30,5,5" FontStyle="Italic" TextWrapping="Wrap" 
-							   Grid.Row="1" Grid.Column="1" />
+							   Grid.Row="2" Grid.Column="1" />
 					<TextBlock VerticalAlignment="Top" Text="{Binding CurrentFramework, FallbackValue=(Current Version)}" 
 							   Grid.ColumnSpan="3" HorizontalAlignment="Left" 
 							   Padding="0,5,5,5" FontStyle="Italic" TextWrapping="Wrap" 
-							   Grid.Row="2" Grid.Column="1" />
+							   Grid.Row="3" Grid.Column="1" />
 				</Grid>
 			</Border>
 		</StackPanel>

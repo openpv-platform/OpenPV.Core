@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 #include "AhsokaServices.h"
+#include "AhsokaClientEndPoint.h"
 
 using namespace std;
 using namespace DefaultNameSpace;
@@ -15,7 +16,7 @@ namespace DefaultNameSpace
 {
 	const std::string DefaultServiceName = "DefaultService";
 
-	class DefaultServiceClient : public AhsokaServiceFramework::AhsokaEndPointWithCallback<DefaultTransportIdEnum>
+	class DefaultServiceClient : public AhsokaServiceFramework::AhsokaClientEndPoint<DefaultTransportIdEnum>
 	{
 		public:
 

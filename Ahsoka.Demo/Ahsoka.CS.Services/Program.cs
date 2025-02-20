@@ -1,7 +1,7 @@
-﻿using Ahsoka.Dispatch;
-using Ahsoka.ServiceFramework;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Dispatch;
+using Ahsoka.Core.Drawing.Utility;
 using Ahsoka.Services.System;
-using Ahsoka.System;
 using System;
 
 namespace Ahsoka.Services.Demo;
@@ -17,6 +17,7 @@ public class Program
         // to our application.  If this behavior is not wanted, the clients configuration
         // can be altered to only listen to internal url's OR not started at all.
         SystemServiceClient systemServiceClient = new();
+        Dispatcher.Default.AddStartupItem(systemServiceClient);
 
         // Here we create a Time Service Client which we built in this demo.  By default this service will 
         // use its internal configuration and start when first called OR when started
@@ -38,14 +39,10 @@ public class Program
         },
         Dispatcher.Default.Stop); // Stop the Dispatcher when Work is Complete.
 
-        // Start the main Dispatcher and Block until it completes.
-        // This method blocks (executes our RunLoop) until the service shutdown is requested
-        // which currently happens in the WaitForKeyboardEntry() method.
-        Dispatcher.Default.StartAndRun();
-
         // Once the Dispatcher is shutdown in the Dispatcher.Default.Stop() method,
         // we ask Linux / Windows to exit our process.
-        ApplicationContext.Exit();
+        Dispatcher.Default.StartAndRun();
+
     }
 
     /// <summary>

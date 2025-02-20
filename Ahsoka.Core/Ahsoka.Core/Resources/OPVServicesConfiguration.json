@@ -3,9 +3,8 @@
     {
       "socketType": "TcpSocket",
       "serviceName": "InstallService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5000,
       "behaviors": "AutoStart"
     },
@@ -14,7 +13,6 @@
       "serviceName": "SystemService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5001,
       "behaviors": "AutoStart"
     },
@@ -23,35 +21,63 @@
       "serviceName": "SparkService",
       "tcpListenAddress": "*",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5002,
       "behaviors": "AutoStart"
     },
     {
       "socketType": "TcpSocket",
-      "serviceName": "NetworkService",
-      "tcpListenAddress": "*",
+      "serviceName": "WiFiClientService",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5003,
       "behaviors": "AutoStart"
     },
     {
       "socketType": "TcpSocket",
       "serviceName": "IotService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5005,
       "behaviors": "AutoStart"
     },
     {
       "socketType": "TcpSocket",
       "serviceName": "SecurityService",
-      "tcpListenAddress": "*",
+      "tcpListenAddress": "localhost",
       "tcpConnectionAddress": "localhost",
-      "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
       "dataChannel": 5007,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "DeviceService",
+      "tcpListenAddress": "localhost",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 5009,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "CellularService",
+      "tcpListenAddress": "localhost",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 5010,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "WiFiAPService",
+      "tcpListenAddress": "localhost",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 5011,
+      "behaviors": "AutoStart"
+    },
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "LayerManagerService",
+      "tcpListenAddress": "localhost",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 5100,
       "behaviors": "AutoStart"
     }
   ]

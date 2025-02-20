@@ -22,7 +22,7 @@ namespace Ahsoka.DeveloperTools.ViewModel;
 
 internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
 {
-    List<SparkReleaseViewModel> releaseList;
+    List<SparkReleaseViewModel> releaseList = new List<SparkReleaseViewModel>();
     SparkReleaseViewModel selectedViewModel;
     bool show = false;
     bool updateAvailable = false;
@@ -103,8 +103,8 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
 
     public UpdatesViewModel(MainViewModel parentViewModel) :
         base(parentViewModel)
-    {
-        RefreshList();
+    { 
+
     }
 
     internal void ShowUpdates()

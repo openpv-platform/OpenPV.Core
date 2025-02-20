@@ -506,6 +506,10 @@ internal class MainViewModel : ViewModelBase
             else if (showNewVersionHelp)
                 Plugins.OpenPopup(showNewVersionHelp);
 
+            // Fix Crash on Initial Login
+            if (!IsOffline)
+                Updates.RefreshList();
+
         }
     }
 

@@ -37,48 +37,17 @@ internal class OpenViewProFlashTool : OpenPVToolBase
 
     public override async Task InstallTool(IToolViewModel toolVM)
     {
-        string pathToScript = "", executable = "", args = "";
-        bool admin = false;
+        if (OperatingSystem.IsWindows())
+        {
+            IProgress<CommandOutput> progressText = new Progress<CommandOutput>(info =>
+            {
+                toolVM.MainViewModel.Console.AddConsoleText(info.Data,false);
+            });
 
-        if (OperatingSystem.IsLinux())
-        {
-            /* pathToScript = Path.Combine(LocalPath, "stm_installer_linux.zip");
-             zipPath = Path.Combine(LocalPath, "TempExtract");
-             ZipFile.ExtractToDirectory(pathToScript, zipPath, true);
-             List<string> file = Directory.GetFiles(zipPath, "*.linux", SearchOption.AllDirectories).ToList();
-             executable = file.First();
-             args = "";
-             admin = false;*/
-        }
-        else if (OperatingSystem.IsMacOS())
-        {
-            /* pathToScript = Path.Combine(LocalPath, "stm_installer_mac.zip");
-             zipPath = Path.Combine(LocalPath, "TempExtract");
-             ZipFile.ExtractToDirectory(pathToScript, zipPath, true);
-             List<string> file = Directory.GetFiles(zipPath, "SetupSTM32CubeProgrammer-2_14_0_macos", SearchOption.AllDirectories).ToList();
-             executable = file.First();
-             args = "";
-             admin = false;*/
-        }
-        else if (OperatingSystem.IsWindows())
-        {
-            pathToScript = Path.Combine(LocalPath, "driver\\OpenViewPro_DFU.inf");
-            executable = "C:\\Windows\\System32\\InfDefaultInstall.exe";
-            args = pathToScript;
-
-            admin = true;
+            CancellationTokenSource token = new CancellationTokenSource();
+            ProcessUtility.RunProcessAsync("cmd", "/c " + Path.Combine(LocalPath, "openviewpro-driver.exe"), LocalPath, progressText, token.Token);
         }
         else
             return;
-
-
-        var process = ProcessUtility.CreateProcessInWindow(executable, args);
-        if (admin)
-            process.StartInfo.Verb = "runas";
-
-        process.Start();
-
-        await process.WaitForExitAsync(); // Wait for Install to Complete
-        process.Dispose();
     }
 }

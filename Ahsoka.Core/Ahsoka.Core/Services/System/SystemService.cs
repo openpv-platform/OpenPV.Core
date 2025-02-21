@@ -27,7 +27,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
     readonly SystemSettings settings;
 
     Dictionary<string, string> platformVersions = new();
-    private string currentAppPath;
     private string sdkVersion;
     private string applicationName;
     private string applicationDescription;
@@ -80,7 +79,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
         InitSystemSettings(settings);
         stopwatch.ResetTiming("Settings Loaded");
 
-        currentAppPath = SystemInfo.GetApplicationInfo(out applicationName, out applicationDescription, out applicationVersion, out sdkVersion);
+        SystemInfo.GetApplicationInfo(out applicationName, out applicationDescription, out applicationVersion, out sdkVersion);
 
         GetVersions();
 
@@ -324,6 +323,9 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
     {
         var info = message.Message as BrightnessInfo;
         coreInterop.SetBrightness(info.Percentage);
+
+        // Save Corrected Value
+        info.Percentage = coreInterop.GetBrightness();
         settings.BrightnessInfo.Percentage = info.Percentage;
         if (info.Persist)
             SaveSystemSettings();

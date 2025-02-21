@@ -66,11 +66,11 @@
       "Name": "OpenViewPro Flash Tools",
       "Description": "Flash Tool for OpenView Pro Series",
       "BaseClass": "Ahsoka.DeveloperTools.OpenViewProFlashTool",
-      "Version": ".11",
-      "DevelopmentPlatform": "Any",
+      "Version": "5.0",
+      "DevelopmentPlatform": "Windows64",
       "Resources": [
         {
-          "DownloadPath": "https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/OpenViewPro/InstallTools/OpenViewPro.zip"
+          "DownloadPath": "https://powervisionsparkprod.blob.core.windows.net/ahsoka-public-downloads/OpenViewPro/InstallTools/OpenViewProDriver.zip"
         }
       ]
     },

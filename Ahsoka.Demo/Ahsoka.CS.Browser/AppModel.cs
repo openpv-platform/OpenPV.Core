@@ -31,19 +31,19 @@ internal class AppModel
     internal static void BrightnessUp()
     {
         lastBrightness = systemClient.GetBrightness().Percentage;
-        if (lastBrightness <= 90)
-            lastBrightness += 10;
+        if (lastBrightness <= 95)
+            lastBrightness += 5;
 
-        systemClient.SetBrightness(new BrightnessInfo() { Percentage = lastBrightness });
+        lastBrightness = systemClient.SetBrightness(new BrightnessInfo() { Percentage = lastBrightness }).Percentage;
     }
 
     internal static void BrightnessDown()
     {
         lastBrightness = systemClient.GetBrightness().Percentage;
-        if (lastBrightness >= 10)
-            lastBrightness -= 10;
+        if (lastBrightness >= 5)
+            lastBrightness -= 5;
 
-        systemClient.SetBrightness(new BrightnessInfo() { Percentage = lastBrightness });
+        lastBrightness =  systemClient.SetBrightness(new BrightnessInfo() { Percentage = lastBrightness }).Percentage;
     }
 
 }

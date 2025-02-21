@@ -1,4 +1,5 @@
-﻿using Ahsoka.Core.Hardware;
+﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
 using Ahsoka.Core.Utility;
 using Avalonia.Controls;
 

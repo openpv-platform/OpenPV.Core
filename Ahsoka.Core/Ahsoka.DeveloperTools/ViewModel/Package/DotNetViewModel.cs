@@ -153,7 +153,7 @@ internal class DotNetViewModel : ViewModelBase
         if (frameworkInfo != null)
             if (new Version(frameworkInfo.FrameworkVersion).Major < new Version(parentViewModel.GetVersion()).Major)
             {
-                string packageExtensionFolder = parentViewModel.SelectedPackage.PackageInfo.GetExtentionFolder();
+                string packageExtensionFolder = parentViewModel.SelectedPackage.PackageInfo.GetExtensionFolder();
                 if (Directory.Exists(packageExtensionFolder))
                     Directory.Delete(packageExtensionFolder, true);
 

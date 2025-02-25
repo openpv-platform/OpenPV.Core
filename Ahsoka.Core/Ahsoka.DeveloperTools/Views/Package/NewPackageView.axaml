@@ -3,7 +3,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="1024" d:DesignHeight="600"
-			 xmlns:material="using:Material.Icons.Avalonia"
+			 xmlns:progRing="clr-namespace:AvaloniaProgressRing;assembly=AvaloniaProgressRing"
+		     xmlns:material="using:Material.Icons.Avalonia"
 			 xmlns:CustomerTools="clr-namespace:Ahsoka.DeveloperTools.Views"
              x:Class="Ahsoka.DeveloperTools.Views.NewPackageView" Background="#33555555">
 	<Border Margin="60" BoxShadow="5 5 10 2 DarkGray" BorderBrush="DarkGray" BorderThickness="1" Background="White">
@@ -16,7 +17,7 @@
 
 			</Border>
 			<DockPanel Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True"
-					   IsVisible="{Binding IsCreate, FallbackValue=false}">
+					   IsVisible="{Binding IsCreate, FallbackValue=true}">
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="*"/>
@@ -33,6 +34,15 @@
 							<StackPanel Orientation="Horizontal">
 								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="NextTitle"></material:MaterialIcon>
 								<TextBlock Margin="6,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="13"  Text="  Next   "/>
+							</StackPanel>
+						</Button>
+						<Button  HorizontalAlignment="Left"
+							Height="38" Margin="10"
+							VerticalContentAlignment="Center"
+								Command="{Binding RefreshDemos}" >
+							<StackPanel Orientation="Horizontal">
+								<material:MaterialIcon Width="24" Height="24" Foreground="SteelBlue" Kind="Refresh"></material:MaterialIcon>
+								<TextBlock Margin="6,0" VerticalAlignment="Center" FontSize="13"  Text="Refresh Demos"/>
 							</StackPanel>
 						</Button>
 					</Grid>
@@ -56,7 +66,7 @@
 			</DockPanel>
 
 			<DockPanel Grid.RowSpan="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" LastChildFill="True"
-					   IsVisible="{Binding IsConfigure, FallbackValue=true}">
+					   IsVisible="{Binding IsConfigure, FallbackValue=false}">
 				<Grid >
 					<Grid.RowDefinitions>
 						<RowDefinition Height="*"/>
@@ -140,6 +150,20 @@
 				</Border>
 			</Border>
 
+			<Border  IsVisible="{Binding IsWorking, FallbackValue=true}"
+			 BorderBrush="DarkGray" Background="Transparent" BorderThickness="0,0,0,0" Margin="0,0,0,0" >
+				<Border HorizontalAlignment="Center" VerticalAlignment="Center"  BoxShadow="5 5 10 2 DarkGray" Grid.ColumnSpan="2" BorderBrush="DarkGray" Background="White" BorderThickness="1">
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="50">
+
+						<progRing:ProgressRing Width="30"  Height="30" IsActive="True"   Foreground="SteelBlue" />
+						<TextBlock  Foreground="SteelBlue" FontSize="16"
+									   VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,5"
+									   Padding="10" Text="{Binding WorkingText, FallbackValue=Refreshing Demos...}"/>
+
+					</StackPanel>
+				</Border>
+			</Border>
+			
 			<Button Margin="4" Grid.Row="0" Width="24" Height="24"
 				HorizontalAlignment="Right"
 				VerticalAlignment="Top"

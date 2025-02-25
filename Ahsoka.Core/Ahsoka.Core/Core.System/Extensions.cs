@@ -266,7 +266,7 @@ public class Extensions
 
     private static void CreateProject(PackageInformation packageInfo, string projectFile, List<ExtensionInfo> extensionInfos)
     {
-        string pathToExtensionInfo = packageInfo.GetPackageExtentionFolder();
+        string pathToExtensionInfo = packageInfo.GetExtentionFolder();
 
         var configs = Extensions.Configurations;
 

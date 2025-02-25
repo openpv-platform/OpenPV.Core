@@ -143,7 +143,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     internal void ReloadExtensions()
     {
         extensionUXExtensions.Clear();
-        Extensions.LoadExtensions(ParentViewModel.PackageInfo.GetPackageExtentionFolder(), true);
+        Extensions.LoadExtensions(ParentViewModel.PackageInfo.GetExtentionFolder(), true);
 
         var extensionList = Extensions.GetExtensionLibraries();
 
@@ -565,7 +565,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
 
     public string GetExtensionDirectory()
     {
-        string packageExtensionFolder = ParentViewModel.ParentViewModel.PackageInfo.GetPackageExtentionFolder();
+        string packageExtensionFolder = ParentViewModel.ParentViewModel.PackageInfo.GetExtentionFolder();
         string extensionFolder = Path.Combine(packageExtensionFolder, ExtensionConfiguration.ExtensionName);
         return extensionFolder;
     }

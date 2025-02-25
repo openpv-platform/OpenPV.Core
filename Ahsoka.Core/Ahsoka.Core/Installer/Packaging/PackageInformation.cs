@@ -129,7 +129,7 @@ public class PackageInformation : PackageHeader
             (type == KeyTypes.PackageSigningKey ? keyName + ".appcert" : keyName + ".servicecert"));
     }
 
-    internal string GetPackageExtentionFolder()
+    public string GetExtentionFolder()
     {
         if (ApplicationType == ApplicationType.Dotnet)
         {
@@ -142,7 +142,11 @@ public class PackageInformation : PackageHeader
             return Path.Combine(projectFolder, Extensions.ExtensionsFolder);
         }
         return "";
-        
+    }
+
+    public string GetPlatformExtentionFolder(PlatformFamily family)
+    {
+        return Path.Combine(GetExtentionFolder(), "platform", family.ToString());
     }
 
     internal bool CanUseOptimizerdServiceManager()

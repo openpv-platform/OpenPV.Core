@@ -63,7 +63,7 @@ class CanTests
             // Open and Verify we recieved the Port Configuration
             client.OpenCommunicationChannel();
             auto portConfig = client.GetPortConfiguration();
-            uint id = portConfig.messageconfiguration().messages(0).id();
+            uint id = portConfig.message_configuration().messages(0).id();
             
             // Other ID for Testing.
             uint otherId = id + 1;

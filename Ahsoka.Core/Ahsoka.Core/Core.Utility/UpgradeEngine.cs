@@ -8,24 +8,19 @@ namespace Ahsoka.Core.Utility;
 
 internal static class UpgradeEngine
 {
-    private static readonly Dictionary<string, List<UpgradeMethod>> upgradeDictionary = new();
-    private static Dictionary<string, object> context;
+    
 
     static UpgradeEngine()
     {
-        Type[] types = ClassLoader.GetSubclasses(typeof(UpgradeMethod));
-        foreach (Type typeItem in types)
-        {
-            UpgradeMethod method = ClassLoader.CreateType(typeItem) as UpgradeMethod;
-            if (!upgradeDictionary.ContainsKey(method.Extension))
-                upgradeDictionary.Add(method.Extension, new List<UpgradeMethod>());
 
-            upgradeDictionary[method.Extension.ToLower()].Add(method);
-        }
     }
 
     internal static string ExecuteUpgrade(string fileName, string contents)
     {
+        Dictionary<string, List<UpgradeMethod>> upgradeDictionary = LoadSubclasses();
+        Dictionary<string, object> context;
+        
+
         string fileNameLocal = Path.GetFileName(fileName);
         context = new Dictionary<string, object>();
         context["FileName"] = fileName;
@@ -35,7 +30,7 @@ internal static class UpgradeEngine
         List<UpgradeMethod> methods = new();
 
         foreach (var item in upgradeDictionary)
-            if (fileNameLocal.ToLowerInvariant().EndsWith(item.Key))
+            if (fileNameLocal.ToLowerInvariant().EndsWith(item.Key.ToLowerInvariant()))
                 methods = item.Value;
 
         if (methods.Count > 0)
@@ -63,12 +58,29 @@ internal static class UpgradeEngine
         string data = File.ReadAllText(path);
         return ExecuteUpgrade(path, data);
     }
+
+    private static Dictionary<string, List<UpgradeMethod>> LoadSubclasses()
+    {
+        var upgradeDictionary = new Dictionary<string, List<UpgradeMethod>>(StringComparer.OrdinalIgnoreCase);
+        Type[] types = ClassLoader.GetSubclasses(typeof(UpgradeMethod));
+        foreach (Type typeItem in types)
+        {
+            UpgradeMethod method = ClassLoader.CreateType(typeItem) as UpgradeMethod;
+            if (!upgradeDictionary.ContainsKey(method.Extension))
+                upgradeDictionary.Add(method.Extension, new List<UpgradeMethod>());
+
+            upgradeDictionary[method.Extension].Add(method);
+        }
+        return upgradeDictionary;
+    }
 }
 
-internal abstract class UpgradeMethod
+/// <summary>
+/// Allows upgrades to json documents when loading
+/// </summary>
+public abstract class UpgradeMethod
 {
     internal const string packageUpgradeExtension = "packageinfo.json";
-    internal const string canUpgradeExtension = "cancalibration.json";
 
     /// <summary>
     /// Gets or sets the path.
@@ -87,12 +99,17 @@ internal abstract class UpgradeMethod
     /// </summary>
     /// <param name="path">The path.</param>
     /// <param name="version">The version.</param>
-    protected UpgradeMethod(string path, string version)
+    public UpgradeMethod(string path, string version)
     {
         Extension = path;
         Version = new Version(version);
     }
 
+    /// <summary>
+    /// Executes the upgrade on a raw Json document
+    /// </summary>
+    /// <param name="document"></param>
+    /// <param name="context"></param>
     public abstract void UpgradeData(JsonNode document, Dictionary<string, object> context);
 
 }

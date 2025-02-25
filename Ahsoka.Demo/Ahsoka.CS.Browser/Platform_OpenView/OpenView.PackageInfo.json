@@ -1,5 +1,5 @@
 {
-  "version": "4.0.1.10065",
+  "version": "4.1.1.10001",
   "applicationType": "Dotnet",
   "execCommand": "Ahsoka.CS.Browser",
   "packageName": "Ahsoka.CS.Browser",
@@ -28,7 +28,6 @@
       "requireChallenge": "NotRequired",
       "services": [
         {
-          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
@@ -43,8 +42,8 @@
   "screenConfiguration": {
     "showUnknownSurfaces": false,
     "bootLogoPath": "",
-    "orientation": "DefaultOrientation",
-    "surfaceSetups": []
+    "orientation": 0,
+    "surfaceSetup": []
   },
   "hardwareConfiguration": {
     "hardwareItems": [],

@@ -228,7 +228,9 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
                                     Arguments = $"-c \"nohup xterm -fs 14 -fa DejaVuSansMono -e 'sudo apt install {localPath} && nohup OpenPV.DeveloperToolkit'\"",
                                 };
 
-                                Process.Start(linuxInfo);
+                                // Allow Process to Finish then exit
+                                var process = Process.Start(linuxInfo);
+                                process.WaitForExit();
                             }
                             if (OperatingSystem.IsMacOS())
                             {
@@ -266,7 +268,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
                                 };
 
                                 var process = Process.Start(macStartInfo);
-                                Task.Delay(2000).Wait();
+                                process.WaitForExit();
 
                             }
                             else
@@ -278,6 +280,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
                                     Arguments = $"/i \"{localPath}\" INSTALLDIR=\"{CreateExeFolderPath()}\" TARGETDIR=\"{CreateExeFolderPath()}\" /passive UPDATING_AUTOMATICALLY=1 /l* test.log",
                                 };
                                 var result = Process.Start(windowsInfo);
+
                             }
                         }
                         catch (Win32Exception ex)

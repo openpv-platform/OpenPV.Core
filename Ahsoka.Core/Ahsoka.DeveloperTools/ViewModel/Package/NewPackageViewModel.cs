@@ -2,6 +2,8 @@
 using Ahsoka.DeveloperTools.ViewModel;
 using Ahsoka.Installer;
 using Avalonia.Controls;
+using Avalonia.Controls.Documents;
+using Avalonia.Threading;
 using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,8 @@ using System.ComponentModel;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ahsoka.DeveloperTools;
 
@@ -17,8 +21,9 @@ internal class NewPackageViewModel : ViewModelBase
 {
     #region Fields
     private readonly MainViewModel parentViewModel;
-    private bool isCreate, matchNames = true;
+    private bool isCreate, isWorking, matchNames = true;
     private string projectName, projectPath, directoryName, selectedProject;
+    private string workingText = "";
 
     #endregion
 
@@ -39,7 +44,10 @@ internal class NewPackageViewModel : ViewModelBase
         get; private set;
     }
 
-    public bool ShowNoProjects { get; }
+    public bool ShowNoProjects { get; set; }
+    
+    public bool IsWorking { get { return isWorking; } set { isWorking = value; OnPropertyChanged(); } }
+    public string WorkingText { get { return workingText; } set { workingText = value; OnPropertyChanged(); } }
 
     public bool IsCreate { get { return isCreate; } set { isCreate = value; OnPropertyChanged(); OnPropertyChanged(nameof(IsConfigure)); } }
 
@@ -68,12 +76,20 @@ internal class NewPackageViewModel : ViewModelBase
     #endregion
 
     #region Methods
+ 
+
     public NewPackageViewModel(MainViewModel customerToolsViewModel)
     {
         this.parentViewModel = customerToolsViewModel;
         Demos = new();
         IsCreate = true;
+        IsWorking = false;
 
+        LoadDemos();
+    }
+
+    private void LoadDemos()
+    {
         List<CustomerDemoInfoViewModel> demos = new();
 
         //load demos
@@ -114,7 +130,7 @@ internal class NewPackageViewModel : ViewModelBase
                                 var data = new StreamReader(entry.Open());
                                 string json = data.ReadToEnd();
                                 var demoProject = PackageInformation.LoadPackageInformation(json, false);
-                                demos.Add(new CustomerDemoInfoViewModel(demoProject) { FileName = file });
+                                demos.Add(new CustomerDemoInfoViewModel(demoProject) { FileName = file, IsExtension = true });
                             }
                     }
                     catch { }
@@ -126,9 +142,12 @@ internal class NewPackageViewModel : ViewModelBase
                       group p by p.FileName into g
                       select new { PrimaryDemo = g.FirstOrDefault(), AllDemos = g.ToList() };
 
-        foreach (var item in results)
+        foreach (var item in results.OrderBy(x=>x.PrimaryDemo.IsExtension).ThenBy(x=>x.PrimaryDemo.ProjectName))
         {
-            Demos.Add(item.PrimaryDemo);
+            // Hiding VSCODE Demo for now.
+            if (item.PrimaryDemo.ProjectName.StartsWith("Ahsoka.CPP"))
+                continue;
+
             item.PrimaryDemo.DemoList.AddRange(item.AllDemos.Select(x => x.ProjectName));
 
             item.PrimaryDemo.OriginalName = item.PrimaryDemo.ProjectName;
@@ -137,6 +156,8 @@ internal class NewPackageViewModel : ViewModelBase
                 item.PrimaryDemo.DisplayName = item.PrimaryDemo.ProjectName;
             else
                 item.PrimaryDemo.DisplayName = item.PrimaryDemo.ProjectName.Replace(".Select", "").Replace(".Pro", "");
+            
+            Demos.Add(item.PrimaryDemo); 
         }
 
 
@@ -254,6 +275,42 @@ internal class NewPackageViewModel : ViewModelBase
     {
         parentViewModel.Popup.DismissPopup();
     }
+
+    public void RefreshDemos()
+    {
+        IsWorking = true;
+        Demos.Clear();
+
+        Task.Run(() =>
+        {
+            if (!parentViewModel.Plugins.ToolListDownloaded)
+            {
+                WorkingText = "Downloading Plugin List";
+                parentViewModel.Plugins.LoadItems(true);
+            }
+
+            // Check Pre-Requisites
+            PlatformDemoTool demoTool = (PlatformDemoTool)parentViewModel.Plugins.SupportInfo?.Downloads.FirstOrDefault(x => x is PlatformDemoTool tool );
+            PlatformExtensionsTool extensionTool = (PlatformExtensionsTool)parentViewModel.Plugins.SupportInfo?.Downloads.FirstOrDefault(x => x is PlatformExtensionsTool tool);
+
+            CancellationTokenSource cts = new CancellationTokenSource();
+            WorkingText = "Clearing Extensions and Demos";
+            demoTool.RemoveTool(this.parentViewModel.Plugins);
+            extensionTool.RemoveTool(this.parentViewModel.Plugins);
+
+            WorkingText = "Downloading Extensions and Demos";
+            demoTool.DownloadTool(this.parentViewModel.Plugins, cts).GetAwaiter().GetResult();
+            extensionTool.DownloadTool(this.parentViewModel.Plugins, cts).GetAwaiter().GetResult();
+
+        }).ContinueWith((result)=>
+        {
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                LoadDemos();
+                IsWorking = false;
+            });
+        });
+    }
     #endregion
 }
 
@@ -262,6 +319,8 @@ public class CustomerDemoInfoViewModel : ViewModelBase
     public List<String> DemoList { get; set; } = new();
 
     public PackageInformation Model { get; init; }
+
+    public bool IsExtension { get; set; }
 
     public string FileName { get; set; }
 
@@ -273,7 +332,9 @@ public class CustomerDemoInfoViewModel : ViewModelBase
 
     public string Description { get { return Model.PackageDescription; } set { Model.PackageDescription = value; OnPropertyChanged(); } }
 
-    public string Language { get { return Model.ApplicationType == ApplicationType.Dotnet ? "C#" : "C++"; } set { Model.PackageName = value; OnPropertyChanged(); } }
+    public string Language { get { return Model.ApplicationType == ApplicationType.Dotnet ? 
+                                        "C#" + (IsExtension ? " (Extension)":"") : 
+                                        "C++" + (IsExtension? " (Extension)": "") ; } set { Model.PackageName = value; OnPropertyChanged(); } }
 
     public bool IsLocal { get { return File.Exists(Model.GetPackageInfoPath()); } set { } }
 

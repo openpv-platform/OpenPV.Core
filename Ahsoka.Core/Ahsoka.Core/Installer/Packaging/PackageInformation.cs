@@ -131,14 +131,18 @@ public class PackageInformation : PackageHeader
 
     internal string GetPackageExtentionFolder()
     {
-        if (ApplicationType == Installer.ApplicationType.Dotnet)
+        if (ApplicationType == ApplicationType.Dotnet)
         {
             string projectFolder = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), DotNetInfo.ProjectPath));
             return Path.Combine(projectFolder, "obj", Extensions.ExtensionsFolder);
         }
-        else
-            return Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), Extensions.ExtensionsFolder);
-
+        else if (ApplicationType == ApplicationType.Cpp)
+        {
+            string projectFolder = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), CppInfo.ProjectPath));
+            return Path.Combine(projectFolder, Extensions.ExtensionsFolder);
+        }
+        return "";
+        
     }
 
     internal bool CanUseOptimizerdServiceManager()

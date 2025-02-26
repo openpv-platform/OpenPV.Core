@@ -96,7 +96,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         {
             var version = await GetVersionToDownload(config, config.PackageName, nugetVersion.IsPrerelease);
 
-            await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version.FirstOrDefault(), false, demoPath, false, true);
+            await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version.FirstOrDefault(), demoPath, false, true);
         }
         catch { Console.WriteLine($"Unable to Download Packages for {config.PackageName}"); }
     }
@@ -171,7 +171,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         return listOfResults;
     }
 
-    internal static async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string packageName, string version, bool ux, string directory, bool evaluateDeps, bool demoOnly)
+    internal static async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string packageName, string version, string directory, bool evaluateDeps, bool demoOnly)
     {
         Console.WriteLine($"Fetching {packageName} with version {version} for download");
 
@@ -229,6 +229,22 @@ internal class PlatformExtensionsTool : SparkToolBase
                     demo.ExtractToFile(Path.Combine(pathToDemos, demo.Name));
                 }
             }
+
+            if (package.StartsWith("Ahsoka") && directory.EndsWith("lib"))
+            {
+                var plaformFiles = archive.Entries.Where(x => x.FullName.StartsWith("platform"));
+                foreach (var file in plaformFiles)
+                {
+                    // Up One and Over 
+                    string pathToPlaform = Path.Combine(Path.GetDirectoryName(directory));
+                    string filePath = Path.Combine(pathToPlaform.Replace("\\", "/"), file.FullName);
+                    if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                    file.ExtractToFile(filePath);
+                }
+            }
+
 
             if (libEntry != null && !demoOnly)
             {

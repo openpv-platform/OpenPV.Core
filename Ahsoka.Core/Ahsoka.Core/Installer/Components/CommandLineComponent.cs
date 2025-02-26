@@ -75,6 +75,10 @@ internal class CommandLineComponent : PackageComponentBase
             componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
         }
 
+        // Add Extension Libs - Add AhsokaLibs for Platform
+        foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
+            Extensions.InstallExtensionLibs(info.PlatformFamily, additionalFiles, item.ExtensionName);
+
         if (componentData != null)
         {
             if (info.PlatformFamily == PlatformFamily.Windows64)

@@ -3,7 +3,7 @@
 
 	<ItemGroup Label="Native Libraries for GLES">
 		
-		<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Drawing.OpenViewLinux.so">
+		<Content Include="..\..\BuildOutputs\Platform\OpenViewLinux\Ahsoka.Drawing.so">
 			<Link>AhsokaLib\Ahsoka.Drawing.OpenViewLinux.so</Link>
 			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Drawing.OpenViewLinux.so</PackagePath>
 			<PackageCopyToOutput>true</PackageCopyToOutput>
@@ -12,7 +12,7 @@
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Visible>true</Visible>
 		</Content>
-		<Content Include="..\..\BuildOutputs\Ahsoka.Services\Ahsoka.Drawing.OpenViewLinuxPro.so">
+		<Content Include="..\..\BuildOutputs\Platform\OpenViewLinuxPro\Ahsoka.Drawing.so">
 			<Link>AhsokaLib\Ahsoka.Drawing.OpenViewLinuxPro.so</Link>
 			<PackagePath>contentFiles/any/any/AhsokaLib/Ahsoka.Drawing.OpenViewLinuxPro.so</PackagePath>
 			<PackageCopyToOutput>true</PackageCopyToOutput>

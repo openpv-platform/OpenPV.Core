@@ -181,7 +181,7 @@ endif
 
 export ESP-HOSTED := $(CURDIR)/../ThirdParty/esp-hosted/host/
 export ESP-HOSTED-BUILD := $(ESP-HOSTED)linux/host_control/c_support/
-export LIB-OUT := $(CURDIR)/../../BuildOutputs/Ahsoka.Services/$(TARGETNAME)
+export LIB-OUT := $(CURDIR)/../../BuildOutputs/Platform/OpenViewLinux/$(TARGETNAME)
 
 esphosted:
 	echo esp-hosted shared library begin

@@ -68,6 +68,29 @@ public class Extensions
         }
     }
 
+
+    internal static void InstallExtensionLibs(PlatformFamily family, Dictionary<string, byte[]> additionalFiles, string extensionName, IProgress<string> progress = null)
+    {
+        var config = Configurations.FirstOrDefault(x => x.ExtensionName == extensionName);
+        if (config == null)
+        {
+            progress?.Report($"No extension found for {extensionName}");
+            return;
+        }
+
+        string pathToExtensionCache = Path.GetDirectoryName(config.FilePath);
+
+        foreach (var file in Directory.GetFiles(pathToExtensionCache, "*", SearchOption.AllDirectories))
+        {
+            if (!file.Contains("\\ux\\") && !file.Contains("\\demos"))
+            {
+                string fileNameFromExtensions = file.Replace(pathToExtensionCache, "");
+                string fileName = $"{ExtensionsFolder}/{extensionName}/{fileNameFromExtensions.Replace("\\", "/").TrimStart('/')}";
+                additionalFiles[fileName] = File.ReadAllBytes(file);
+            }
+        }
+    }
+
     /// <summary>
     ///  Load Extensions from the specified path (or use default if null)
     /// </summary>

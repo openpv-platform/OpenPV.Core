@@ -144,9 +144,9 @@ public class PackageInformation : PackageHeader
         return "";
     }
 
-    public string GetPlatformExtensionFolder(PlatformFamily family)
+    public string GetPlatformExtensionFolder(PlatformFamily family, string extensionName)
     {
-        return Path.Combine(GetExtensionFolder(), "platform", family.ToString());
+        return Path.Combine(GetExtensionFolder(), extensionName, "platform", family.ToString());
     }
 
     internal bool CanUseOptimizerdServiceManager()

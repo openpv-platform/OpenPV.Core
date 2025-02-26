@@ -113,17 +113,7 @@ public class Extensions
 
         // Unload any Libraries in the Load Context.
         if (currentLoadContext != null)
-        {
-            foreach (var item in ExtensionLibraries)
-                if (item.TryGetTarget(out var lib))
-                    ClassLoader.RemoveAssembly(lib);
-
-            ExtensionLibraries.Clear();
-            Configurations.Clear();
-
-            currentLoadContext.Unload();
-            currentLoadContext = null;
-        }
+            CloseExtensions();
 
         currentLoadContext = new AssemblyLoadContext("ExtensionContext", true);
 
@@ -149,6 +139,19 @@ public class Extensions
         }
     }
 
+    internal static void CloseExtensions()
+    {
+        foreach (var item in ExtensionLibraries)
+            if (item.TryGetTarget(out var lib))
+                ClassLoader.RemoveAssembly(lib);
+
+        ExtensionLibraries.Clear();
+        Configurations.Clear();
+
+        currentLoadContext?.Unload();
+        currentLoadContext = null;
+    }
+
     internal static List<WeakReference<Assembly>> GetExtensionLibraries(bool includeCoreLibrary = false)
     {
         // Always Load Ahsoka.Core Assembly
@@ -159,17 +162,17 @@ public class Extensions
         return assemblies;
     }
 
-    internal static List<T> GetExtensions<T>() where T : class
+    internal static List<T> GetExtensions<T>(bool includeCore = false) where T : class
     {
         List<T> installers = new();
-        var assemblies = GetExtensionLibraries();
+        var assemblies = GetExtensionLibraries(includeCore);
 
         foreach (var assembly in assemblies)
         {
             if (assembly.TryGetTarget(out var t))
                 foreach (var item in t.DefinedTypes)
                 {
-                    if (typeof(T).IsAssignableFrom(item))
+                    if (typeof(T).IsAssignableFrom(item) && !item.IsAbstract)
                         installers.Add(ClassLoader.CreateType(item) as T);
                 }
         }

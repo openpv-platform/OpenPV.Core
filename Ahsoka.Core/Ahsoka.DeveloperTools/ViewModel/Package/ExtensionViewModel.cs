@@ -341,6 +341,8 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             item.Value.Close();
         }
 
+        Extensions.CloseExtensions();
+
         ParentViewModel.ParentViewModel.Popup.DismissPopup(currentPopup);
     }
 

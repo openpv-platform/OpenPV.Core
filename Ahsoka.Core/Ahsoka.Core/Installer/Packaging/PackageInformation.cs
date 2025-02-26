@@ -138,7 +138,7 @@ public class PackageInformation : PackageHeader
         }
         else if (ApplicationType == ApplicationType.Cpp)
         {
-            string projectFolder = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), CppInfo.ProjectPath));
+            string projectFolder = Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), CppInfo.ProjectPath);
             return Path.Combine(projectFolder, Extensions.ExtensionsFolder);
         }
         return "";

@@ -67,8 +67,7 @@ public class Extensions
             }
         }
     }
-
-
+    
     internal static void InstallExtensionLibs(PlatformFamily family, Dictionary<string, byte[]> additionalFiles, string extensionName, IProgress<string> progress = null)
     {
         var config = Configurations.FirstOrDefault(x => x.ExtensionName == extensionName);
@@ -82,10 +81,11 @@ public class Extensions
 
         foreach (var file in Directory.GetFiles(pathToExtensionCache, "*", SearchOption.AllDirectories))
         {
-            if (!file.Contains("\\ux\\") && !file.Contains("\\demos"))
+            string platformFolder = $"platform\\{family.ToString()}\\AhsokaLib";
+
+            if (file.Replace("/","\\").Contains(platformFolder))
             {
-                string fileNameFromExtensions = file.Replace(pathToExtensionCache, "");
-                string fileName = $"{ExtensionsFolder}/{extensionName}/{fileNameFromExtensions.Replace("\\", "/").TrimStart('/')}";
+                string fileName = $"AhsokaLib/{Path.GetFileName(file)}";
                 additionalFiles[fileName] = File.ReadAllBytes(file);
             }
         }

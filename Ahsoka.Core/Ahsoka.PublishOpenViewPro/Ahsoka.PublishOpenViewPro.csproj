@@ -31,7 +31,7 @@
 
 		<!--Copy Distro and Upgrade Files-->
 		<Copy SourceFiles="@(DISTRO_FIRMWARE)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport_Firmware\%(RecursiveDir)" />
-		<Copy SourceFiles="@(PLATFORM_RESOURCES)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinux_TargetSupport\Resources\AhsokaLib\%(RecursiveDir)" />
+		<Copy SourceFiles="@(PLATFORM_RESOURCES)" DestinationFolder="$(PlatformSupportRoot)\PlatformSupport\OpenViewLinuxPro_TargetSupport\Resources\AhsokaLib\%(RecursiveDir)" />
 
 		<!-- Create OpenView "Select" Target Support Package (For Prep, Runtimes, Etc.) -->
 		<Exec Condition="true" Command="dotnet clean ../Ahsoka.Installer.UI/Ahsoka.Installer.UI.csproj" />

@@ -1,4 +1,5 @@
 ﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
 using Ahsoka.Core.Utility;
 using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Install;
@@ -75,9 +76,7 @@ internal class CommandLineComponent : PackageComponentBase
             componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
         }
 
-        // Add Extension Libs - Add AhsokaLibs for Platform
-        foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
-            Extensions.InstallExtensionLibs(info.PlatformFamily, additionalFiles, item.ExtensionName);
+        AddAhsokaLibs(info, additionalFiles);
 
         if (componentData != null)
         {
@@ -90,6 +89,16 @@ internal class CommandLineComponent : PackageComponentBase
         }
         return componentData;
     }
+
+    private static void AddAhsokaLibs(PackageInformation info, Dictionary<string, byte[]> additionalFiles)
+    {
+        AddCoreLibs(info.PlatformFamily, additionalFiles);
+
+        // Add Extension Libs - Add AhsokaLibs for Platform
+        foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
+            Extensions.InstallExtensionLibs(info.PlatformFamily, additionalFiles, item.ExtensionName);
+    }
+
 
     protected override string GetTargetPath()
     {

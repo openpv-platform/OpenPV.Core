@@ -110,9 +110,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
         foreach (var plugin in installerPlugins)
             plugin.AddAdditionalApplicationFiles(buildLocation, attributes, additionalFiles, info, progress);
 
-        // Add Extension Libs and Resources - Add AhsokaLibs for Platform
-        foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
-            Extensions.InstallExtensionLibs(info.PlatformFamily, additionalFiles, item.ExtensionName);
+        AddAhsokaLibs(info, additionalFiles);
 
         // Add Component Attributes
         var componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
@@ -127,6 +125,17 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
             plugin.CleanupApplication(buildLocation, info, progress);
 
         return componentData;
+    }
+
+    private static void AddAhsokaLibs(PackageInformation info, Dictionary<string, byte[]> additionalFiles)
+    {
+        // Add Core Libs if running C# Apps
+        if (info.ApplicationType == ApplicationType.Dotnet)
+            AddCoreLibs(info.PlatformFamily, additionalFiles);
+
+        // Add Extension Libs and Resources - Add AhsokaLibs for Platform
+        foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
+            Extensions.InstallExtensionLibs(info.PlatformFamily, additionalFiles, item.ExtensionName);
     }
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)

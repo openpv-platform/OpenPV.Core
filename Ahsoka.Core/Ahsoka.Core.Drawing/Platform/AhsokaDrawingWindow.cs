@@ -3,17 +3,17 @@ using System.Runtime.InteropServices;
 
 namespace Ahsoka.Core.Drawing.Platform;
 
-internal class STWindow : LinuxWindow
+internal class AhsokaDrawingWindow : LinuxWindow
 {
-    public STWindow() : base(new STDrawingImplementation())
+    public AhsokaDrawingWindow() : base(new AhsokaDrawingImplementation())
     {
 
     }
 
-    class STDrawingImplementation : LinuxDrawingImplementation
+    class AhsokaDrawingImplementation : LinuxDrawingImplementation
     {
         #region Native Interop
-        public const string NativeLibraryName = "AhsokaLib/Ahsoka.Drawing.OpenViewLinux.so";
+        public const string NativeLibraryName = "AhsokaLib/Ahsoka.Drawing.so";
 
         [DllImport(NativeLibraryName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
         internal static extern int InitWindowWithSize(bool fullscreen, int width, int height, [MarshalAs(UnmanagedType.LPStr)] string appid);
@@ -130,7 +130,7 @@ internal class STWindow : LinuxWindow
             return new DrawingRect(x, y, w, h);
         }
         #endregion
-    }
 
+    }
 }
 

@@ -4,9 +4,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Core", "Ahsoka.Core\Ahsoka.Core\Ahsoka.Core.csproj", "{C5F62D5C-7316-421F-8414-ECD2A4C7081A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{4707A2D8-1A4F-4135-B72C-31BF01B66C55} = {4707A2D8-1A4F-4135-B72C-31BF01B66C55}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ahsoka.Test", "Ahsoka.Core\Ahsoka.Test\Ahsoka.Test.csproj", "{5D5A8A09-CA99-4D1A-A269-796274F0EFDD}"
 EndProject

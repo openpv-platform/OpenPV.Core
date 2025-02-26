@@ -67,7 +67,9 @@ internal class ActiveConnectionViewModel : ViewModelBase
                 selectedInfo.IsActive = false;
 
             selectedInfo = value;
-            selectedInfo.IsActive = true;
+            if (selectedInfo != null)
+                selectedInfo.IsActive = true;
+
             OnPropertyChanged();
         }
     }

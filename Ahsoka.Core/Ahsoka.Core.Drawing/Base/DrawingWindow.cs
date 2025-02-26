@@ -59,14 +59,9 @@ public partial class DrawingWindow
         {
             CreateDesktopWindow(surfaceId, appId);
         }
-        else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
+        else
         {
-            nativeWindow = new Platform.STWindow();
-            api = nativeWindow.CreateWindow(this, surfaceId, appId) as SkiaDrawingApi;
-        }
-        else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
-        {
-            nativeWindow = new Platform.TIWindow();
+            nativeWindow = new Platform.AhsokaDrawingWindow();
             api = nativeWindow.CreateWindow(this, surfaceId, appId) as SkiaDrawingApi;
         }
 
@@ -84,14 +79,9 @@ public partial class DrawingWindow
         {
             CreateDesktopWindow(fullScreen, width, height, appId);
         }
-        else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinux)
+        else
         {
-            nativeWindow = new Platform.STWindow();
-            api = nativeWindow.CreateWindow(this, fullScreen, width, height, appId) as SkiaDrawingApi;
-        }
-        else if (SystemInfo.CurrentPlatform == PlatformFamily.OpenViewLinuxPro)
-        {
-            nativeWindow = new Platform.TIWindow();
+            nativeWindow = new Platform.AhsokaDrawingWindow();
             api = nativeWindow.CreateWindow(this, fullScreen, width, height, appId) as SkiaDrawingApi;
         }
 

@@ -286,6 +286,7 @@ internal class DotNetViewModel : ViewModelBase
     {
         string pathToCommandLine = Path.Combine(mainViewModel.GetPlatformPath(platform), "CommandLine");
         string pathToHardware = Path.Combine(mainViewModel.GetPlatformPath(platform), "Hardware");
+        string pathToResources = Path.Combine(mainViewModel.GetPlatformPath(platform), "Resources");
 
         // Copy Command Line
         if (!Directory.Exists(pathToCommandLine))
@@ -300,6 +301,7 @@ internal class DotNetViewModel : ViewModelBase
         // Copy Command Line
         string pathToCLIOutput = Path.Combine(directory, platform.ToString() + "_TargetSupport", "CommandLine");
         string pathToHWOutput = Path.Combine(directory, platform.ToString() + "_TargetSupport", "Hardware");
+        string pathToResourceOutput = Path.Combine(directory, platform.ToString() + "_TargetSupport", "Resources");
         progressString?.Report($" ");
         progressString?.Report($"Installing Ahsoka Services Application to {pathToCLIOutput}");
         progressString?.Report($" ");
@@ -308,6 +310,8 @@ internal class DotNetViewModel : ViewModelBase
         if (Directory.Exists(pathToHardware))
             FileUtilities.CopyDirectory(pathToHardware, pathToHWOutput, true, progressString);
 
+        if (Directory.Exists(pathToResources))
+            FileUtilities.CopyDirectory(pathToResources, pathToResourceOutput, true, progressString);
 
         progressString?.Report($" ");
 

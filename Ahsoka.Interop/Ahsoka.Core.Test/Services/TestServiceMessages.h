@@ -22,7 +22,7 @@ namespace AhsokaCore
             TestServiceMessages()
             {
                 RegisterServiceRequest(EchoTest, CreateCTOR<AhsokaCore::ServiceConfiguration>(), CreateCTOR<AhsokaCore::ServiceConfiguration>());
-		        RegisterServiceNotification(EchoTestNotification, CreateCTOR<AhsokaServiceFramework::EmptyNotification>());
+		        RegisterServiceNotification(EchoTestNotification, CreateCTOR<AhsokaCore::ServiceConfiguration>());
 			}
     };
 }

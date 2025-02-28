@@ -4,8 +4,6 @@
 #include "IotTests.hpp"
 #include "SystemTests.hpp"
 #include "SparkTests.hpp"
-#include "NetworkTests.hpp"
-#include "CanTests.hpp"
 #include <filesystem>
 
 using namespace std;
@@ -21,8 +19,6 @@ int main(int argc, char *argv[])
         cout << "   1: Service Tests" << std::endl;
         cout << "   2: Iot Tests" << std::endl;
         cout << "   3: Spark Test" << std::endl;
-        cout << "   4: Network Test" << std::endl;
-        cout << "   5: Can Test" << std::endl;
         cout << "   9: Exit Test" << std::endl << std::endl;
 
         int test;
@@ -48,18 +44,6 @@ int main(int argc, char *argv[])
                 {
                     SparkTests spark;
                     spark.RunTests(pathToExecutable);
-                    break;
-                }
-                case 4:
-                {
-                    NetworkTests network;
-                    network.RunTests(pathToExecutable);
-                    break;
-                }
-                case 5:
-                {
-                    CanTests canTest;
-                    canTest.RunTests(pathToExecutable);
                     break;
                 }
                 case 9:

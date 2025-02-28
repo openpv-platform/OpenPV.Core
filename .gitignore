@@ -24,3 +24,4 @@ Extensions/**/*
 
 TestResults/*
 Ahsoka.Interop/Ahsoka.Proto/*.proto
+Ahsoka.Demo/Ahsoka_CPP_Services/.extensions/*

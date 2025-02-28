@@ -9,8 +9,6 @@ set(CMAKE_AUTORCC OFF)
 
 project ("Ahsoka.Proto" LANGUAGES CXX)
 
-include(Functions.cmake)
-
 find_package(Protobuf REQUIRED)
 
 message(STATUS "Using Protocol Buffers ${Protobuf_VERSION}")

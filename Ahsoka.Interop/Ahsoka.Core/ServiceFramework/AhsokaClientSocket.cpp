@@ -39,6 +39,7 @@ namespace AhsokaServiceFramework
         {
             IsSending = false;
             socketThread->join();
+            delete socketThread;
             socketThread = 0;
         }
 
@@ -46,6 +47,7 @@ namespace AhsokaServiceFramework
         {
             IsListening = false;
             notificationThread->join();
+            delete notificationThread;
             notificationThread = 0;
         }
 
@@ -125,6 +127,7 @@ namespace AhsokaServiceFramework
 
         notificationSocket->disconnect(GetDataChannel());
         notificationSocket->close();
+        delete notificationSocket;
    
         std::cout << "Client Listener Shutdown Successfully" << std::endl;
     }
@@ -162,7 +165,9 @@ namespace AhsokaServiceFramework
 
         socket->disconnect(GetDataChannel());
         socket->close();
-        
+
+        delete socket;
+
         std::cout << "Client Sender Shutdown Successfully" << std::endl;
     }
 

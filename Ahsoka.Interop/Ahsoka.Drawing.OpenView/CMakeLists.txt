@@ -6,13 +6,15 @@ cmake_minimum_required (VERSION 3.8)
 
 # Link 3rd party libraries into executable target
 IF (${AHSOKA_BUILD_OUTPUTS} MATCHES "OpenViewLinux_TargetSupport/SDK$")
-    set(PROJECT_NAME "Ahsoka.Drawing.OpenViewLinux")
+    set(PROJECT_NAME "Ahsoka.Drawing")
+    set(PLATFORM "OpenViewLinux")
     set(CMAKE_EXE_LINKER_FLAGS " -lwayland-server -lwayland-client -lEGL -lGLESv2 ")
     set(CMAKE_SHARED_LINKER_FLAGS "-lwayland-server -lwayland-client -lEGL -lGLESv2 -lpthread")
 ENDIF()
 
 IF (${AHSOKA_BUILD_OUTPUTS} MATCHES "OpenViewLinuxPro_TargetSupport/SDK$") 
-    set(PROJECT_NAME "Ahsoka.Drawing.OpenViewLinuxPro")
+    set(PROJECT_NAME "Ahsoka.Drawing")
+    set(PLATFORM "OpenViewLinuxPro")
     set(CMAKE_EXE_LINKER_FLAGS " -lwayland-server -lwayland-client -lEGL -lGLESv2 -lwayland-egl -livi-application -lilmControl -lilmCommon")
     set(CMAKE_SHARED_LINKER_FLAGS "-lwayland-server -lwayland-client -lEGL -lGLESv2 -lpthread -lwayland-egl -livi-application -lilmControl -lilmCommon")
     add_definitions( -DISPRO)
@@ -39,7 +41,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Ahsoka.Core Ahsoka.Proto)
 set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS_RELEASE -s)
 
 #Set Output Location
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS}/../../../Ahsoka.Services/)
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS}/../../../Ahsoka.Services/)
+set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS}/../../../Platform/${PLATFORM})
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${AHSOKA_BUILD_OUTPUTS}/../../../Platform/${PLATFORM})
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
 

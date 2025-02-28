@@ -3,20 +3,20 @@
 #include <iostream>
 #include <string>
 #include "AhsokaServices.h"
+#include "AhsokaRuntimeProcess.h"
 
 class SparkTests
 {
     public:
         void RunTests(std::string pathToServiceExe)
         {
-            SystemServiceClient client;
-            SparkServiceClient sparkClient;
+            auto serviceProcess = AhsokaRuntimeProcess::StartServiceExecutable(pathToServiceExe);
 
-            auto runtime = AhsokaRuntime::CreateBuilder()
-                .AddEndPoint(&client)
-                .AddEndPoint(&sparkClient)
-                .SetServiceExecutable(pathToServiceExe)
-                .StartWithExternalServices(); // Connect to Already Running Runtime
+            SystemServiceClient client;
+            client.Start();
+
+            SparkServiceClient sparkClient;
+            sparkClient.Start();
 
             std::cout << client.Echo("Server Ready") << ::endl;
 
@@ -37,8 +37,11 @@ class SparkTests
             else std::cout << "Subscription set failed" << std::endl;
 
             client.RequestServiceShutdown();
-            runtime.RequestShutdown();
-            runtime.WaitForShutdown();
+            
+            client.Stop();
+            sparkClient.Stop();
+
+            serviceProcess->EndProcess();
 
             std::cout << "Shutdown Completed" << std::endl;
         }

@@ -15,7 +15,7 @@
 
 	<Target Name="Clean BuildOutputs" BeforeTargets="BeforeClean">
 		<Message Text="Cleaning BuildOutputs" Importance="high" />
-		<RemoveDir Directories="$(InteropSource_Root)\BuildOutputs\Ahsoka.Services" />
+		<RemoveDir Directories="$(InteropSource_Root)\BuildOutputs\PlatformLibs" />
 		<RemoveDir Directories="$(InteropSource_Root)\BuildOutputs\SDK" />
 		<RemoveDir Directories="$(InteropSource_Root)\BuildOutputs\StoryboardLib" />
 	</Target>
@@ -23,7 +23,7 @@
 	<Import Project="../Ahsoka.DownloadBSP/BSP.Targets" />
 
 	<Target Name="BuildInteropLibs" AfterTargets="PostBuildEvent" 
-		 Condition="$(IGNORE_PREREQS) !='YES' and !Exists('$(InteropSource_Root)\BuildOutputs\Ahsoka.Services\Ahsoka.Services.OpenViewLinux.so')">
+		 Condition="$(IGNORE_PREREQS) !='YES' and !Exists('$(InteropSource_Root)\BuildOutputs\PlatformLibs\OpenViewLinux\Ahsoka.Services.OpenViewLinux.so')">
 
 		<Message Text="Generate Proto Files" Importance="high" />
 		<MakeDir Directories="$(InteropSource_Root)\BuildOutputs\TempProto" />

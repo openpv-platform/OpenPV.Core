@@ -16,8 +16,6 @@ internal class DeviceManagerPlugin : InstallerPlugin
         PackageInformation info,
         IProgress<PackageProgressInfo> progress)
     {
-
-
         var configJsonContents = JsonUtility.Serialize(info.HardwareConfiguration);
         var protobufferStream = new MemoryStream();
         ProtoBuf.Serializer.Serialize(protobufferStream, info.HardwareConfiguration);

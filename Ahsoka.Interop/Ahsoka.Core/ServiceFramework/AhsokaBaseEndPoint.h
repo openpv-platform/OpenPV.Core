@@ -16,28 +16,17 @@ namespace AhsokaServiceFramework
 
 			AhsokaBaseEndPoint() {}
             
-            virtual ~AhsokaBaseEndPoint() {}
+            virtual ~AhsokaBaseEndPoint() 
+			{
+				delete socket;
+			}
 
 			bool GetIsConnected()
 			{
 				if (currentRuntime)
 					return socket->GetIsConnected();
+
 				return false;		
-			}
-
-			void Connect()
-			{
-				if (currentRuntime)
-				{
-					socket->Connect();
-					OnEndPointConnected();
-				}					
-			}
-
-			void Disconnect()
-			{
-				OnEndPointDisconnected();
-				socket->Disconnect();
 			}
 
 		    AhsokaCore::ServiceConfiguration& GetRuntimeConfiguration() 
@@ -45,34 +34,40 @@ namespace AhsokaServiceFramework
 				return serviceConfig;
 			}
 
-
- 			template <typename TEndPoint>
-            [[deprecated("Use 'this' instead.")]]
-			TEndPoint* GetEndPoint() { return static_cast<TEndPoint*>(this); }
-
 			void Start()
 			{
-				AhsokaRuntime::CreateBuilder()
-						.AddEndPoint(this)
-						.StartLocalRuntime();
+				if (!isConnected)
+				{
+					socket->Connect();
+				
+					AhsokaRuntime::GetDefaultRuntime().AddEndPoint(this);
+					
+					OnEndPointConnected();
+
+					isConnected = true;
+				}
 			}
 
 			void Stop()
 			{
-				try
+				if (isConnected)
 				{
-					this->currentRuntime->RequestShutdown();
-				}
-				catch(const std::exception& e) {}
+					socket->Disconnect();
 				
-				this->currentRuntime->WaitForShutdown();
+					AhsokaRuntime::GetDefaultRuntime().RemoveEndPoint(this);
+					
+					OnEndPointDisconnected();
+
+					isConnected = false;
+				}
 			}
 
 		protected:
 
+			bool isConnected = false;
 		 	IAhsokaSocket * socket;
 			AhsokaMessagesBase messageFactory;
-			bool isServiceEndPoint;
+			bool isServiceEndPoint = false;
 
 			virtual IAhsokaSocket* CreateSocket(AhsokaCore::ServiceConfiguration& config) = 0;
 

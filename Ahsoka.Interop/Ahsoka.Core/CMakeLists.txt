@@ -10,10 +10,8 @@ check_c_compiler_flag(-Wdeprecated-declarations HAVE_DEPRECATED_DECLARATIONS)
 FILE(GLOB ServiceFramework ServiceFramework/*.cpp)
 FILE(GLOB Utility Utility/*.cpp)
 
-# Define Library
-add_Library(Ahsoka.Core STATIC ${ServiceFramework} ${Utility} ${TinyLib})
-
-# Add Included Folders.
+# Define Library and Search Folders
+add_Library(Ahsoka.Core SHARED ${ServiceFramework} ${Utility})
 target_include_directories(Ahsoka.Core PUBLIC ServiceFramework Utility)
 
 # Disable compiler warnings
@@ -22,45 +20,28 @@ IF (HAVE_DEPRECATED_DECLARATIONS)
 ENDIF()
 
 # Add Internal Libraries
-find_library( AHSOKA_LIBS NAMES Ahsoka.Proto)
+find_library( AhsokaProto NAMES Ahsoka.Proto)
 target_link_libraries(Ahsoka.Core PRIVATE Ahsoka.Proto)
 
-#find_library( TINY_LIB NAMES tiny-process-library)
-#target_link_libraries(Ahsoka.Core PRIVATE tiny-process-library)
+# Add ProtoBuf and zero mq as well as our Proto Compiled Outputs
+find_package (Protobuf REQUIRED)
+target_link_libraries(Ahsoka.Core PUBLIC protobuf)
 
-IF (WIN32)
-       
-        #Find Proto in vcpkg
-        find_package(Protobuf CONFIG REQUIRED)
-        target_link_libraries(Ahsoka.Core PRIVATE protobuf::libprotoc protobuf::libprotobuf protobuf::libprotobuf-lite)
+#Add Zero MQ
+find_library (ZeroMQ NAMES zmq REQUIRED)
+target_link_libraries(Ahsoka.Core PUBLIC zmq)
 
-        find_package(ZeroMQ CONFIG REQUIRED)
-        target_link_libraries(Ahsoka.Core PRIVATE libzmq-static)
-
-        # Find zmq from vcconfig
-        find_path(CPPZMQ_INCLUDE_DIRS "zmq.hpp")
-        target_include_directories(Ahsoka.Core PRIVATE ${CPPZMQ_INCLUDE_DIRS})
-      
-ELSE()
-        # Add ProtoBuf and zero mq as well as our Proto Compiled Outputs
-        find_package (Protobuf REQUIRED)
-        target_link_libraries(Ahsoka.Core PUBLIC protobuf)
-
-        #Add Zero MQ
-        find_library (ZeroMQ NAMES zmq REQUIRED)
-        target_link_libraries(Ahsoka.Core PUBLIC zmq)
-ENDIF()
 
 # Copy the Services headers to the Output Folder
 FILE(GLOB ServiceHeaders Services/*.h )
-FILE(COPY ${ServiceHeaders} DESTINATION ${AHSOKA_BUILD_OUTPUTS}/inc/services)
-
 FILE(GLOB ServiceFrameworkHeaders ServiceFramework/*.h )
 FILE(GLOB UtilityHeaders Utility/*.h )
+
+FILE(COPY ${ServiceHeaders} DESTINATION ${AHSOKA_BUILD_OUTPUTS}/inc/services)
 FILE(COPY ${ServiceFrameworkHeaders} DESTINATION ${AHSOKA_BUILD_OUTPUTS}/inc/services)
 FILE(COPY ${UtilityHeaders} DESTINATION ${AHSOKA_BUILD_OUTPUTS}/inc/services)
 
-#Pick up Proto Headers and Include in Output Folder
+#Pick up Internal Proto Headers and Include in Output Folder
 ADD_CUSTOM_COMMAND(TARGET Ahsoka.Core
         POST_BUILD
         COMMAND echo Create Proto Header Folder

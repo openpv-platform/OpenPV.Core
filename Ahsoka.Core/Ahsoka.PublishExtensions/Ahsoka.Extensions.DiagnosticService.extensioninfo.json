@@ -16,7 +16,7 @@
   "hasCommands": "true",
   "hasUx": "true",
   "hasSdkGenerator": "true",
-  "minVersion": "4.0.0",
+  "minVersion": "4.1.0",
   "maxVersion": "5.0.0",
   "requireExactVersion": "false"
 }

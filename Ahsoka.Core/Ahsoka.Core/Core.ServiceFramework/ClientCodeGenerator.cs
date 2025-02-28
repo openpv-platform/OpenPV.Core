@@ -19,7 +19,7 @@ public class ClientCodeGenerator
         if (!Directory.Exists(pathToOutputFolder)) { Directory.CreateDirectory(pathToOutputFolder); }
 
         AhsokaLogging.LogMessage(AhsokaVerbosity.Medium, $"");
-        includes = "#pragma once\n#include \"AhsokaRuntimeBuilder.h\"\n#include \"AhsokaConfiguration.h\"\n#include \"Services.pb.h\"\n";
+        includes = "#pragma once\n#include \"AhsokaRuntime.h\"\n#include \"AhsokaConfiguration.h\"\n#include \"Services.pb.h\"\n";
         usings = "using namespace AhsokaServiceFramework;\n";
 
         foreach (var item in ClassLoader.GetItemsWithInterface(typeof(AhsokaMessagesBase)))

@@ -3,46 +3,46 @@
 #include <iostream>
 #include <string>
 #include "AhsokaServices.h"
+#include "AhsokaRuntimeProcess.h"
 
 class SystemTests
 {
     public:
         void RunTests(std::string pathToServiceExe)
         {
-            SystemServiceClient client;
+            auto serviceProcess = AhsokaRuntimeProcess::StartServiceExecutable(pathToServiceExe);
 
-            auto runtime = AhsokaRuntime::CreateBuilder()
-                .AddEndPoint(&client)
-                .SetServiceExecutable(pathToServiceExe)
-                .StartWithExternalServices();
+            SystemServiceClient client;
+            client.Start();    
 
             std::cout << client.Echo("Echo Test ") << std::endl;
 
-            auto hardwareInfo = client.GetHardwareInformation();
-            
-            std::cout << std::endl << "Hardware Connected to (" << hardwareInfo.get()->application_name() << ") "
-                << std::endl << "Device - " << hardwareInfo.get()->serial_number() << " - " << hardwareInfo.get()->part_number()
-                << std::endl;
-
+            auto hardwareInfo =  client.GetHardwareInformation();
+            std::cout << std::endl << "Hardware Connected to (" << hardwareInfo->application_name() << ") "
+            << std::endl << "Device - " << hardwareInfo->serial_number() << " - " << hardwareInfo->part_number()
+            << std::endl;
             
             std::cout << std::endl << "Setting Brightness value 50%: ";
             AhsokaSystem::BrightnessInfo brightness;   
             brightness.set_percentage(50);
-            std::cout << client.SetBrightness(brightness)->percentage() << "%" << std::endl;
+            std::cout <<  client.SetBrightness(brightness)->percentage() << "%" << std::endl;
 
             std::cout << std::endl << "Setting Brightness value 75%: ";
             brightness.set_percentage(75);
-            std::cout << client.SetBrightness(brightness)->percentage() << "%" << std::endl;
+            std::cout <<  client.SetBrightness(brightness)->percentage() << "%" << std::endl;
 
             std::cout << std::endl << "Getting Brightness value: " 
-                << client.GetBrightness().get()->percentage()
+                <<  client.GetBrightness().get()->percentage()
                 << std::endl;
 
+            // Request Service Stop 
             client.RequestServiceShutdown();
-            runtime.RequestShutdown();
-            runtime.WaitForShutdown();
+
+            // Stop Client
+            client.Stop();
+
+            serviceProcess->EndProcess();
 
             std::cout << "Shutdown Completed" << std::endl;
-
         }
 };

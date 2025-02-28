@@ -3,6 +3,7 @@ using Ahsoka.Core.Hardware;
 using Ahsoka.Core.Spark;
 using Ahsoka.Core.Utility;
 using Ahsoka.Installer;
+using Ahsoka.Installer.Components;
 using Ahsoka.Installer.InstallEngine;
 using Ahsoka.Services.Spark;
 using Ahsoka.Services.System;
@@ -478,8 +479,11 @@ internal abstract class LinuxRemoteTargetTool : ICanCancel, IRemoteTargetTool
                 progress.Report($"  {info.Message}");
             });
 
+            Dictionary<string, byte[]> additionalFiles = new Dictionary<string, byte[]>();
+            InstallEngineComponent.AddCoreLibs(info.PlatformFamily, additionalFiles);
+
             // Pack File to Zip
-            PackagingUtility.CreateZipPackage(pathToZip, fileNameToCleanUp, info.FactoryInfo.PlatformFamily, installProgress);
+            PackagingUtility.CreateZipPackage(pathToZip, fileNameToCleanUp, info.FactoryInfo.PlatformFamily, installProgress, additionalFiles);
 
             using (var fileToUpload = new FileStream(fileNameToCleanUp, FileMode.Open))
             {

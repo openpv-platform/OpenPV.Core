@@ -61,7 +61,17 @@
 			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
 	</ItemGroup>
-	
+
+	<!--Note that this will only run once.  To generate licenses again, you must delete the file.-->
+	<Target Name="GenerateLicenseFile" BeforeTargets="PreBuildEvent"
+			Condition="!Exists('..\Ahsoka.Core\Resources\Licenses.json') ">
+
+		<Message Text="Generate License File" Importance="High" />
+		<Exec ContinueOnError="true" Command="dotnet tool update --global dotnet-project-licenses --version 2.7.*" />
+		<Exec Command="dotnet project-licenses -i . -o --outfile ../Ahsoka.Core/Resources/Licenses.json -j -p false" />
+	</Target>
+
+
 	<ItemGroup>
 		<PackageReference Include="EnovationCloud.Core" Version="4.9.0" />
 		<PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="8.0.1" />

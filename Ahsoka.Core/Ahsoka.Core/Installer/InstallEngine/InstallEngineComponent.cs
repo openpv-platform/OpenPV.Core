@@ -1,7 +1,9 @@
 ﻿using Ahsoka.Core;
+using Ahsoka.Core.Hardware;
 using Ahsoka.Services.Install;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 
@@ -81,6 +83,21 @@ public abstract class InstallEngineComponent
         return Extensions.GetExtensions<InstallEngineComponent>().Where(x => x.SupportedPlatforms.Contains(platformFamily) || x.SupportedPlatforms.Contains(PlatformFamily.Any)).ToList();
     }
     #endregion
+
+
+    internal static void AddCoreLibs(PlatformFamily family, Dictionary<string, byte[]> additionalFiles)
+    {
+        string pathToLibs = PlatformSupportPathInfo.GetPlatformSupportPath(family);
+        pathToLibs = Path.Combine(pathToLibs, "Resources", "AhsokaLib");
+        if (Directory.Exists(pathToLibs))
+        {
+            foreach (var file in Directory.GetFiles(pathToLibs, "*", SearchOption.AllDirectories))
+            {
+                string fileName = $"AhsokaLib/{Path.GetFileName(file)}";
+                additionalFiles[fileName] = File.ReadAllBytes(file);
+            }
+        }
+    }
 
     #region Abstract
     /// <summary>

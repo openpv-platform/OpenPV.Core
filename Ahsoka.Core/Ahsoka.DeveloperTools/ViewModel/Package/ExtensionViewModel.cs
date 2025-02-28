@@ -143,7 +143,7 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
     internal void ReloadExtensions()
     {
         extensionUXExtensions.Clear();
-        Extensions.LoadExtensions(ParentViewModel.PackageInfo.GetPackageExtentionFolder(), true);
+        Extensions.LoadExtensions(ParentViewModel.PackageInfo.GetExtensionFolder(), true);
 
         var extensionList = Extensions.GetExtensionLibraries();
 
@@ -340,6 +340,8 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
 
             item.Value.Close();
         }
+
+        Extensions.CloseExtensions();
 
         ParentViewModel.ParentViewModel.Popup.DismissPopup(currentPopup);
     }
@@ -542,7 +544,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
         if (!Directory.Exists(libDirectory))
             Directory.CreateDirectory(libDirectory);
 
-        await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.PackageName, this.InstalledVersion, false, libDirectory, true, false);
+        await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.PackageName, this.InstalledVersion, libDirectory, true, false);
 
         if (ExtensionConfiguration.HasUx)
         {
@@ -551,7 +553,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
             if (!Directory.Exists(uxDirectory))
                 Directory.CreateDirectory(uxDirectory);
 
-            await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.UxPackageName, this.InstalledVersion, true, uxDirectory, false, false);
+            await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.UxPackageName, this.InstalledVersion, uxDirectory, false, false);
         }
 
         ParentViewModel.ReloadExtensions();
@@ -565,7 +567,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
 
     public string GetExtensionDirectory()
     {
-        string packageExtensionFolder = ParentViewModel.ParentViewModel.PackageInfo.GetPackageExtentionFolder();
+        string packageExtensionFolder = ParentViewModel.ParentViewModel.PackageInfo.GetExtensionFolder();
         string extensionFolder = Path.Combine(packageExtensionFolder, ExtensionConfiguration.ExtensionName);
         return extensionFolder;
     }

@@ -129,7 +129,7 @@ public class PackageInformation : PackageHeader
             (type == KeyTypes.PackageSigningKey ? keyName + ".appcert" : keyName + ".servicecert"));
     }
 
-    internal string GetPackageExtentionFolder()
+    public string GetExtensionFolder()
     {
         if (ApplicationType == ApplicationType.Dotnet)
         {
@@ -138,11 +138,15 @@ public class PackageInformation : PackageHeader
         }
         else if (ApplicationType == ApplicationType.Cpp)
         {
-            string projectFolder = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), CppInfo.ProjectPath));
+            string projectFolder = Path.Combine(Path.GetDirectoryName(GetPackageInfoPath()), CppInfo.ProjectPath);
             return Path.Combine(projectFolder, Extensions.ExtensionsFolder);
         }
         return "";
-        
+    }
+
+    public string GetPlatformExtensionFolder(PlatformFamily family, string extensionName)
+    {
+        return Path.Combine(GetExtensionFolder(), extensionName, "platform", family.ToString());
     }
 
     internal bool CanUseOptimizerdServiceManager()

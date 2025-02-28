@@ -17,7 +17,7 @@ internal static class UpgradeEngine
 
     internal static string ExecuteUpgrade(string fileName, string contents)
     {
-        Dictionary<string, List<UpgradeMethod>> upgradeDictionary = LoadSubclasses();
+        Dictionary<string, List<UpgradeMethod>> upgradeDictionary = GetUpgradeMethods();
         Dictionary<string, object> context;
         
 
@@ -59,13 +59,12 @@ internal static class UpgradeEngine
         return ExecuteUpgrade(path, data);
     }
 
-    private static Dictionary<string, List<UpgradeMethod>> LoadSubclasses()
+    private static Dictionary<string, List<UpgradeMethod>> GetUpgradeMethods()
     {
         var upgradeDictionary = new Dictionary<string, List<UpgradeMethod>>(StringComparer.OrdinalIgnoreCase);
-        Type[] types = ClassLoader.GetSubclasses(typeof(UpgradeMethod));
-        foreach (Type typeItem in types)
+
+        foreach (UpgradeMethod method in Extensions.GetExtensions<UpgradeMethod>(true))
         {
-            UpgradeMethod method = ClassLoader.CreateType(typeItem) as UpgradeMethod;
             if (!upgradeDictionary.ContainsKey(method.Extension))
                 upgradeDictionary.Add(method.Extension, new List<UpgradeMethod>());
 

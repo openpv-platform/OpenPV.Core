@@ -374,7 +374,6 @@ internal class MainViewModel : ViewModelBase
     internal async Task<string> FolderLocatorAsync(string dialogTitle, string defaultPath = null)
     {
         var file = await RootVisual.StorageProvider.TryGetFolderFromPathAsync(defaultPath);
-
         string path = null;
         var dialog = new FolderPickerOpenOptions
         {
@@ -382,10 +381,14 @@ internal class MainViewModel : ViewModelBase
             Title = dialogTitle
         };
 
-        var result = await RootVisual.StorageProvider.OpenFolderPickerAsync(dialog);
+        try
+        {
+            var result = await RootVisual.StorageProvider.OpenFolderPickerAsync(dialog);
 
-        if (result != null)
-            path = result.FirstOrDefault()?.TryGetLocalPath();
+            if (result != null)
+                path = result.FirstOrDefault()?.TryGetLocalPath();
+        }
+        catch { }
 
         return path;
     }

@@ -1,6 +1,6 @@
 #include "process.hpp"
 
-namespace TinyProcessLib {
+namespace AhsokaServiceFramework {
 
 Process::Process(const std::vector<string_type> &arguments, const string_type &path,
                  std::function<void(const char *bytes, size_t n)> read_stdout,

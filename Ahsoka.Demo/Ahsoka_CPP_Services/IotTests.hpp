@@ -5,6 +5,7 @@
 #include <condition_variable>
 
 #include "AhsokaServices.h"
+#include "AhsokaRuntimeProcess.h"
 
 using namespace google::protobuf::util;
 
@@ -15,15 +16,14 @@ class IotTests
 
         void RunTests(std::string pathToServiceExe)
         {
+            auto serviceProcess = AhsokaRuntimeProcess::StartServiceExecutable(pathToServiceExe);
+
             SystemServiceClient client;
+            client.Start();
+          
             IotServiceClient iotClient;
-
-            auto runtime = AhsokaRuntime::CreateBuilder()
-                .AddEndPoint(&client)
-                .AddEndPoint(&iotClient)
-                .SetServiceExecutable(pathToServiceExe)
-                .StartWithExternalServices(); // Connect to Already Running Runtime
-
+            iotClient.Start();
+          
             std::cout << client.Echo("Server Ready") << ::endl;
           
             std::cout << endl << "Running IOT Tests"  << ::endl;
@@ -43,10 +43,10 @@ class IotTests
             // Stop Server
             client.RequestServiceShutdown();
 
-            // Stop Local Services
-            runtime.RequestShutdown();
-            runtime.WaitForShutdown();
-
+            client.Stop();
+            iotClient.Stop();
+            
+            serviceProcess->EndProcess();
             std::cout << "Shutdown Completed" << std::endl;
 
         }

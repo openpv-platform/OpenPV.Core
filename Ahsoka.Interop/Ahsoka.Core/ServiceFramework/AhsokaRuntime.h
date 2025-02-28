@@ -2,41 +2,32 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <zmq.hpp>
 
 #include "IAhsokaEndPoint.h"
 
 namespace AhsokaServiceFramework
 {
-	template <typename TTransportID> class AhsokaBaseEndPoint;
-	class AhsokaRuntimeBuilder;
-	class AhsokaRuntimeProcess;
-
+	
 	class AhsokaRuntime
 	{
 		public:
 
-			static AhsokaRuntimeBuilder CreateBuilder();
-			static void ShutdownAll();
-
-			~AhsokaRuntime();
-  			AhsokaRuntime(const AhsokaRuntime& other);
-
+			static AhsokaRuntime& GetDefaultRuntime();
 			static void ReleaseStartup();
-			void RequestShutdown();
-			void WaitForShutdown();
+			
+		    void StartEndPoints(std::vector<IAhsokaEndPoint*>);
+		    void StopEndPoints(std::vector<IAhsokaEndPoint*>);
+			void StopAllEndPoints();
+			
+			void AddEndPoint(IAhsokaEndPoint*);
+			void RemoveEndPoint(IAhsokaEndPoint* endPoint);
+			
+			~AhsokaRuntime() = default;
 	
 		private:
 
-			class Details;
-			std::unique_ptr<Details> details;
-           
-			friend AhsokaRuntimeBuilder;
-			AhsokaRuntime();
-			
-			void ExecuteRuntime(std::vector<IAhsokaEndPoint*>, AhsokaRuntimeProcess*);
-
-			template <typename TTransportID> friend class AhsokaBaseEndPoint;
+			AhsokaRuntime() = default;
+		    std::map<std::string, IAhsokaEndPoint*> endPoints;
 			
 	};
 }

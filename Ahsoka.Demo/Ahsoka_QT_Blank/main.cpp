@@ -1,4 +1,5 @@
 #include "AhsokaServices.h"
+#include "AhsokaRuntimeProcess.h"
 #include <iostream>
 #include <string>
 
@@ -7,12 +8,10 @@
 int main(int argc, char *argv[])
 {
 
-    AhsokaSystem::SystemServiceClient client;
+    auto serviceProcess = AhsokaRuntimeProcess::StartServiceExecutable("./CommandLine/Ahsoka.CommandLine");
 
-    auto runtime = AhsokaRuntime::CreateBuilder()
-        .AddEndPoint(&client)
-        .SetServiceExecutable("./CommandLine/Ahsoka.CommandLine")
-        .StartWithExternalServices();
+    AhsokaSystem::SystemServiceClient client;
+    client.Start();
 
     AhsokaRuntime::ReleaseStartup();
     std::cout << client.Echo("Echo Test ") << std::endl;
@@ -32,8 +31,10 @@ int main(int argc, char *argv[])
         << client.GetBrightness().get()->percentage()
         << std::endl;
 
-    runtime.RequestShutdown();
-    runtime.WaitForShutdown();
+    client.RequestServiceShutdown();
+    client.Stop();
+
+    serviceProcess->EndProcess();
 
     std::cout << "Shutdown Completed" << std::endl;
 

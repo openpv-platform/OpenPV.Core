@@ -64,7 +64,6 @@ public partial class AhsokaRuntime
         return ServiceEndPoints.Where(x => x.EndPointId == endpointId).FirstOrDefault();
     }
 
-
     /// <summary>
     /// Get a reference to a Client Available in the Runtime
     /// </summary>

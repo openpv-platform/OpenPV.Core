@@ -11,20 +11,23 @@
 using namespace std;
  
 int responseCount = 0;
-int requestCount = 200000;
+int requestCount = 10;
 ReadyWaiter waiter;
 
 void NotificationRecieved(TestMessageTypes transportId, AhsokaServiceFramework::AhsokaMessageType_t& message)
 {
     if (transportId == EchoTestNotification)
     {
+        auto callbackMessage = reinterpret_cast<AhsokaCore::ServiceConfiguration&>(message);
+        std::cout << callbackMessage.service_name() << " Notification Received" << std::endl;
+    
         responseCount++;
         if (responseCount == requestCount)
             waiter.SetReady();
     }
 }
 
-int main()
+void RunTest()
 {
     AhsokaCore::ServiceConfiguration localConfig; 
     localConfig.set_service_name(TestServiceName);
@@ -45,6 +48,7 @@ int main()
     for (size_t i = 0; i < requestCount; i++)
     {    
         auto newConfig = client->EchoConfig(localConfig, 5000);
+        std::cout << newConfig->service_name() << " Message Received" << std::endl;
     }
     
     // Block until message recieved.
@@ -55,6 +59,16 @@ int main()
 
     // Start Service
     service->Stop();
+
+    delete client;
+    delete service;
+}
+
+int main()
+{
+    RunTest();
+    RunTest();
+    RunTest();
    
     return 0;
 }

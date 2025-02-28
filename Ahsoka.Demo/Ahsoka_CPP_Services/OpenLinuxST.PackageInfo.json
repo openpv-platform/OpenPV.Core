@@ -1,14 +1,12 @@
 {
-  "version": "3.7.3.30007",
+  "version": "4.1.1.10015",
   "applicationType": "Cpp",
-  "systemOrientation": "DefaultOrientation",
   "execCommand": "Ahsoka.CPP.Services",
   "packageName": "Ahsoka.CPP.Services",
-  "packageDescription": "Project demonstating Service usage in C++",
+  "packageDescription": "Project demonstating Service usage in C\u002B\u002B",
   "applicationVersion": "3.0",
   "packageApplicationFolder": "Outputs",
   "packageOutputDirectory": "..\\PackageOutput",
-  "startupLogoPath": "Assets\\Background.png",
   "licenses": [],
   "optimizedServiceManager": true,
   "customPackageInfo": {
@@ -25,68 +23,48 @@
     "runtimeConfiguration": {
       "serviceStartup": "NoAutoStart",
       "releaseOption": "NoAutoStart",
-      "extensionInfo": [
-        {
-          "extensionName": "CAN Service Extension",
-          "configurationFile": "CANServiceConfiguration.json"
-        }
-      ],
+      "extensionInfo": [],
       "startupDelay": 3,
       "requireChallenge": "NotRequired",
       "services": [
         {
-          "socketType": "TcpSocket",
           "serviceName": "SystemService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5001,
           "isExtension": false,
           "behaviors": "AutoStart"
         },
         {
-          "socketType": "TcpSocket",
           "serviceName": "SparkService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5002,
           "isExtension": false,
           "behaviors": "AutoStart"
         },
         {
-          "socketType": "TcpSocket",
-          "serviceName": "NetworkService",
-          "tcpListenAddress": "*",
-          "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-          "dataChannel": 5003,
-          "isExtension": false,
-          "behaviors": "AutoStart"
-        },
-        {
-          "socketType": "TcpSocket",
           "serviceName": "IotService",
           "tcpListenAddress": "*",
           "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
           "dataChannel": 5005,
           "isExtension": false,
-          "behaviors": "AutoStart"
-        },
-        {
-          "socketType": "TcpSocket",
-          "serviceName": "CanService",
-          "tcpListenAddress": "*",
-          "tcpConnectionAddress": "localhost",
-          "bleServiceUuidBase": "96730000-8f5d-4cef-8289-744c8faa1a66",
-          "dataChannel": 5107,
-          "isExtension": true,
           "behaviors": "AutoStart"
         }
       ]
     },
     "environmentValues": []
+  },
+  "screenConfiguration": {
+    "showUnknownSurfaces": false,
+    "bootLogoPath": "Assets\\Background.png",
+    "orientation": 0,
+    "surfaceSetup": []
+  },
+  "hardwareConfiguration": {
+    "hardwareItems": [],
+    "usbStartStatePrimary": "Default",
+    "usbStartStateSecondary": "Default"
   },
   "packageType": "opvEncrypted",
   "packageStructureVersion": 1,

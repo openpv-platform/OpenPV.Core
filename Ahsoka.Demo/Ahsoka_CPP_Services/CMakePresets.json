@@ -58,6 +58,9 @@
                 "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
                     "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
                 }
+            },
+            "environment": {
+                "AhsokaPlatform": "Ubuntu64"
             }
         },
         {

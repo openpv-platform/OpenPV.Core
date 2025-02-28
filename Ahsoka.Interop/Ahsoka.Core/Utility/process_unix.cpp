@@ -9,7 +9,7 @@
 #include <stdexcept>
 #include <unistd.h>
 
-namespace TinyProcessLib {
+namespace AhsokaServiceFramework {
 
 Process::Data::Data() noexcept : id(-1) {}
 

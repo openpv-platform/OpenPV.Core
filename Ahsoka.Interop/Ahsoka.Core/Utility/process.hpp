@@ -11,7 +11,7 @@
 #include <sys/wait.h>
 #endif
 
-namespace TinyProcessLib {
+namespace AhsokaServiceFramework {
 /// Additional parameters to Process constructors.
 struct Config {
   /// Buffer size for reading stdout and stderr. Default is 131072 (128 kB).

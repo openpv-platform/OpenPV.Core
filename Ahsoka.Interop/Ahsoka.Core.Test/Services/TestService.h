@@ -2,7 +2,6 @@
 #include <string>
 #include <functional>
 #include <memory>
-#include "AhsokaRuntimeBuilder.h"
 #include "AhsokaConfiguration.h"
 #include "AhsokaServiceEndPoint.h"
 #include "TestServiceMessages.h"
@@ -30,7 +29,7 @@ namespace AhsokaCore
 					SendMessageInternal(messageHeader, &message, false);
 
 					messageHeader.set_transport_id(EchoTestNotification);
-					SendMessageInternal(messageHeader, 0, true);
+					SendMessageInternal(messageHeader, &message, true);
 				}
 			}
 	};

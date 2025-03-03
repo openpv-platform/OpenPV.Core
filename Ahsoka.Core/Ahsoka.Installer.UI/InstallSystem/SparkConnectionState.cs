@@ -285,7 +285,7 @@ internal class SparkConnectionState : InstallerUIStateBase
     protected override InstallerUIStateBase OnHandleAction(string action)
     {
         bool isConnected = InstallerDrawingManager.Default.HasEthernet || InstallerDrawingManager.Default.HasCellModem ||
-                           InstallerDrawingManager.Default.WiFiViewModel.ConnectionState != WirelessConnectionState.ClientConnected;
+                           InstallerDrawingManager.Default.WiFiViewModel.ConnectionState == WirelessConnectionState.ClientConnected;
 
         if (!isConnected)
         {

@@ -44,6 +44,11 @@ internal class StartupInstallerPlugin : InstallerPlugin
         var builder = AddEnvironmentValues(info);
         if (builder.Length > 0)
             additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/start/{ApplicationOutputComponent.AppEnvironmentScriptName}"] = UTF8Encoding.UTF8.GetBytes(builder.ToString());
+
+        // Add Legacy Orientation Value for BootLoader
+        builder = new();
+        AddOrientationAttribute(builder, info);
+        additionalFiles[$"{ApplicationOutputComponent.ComponentTypeGuid}.{ApplicationOutputComponent.AppEnvironmentScriptName}"] = UTF8Encoding.UTF8.GetBytes(builder.ToString());
     }
 
     private static StringBuilder AddEnvironmentValues(PackageInformation info)
@@ -69,12 +74,12 @@ internal class StartupInstallerPlugin : InstallerPlugin
 
         if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.BeforeApplicationStart)
         {
-            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = [];
             preScript.Append($"\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} & ");
         }
         else if (info.ServiceInfo.RuntimeConfiguration.ServiceStartup == StartOptions.AfterApplicationStart)
         {
-            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = new byte[0];
+            additionalFiles[$"{ApplicationOutputConstants.AppInfoFolder}/AutoStartEnabled"] = [];
             postScript.Append($"{delay}\nchmod +x {commandLineScriptName}\n{commandLineScriptName} --StartServices {Path.GetDirectoryName(commandLineScriptName).Replace("\\", "/")}/{AutoStartFileName} &");
             delay = "";
         }

@@ -198,6 +198,7 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
 
             // Extract Start Script, Environment Script and UI Helper if Needed.
             AddScript(context, StartScriptName);
+            AddScript(context, AppEnvironmentScriptName); // Used for Legacy Bootloader
 
             // Get the Applicatoin Type and Command / Name and pass it to the Plugin so it can make any 
             // modifications to the system specific to this application type.

@@ -24,7 +24,7 @@ internal class WiFiSetupState : InstallerUIStateBase
         int width = args.Width;
         int height = args.Height;
 
-        if (InstallerDrawingManager.Default.WiFiViewModel.ConnectionState == Services.Network.WirelessConnectionState.ClientConnected)
+        if (SystemInfo.IsDesktop() || InstallerDrawingManager.Default.WiFiViewModel.ConnectionState == Services.Network.WirelessConnectionState.ClientConnected)
         {
             // Draw Waiting for TimeSync
             DrawConnectedToNetwork(drawingApi, width, height);

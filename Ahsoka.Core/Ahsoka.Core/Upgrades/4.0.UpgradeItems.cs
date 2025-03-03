@@ -1,8 +1,36 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Ahsoka.Core.Utility;
 
+
+internal class UpgradeNeworkPackage_4_0 : UpgradeMethod
+{
+    public UpgradeNeworkPackage_4_0() : base(packageUpgradeExtension, "4.1.0") { }
+
+    public override void UpgradeData(JsonNode document, Dictionary<string, object> context)
+    {
+        var serviceInfo = document["serviceInfo"];
+        if (serviceInfo != null)
+        {
+            var config = serviceInfo["runtimeConfiguration"];
+            if (config != null)
+            {
+                var items = config["services"].AsArray();
+                foreach (var item in items)
+                {
+                    var serviceName = item["serviceName"];
+                    if (serviceName != null && serviceName.AsValue().ToString() == "NetworkService")
+                    {
+                        item["serviceName"] = "WiFiClientService";
+                    }
+                }
+            }
+        }
+
+    }
+}
 
 
 internal class UpgradeItemsPackage_4_0 : UpgradeMethod

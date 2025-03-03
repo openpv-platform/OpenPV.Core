@@ -26,12 +26,6 @@
       "Hash": null
     },
     {
-      "Path": "Ahsoka.CS.Blank.Advanced.zip",
-      "DownloadToken": null,
-      "SizeInBytes": 0,
-      "Hash": null
-    },
-    {
       "Path": "Ahsoka.CS.Services.zip",
       "DownloadToken": null,
       "SizeInBytes": 0,
@@ -57,12 +51,6 @@
     },
     {
       "Path": "Ahsoka_QT_Demo.zip",
-      "DownloadToken": null,
-      "SizeInBytes": 0,
-      "Hash": null
-    },
-    {
-      "Path": "Ahsoka_CPP_Services.zip",
       "DownloadToken": null,
       "SizeInBytes": 0,
       "Hash": null

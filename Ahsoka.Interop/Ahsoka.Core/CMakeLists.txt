@@ -10,8 +10,10 @@ check_c_compiler_flag(-Wdeprecated-declarations HAVE_DEPRECATED_DECLARATIONS)
 FILE(GLOB ServiceFramework ServiceFramework/*.cpp)
 FILE(GLOB Utility Utility/*.cpp)
 
-# Define Library and Search Folders
-add_Library(Ahsoka.Core SHARED ${ServiceFramework} ${Utility})
+# Define Library
+add_Library(Ahsoka.Core STATIC ${ServiceFramework} ${Utility} ${TinyLib})
+
+# Add Included Folders.
 target_include_directories(Ahsoka.Core PUBLIC ServiceFramework Utility)
 
 # Disable compiler warnings

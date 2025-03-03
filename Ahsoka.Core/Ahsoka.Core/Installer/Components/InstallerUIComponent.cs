@@ -30,8 +30,8 @@ internal class InstallerUIComponent : PackageComponentBase
     {
         if (IsEnabled)
         {
-            var result = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
             AddCoreLibs(info.PlatformFamily, additionalFiles);
+            var result = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
             return result;
         }
         else

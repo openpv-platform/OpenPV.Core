@@ -39,6 +39,8 @@ internal class CommandLineComponent : PackageComponentBase
     {
         PackageComponent componentData = null;
 
+        AddAhsokaLibs(info, additionalFiles);
+        
         if (info.OptimizedServiceManager && info.CanUseOptimizerdServiceManager())
         {
             progress.Report(new PackageProgressInfo() { Message = " " });
@@ -76,7 +78,6 @@ internal class CommandLineComponent : PackageComponentBase
             componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
         }
 
-        AddAhsokaLibs(info, additionalFiles);
 
         if (componentData != null)
         {

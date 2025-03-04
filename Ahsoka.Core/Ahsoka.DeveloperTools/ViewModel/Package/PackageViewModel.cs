@@ -483,6 +483,7 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
     {
         PackageInfo = PackageInformation.LoadPackageInformation(PackageInfoPath);
         PackageChanged();
+        InitModel(true);
     }
     #endregion
 
@@ -575,23 +576,26 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         PackageInfoPath = filePath;
     }
 
-    internal void InitModel()
+    internal void InitModel(bool reInit = false)
     {
-        this.sparkViewModel = new SparkViewModel(ParentViewModel);
+        SparkViewModel = new SparkViewModel(ParentViewModel);
         StartupViewModel = new StartupOptionsViewModel(this);
         ServiceViewModel = new ServiceViewModel(this);
         ExtensionsViewModel = new ExtensionsViewModel(this);
         DisplayViewModel = new DisplayViewModel(this);
         HardwareViewModel = new HardwareViewModel(this);
 
-        Deps.CheckDependencies(SystemInfo.CurrentPlatform, PackageInfo.PlatformFamily);
+        if (!reInit)
+        {
+            Deps.CheckDependencies(SystemInfo.CurrentPlatform, PackageInfo.PlatformFamily);
 
-        UpdateApplicationViewModel();
+            UpdateApplicationViewModel();
 
-        HandleHardwareInfoChanges();
-
-        DotNetViewModel?.NeedsUpdate();
-        CppViewModel?.NeedsUpdate();
+            HandleHardwareInfoChanges();
+        
+            DotNetViewModel?.NeedsUpdate();
+            CppViewModel?.NeedsUpdate();
+        }
     }
 
     private void HandleHardwareInfoChanges()
@@ -1093,12 +1097,12 @@ internal class PackageViewModel : ChildViewModelBase<MainViewModel>, ICanCancel,
         string pathToKits;
         if (ApplicationType == ApplicationType.Dotnet)
         {
-            string projectPath = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), PackageInfo.DotNetInfo.ProjectPath));
+            string projectPath = Path.GetDirectoryName(Path.Combine(Path.GetDirectoryName(PackageInfo.GetPackageInfoPath()), PackageInfo.DotNetInfo.ProjectPath));
             pathToKits = Path.Combine(projectPath, "obj");
         }
         else
         {
-            pathToKits = Path.Combine(Path.GetDirectoryName(packageInfo.GetPackageInfoPath()), PackageInfo.CppInfo.ProjectPath);
+            pathToKits = Path.Combine(Path.GetDirectoryName(PackageInfo.GetPackageInfoPath()), PackageInfo.CppInfo.ProjectPath);
         }
 
 

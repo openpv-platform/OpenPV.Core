@@ -1,6 +1,7 @@
 ﻿using Ahsoka.Core.Hardware;
 using Ahsoka.Core.Spark;
 using Ahsoka.Core.Utility;
+using Ahsoka.Services.System;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -44,9 +45,12 @@ internal class WindowsTargetTools : OpenViewRemoteTargetTool
     {
         Dictionary<string, MemoryStream> filesToLoad = new();
 
+        if (info.FactoryInfo.DeviceId == Guid.Empty)
+            info.FactoryInfo.DeviceId = FactoryInfo.CreateDeviceId(info.FactoryInfo.PlatformFamily, SystemService.GetInterop().GetHardwareSerialNumber());
+
         // Assign Hardware Serial Number and Generate DeviceID
         string hardwareID = info.FactoryInfo.DeviceId.ToString(); // Returns the SN.
-
+        
         // Add Factory Hardware Folder
         string factoryPath = info.TargetPathInfo.GetFactoryPath(FactoryPaths.HardwareRoot);
         progress.Report("");

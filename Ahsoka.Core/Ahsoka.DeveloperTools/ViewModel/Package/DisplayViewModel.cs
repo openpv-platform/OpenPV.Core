@@ -51,7 +51,7 @@ internal class DisplayViewModel : ChildViewModelBase<PackageViewModel>
             if (hardwareDef != null)
                 return $"{hardwareDef.ScreenInfo.ScreenWidth}x{hardwareDef.ScreenInfo.ScreenHeight}";
             else
-                return "Un;nown";
+                return "Unknown";
         }
         set
         { }

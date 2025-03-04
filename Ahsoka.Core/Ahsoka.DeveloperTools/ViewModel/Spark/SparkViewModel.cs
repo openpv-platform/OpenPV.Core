@@ -311,7 +311,7 @@ internal class SparkViewModel : ChildViewModelBase<MainViewModel>
 
         if (!File.Exists(outputFilePath))
         {
-            ParentViewModel.Console.AddConsoleLine("Please Generate the Package Before Uploading to Spark");
+            await ParentViewModel.Dialog.ShowDialog("File not Found", "Please Generate the Package Before Uploading to Spark", "OK");
             return;
         }
 

@@ -130,7 +130,6 @@ internal class AhsokaDrawingWindow : LinuxWindow
             return new DrawingRect(x, y, w, h);
         }
         #endregion
-
     }
 }
 

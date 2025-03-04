@@ -81,13 +81,25 @@ public class Extensions
 
         foreach (var file in Directory.GetFiles(pathToExtensionCache, "*", SearchOption.AllDirectories))
         {
-            string platformFolder = $"platform\\{family.ToString()}\\AhsokaLib";
-
-            if (file.Replace("/","\\").Contains(platformFolder))
+            string fileNameFromExtensions = file.Replace(pathToExtensionCache, "");
+            if (fileNameFromExtensions.Contains("\\lib\\"))
             {
-                string fileName = $"AhsokaLib/{Path.GetFileName(file)}";
+                
+                string fileName = $"{ExtensionsFolder}/{extensionName}/{fileNameFromExtensions.Replace("\\", "/").TrimStart('/')}";
                 additionalFiles[fileName] = File.ReadAllBytes(file);
+
             }
+            else if (fileNameFromExtensions.Contains("\\platform\\"))
+            {
+                string platformFolder = $"platform\\{family.ToString()}\\AhsokaLib";
+
+                if (fileNameFromExtensions.Replace("/", "\\").Contains(platformFolder))
+                {
+                    string fileName = $"AhsokaLib/{Path.GetFileName(file)}";
+                    additionalFiles[fileName] = File.ReadAllBytes(file);
+                }
+            }
+            
         }
     }
 

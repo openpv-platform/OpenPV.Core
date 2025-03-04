@@ -9,7 +9,7 @@ internal static class ImageUtility
     public static MemoryStream RotateImage(int orientation, MemoryStream data)
     {
         var image = Image.Load(data);
-        if (orientation != 180)
+        if (orientation != 0)
             image.Mutate(x => x.Rotate(orientation));
 
         data.Dispose();

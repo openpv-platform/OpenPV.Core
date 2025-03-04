@@ -305,13 +305,13 @@ internal class DotNetViewModel : ViewModelBase
         progressString?.Report($" ");
         progressString?.Report($"Installing Ahsoka Services Application to {pathToCLIOutput}");
         progressString?.Report($" ");
-        FileUtilities.CopyDirectory(pathToCommandLine, pathToCLIOutput, true, progressString);
+        FileUtilities.CopyDirectory(pathToCommandLine, pathToCLIOutput, true, progressString, Path.GetFileName(pathToCommandLine));
 
         if (Directory.Exists(pathToHardware))
-            FileUtilities.CopyDirectory(pathToHardware, pathToHWOutput, true, progressString);
+            FileUtilities.CopyDirectory(pathToHardware, pathToHWOutput, true, progressString, Path.GetFileName(pathToHardware));
 
         if (Directory.Exists(pathToResources))
-            FileUtilities.CopyDirectory(pathToResources, pathToResourceOutput, true, progressString);
+            FileUtilities.CopyDirectory(pathToResources, pathToResourceOutput, true, progressString, Path.GetFileName(pathToResources));
 
         progressString?.Report($" ");
 

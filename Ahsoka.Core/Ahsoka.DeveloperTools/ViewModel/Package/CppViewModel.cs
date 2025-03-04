@@ -246,7 +246,7 @@ internal class CppViewModel : ViewModelBase
                     {
                         string pathToSDKOutput = Path.Combine(directoryForFramework, platform.ToString() + "_TargetSupport", "SDK");
                         parentViewModel.Console.AddConsoleLine($"Installing SDK to {pathToSDKOutput}");
-                        FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, null);
+                        FileUtilities.CopyDirectory(pathToSdk, pathToSDKOutput, true, null, Path.GetFileName(pathToSdk));
 
                         ClientCodeGenerator.GenerateClients(parentViewModel.SelectedPackage.PackageInfo, Path.Combine(pathToSDKOutput));
 

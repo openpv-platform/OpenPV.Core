@@ -46,28 +46,6 @@ public class Extensions
         ExtensionLibraries.Add(new WeakReference<Assembly>(assembly));
     }
 
-    internal static void InstallExtension(Dictionary<string, byte[]> additionalFiles, string extensionName, IProgress<string> progress = null)
-    {
-        var config = Configurations.FirstOrDefault(x => x.ExtensionName == extensionName);
-        if (config == null)
-        {
-            progress?.Report($"No extension found for {extensionName}");
-            return;
-        }
-
-        string pathToExtensionCache = Path.GetDirectoryName(config.FilePath);
-
-        foreach (var file in Directory.GetFiles(pathToExtensionCache, "*", SearchOption.AllDirectories))
-        {
-            if (!file.Contains("\\ux\\") && !file.Contains("\\demos"))
-            {
-                string fileNameFromExtensions = file.Replace(pathToExtensionCache, "");
-                string fileName = $"{ExtensionsFolder}/{extensionName}/{fileNameFromExtensions.Replace("\\", "/").TrimStart('/')}";
-                additionalFiles[fileName] = File.ReadAllBytes(file);
-            }
-        }
-    }
-    
     internal static void InstallExtensionLibs(PlatformFamily family, Dictionary<string, byte[]> additionalFiles, string extensionName, IProgress<string> progress = null)
     {
         var config = Configurations.FirstOrDefault(x => x.ExtensionName == extensionName);
@@ -82,9 +60,8 @@ public class Extensions
         foreach (var file in Directory.GetFiles(pathToExtensionCache, "*", SearchOption.AllDirectories))
         {
             string fileNameFromExtensions = file.Replace(pathToExtensionCache, "");
-            if (fileNameFromExtensions.Contains("\\lib\\"))
+            if (fileNameFromExtensions.Contains("\\lib\\") || fileNameFromExtensions.ToLower().EndsWith("extensioninfo.json"))
             {
-                
                 string fileName = $"{ExtensionsFolder}/{extensionName}/{fileNameFromExtensions.Replace("\\", "/").TrimStart('/')}";
                 additionalFiles[fileName] = File.ReadAllBytes(file);
 

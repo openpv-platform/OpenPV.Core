@@ -131,11 +131,13 @@ internal class ApplicationOutputComponent : FileSystemComponentBase
     {
         // Add Core Libs if running C# Apps
         if (info.ApplicationType == ApplicationType.Dotnet)
+        {
             AddCoreLibs(info.PlatformFamily, additionalFiles);
 
-        // Add Extension Libs and Resources - Add AhsokaLibs for Platform
-        foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
-            Extensions.InstallExtensionLibs(info.PlatformFamily, additionalFiles, item.ExtensionName);
+            // Add Extension Libs and Resources - Add AhsokaLibs for Platform
+            foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
+                Extensions.InstallExtensionLibs(info.PlatformFamily, additionalFiles, item.ExtensionName);
+        }         
     }
 
     protected override InstallResult OnInstallComponent(InstallContext context, PackageComponent item)

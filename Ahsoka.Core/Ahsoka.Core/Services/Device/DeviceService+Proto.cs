@@ -203,8 +203,8 @@ public class TouchTuneInfoReply
     [ProtoMember(2)]
     public string ReplyReason { get; set; }
 
-    [ProtoMember(3)]
-    public Dictionary<string, string> VersionInfo { get; set; }
+    [ProtoMember(3, IsRequired = true)]
+    public Dictionary<string, string> VersionInfo { get; set; } = new();
 }
 
 public enum MessageReplyStatus

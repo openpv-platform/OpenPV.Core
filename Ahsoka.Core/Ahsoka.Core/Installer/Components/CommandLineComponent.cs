@@ -71,10 +71,6 @@ internal class CommandLineComponent : PackageComponentBase
             if (info.OptimizedServiceManager)
                 progress.Report(new PackageProgressInfo() { Message = "         Compiler not found, using Dynamic Extensions, install ServiceCompiler if you wish to use this feature" });
 
-            // Add Extensions to App Folder
-            foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
-                Extensions.InstallExtension(additionalFiles, item.ExtensionName);
-
             componentData = base.OnCreateFilePackageStream(buildLocation, info, additionalFiles, installerPlugins, progress);
         }
 

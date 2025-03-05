@@ -59,6 +59,29 @@ public class Extensions
 
         foreach (var file in Directory.GetFiles(pathToExtensionCache, "*", SearchOption.AllDirectories))
         {
+            string platformFolder = $"platform\\{family.ToString()}\\AhsokaLib";
+
+            if (file.Replace("/", "\\").Contains(platformFolder))
+            {
+                string fileName = $"AhsokaLib/{Path.GetFileName(file)}";
+                additionalFiles[fileName] = File.ReadAllBytes(file);
+            }
+        }
+    }
+
+    internal static void InstallExtension(PlatformFamily family, Dictionary<string, byte[]> additionalFiles, string extensionName, IProgress<string> progress = null)
+    {
+        var config = Configurations.FirstOrDefault(x => x.ExtensionName == extensionName);
+        if (config == null)
+        {
+            progress?.Report($"No extension found for {extensionName}");
+            return;
+        }
+
+        string pathToExtensionCache = Path.GetDirectoryName(config.FilePath);
+
+        foreach (var file in Directory.GetFiles(pathToExtensionCache, "*", SearchOption.AllDirectories))
+        {
             string fileNameFromExtensions = file.Replace(pathToExtensionCache, "");
             if (fileNameFromExtensions.Contains("\\lib\\") || fileNameFromExtensions.ToLower().EndsWith("extensioninfo.json"))
             {

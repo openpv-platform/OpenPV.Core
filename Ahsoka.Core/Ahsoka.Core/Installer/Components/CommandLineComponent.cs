@@ -93,7 +93,7 @@ internal class CommandLineComponent : PackageComponentBase
 
         // Add Extension Libs - Add AhsokaLibs for Platform
         foreach (var item in info.ServiceInfo.RuntimeConfiguration.ExtensionInfo)
-            Extensions.InstallExtensionLibs(info.PlatformFamily, additionalFiles, item.ExtensionName);
+            Extensions.InstallExtension(info.PlatformFamily, additionalFiles, item.ExtensionName);
     }
 
 

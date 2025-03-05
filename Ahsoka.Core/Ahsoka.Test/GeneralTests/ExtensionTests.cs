@@ -32,7 +32,7 @@ public class ExtensionTests : LinearTestBase
         var extensions = Extensions.GetExtensionLibraries(false);
 
         Dictionary<string, byte[]> additionalFiles = new Dictionary<string, byte[]>();
-        Extensions.InstallExtensionLibs(PlatformFamily.Windows64, additionalFiles, "Test Extension");
+        Extensions.InstallExtension(PlatformFamily.Windows64, additionalFiles, "Test Extension");
     }
 
 

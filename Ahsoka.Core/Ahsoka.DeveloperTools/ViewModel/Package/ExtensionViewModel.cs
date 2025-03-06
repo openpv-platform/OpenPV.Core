@@ -105,9 +105,11 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             // Add View Model for Each Extension thats Available
             foreach (var item in ParentViewModel.ParentViewModel.AvailableExtensions)
             {
-                var extension = new ExtensionViewModel(this, item);
+                // Create Copy of Available Extensions for this Package
+                var info = JsonUtility.Deserialize<ExtensionConfiguration>(JsonUtility.Serialize(item));
+                var extension = new ExtensionViewModel(this, info);
 
-                if (ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.ExtensionInfo.Any(x => x.ExtensionName == item.ExtensionName))
+                if (ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.ExtensionInfo.Any(x => x.ExtensionName == info.ExtensionName))
                     SelectedExtensions.Add(extension);
                 else
                     AllExtensions.Add(extension);

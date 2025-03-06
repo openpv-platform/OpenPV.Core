@@ -105,9 +105,11 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
             // Add View Model for Each Extension thats Available
             foreach (var item in ParentViewModel.ParentViewModel.AvailableExtensions)
             {
-                var extension = new ExtensionViewModel(this, item);
+                // Create Copy of Available Extensions for this Package
+                var info = JsonUtility.Deserialize<ExtensionConfiguration>(JsonUtility.Serialize(item));
+                var extension = new ExtensionViewModel(this, info);
 
-                if (ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.ExtensionInfo.Any(x => x.ExtensionName == item.ExtensionName))
+                if (ParentViewModel.PackageInfo.ServiceInfo.RuntimeConfiguration.ExtensionInfo.Any(x => x.ExtensionName == info.ExtensionName))
                     SelectedExtensions.Add(extension);
                 else
                     AllExtensions.Add(extension);
@@ -227,8 +229,8 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         IsWorking = true;
         await Task.Run(async () =>
         {
-            await selectedExtension.DownloadExtension(PreRelease, source);
-            selectedExtension.IsInstalled = true;
+            if (await selectedExtension.DownloadExtension(PreRelease, source))
+                selectedExtension.IsInstalled = true;
 
         }).ContinueWith((t) =>
         {
@@ -382,16 +384,29 @@ internal class ExtensionsViewModel : ChildViewModelBase<PackageViewModel>, ICust
         }
     }
 
-    internal static async Task DownloadMissingExtensions(MainViewModel mainViewModel, IProgress<string> progressString)
+    internal static async Task<bool> DownloadMissingExtensions(MainViewModel mainViewModel, IProgress<string> progressString)
     {
         CancellationTokenSource source = new CancellationTokenSource();
         foreach (var item in mainViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions)
             if (!item.IsInstalled)
             {
                 progressString?.Report($"Downloading Extension {item.ExtensionName}");
-                await item.DownloadExtension(mainViewModel.SelectedPackage.ExtensionsViewModel.PreRelease, source);
-                item.IsInstalled = true;
+                if (await item.DownloadExtension(mainViewModel.SelectedPackage.ExtensionsViewModel.PreRelease, source, false))
+                    item.IsInstalled = true;
+                else
+                {
+                    item.InstalledVersion = "0.0";
+                    Directory.Delete(item.GetExtensionDirectory(),true);
+                    progressString?.Report($"An error occured downloading Extension {item.ExtensionName}");
+                }
             }
+
+        bool result = mainViewModel.SelectedPackage.ExtensionsViewModel.SelectedExtensions.Any(x => x.IsInstalled == false);
+
+        if (!result)
+            mainViewModel.SelectedPackage.ExtensionsViewModel.ReloadExtensions();
+
+        return !result;
     }
     #endregion
 
@@ -526,7 +541,7 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
         });
     }
 
-    public async Task DownloadExtension(bool preRelease, CancellationTokenSource token)
+    public async Task<bool> DownloadExtension(bool preRelease, CancellationTokenSource token, bool reloadWhenComplete = true)
     {
         string directory = GetExtensionDirectory();
         if (Directory.Exists(directory))
@@ -544,7 +559,8 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
         if (!Directory.Exists(libDirectory))
             Directory.CreateDirectory(libDirectory);
 
-        await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.PackageName, this.InstalledVersion, libDirectory, true, false);
+        var libResult = await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.PackageName, this.InstalledVersion, libDirectory, true, false);
+        bool uxResult = true;
 
         if (ExtensionConfiguration.HasUx)
         {
@@ -553,10 +569,13 @@ internal class ExtensionViewModel : ChildViewModelBase<ExtensionsViewModel>
             if (!Directory.Exists(uxDirectory))
                 Directory.CreateDirectory(uxDirectory);
 
-            await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.UxPackageName, this.InstalledVersion, uxDirectory, false, false);
+            uxResult = await PlatformExtensionsTool.DownloadPackage(ParentViewModel.ParentViewModel, token, configuration.UxPackageName, this.InstalledVersion, uxDirectory, false, false);
         }
 
-        ParentViewModel.ReloadExtensions();
+        if (reloadWhenComplete)
+            ParentViewModel.ReloadExtensions();
+
+        return libResult && uxResult;
     }
 
     public string GetExtensionFile()

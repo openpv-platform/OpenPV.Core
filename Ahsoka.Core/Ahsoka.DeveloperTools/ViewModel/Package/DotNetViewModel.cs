@@ -215,7 +215,9 @@ internal class DotNetViewModel : ViewModelBase
                 parentViewModel.Console.AddConsoleLine(info);
             });
 
-            await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
+           var dlResult = await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
+            if (!dlResult)
+                throw new IOException("Unable to Update Extensions");
 
             //needs method for determining platforms to load
             List<PlatformFamily> platformsToSupport = new() { packageInfo.PlatformFamily };
@@ -257,10 +259,10 @@ internal class DotNetViewModel : ViewModelBase
 
             finishedInstall = true;
         }
-        catch (IOException)
+        catch (IOException exc)
         {
             finishedInstall = false;
-            parentViewModel.Console.AddConsoleLine($"Unable to Remove and Re-Add the SDK Folder");
+            parentViewModel.Console.AddConsoleLine($"Unable to Remove and Re-Add the SDK Folder - {exc.Message}");
         }
         finally
         {

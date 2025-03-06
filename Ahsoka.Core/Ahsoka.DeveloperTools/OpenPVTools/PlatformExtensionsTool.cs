@@ -95,10 +95,12 @@ internal class PlatformExtensionsTool : SparkToolBase
         try
         {
             var version = await GetVersionToDownload(config, config.PackageName, nugetVersion.IsPrerelease);
-
             await PlatformExtensionsTool.DownloadPackage(toolVM, cancellationToken, config.PackageName, version.FirstOrDefault(), demoPath, false, true);
         }
-        catch { Console.WriteLine($"Unable to Download Packages for {config.PackageName}"); }
+        catch 
+        { 
+            toolVM.MainViewModel.Console.AddConsoleLine($"Unable to Download Packages for {config.PackageName}"); 
+        }
     }
 
     protected override string GetVersionFilePath()
@@ -171,15 +173,17 @@ internal class PlatformExtensionsTool : SparkToolBase
         return listOfResults;
     }
 
-    internal static async Task DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string packageName, string version, string directory, bool evaluateDeps, bool demoOnly)
+    internal static async Task<bool> DownloadPackage(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string packageName, string version, string directory, bool evaluateDeps, bool demoOnly)
     {
         Console.WriteLine($"Fetching {packageName} with version {version} for download");
 
         if (version != null)
-            await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, version, null, evaluateDeps, demoOnly);
+            return await DownloadNugetFiles(toolVM, cancellationToken, directory, packageName, version, null, evaluateDeps, demoOnly);
+
+        return false;
     }
 
-    private static async Task DownloadNugetFiles(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string directory, string package, string version, List<string> previousDownloads, bool evaluateDeps, bool demoOnly)
+    private static async Task<bool> DownloadNugetFiles(IToolViewModel toolVM, CancellationTokenSource cancellationToken, string directory, string package, string version, List<string> previousDownloads, bool evaluateDeps, bool demoOnly)
     {
         previousDownloads ??= new List<string>();
 
@@ -188,7 +192,7 @@ internal class PlatformExtensionsTool : SparkToolBase
         string libraryFile = package + ".dll";
 
         if (previousDownloads.Contains(package) || string.IsNullOrEmpty(package))
-            return;
+            return true;
 
         previousDownloads.Add(package);
 
@@ -199,7 +203,14 @@ internal class PlatformExtensionsTool : SparkToolBase
                 toolVM.DownloadPercent = (int)progressPercentage;
             };
 
-            await nugetDL.StartDownload(cancellationToken);
+            try
+            {
+                await nugetDL.StartDownload(cancellationToken);
+            }
+            catch
+            { 
+                return false; 
+            }
         }
 
         using (var stream = new FileStream(nugetFile, FileMode.Open))
@@ -282,7 +293,7 @@ internal class PlatformExtensionsTool : SparkToolBase
 
         File.Delete(nugetFile);
 
-
+        return true;
     }
 
     private static IEnumerable<XElement> FindBestGroup(IEnumerable<XElement> dependencyGroups)

@@ -39,9 +39,9 @@ internal class STServiceImplementation : IServiceImplementation
         else if (percent > 100)
             percent = 100;
 
-        int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness"))) + 1;
-        int rawValue = (int)Math.Round(percent / (100.0f / brightnessSteps), 0);
-        
+        int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
+        float stepsSize = 100.0f / brightnessSteps;
+        int rawValue = (int)Math.Round((percent / stepsSize), 0);
         File.WriteAllText(Path.Combine(backlightDriverPath, "brightness"), rawValue.ToString());
     }
 
@@ -49,7 +49,7 @@ internal class STServiceImplementation : IServiceImplementation
     {
         using var stopwatch = new AhsokaStopwatch("GetBrightness");
 
-        int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness"))) + 1;
+        int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
         int rawValue = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "brightness")));
         return (int)Math.Round(rawValue * (100.0f / brightnessSteps), 0);
     }

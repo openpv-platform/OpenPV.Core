@@ -211,7 +211,9 @@ internal class CppViewModel : ViewModelBase
                 parentViewModel.Console.AddConsoleLine(info);
             });
 
-            await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
+            var dlResult =  await ExtensionsViewModel.DownloadMissingExtensions(parentViewModel, progressString);
+            if (!dlResult)
+                throw new IOException("Unable to Update Extensions");
 
             PlatformFamily[] platformsToSupport =
             {

@@ -205,7 +205,7 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
                 var fileItem = token.Contents.FirstOrDefault(x => x.Path.EndsWith(fileExt));
                 string downloadUrl = fileItem.DownloadToken;
 
-                string localPath = Path.GetTempFileName() + fileExt;
+                string localPath = Path.Combine(Path.GetTempPath(),Guid.NewGuid().ToString() + fileExt);
 
                 ParentViewModel.Downloads.ExecuteDownload("Downloading OpenPV Update", localPath, fileItem.DownloadToken);
 
@@ -333,8 +333,8 @@ internal class UpdatesViewModel : ChildViewModelBase<MainViewModel>
             try
             {
                 ReleaseDTO token = SparkAccountClient.SharedSparkClient.GetDownloadToken(SelectedRelease.ReleaseDto.ReleaseID, DateTime.Now.AddMinutes(15));
-                string fileExt = Environment.OSVersion.Platform == PlatformID.Unix ? ".deb" : ".msi";
-                var fileItem = token.Contents.FirstOrDefault(x => x.Path.EndsWith(fileExt));
+                string fileExt = Environment.OSVersion.Platform == PlatformID.Unix ? "deb" : "msi";
+                var fileItem = token.Contents.FirstOrDefault(x => x.Path.EndsWith("." + fileExt));
                 string downloadUrl = fileItem.DownloadToken;
 
                 string localPath = ParentViewModel.FileSaveDialogAsync("Save File", fileExt, "Installer", fileItem.Path).GetAwaiter().GetResult();

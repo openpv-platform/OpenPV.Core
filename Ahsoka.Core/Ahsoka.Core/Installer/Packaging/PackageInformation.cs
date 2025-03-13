@@ -53,7 +53,7 @@ public class PackageInformation : PackageHeader
             using FileStream zipFile = new FileStream(path, FileMode.Open);
             using ZipArchive archive = new ZipArchive(zipFile);
             var entry = archive.Entries.FirstOrDefault(x => x.Name.ToLower().EndsWith("packageinfo.json"));
-            string filePath = Path.GetTempFileName();
+            string filePath = Path.Combine(Path.GetTempPath(), entry.Name);
             entry.ExtractToFile(filePath, true);
             package = ConfigurationFileLoader.LoadFile<PackageInformation>(filePath);
             File.Delete(filePath);

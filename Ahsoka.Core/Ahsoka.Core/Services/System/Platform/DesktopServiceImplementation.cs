@@ -11,7 +11,7 @@ namespace Ahsoka.Services.System.Platform;
 internal class DesktopServiceImplementation : IServiceImplementation
 {
     int currentBrightness = 5;
-    int brightnessSteps = 19; // Matching Select
+    int maxBrightness = 99; // Matching Select
 
     public string GetHardwareSerialNumber()
     {
@@ -29,20 +29,24 @@ internal class DesktopServiceImplementation : IServiceImplementation
             return "Generic Desktop";
     }
 
-    void IServiceImplementation.SetBrightness(int percent)
+    void IServiceImplementation.SetBrightness(int value)
     {
-        if (percent < 0)
-            percent = 0;
-        else if (percent > 100)
-            percent = 100;
+        if (value < 0)
+            value = 0;
+        else if (value > 100)
+            value = 100;
 
-        currentBrightness = (int)Math.Round(percent / (100.0f / brightnessSteps));
+        currentBrightness = value;
     }
 
     int IServiceImplementation.GetBrightness()
     {
-        int rawValue = currentBrightness;
-        return (int)Math.Round(rawValue * (100.0f / brightnessSteps));
+        return currentBrightness;
+    }
+
+    int IServiceImplementation.GetBrightnessMax()
+    {
+        return maxBrightness;
     }
 
     private static string GetWMICValue(string args)

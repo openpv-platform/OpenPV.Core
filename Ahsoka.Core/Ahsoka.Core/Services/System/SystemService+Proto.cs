@@ -26,6 +26,9 @@ public class SystemMessageTypes
         GetBrightness = 15,
         SetBrightness = 17,
 
+        GetBrightnessRaw = 18,
+        SetBrightnessRaw = 19,
+
         SetBootLogo = 30,
 
         TestNotif = 31,
@@ -196,6 +199,28 @@ public class BrightnessInfo
     /// Default CTOR
     /// </summary>
     public BrightnessInfo()
+    {
+        this.Persist = true;
+    }
+}
+
+// Brightness
+[ProtoContract]
+public class BrightnessInfoRaw
+{
+    [ProtoMember(1)]
+    public int Value { get; set; }
+
+    [ProtoMember(2)]
+    public int MaxValue { get; set; }
+
+    [ProtoMember(3)]
+    public bool Persist { get; set; }
+
+    /// <summary>
+    /// Default CTOR
+    /// </summary>
+    public BrightnessInfoRaw()
     {
         this.Persist = true;
     }

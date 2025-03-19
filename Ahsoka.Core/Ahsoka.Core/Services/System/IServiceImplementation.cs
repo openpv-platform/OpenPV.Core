@@ -9,8 +9,10 @@ internal interface IServiceImplementation
     string GetHardwareModel();
 
     int GetBrightness();
+    
+    int GetBrightnessMax();
 
-    void SetBrightness(int percent);
+    void SetBrightness(int value);
 
     void Reboot();
 
@@ -21,4 +23,5 @@ internal interface IServiceImplementation
     void ShutdownApplication(int shutDownCode);
 
     Dictionary<string, string> GetPlatformVersions();
+
 }

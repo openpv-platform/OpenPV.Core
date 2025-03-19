@@ -170,6 +170,15 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
                 HandleSetBrightness(request);
                 break;
 
+            case SystemMessageTypes.Ids.GetBrightnessRaw:
+                HandleGetBrightnessRaw(request);
+                break;
+
+            case SystemMessageTypes.Ids.SetBrightnessRaw:
+                HandleSetBrightnessRaw(request);
+                break;
+
+
             case SystemMessageTypes.Ids.SetBootLogo:
                 HandleSetBootLogo(request);
                 break;
@@ -316,21 +325,53 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
     private void HandleGetBrightness(AhsokaServiceRequest message)
     {
-        SendResponse(message, settings.BrightnessInfo);
+        using var stopwatch = new AhsokaStopwatch("GetBrightness");
+
+        int brightnessSteps = coreInterop.GetBrightnessMax();
+        int brightness = coreInterop.GetBrightness();
+
+        SendResponse(message, new BrightnessInfo()
+        {
+             Percentage = (int)Math.Round(brightness * (100.0f / brightnessSteps), 0)
+        });
     }
 
     private void HandleSetBrightness(AhsokaServiceRequest message)
     {
         var info = message.Message as BrightnessInfo;
-        coreInterop.SetBrightness(info.Percentage);
 
-        // Save Corrected Value
-        info.Percentage = coreInterop.GetBrightness();
-        settings.BrightnessInfo.Percentage = info.Percentage;
+        int brightnessSteps = coreInterop.GetBrightnessMax();
+        float stepsSize = 100.0f / brightnessSteps;
+        settings.BrightnessInfo.Value = (int)Math.Round((info.Percentage / stepsSize), 0);
+
+        // Set Value
+        coreInterop.SetBrightness(settings.BrightnessInfo.Value);
+
         if (info.Persist)
             SaveSystemSettings();
 
         HandleGetBrightness(message);
+    }
+
+    private void HandleGetBrightnessRaw(AhsokaServiceRequest message)
+    {
+        SendResponse(message, settings.BrightnessInfo);
+    }
+
+    private void HandleSetBrightnessRaw(AhsokaServiceRequest message)
+    {
+        var info = message.Message as BrightnessInfoRaw;
+        coreInterop.SetBrightness(info.Value);
+
+        // Save Value
+        info.Value = coreInterop.GetBrightness();
+        settings.BrightnessInfo.Value = info.Value;
+        info.MaxValue = coreInterop.GetBrightnessMax();
+
+        if (info.Persist)
+            SaveSystemSettings();
+
+        HandleGetBrightnessRaw(message);
     }
 
     internal List<ServiceStats> GetServiceInfo()
@@ -363,9 +404,10 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
                 Console.WriteLine($"LoadSystemSettings: systemSettings is null...");
                 return new SystemSettings()
                 {
-                    BrightnessInfo = new BrightnessInfo()
+                    BrightnessInfo = new BrightnessInfoRaw()
                     {
-                        Percentage = coreInterop.GetBrightness()
+                        Value = coreInterop.GetBrightness(),
+                        MaxValue = coreInterop.GetBrightnessMax()
                     }
                 };
             }
@@ -373,9 +415,10 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
             {
                 Console.WriteLine($"LoadSystemSettings: systemSettings.BrightnessInfo is null...");
                 // Deserialized reference type is null, file is likely empty
-                systemSettings.BrightnessInfo = new BrightnessInfo()
+                systemSettings.BrightnessInfo = new BrightnessInfoRaw()
                 {
-                    Percentage = coreInterop.GetBrightness()
+                    Value = coreInterop.GetBrightness(),
+                    MaxValue = coreInterop.GetBrightnessMax()
                 };
                 return systemSettings;
             }
@@ -387,9 +430,10 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
         return new SystemSettings()
         {
-            BrightnessInfo = new BrightnessInfo()
+            BrightnessInfo = new BrightnessInfoRaw()
             {
-                Percentage = coreInterop.GetBrightness()
+                Value = coreInterop.GetBrightness(),
+                MaxValue = coreInterop.GetBrightnessMax()
             }
         };
     }
@@ -402,7 +446,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
     private void InitSystemSettings(SystemSettings systemSettings)
     {
-        coreInterop.SetBrightness(systemSettings.BrightnessInfo.Percentage);
+        coreInterop.SetBrightness(systemSettings.BrightnessInfo.Value);
     }
 
     private static string GetSettingsPath()
@@ -411,7 +455,7 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
         if (!Directory.Exists(path))
             Directory.CreateDirectory(path);
-        string file = Path.Combine(path, "settings.json");
+        string file = Path.Combine(path, "brightnessInfo.json");
         return file;
     }
 
@@ -443,6 +487,6 @@ public class SystemService : AhsokaServiceBase<SystemMessageTypes.Ids>
 
 internal class SystemSettings
 {
-    public BrightnessInfo BrightnessInfo { get; set; }
+    public BrightnessInfoRaw BrightnessInfo { get; set; }
 }
 

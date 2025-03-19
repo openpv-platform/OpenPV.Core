@@ -178,6 +178,29 @@ public class SystemServiceClient : AhsokaClientBase<SystemMessageTypes.Ids>
     }
 
     /// <summary>
+    /// Returns the Brightness of the Current Primary Display
+    /// </summary>
+    /// <returns></returns>
+    public BrightnessInfoRaw GetBrightnessRaw()
+    {
+        return SendMessageWithResponse<BrightnessInfoRaw>(SystemMessageTypes.Ids.GetBrightnessRaw);
+    }
+
+    /// <summary>
+    /// Sets the brightness of the Primary Display.  Note that method returns a brightness value
+    /// as the requested value may not be valid for some targets (for example if the display uses 
+    /// a less than 1 byte Brightness Value) and the accepted value will be returned if the requested value is 
+    /// not valid.
+    /// </summary>
+    /// <param name="brightnessInfo"></param>
+    /// <returns></returns>
+    public BrightnessInfoRaw SetBrightnessRaw(BrightnessInfoRaw brightnessInfo)
+    {
+        return SendMessageWithResponse<BrightnessInfoRaw>(SystemMessageTypes.Ids.SetBrightnessRaw, brightnessInfo);
+    }
+
+
+    /// <summary>
     /// Sets the Boot Logo (Splash) to a given a .png file
     /// </summary>
     /// <param name="bootLogoInfo">Boot logo info such as the path to the .png image file.</param>

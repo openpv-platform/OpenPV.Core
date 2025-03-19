@@ -87,6 +87,10 @@ public class SystemServiceMessages : AhsokaMessagesBase
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.GetBrightness, typeof(EmptyNotification), typeof(BrightnessInfo));
         this.RegisterServiceRequest(SystemMessageTypes.Ids.SetBrightness, typeof(BrightnessInfo), typeof(BrightnessInfo));
+      
+        this.RegisterServiceRequest(SystemMessageTypes.Ids.GetBrightnessRaw, typeof(EmptyNotification), typeof(BrightnessInfoRaw));
+        this.RegisterServiceRequest(SystemMessageTypes.Ids.SetBrightnessRaw, typeof(BrightnessInfoRaw), typeof(BrightnessInfoRaw));
+        
         this.RegisterServiceRequest(SystemMessageTypes.Ids.SetBootLogo, typeof(BootLogoInfo), typeof(EmptyNotification));
 
         this.RegisterServiceRequest(SystemMessageTypes.Ids.RequestShutdown, typeof(ShutdownInformation), typeof(EmptyNotification));

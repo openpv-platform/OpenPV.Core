@@ -18,6 +18,7 @@ internal class TIServiceImplementation : IServiceImplementation
     public const string NativeLibraryName = "AhsokaLib/Ahsoka.Services.ST.so";
     private const string firmwareModelNumberPath = "/sys/firmware/devicetree/base/model";
     private const string firmwareSerialNumberPath = "/sys/block/mmcblk0/device/cid";
+    private const string backlightDriverPath = "/sys/devices/platform/panel_backlight/backlight/panel_backlight";
     #endregion
 
     #region Interface
@@ -31,23 +32,29 @@ internal class TIServiceImplementation : IServiceImplementation
         return File.ReadAllText(firmwareSerialNumberPath).Trim().Replace("\0", "");
     }
 
-    private void BuzzerInit()
+   
+    void IServiceImplementation.SetBrightness(int value)
     {
+        int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
 
-    }
+        if (value < 0)
+            value = 0;
+        else if (value > brightnessSteps)
+            value = brightnessSteps;
 
-    void IServiceImplementation.SetBrightness(int percent)
-    {
-        if (percent < 0)
-            percent = 0;
-        else if (percent > 100)
-            percent = 100;
+        File.WriteAllText(Path.Combine(backlightDriverPath, "brightness"), value.ToString());
     }
 
     int IServiceImplementation.GetBrightness()
     {
-        return 100;
+        return int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "brightness")));
     }
+
+    int IServiceImplementation.GetBrightnessMax()
+    {
+        return int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
+    }
+
 
     void IServiceImplementation.Reboot()
     {

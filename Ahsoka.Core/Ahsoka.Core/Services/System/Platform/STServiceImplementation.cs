@@ -15,7 +15,7 @@ internal class STServiceImplementation : IServiceImplementation
     readonly string[] logoFileTypes = { ".png", ".jpg" };
 
     #region NativeLibrary
-    private const string systmeBacklightService = "/lib/systemd/system/systemd-backlight@.service";
+    private const string systemBacklightService = "/lib/systemd/system/systemd-backlight@.service";
     private const string firmwareModelNumberPath = "/sys/firmware/devicetree/base/model";
     private const string firmwareSerialNumberPath = "/sys/firmware/devicetree/base/serial-number";
     private const string backlightDriverPath = "/sys/devices/platform/panel_backlight/backlight/panel_backlight";
@@ -33,40 +33,30 @@ internal class STServiceImplementation : IServiceImplementation
         return File.ReadAllText(firmwareSerialNumberPath).Trim().Replace("\0", "");
     }
 
-    void IServiceImplementation.SetBrightness(int percent)
+    void IServiceImplementation.SetBrightness(int value)
     {
-        if (percent < 0)
-            percent = 0;
-        else if (percent > 100)
-            percent = 100;
+        int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
+
+        if (value < 0)
+            value = 0;
+        else if (value > brightnessSteps)
+            value = brightnessSteps;
 
         // Disable Backlight Service
-        if (File.Exists(systmeBacklightService))
-            File.Move(systmeBacklightService, $"{systmeBacklightService}.old",true);
+        if (File.Exists(systemBacklightService))
+            File.Move(systemBacklightService, $"{systemBacklightService}.old", true);
 
-        if (File.Exists(Path.Combine(backlightDriverPath, "brightness")))
-        {
-            int originalValue = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "brightness")));
-            Console.WriteLine(originalValue);
-
-            int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
-            float stepsSize = 100.0f / brightnessSteps;
-            int rawValue = (int)Math.Round((percent / stepsSize), 0);
-            File.WriteAllText(Path.Combine(backlightDriverPath, "brightness"), rawValue.ToString());
-
-            int newValue = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "brightness")));
-            Console.WriteLine(newValue);
-        }
-
+        File.WriteAllText(Path.Combine(backlightDriverPath, "brightness"), value.ToString());
     }
 
     int IServiceImplementation.GetBrightness()
     {
-        using var stopwatch = new AhsokaStopwatch("GetBrightness");
+        return int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "brightness")));
+    }
 
-        int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
-        int rawValue = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "brightness")));
-        return (int)Math.Round(rawValue * (100.0f / brightnessSteps), 0);
+    int IServiceImplementation.GetBrightnessMax()
+    {
+        return int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
     }
 
     void IServiceImplementation.Reboot()

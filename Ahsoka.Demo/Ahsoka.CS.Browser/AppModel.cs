@@ -6,7 +6,7 @@ namespace Ahsoka.CS.Browser;
 internal class AppModel
 {
     static SystemServiceClient systemClient = null;
-    static int lastBrightness = 50;
+    static BrightnessInfoRaw lastBrightness = new BrightnessInfoRaw() { Value = 10 };
 
     internal static void StartModel(WebApplication app)
     {
@@ -24,26 +24,27 @@ internal class AppModel
 
     internal static int GetBrightness()
     {
-        lastBrightness = systemClient.GetBrightness().Percentage;
-        return lastBrightness;
+        lastBrightness = systemClient.GetBrightnessRaw();
+        return lastBrightness.Value;
     }
 
     internal static void BrightnessUp()
     {
-        lastBrightness = systemClient.GetBrightness().Percentage;
-        if (lastBrightness <= 95)
-            lastBrightness += 5;
+        lastBrightness = systemClient.GetBrightnessRaw();
+        if (lastBrightness.Value < lastBrightness.MaxValue)
+            lastBrightness.Value += 1;
 
-        lastBrightness = systemClient.SetBrightness(new BrightnessInfo() { Percentage = lastBrightness }).Percentage;
+        lastBrightness = systemClient.SetBrightnessRaw(lastBrightness);
     }
 
     internal static void BrightnessDown()
     {
-        lastBrightness = systemClient.GetBrightness().Percentage;
-        if (lastBrightness >= 5)
-            lastBrightness -= 5;
+        lastBrightness = systemClient.GetBrightnessRaw();
+        if (lastBrightness.Value > 0)
+            lastBrightness.Value -=1;
 
-        lastBrightness =  systemClient.SetBrightness(new BrightnessInfo() { Percentage = lastBrightness }).Percentage;
+
+        lastBrightness = systemClient.SetBrightnessRaw(lastBrightness);
     }
 
 }

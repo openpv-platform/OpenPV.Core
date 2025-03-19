@@ -15,6 +15,7 @@ internal class STServiceImplementation : IServiceImplementation
     readonly string[] logoFileTypes = { ".png", ".jpg" };
 
     #region NativeLibrary
+    private const string systmeBacklightService = "/lib/systemd/system/systemd-backlight@.service";
     private const string firmwareModelNumberPath = "/sys/firmware/devicetree/base/model";
     private const string firmwareSerialNumberPath = "/sys/firmware/devicetree/base/serial-number";
     private const string backlightDriverPath = "/sys/devices/platform/panel_backlight/backlight/panel_backlight";
@@ -39,10 +40,24 @@ internal class STServiceImplementation : IServiceImplementation
         else if (percent > 100)
             percent = 100;
 
-        int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
-        float stepsSize = 100.0f / brightnessSteps;
-        int rawValue = (int)Math.Round((percent / stepsSize), 0);
-        File.WriteAllText(Path.Combine(backlightDriverPath, "brightness"), rawValue.ToString());
+        // Disable Backlight Service
+        if (File.Exists(systmeBacklightService))
+            File.Move(systmeBacklightService, $"{systmeBacklightService}.old",true);
+
+        if (File.Exists(Path.Combine(backlightDriverPath, "brightness")))
+        {
+            int originalValue = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "brightness")));
+            Console.WriteLine(originalValue);
+
+            int brightnessSteps = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "max_brightness")));
+            float stepsSize = 100.0f / brightnessSteps;
+            int rawValue = (int)Math.Round((percent / stepsSize), 0);
+            File.WriteAllText(Path.Combine(backlightDriverPath, "brightness"), rawValue.ToString());
+
+            int newValue = int.Parse(File.ReadAllText(Path.Combine(backlightDriverPath, "brightness")));
+            Console.WriteLine(newValue);
+        }
+
     }
 
     int IServiceImplementation.GetBrightness()

@@ -102,7 +102,7 @@ public class GetHardwareInformationReply
     [ProtoMember(9)]
     public double CpuTempInC { get; set; }
 
-    [ProtoMember(10, IsRequired = true)]
+    [ProtoMember(100, IsRequired = true)]
     public Dictionary<string, string> VersionInfo { get; set; } = new Dictionary<string, string>();
 }
 

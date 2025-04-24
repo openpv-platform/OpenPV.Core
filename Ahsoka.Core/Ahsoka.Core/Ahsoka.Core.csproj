@@ -82,7 +82,7 @@
 		<PackageReference Include="Mono.Posix.NETStandard" Version="1.0.0" />
 		<PackageReference Include="MQTTnet" Version="4.3.7.1207" />
 		<PackageReference Include="System.Text.Json" Version="8.0.5" />
-		<PackageReference Include="Usb.Events" Version="11.1.0.1" />
+		<PackageReference Include="Usb.Events" Version="11.1.1" />
 	</ItemGroup>
 
 	<ItemGroup Label="Windows Only Modules - If Only I could Figure Out how to Exclude Them???">

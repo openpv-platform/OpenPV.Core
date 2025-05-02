@@ -1,7 +1,7 @@
 ﻿{
   "extensionName": "Reach Service Extension",
   "packageName": "Ahsoka.Extensions.CygnusReach",
-  "uxpackageName": "Ahsoka.Extensions.CygnusReach.UX",
+  "uxpackageName": "Ahsoka.Extensions.CygnusReach.Ux",
   "uxViewModelName": "CygnusReachSetupViewModel",
   "serviceConfigurations": [
     {
@@ -14,7 +14,7 @@
     }
   ],
   "hasCommands": "false",
-  "hasUx": "false",
+  "hasUx": "true",
   "minVersion": "4.0.0",
   "maxVersion": "5.0.0",
   "requireExactVersion": "false"

@@ -323,7 +323,7 @@ stages:
       displayName: 'Push Packages to Spark'
       inputs:
         script: |
-          EnovationCloud.CommandLine --UploadToSpark $(Build.SourcesDirectory)/PublishArea/drop/SparkUpload sparkserviceprod.azurewebsites.net  $(SparkLogin) $(SparkPassword) $(Build.BuildNumber)
+          EnovationCloud.CommandLine --UploadToSpark $(Build.SourcesDirectory)/PublishArea/drop/SparkUpload enovation.powervisionspark.com  $(SparkLogin) $(SparkPassword) $(Build.BuildNumber)
 
     - task: NuGetCommand@2
       displayName: 'Push to Nuget.org if dev or main'

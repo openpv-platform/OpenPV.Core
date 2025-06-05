@@ -91,7 +91,7 @@ public class SparkTests : LinearTestBase
 
         SparkConnectionInfo info = new()
         {
-            Url = "sparkserviceprod.azurewebsites.net",
+            Url = "enovation.powervisionspark.com",
             Login = identity,
             Password = password
         };

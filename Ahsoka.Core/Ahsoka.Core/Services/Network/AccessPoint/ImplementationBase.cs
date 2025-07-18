@@ -74,7 +74,7 @@ internal abstract class ImplementationBase
                 {
                     lock (syncRoot)
                     {
-                        var newList = GetClientList(adapterRequest);
+                        var newList = OnGetClientList(adapterRequest);
                         foreach (var item in newList.Clients)
                             if (!connectedList.Clients.Any(x => x.MacAddress == item.MacAddress))
                                 NetworkService.SendNotification(WiFiAPMessageTypes.Ids.ClientAdded, item);
@@ -98,9 +98,14 @@ internal abstract class ImplementationBase
 
     internal AdapterResult StopAccessPoint(AdapterRequest adapterRequest)
     {
-        cancellationTokenSource?.Cancel();
-        notificationTask?.Wait(5000);
-        connectedList.Clients.Clear();
+        try
+        {
+            cancellationTokenSource?.Cancel();
+            notificationTask?.Wait(5000);
+        }
+        catch { }
+
+        connectedList?.Clients?.Clear();
         return OnStopAccessPoint(adapterRequest);
     }
 

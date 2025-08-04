@@ -190,8 +190,12 @@ public class Dispatcher
         }
     }
 
-
-    internal bool DeregisterTimerCallback(Guid timerReference)
+    /// <summary>
+    /// Remove Timer Callback from Timer List
+    /// </summary>
+    /// <param name="timerReference"></param>
+    /// <returns></returns>
+    public bool DeregisterTimerCallback(Guid timerReference)
     {
         lock (timers)
             foreach (var item in this.timers)

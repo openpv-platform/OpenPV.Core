@@ -131,9 +131,9 @@ public class Dispatcher
     /// <param name="timeElapsedCallback"></param>
     /// <param name="interval"></param>
     /// <param name="source"></param>
-    public void RegisterTimerCallback(Action<object, EventArgs> timeElapsedCallback, TimeSpan interval, object source = null)
+    public Guid RegisterTimerCallback(Action<object, EventArgs> timeElapsedCallback, TimeSpan interval, object source = null)
     {
-        RegisterTimerCallback<EventArgs>(timeElapsedCallback, interval, source);
+        return RegisterTimerCallback<EventArgs>(timeElapsedCallback, interval, source);
     }
 
     /// <summary>
@@ -142,8 +142,10 @@ public class Dispatcher
     /// <param name="timeElapsedCallback"></param>
     /// <param name="interval"></param>
     /// <param name="source"></param>
-    public void RegisterTimerCallback<T>(Action<object, T> timeElapsedCallback, TimeSpan interval, object source = null) where T : class
+    public Guid RegisterTimerCallback<T>(Action<object, T> timeElapsedCallback, TimeSpan interval, object source = null) where T : class
     {
+        Guid reference = Guid.NewGuid();
+
         AddAutoStartInternal(source as IDispatchSource);
 
         // If Timer Exists, Add Dispatcher, otherwise create a new timer / tracker
@@ -152,8 +154,11 @@ public class Dispatcher
             tracker.Callbacks.Add(new TimerTrackerCallback<T>()
             {
                 Callback = timeElapsedCallback,
-                Sender = source
+                Sender = source,
+                Reference = reference
             });
+
+            return reference;
         }
         else
         {
@@ -173,14 +178,38 @@ public class Dispatcher
                 }
             });
 
-            List<TimerTrackerCallback> callbacks = new() { new TimerTrackerCallback<T>() { Callback = timeElapsedCallback, Sender = source } };
+            List<TimerTrackerCallback> callbacks = new() { new TimerTrackerCallback<T>() { Callback = timeElapsedCallback, Sender = source, Reference = reference } };
 
             this.timers[interval.TotalMilliseconds] = new TimerTracker()
             {
                 Timer = new Timer(timerCallback, callbacks, (int)interval.TotalMilliseconds, (int)interval.TotalMilliseconds),
                 Callbacks = callbacks
             };
+
+            return reference;
         }
+    }
+
+
+    internal bool DeregisterTimerCallback(Guid timerReference)
+    {
+        lock (timers)
+            foreach (var item in this.timers)
+            {
+                var timerToRemove = item.Value.Callbacks.FirstOrDefault(x => x.Reference == timerReference);
+                if (timerToRemove != null)
+                {
+                    item.Value.Callbacks.Remove(timerToRemove);
+                    if (item.Value.Callbacks.Count == 0)
+                    {
+                        item.Value.Timer.Change(Timeout.Infinite, Timeout.Infinite);
+                        this.timers.Remove(item.Key);
+                    }
+                    return true;
+                }
+            }
+
+        return false;
     }
 
     /// <summary>
@@ -441,6 +470,8 @@ public class Dispatcher
     abstract class TimerTrackerCallback
     {
         internal object Sender;
+        internal Guid Reference;
+
         abstract internal void Execute(Dispatcher dispatcher);
     }
 

@@ -376,7 +376,7 @@ public class ServiceTests : LinearTestBase
 
         Dispatcher.Default.RegisterCallback((o, e) => { }, netClient);
         Dispatcher.Default.RegisterCallback<NotificationEventArgs<SystemMessageTypes.Ids>>(ApplicationServiceClient_NotificationReceived, systemClient);
-        Dispatcher.Default.RegisterTimerCallback((o, e) =>
+        var timerReference = Dispatcher.Default.RegisterTimerCallback((o, e) =>
         {
             Console.WriteLine("Do Nothing");
 
@@ -384,9 +384,11 @@ public class ServiceTests : LinearTestBase
 
         Dispatcher.Default.RegisterTimerCallback((o, e) =>
         {
+            Dispatcher.Default.DeregisterTimerCallback(timerReference);
+
             Dispatcher.Default.Stop();
 
-        }, TimeSpan.FromSeconds(1), systemClient);
+        }, TimeSpan.FromSeconds(2), systemClient);
 
         Dispatcher.Default.InvokeDispatcher(() =>
         {

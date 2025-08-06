@@ -1,0 +1,21 @@
+﻿{
+  "extensionName": "PowerVision Conduit Extension",
+  "packageName": "Ahsoka.Extensions.PowerVisionConduit",
+  "serviceConfigurations": [
+    {
+      "socketType": "TcpSocket",
+      "serviceName": "PowerVisionConduitService",
+      "tcpListenAddress": "localhost",
+      "tcpConnectionAddress": "localhost",
+      "dataChannel": 6127,
+      "behaviors": "AutoStart"
+    }
+  ],
+  "hasCommands": "false",
+  "hasUx": "false",
+  "hasSdkGenerator": "false",
+  "minVersion": "4.0.0",
+  "maxVersion": "5.0.0",
+  "requireExactVersion": "false"
+	
+}

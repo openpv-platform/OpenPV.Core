@@ -1,6 +1,6 @@
 ﻿{
-  "extensionName": "PowerVision Conduit Extension",
-  "packageName": "Ahsoka.Extensions.PowerVisionConduit",
+  "extensionName": "PowerVision Extension",
+  "packageName": "Ahsoka.Extensions.PowerVision",
   "serviceConfigurations": [
     {
       "socketType": "TcpSocket",
